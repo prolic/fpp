@@ -2,6 +2,8 @@
 
 ## Functional PHP Preprocessor
 
+### In development - API will change !!!
+
 ### What it this?
 
 This library can generate php code bases on fpp definitions, the syntax is inspired by Haskell.
@@ -13,7 +15,7 @@ Create a file and put this in it:
 ```console
 namespace Model\Foo;
 
-data Person = {string $name, ?int $age} deriving (ValueObject)
+data Person = {string $name, ?int $age}
 ```
 
 Then generate php code. Now you can do this:
