@@ -1,0 +1,24 @@
+{
+  "name": "prolic/fpp",
+  "description": "Functional PHP Preprocessor",
+  "authors": [
+    {
+      "name": "Sascha-Oliver Prolic",
+      "email": "saschaprolic@googlemail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "marc-mabe/php-enum": "^3.0",
+    "nikic/php-parser": "^3.1.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.0",
+    "prooph/php-cs-fixer-config": "^0.2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Fpp\\": "src/"
+    }
+  }
+}
