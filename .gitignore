@@ -3,6 +3,7 @@
 /.buildpath
 /vendor
 /build
+/demo/generated.php
 .idea
 .php_cs.cache
 nbproject
