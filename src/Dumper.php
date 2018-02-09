@@ -38,7 +38,7 @@ CODE;
             }
         }
 
-        return $code;
+        return substr($code, 0, -1);
     }
 
 
