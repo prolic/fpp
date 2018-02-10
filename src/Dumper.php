@@ -260,8 +260,6 @@ CODE;
         $code .= <<<CODE
 $indent    ];
 
-$indent    protected \$value;
-
 $indent    final public function __construct()
 $indent    {
 $indent        \$valid = false;
@@ -279,11 +277,6 @@ $indent            throw new \LogicException("Invalid {$definition->name()} '\$s
 $indent        }
 $indent    }
 
-$indent    public function value(): string
-$indent    {
-$indent        return \$this->value;
-$indent    }
-
 $indent    public function sameAs({$definition->name()} \$other): bool
 $indent    {
 $indent        return get_class(\$this) === get_class(\$other);
@@ -291,7 +284,7 @@ $indent    }
 
 $indent    public function __toString(): string
 $indent    {
-$indent        return \$this->value;
+$indent        return static::VALUE;
 $indent    }
 $indent}
 
@@ -301,7 +294,7 @@ CODE;
             $code .= "\n$indent" . <<<CODE
 final class {$argument->name()} extends {$definition->name()}
 $indent{
-$indent    protected \$value = '{$argument->name()}';
+$indent    const VALUE = '{$argument->name()}';
 $indent}
 
 CODE;
