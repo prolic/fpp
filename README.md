@@ -95,7 +95,7 @@ php bin/fpp.php demo demo/generated.php
 or for a single file:
 
 ```console
-php bin/enum.php demo demo/generated.php
+php bin/fpp.php demo/enum.fpp demo/generated.php
 ```
 
 ### Features
