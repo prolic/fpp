@@ -74,6 +74,9 @@ final class Definition
             if (! $argument instanceof Argument) {
                 throw new \InvalidArgumentException('Invalid argument given, must be an instance of ' . Argument::class);
             }
+            if ($argument->name() === $name) {
+                throw new \InvalidArgumentException('Argument name is not allowed to be same as object name');
+            }
             $this->arguments[] = $argument;
         }
 
