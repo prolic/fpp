@@ -30,7 +30,7 @@ $collection = new DefinitionCollection();
 
 foreach ($scanner as $file) {
     /* @var \SplFileInfo $file */
-    $definition = $parser->parse(file_get_contents($file->getRealPath()));
+    $definition = $parser->parseFile($file->getRealPath());
     $collection = $collection->merge($definition);
 }
 

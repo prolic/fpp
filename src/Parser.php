@@ -25,6 +25,22 @@ final class Parser
      */
     private $namespaceFound = false;
 
+    /**
+     * @var string
+     */
+    private $filename = '';
+
+    public function parseFile(string $filename): DefinitionCollection
+    {
+        $this->filename = $filename;
+
+        $collection = $this->parse(file_get_contents($filename));
+
+        $this->filename = '';
+
+        return $collection;
+    }
+
     public function parse(string $contents): DefinitionCollection
     {
         $collection = new DefinitionCollection();
@@ -42,7 +58,7 @@ final class Parser
                     break;
                 case T_NAMESPACE:
                     if ($this->namespaceFound) {
-                        throw ParseError::nestedNamespacesDetected($token[2]);
+                        throw ParseError::nestedNamespacesDetected($token[2], $this->filename);
                     }
                     $namespace = $this->parseNamespace($tokens, $position);
                     break;
@@ -93,12 +109,12 @@ final class Parser
                             $this->namespaceFound = false;
                             $namespace = '';
                         } else {
-                            throw ParseError::unexpectedTokenFound('T_STRING or T_WHITESPACE', $token);
+                            throw ParseError::unexpectedTokenFound('T_STRING or T_WHITESPACE', $token, $this->filename);
                         }
                     }
                     break;
                 default:
-                    throw ParseError::unexpectedTokenFound('T_STRING or T_WHITESPACE', $token);
+                    throw ParseError::unexpectedTokenFound('T_STRING or T_WHITESPACE', $token, $this->filename);
             }
 
             if ($position + 1 < $this->tokenCount) {
@@ -112,7 +128,7 @@ final class Parser
     private function nextToken(array $tokens, int &$position): array
     {
         if ($position === $this->tokenCount - 1) {
-            throw ParseError::unexpectedEndOfFile();
+            throw ParseError::unexpectedEndOfFile($this->filename);
         }
 
         $token = $tokens[++$position];
@@ -136,13 +152,13 @@ final class Parser
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_WHITESPACE) {
-            throw ParseError::unexpectedTokenFound(' ', $token);
+            throw ParseError::unexpectedTokenFound(' ', $token, $this->filename);
         }
 
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_STRING) {
-            throw ParseError::expectedString($token);
+            throw ParseError::expectedString($token, $this->filename);
         }
 
         $namespace = $token[1];
@@ -153,7 +169,7 @@ final class Parser
             $token = $this->nextToken($tokens, $position);
 
             if ($token[0] !== T_STRING) {
-                throw ParseError::expectedString($token);
+                throw ParseError::expectedString($token, $this->filename);
             }
 
             $namespace .= '\\' . $token[1];
@@ -172,7 +188,7 @@ final class Parser
         }
 
         if ($token[1] !== ';') {
-            throw ParseError::unexpectedTokenFound(';', $token);
+            throw ParseError::unexpectedTokenFound(';', $token, $this->filename);
         }
 
         return $namespace;
@@ -183,13 +199,13 @@ final class Parser
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_WHITESPACE) {
-            throw ParseError::unexpectedTokenFound(' ', $token);
+            throw ParseError::unexpectedTokenFound(' ', $token, $this->filename);
         }
 
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_STRING) {
-            throw ParseError::expectedString($token);
+            throw ParseError::expectedString($token, $this->filename);
         }
 
         $name = $token[1];
@@ -201,7 +217,7 @@ final class Parser
         }
 
         if ($token[1] !== '=') {
-            throw ParseError::unexpectedTokenFound('=', $token);
+            throw ParseError::unexpectedTokenFound('=', $token, $this->filename);
         }
 
         return [$name, $token];
@@ -212,13 +228,13 @@ final class Parser
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_WHITESPACE) {
-            throw ParseError::unexpectedTokenFound(' ', $token);
+            throw ParseError::unexpectedTokenFound(' ', $token, $this->filename);
         }
 
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_STRING) {
-            throw ParseError::expectedString($token);
+            throw ParseError::expectedString($token, $this->filename);
         }
 
         $name = $token[1];
@@ -239,7 +255,7 @@ final class Parser
             }
 
             if ($token[0] !== T_STRING) {
-                throw ParseError::unexpectedTokenFound('T_STRING', $token);
+                throw ParseError::unexpectedTokenFound('T_STRING', $token, $this->filename);
             }
 
             $messageName = $token[1];
@@ -260,7 +276,7 @@ final class Parser
         }
 
         if ($token[1] !== '=') {
-            throw ParseError::unexpectedTokenFound('=', $token);
+            throw ParseError::unexpectedTokenFound('=', $token, $this->filename);
         }
 
         return [$name, $messageName, $token];
@@ -277,7 +293,7 @@ final class Parser
         }
 
         if ($token[1] !== '{') {
-            throw ParseError::unexpectedTokenFound('{', $token);
+            throw ParseError::unexpectedTokenFound('{', $token, $this->filename);
         }
 
         $token = $this->nextToken($tokens, $position);
@@ -295,20 +311,20 @@ final class Parser
             }
 
             if ($token[0] !== T_STRING) {
-                throw ParseError::expectedString($token);
+                throw ParseError::expectedString($token, $this->filename);
             }
 
             $typehint .= $token[1];
             $token = $this->nextToken($tokens, $position);
 
             if ($token[0] !== T_WHITESPACE) {
-                throw ParseError::unexpectedTokenFound(' ', $token);
+                throw ParseError::unexpectedTokenFound(' ', $token, $this->filename);
             }
 
             $token = $this->nextToken($tokens, $position);
 
             if ($token[0] !== T_VARIABLE) {
-                throw ParseError::unexpectedTokenFound('T_VARIABLE', $token);
+                throw ParseError::unexpectedTokenFound('T_VARIABLE', $token, $this->filename);
             }
 
             $name = substr($token[1], 1);
@@ -340,7 +356,7 @@ final class Parser
             }
 
             if ($token[0] !== T_STRING) {
-                throw ParseError::expectedString($token);
+                throw ParseError::expectedString($token, $this->filename);
             }
 
             $name = $token[1];
@@ -398,7 +414,7 @@ final class Parser
         }
 
         if (! $allow && $token[1] === 'deriving') {
-            throw ParseError::unknownDeriving($token[2]);
+            throw ParseError::unknownDeriving($token[2], $this->filename);
         }
 
         if ($token[1] !== 'deriving') {
@@ -412,7 +428,7 @@ final class Parser
         }
 
         if ($token[1] !== '(') {
-            throw ParseError::unexpectedTokenFound('(', $token);
+            throw ParseError::unexpectedTokenFound('(', $token, $this->filename);
         }
 
         $token = $this->nextToken($tokens, $position);
@@ -423,11 +439,11 @@ final class Parser
             }
 
             if ($token[0] !== T_STRING) {
-                throw ParseError::expectedString($token);
+                throw ParseError::expectedString($token, $this->filename);
             }
 
             if (! in_array($token[1], Deriving::OPTION_VALUES, true)) {
-                throw ParseError::unknownDeriving($token[2]);
+                throw ParseError::unknownDeriving($token[2], $this->filename);
             }
 
             $fqcn = __NAMESPACE__ . '\\Deriving\\' . $token[1];
@@ -436,7 +452,7 @@ final class Parser
             $token = $this->nextToken($tokens, $position);
 
             if ($token[0] === T_WHITESPACE) {
-                throw ParseError::unexpectedTokenFound(' ', $token);
+                throw ParseError::unexpectedTokenFound(' ', $token, $this->filename);
             }
 
             if ($token[1] === ',') {
