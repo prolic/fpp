@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace FppTest;
 
 use Fpp\Argument;
-use Fpp\Data;
+use Fpp\Type\Data;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
-use Fpp\Dumper;
-use Fpp\ValueObject;
+use Fpp\DefinitionCollectionDumper;
+use Fpp\Dumper\AggregateChangedDumper;
+use Fpp\Dumper\CommandDumper;
+use Fpp\Dumper\DataDumper;
+use Fpp\Dumper\DomainEventDumper;
+use Fpp\Dumper\EnumDumper;
+use Fpp\Dumper\QueryDumper;
+use Fpp\Deriving\ValueObject;
 use PHPUnit\Framework\TestCase;
 
 class DumperTest extends TestCase
@@ -28,7 +34,15 @@ class DumperTest extends TestCase
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
 
-        $code = (new Dumper())->dump($collection);
+        $dumper = new DefinitionCollectionDumper([
+            'AggregateChanged' => new AggregateChangedDumper(),
+            'Data' => new DataDumper(),
+            'Enum' => new EnumDumper(),
+            'Command' => new CommandDumper(),
+            'DomainEvent' => new DomainEventDumper(),
+            'Query' => new QueryDumper(),
+        ]);
+        $code = $dumper->dump($collection);
 
         echo $code;
         die;
@@ -47,7 +61,15 @@ class DumperTest extends TestCase
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
 
-        $code = (new Dumper())->dump($collection);
+        $dumper = new DefinitionCollectionDumper([
+            'AggregateChanged' => new AggregateChangedDumper(),
+            'Data' => new DataDumper(),
+            'Enum' => new EnumDumper(),
+            'Command' => new CommandDumper(),
+            'DomainEvent' => new DomainEventDumper(),
+            'Query' => new QueryDumper(),
+        ]);
+        $code = $dumper->dump($collection);
 
         echo $code;
         die;

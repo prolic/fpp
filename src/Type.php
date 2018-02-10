@@ -43,7 +43,7 @@ abstract class Type
         }
     }
 
-    public function sameAs(Type $other): bool
+    public function equals(Type $other): bool
     {
         return get_class($this) === get_class($other);
     }

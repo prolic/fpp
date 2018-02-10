@@ -61,7 +61,7 @@ final class Definition
             throw new \InvalidArgumentException('Message name cannot be empty string');
         }
 
-        if ($type->sameAs(new Type\Enum()) && empty($arguments)) {
+        if ($type->equals(new Type\Enum()) && empty($arguments)) {
             throw new \InvalidArgumentException('Enums need at least one implementation');
         }
 

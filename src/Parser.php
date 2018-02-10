@@ -65,7 +65,8 @@ final class Parser
                     $namespace = $this->parseNamespace($tokens, $position);
                     break;
                 case T_STRING:
-                    switch (ucfirst($token[1])) {
+                    $typeString = ucfirst($token[1]);
+                    switch ($typeString) {
                         case Type\Data::VALUE:
                             list($name) = $this->parseName($tokens, $position);
                             list($arguments) = $this->parseArguments($tokens, $position);
@@ -94,7 +95,8 @@ final class Parser
                             list($name, $messageName) = $this->parseNameWithMessage($tokens, $position);
                             list($arguments) = $this->parseArguments($tokens, $position);
                             list($derivings, $token) = $this->parseDerivings($tokens, $position, false);
-                            $collection->addDefinition(new Definition(new Type\Query(), $namespace, $name, $arguments, $derivings, $messageName));
+                            $typeClass = __NAMESPACE__ . '\\Type\\' . $typeString;
+                            $collection->addDefinition(new Definition(new $typeClass, $namespace, $name, $arguments, $derivings, $messageName));
 
                             if ($token[0] === T_STRING) {
                                 // next definition found

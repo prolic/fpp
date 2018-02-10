@@ -37,7 +37,7 @@ abstract class Deriving
         }
     }
 
-    public function sameAs(Deriving $other): bool
+    public function equals(Deriving $other): bool
     {
         return get_class($this) === get_class($other);
     }

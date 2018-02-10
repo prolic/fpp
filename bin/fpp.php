@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Fpp\Dumper\AggregateChangedDumper;
+use Fpp\Dumper\CommandDumper;
+use Fpp\Dumper\DataDumper;
+use Fpp\Dumper\EnumDumper;
+use Fpp\Dumper\DomainEventDumper;
+use Fpp\Dumper\QueryDumper;
+
 if (! isset($argv[1])) {
     echo 'Missing input directory or file argument';
     exit(1);
@@ -34,7 +41,14 @@ foreach ($scanner as $file) {
     $collection = $collection->merge($definition);
 }
 
-$dumper = new Dumper();
+$dumper = new DefinitionCollectionDumper([
+    'AggregateChanged' => new AggregateChangedDumper(),
+    'Data' => new DataDumper(),
+    'Enum' => new EnumDumper(),
+    'Command' => new CommandDumper(),
+    'DomainEvent' => new DomainEventDumper(),
+    'Query' => new QueryDumper(),
+]);
 $php = $dumper->dump($collection);
 
 file_put_contents($output, $php);

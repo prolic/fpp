@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace FppTest;
 
-use Fpp\Dumper;
+use Fpp\DefinitionCollectionDumper;
+use Fpp\Dumper\AggregateChangedDumper;
+use Fpp\Dumper\CommandDumper;
+use Fpp\Dumper\DataDumper;
+use Fpp\Dumper\DomainEventDumper;
+use Fpp\Dumper\EnumDumper;
+use Fpp\Dumper\QueryDumper;
 use Fpp\Parser;
 use PHPUnit\Framework\TestCase;
 
@@ -27,7 +33,14 @@ FPP;
         $parser = new Parser();
         $collection = $parser->parse($fpp);
 
-        $dumper = new Dumper();
+        $dumper = new DefinitionCollectionDumper([
+            'AggregateChanged' => new AggregateChangedDumper(),
+            'Data' => new DataDumper(),
+            'Enum' => new EnumDumper(),
+            'Command' => new CommandDumper(),
+            'DomainEvent' => new DomainEventDumper(),
+            'Query' => new QueryDumper(),
+        ]);
         $code = $dumper->dump($collection);
 
         echo $code;

@@ -45,8 +45,8 @@ enum Color = Red | Blue | Green | Yellow
 
 ```php
 $blue = MyEnum\Blue();
-var_dump($blue->sameAs(MyEnum\Blue())); // true
-var_dump($blue->sameAs(MyEnum\Red())); // false
+var_dump($blue->equals(MyEnum\Blue())); // true
+var_dump($blue->equals(MyEnum\Red())); // false
 
 function (MyEnum\Color $color): string
 {
@@ -76,7 +76,7 @@ Now you can do this:
 ```php
 $p = Person::fromArray(['name' => 'sasa', 'age' => 36]);
 var_dump($p->toArray()); // ['name' => 'sasa', 'age' => 36]
-$p->sameAs($p) // true
+$p->equals($p) // true
 ```
 
 ### Usage
