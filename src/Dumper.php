@@ -20,22 +20,22 @@ CODE;
         foreach ($collection->definitions() as $definition) {
             /* @var Definition $definition */
             switch (ucfirst((string) $definition->type())) {
-                case Data::VALUE:
+                case Type\Data::VALUE:
                     $code .= $this->dumpData($definition);
                     break;
-                case Enum::VALUE:
+                case Type\Enum::VALUE:
                     $code .= $this->dumpEnum($definition);
                     break;
-                case AggregateChanged::VALUE:
+                case Type\AggregateChanged::VALUE:
                     $code .= $this->dumpAggregateChanged($definition);
                     break;
-                case Command::VALUE:
+                case Type\Command::VALUE:
                     $code .= $this->dumpCommand($definition);
                     break;
-                case DomainEvent::VALUE:
+                case Type\DomainEvent::VALUE:
                     $code .= $this->dumpEvent($definition);
                     break;
-                case Query::VALUE:
+                case Type\Query::VALUE:
                     $code .= $this->dumpCommand($definition);
                     break;
             }
@@ -139,10 +139,10 @@ CODE;
         $code .= "$indent    }\n";
 
         foreach ($definition->derivings() as $deriving) {
-            switch ($deriving) {
-                case (new Show())->value():
+            switch ((string) $deriving) {
+                case Deriving\Show::VALUE:
                     break;
-                case (new StringConverter())->value():
+                case Deriving\StringConverter::VALUE:
                     $argument = current($definition->arguments());
                     $code .= <<<CODE
     
@@ -154,7 +154,7 @@ $indent    }
 CODE;
 
                     break;
-                case (new ArrayConverter())->value():
+                case Deriving\ArrayConverter::VALUE:
                     $code .= <<<CODE
     
 $indent    public function toArray(): array
@@ -193,7 +193,7 @@ CODE;
                         . substr($constructorParams, 0, -2)
                         . ");\n$indent    }\n";
                     break;
-                case (new ValueObject())->value():
+                case Deriving\ValueObject::VALUE:
                     $fqcn = '\\' . $definition->name();
 
                     if ('' !== $definition->namespace()) {

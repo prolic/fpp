@@ -7,10 +7,10 @@ namespace Fpp;
 abstract class Deriving
 {
     const OPTIONS = [
-        Show::class,
-        StringConverter::class,
-        ArrayConverter::class,
-        ValueObject::class,
+        Deriving\Show::class,
+        Deriving\StringConverter::class,
+        Deriving\ArrayConverter::class,
+        Deriving\ValueObject::class,
     ];
 
     const OPTION_VALUES = [
@@ -19,8 +19,6 @@ abstract class Deriving
         'ArrayConverter',
         'ValueObject',
     ];
-
-    protected $value;
 
     final public function __construct()
     {
@@ -39,11 +37,6 @@ abstract class Deriving
         }
     }
 
-    public function value(): string
-    {
-        return $this->value;
-    }
-
     public function sameAs(Deriving $other): bool
     {
         return get_class($this) === get_class($other);
@@ -51,6 +44,6 @@ abstract class Deriving
 
     public function __toString(): string
     {
-        return $this->value;
+        return static::VALUE;
     }
 }

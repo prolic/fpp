@@ -48,35 +48,35 @@ final class Parser
                     break;
                 case T_STRING:
                     switch (ucfirst($token[1])) {
-                        case Data::VALUE:
+                        case Type\Data::VALUE:
                             list($name) = $this->parseName($tokens, $position);
                             list($arguments) = $this->parseArguments($tokens, $position);
                             list($derivings, $token) = $this->parseDerivings($tokens, $position, true);
-                            $collection->addDefinition(new Definition(new Data(), $namespace, $name, $arguments, $derivings));
+                            $collection->addDefinition(new Definition(new Type\Data(), $namespace, $name, $arguments, $derivings));
 
                             if ($token[0] === T_STRING) {
                                 // next definition found
                                 continue 3;
                             }
                             break;
-                        case Enum::VALUE:
+                        case Type\Enum::VALUE:
                             list($name) = $this->parseName($tokens, $position);
                             list($arguments, $token) = $this->parseEnumTypes($tokens, $position);
-                            $collection->addDefinition(new Definition(new Enum(), $namespace, $name, $arguments, [], null));
+                            $collection->addDefinition(new Definition(new Type\Enum(), $namespace, $name, $arguments, [], null));
 
                             if ($token[0] === T_STRING) {
                                 // next definition found
                                 continue 3;
                             }
                             break;
-                        case AggregateChanged::VALUE:
-                        case Command::VALUE:
-                        case DomainEvent::VALUE:
-                        case Query::VALUE:
+                        case Type\AggregateChanged::VALUE:
+                        case Type\Command::VALUE:
+                        case Type\DomainEvent::VALUE:
+                        case Type\Query::VALUE:
                             list($name, $messageName) = $this->parseNameWithMessage($tokens, $position);
                             list($arguments) = $this->parseArguments($tokens, $position);
                             list($derivings, $token) = $this->parseDerivings($tokens, $position, false);
-                            $collection->addDefinition(new Definition(new Query(), $namespace, $name, $arguments, $derivings, $messageName));
+                            $collection->addDefinition(new Definition(new Type\Query(), $namespace, $name, $arguments, $derivings, $messageName));
 
                             if ($token[0] === T_STRING) {
                                 // next definition found
@@ -430,7 +430,7 @@ final class Parser
                 throw ParseError::unknownDeriving($token[2]);
             }
 
-            $fqcn = __NAMESPACE__ . '\\' . $token[1];
+            $fqcn = __NAMESPACE__ . '\\Deriving\\' . $token[1];
             $derivings[] = new $fqcn;
 
             $token = $this->nextToken($tokens, $position);

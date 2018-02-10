@@ -48,23 +48,25 @@ final class Definition
             throw new \InvalidArgumentException('Name cannot be empty string');
         }
 
-        if ($type->sameAs(new Data())
+        $typeString = (string) $type;
+
+        if ($typeString === Type\Data::VALUE
             && null !== $messageName
         ) {
             throw new \InvalidArgumentException('Message name cannot be passed to data type');
-        } elseif (! $type->sameAs(new Data())
-            && ! $type->sameAs(new Enum())
+        } elseif (! $typeString === Type\Data::VALUE
+            && ! $typeString === Type\Enum::VALUE
             && empty($messageName)
         ) {
             throw new \InvalidArgumentException('Message name cannot be empty string');
         }
 
-        if ($type->sameAs(new Enum()) && empty($arguments)) {
+        if ($type->sameAs(new Type\Enum()) && empty($arguments)) {
             throw new \InvalidArgumentException('Enums need at least one implementation');
         }
 
         if (count($arguments) > 1
-            && in_array((new StringConverter)->value(), $derivings)
+            && in_array(Deriving\StringConverter::VALUE, $derivings)
         ) {
             throw new \InvalidArgumentException(sprintf(
                 'Cannot derive from StringConverter using more than one argument for %s\\%s',
@@ -85,7 +87,7 @@ final class Definition
                 throw new \InvalidArgumentException('Argument name is not allowed to be same as object name');
             }
             if ($argument->typehint() !== null
-                && $type->sameAs(new Enum())
+                && $typeString === Type\Enum::VALUE
             ) {
                 throw new \InvalidArgumentException('Argument typehint is not allowed for enums');
             }

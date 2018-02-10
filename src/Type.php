@@ -7,12 +7,12 @@ namespace Fpp;
 abstract class Type
 {
     const OPTIONS = [
-        AggregateChanged::class,
-        Data::class,
-        Enum::class,
-        Command::class,
-        DomainEvent::class,
-        Query::class,
+        Type\AggregateChanged::class,
+        Type\Data::class,
+        Type\Enum::class,
+        Type\Command::class,
+        Type\DomainEvent::class,
+        Type\Query::class,
     ];
 
     const OPTION_VALUES = [
