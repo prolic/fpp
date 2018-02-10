@@ -43,11 +43,6 @@ abstract class Type
         }
     }
 
-    public function value(): string
-    {
-        return $this->value;
-    }
-
     public function sameAs(Type $other): bool
     {
         return get_class($this) === get_class($other);
@@ -55,6 +50,6 @@ abstract class Type
 
     public function __toString(): string
     {
-        return $this->value;
+        return static::VALUE;
     }
 }

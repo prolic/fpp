@@ -6,5 +6,5 @@ namespace Fpp;
 
 final class AggregateChanged extends Type
 {
-    protected $value = 'AggregateChanged';
+    const VALUE = 'AggregateChanged';
 }

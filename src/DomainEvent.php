@@ -6,5 +6,5 @@ namespace Fpp;
 
 final class DomainEvent extends Type
 {
-    protected $value = 'DomainEvent';
+    const VALUE = 'DomainEvent';
 }

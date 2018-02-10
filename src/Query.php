@@ -6,5 +6,5 @@ namespace Fpp;
 
 final class Query extends Type
 {
-    protected $value = 'Query';
+    const VALUE = 'Query';
 }

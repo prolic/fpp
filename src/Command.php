@@ -6,5 +6,5 @@ namespace Fpp;
 
 final class Command extends Type
 {
-    protected $value = 'Command';
+    const VALUE = 'Command';
 }

@@ -6,5 +6,5 @@ namespace Fpp;
 
 final class Enum extends Type
 {
-    protected $value = 'Enum';
+    const VALUE = 'Enum';
 }

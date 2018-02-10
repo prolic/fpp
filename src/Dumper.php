@@ -19,23 +19,23 @@ declare(strict_types=1);
 CODE;
         foreach ($collection->definitions() as $definition) {
             /* @var Definition $definition */
-            switch (ucfirst($definition->type()->value())) {
-                case (new Data())->value():
+            switch (ucfirst((string) $definition->type())) {
+                case Data::VALUE:
                     $code .= $this->dumpData($definition);
                     break;
-                case (new Enum())->value():
+                case Enum::VALUE:
                     $code .= $this->dumpEnum($definition);
                     break;
-                case (new AggregateChanged())->value():
+                case AggregateChanged::VALUE:
                     $code .= $this->dumpAggregateChanged($definition);
                     break;
-                case (new Command())->value():
+                case Command::VALUE:
                     $code .= $this->dumpCommand($definition);
                     break;
-                case (new DomainEvent())->value():
+                case DomainEvent::VALUE:
                     $code .= $this->dumpEvent($definition);
                     break;
-                case (new Query())->value():
+                case Query::VALUE:
                     $code .= $this->dumpCommand($definition);
                     break;
             }
@@ -688,8 +688,9 @@ CODE;
 
         $code = "";
         foreach ($definition->arguments() as $argument) {
+            $code .= "    const {$argument->name()} = '$prefix{$definition->name()}\\";
             $code .= <<<CODE
-    const {$argument->name()} = '{$argument->name()}';
+{$argument->name()}';
 
     function {$argument->name()}()
     {

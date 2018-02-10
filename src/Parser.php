@@ -48,9 +48,9 @@ final class Parser
                     break;
                 case T_STRING:
                     switch (ucfirst($token[1])) {
-                        case (new Data())->value():
-                            list($name, $token) = $this->parseName($tokens, $position);
-                            list($arguments, $token) = $this->parseArguments($tokens, $position);
+                        case Data::VALUE:
+                            list($name) = $this->parseName($tokens, $position);
+                            list($arguments) = $this->parseArguments($tokens, $position);
                             list($derivings, $token) = $this->parseDerivings($tokens, $position, true);
                             $collection->addDefinition(new Definition(new Data(), $namespace, $name, $arguments, $derivings));
 
@@ -59,8 +59,8 @@ final class Parser
                                 continue 3;
                             }
                             break;
-                        case (new Enum())->value():
-                            list($name, $token) = $this->parseName($tokens, $position);
+                        case Enum::VALUE:
+                            list($name) = $this->parseName($tokens, $position);
                             list($arguments, $token) = $this->parseEnumTypes($tokens, $position);
                             $collection->addDefinition(new Definition(new Enum(), $namespace, $name, $arguments, [], null));
 
@@ -69,12 +69,12 @@ final class Parser
                                 continue 3;
                             }
                             break;
-                        case (new AggregateChanged())->value():
-                        case (new Command())->value():
-                        case (new DomainEvent())->value():
-                        case (new Query())->value():
-                            list($name, $messageName, $token) = $this->parseNameWithMessage($tokens, $position);
-                            list($arguments, $token) = $this->parseArguments($tokens, $position);
+                        case AggregateChanged::VALUE:
+                        case Command::VALUE:
+                        case DomainEvent::VALUE:
+                        case Query::VALUE:
+                            list($name, $messageName) = $this->parseNameWithMessage($tokens, $position);
+                            list($arguments) = $this->parseArguments($tokens, $position);
                             list($derivings, $token) = $this->parseDerivings($tokens, $position, false);
                             $collection->addDefinition(new Definition(new Query(), $namespace, $name, $arguments, $derivings, $messageName));
 

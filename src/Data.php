@@ -6,5 +6,5 @@ namespace Fpp;
 
 final class Data extends Type
 {
-    protected $value = 'Data';
+    const VALUE = 'Data';
 }
