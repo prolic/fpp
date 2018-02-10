@@ -28,9 +28,10 @@ class DumperTest extends TestCase
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
 
-        $code = (new Dumper)->dump($collection);
+        $code = (new Dumper())->dump($collection);
 
-        echo $code; die;
+        echo $code;
+        die;
     }
 
     /**
@@ -46,8 +47,9 @@ class DumperTest extends TestCase
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
 
-        $code = (new Dumper)->dump($collection);
+        $code = (new Dumper())->dump($collection);
 
-        echo $code; die;
+        echo $code;
+        die;
     }
 }

@@ -211,7 +211,6 @@ CODE;
                         $code .= "\$this->{$argument->name()} === \$other->{$argument->name()}\n$indent            && ";
                     }
 
-
                     $code = substr($code, 0, -(strlen($indent) + 16)) . ";\n$indent    }\n";
 
                     break;
@@ -324,7 +323,7 @@ CODE;
             $code = "namespace {$definition->namespace()} {\n    ";
             $indent = '    ';
 
-            if (null == $definition->messageName()) {
+            if (null === $definition->messageName()) {
                 $messageName = '\\' . $definition->namespace() . $messageName;
             }
         }
@@ -417,7 +416,7 @@ CODE;
             $code = "namespace {$definition->namespace()} {\n    ";
             $indent = '    ';
 
-            if (null == $definition->messageName()) {
+            if (null === $definition->messageName()) {
                 $messageName = '\\' . $definition->namespace() . $messageName;
             }
         }
@@ -491,7 +490,7 @@ CODE;
             $code = "namespace {$definition->namespace()} {\n    ";
             $indent = '    ';
 
-            if (null == $definition->messageName()) {
+            if (null === $definition->messageName()) {
                 $messageName = '\\' . $definition->namespace() . $messageName;
             }
         }
@@ -578,7 +577,7 @@ CODE;
             $code = "namespace {$definition->namespace()} {\n    ";
             $indent = '    ';
 
-            if (null == $definition->messageName()) {
+            if (null === $definition->messageName()) {
                 $messageName = '\\' . $definition->namespace() . $messageName;
             }
         }
@@ -657,7 +656,7 @@ CODE;
                 $code .= "{$argument->typehint()} ";
             }
 
-            $code.= "\${$argument->name()}, ";
+            $code .= "\${$argument->name()}, ";
         }
 
         if (! empty($definition->arguments())) {
@@ -668,7 +667,7 @@ CODE;
         $code .= "{\n        return new $type(";
 
         foreach ($definition->arguments() as $argument) {
-            $code.= "\${$argument->name()}, ";
+            $code .= "\${$argument->name()}, ";
         }
 
         if (! empty($definition->arguments())) {
@@ -686,7 +685,7 @@ CODE;
             ? '\\' . $definition->namespace() . '\\'
             : '\\';
 
-        $code = "";
+        $code = '';
         foreach ($definition->arguments() as $argument) {
             $code .= "    const {$argument->name()} = '$prefix{$definition->name()}\\";
             $code .= <<<CODE

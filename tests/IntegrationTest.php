@@ -30,7 +30,8 @@ FPP;
         $dumper = new Dumper();
         $code = $dumper->dump($collection);
 
-        echo $code; die;
+        echo $code;
+        die;
         eval(substr($code, 5));
 
         $p = \Model\Foo\Person\Person('sasa', 36);

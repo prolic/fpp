@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Fpp;
 
 if (! isset($argv[1])) {
-    echo "Missing input directory or file argument";
+    echo 'Missing input directory or file argument';
     exit(1);
 }
 
 if (! isset($argv[2])) {
-    echo "Missing output file argument";
+    echo 'Missing output file argument';
     exit(1);
 }
 

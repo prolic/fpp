@@ -121,7 +121,7 @@ final class Parser
             $token = [
                 T_OTHER,
                 $token,
-                $this->line
+                $this->line,
             ];
         } else {
             $token[2] = $token[2] - 2;
@@ -431,7 +431,7 @@ final class Parser
             }
 
             $fqcn = __NAMESPACE__ . '\\Deriving\\' . $token[1];
-            $derivings[] = new $fqcn;
+            $derivings[] = new $fqcn();
 
             $token = $this->nextToken($tokens, $position);
 

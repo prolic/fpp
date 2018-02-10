@@ -24,7 +24,7 @@ abstract class Deriving
     {
         $valid = false;
 
-        foreach(self::OPTIONS as $value) {
+        foreach (self::OPTIONS as $value) {
             if ($this instanceof $value) {
                 $valid = true;
                 break;
