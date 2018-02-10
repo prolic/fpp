@@ -3,6 +3,6 @@ namespace Model {
     data Length = {int $length} deriving (StringConverter, ValueObject)
 }
 
-namespace Enums {
+namespace Color {
     data Red = {}
 }
