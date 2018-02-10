@@ -48,7 +48,7 @@ final class Parser
                     break;
                 case T_STRING:
                     switch ($token[1]) {
-                        case 'data':
+                        case Type::DATA:
                             list($name, $token) = $this->parseName($tokens, $position);
                             list($arguments, $token) = $this->parseArguments($tokens, $position);
                             list($derivings, $token) = $this->parseDerivings($tokens, $position, true);
@@ -59,9 +59,10 @@ final class Parser
                                 continue 3;
                             }
                             break;
-                        case 'command':
-                        case 'event':
-                        case 'query':
+                        case Type::AGGREGATE_CHANGED:
+                        case Type::COMMAND:
+                        case Type::DOMAIN_EVENT:
+                        case Type::QUERY:
                             $type = Type::get($token[1]);
                             list($name, $messageName, $token) = $this->parseNameWithMessage($tokens, $position);
                             list($arguments, $token) = $this->parseArguments($tokens, $position);
@@ -83,12 +84,12 @@ final class Parser
                             $this->namespaceFound = false;
                             $namespace = '';
                         } else {
-                            throw ParseError::invalidToken($token[2]);
+                            throw ParseError::unexpectedTokenFound('T_STRING or T_WHITESPACE', $token);
                         }
                     }
                     break;
                 default:
-                    throw ParseError::invalidToken($token[2]);
+                    throw ParseError::unexpectedTokenFound('T_STRING or T_WHITESPACE', $token);
             }
 
             if ($position + 1 < $this->tokenCount) {
@@ -126,13 +127,13 @@ final class Parser
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_WHITESPACE) {
-            throw ParseError::expectedWhiteSpace($token[2]);
+            throw ParseError::unexpectedTokenFound(' ', $token);
         }
 
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_STRING) {
-            throw ParseError::expectedString($token[2]);
+            throw ParseError::expectedString($token);
         }
 
         $namespace = $token[1];
@@ -143,7 +144,7 @@ final class Parser
             $token = $this->nextToken($tokens, $position);
 
             if ($token[0] !== T_STRING) {
-                throw ParseError::expectedString($token[2]);
+                throw ParseError::expectedString($token);
             }
 
             $namespace .= '\\' . $token[1];
@@ -162,7 +163,7 @@ final class Parser
         }
 
         if ($token[1] !== ';') {
-            throw ParseError::invalidToken($token[2]);
+            throw ParseError::unexpectedTokenFound(';', $token);
         }
 
         return $namespace;
@@ -173,13 +174,13 @@ final class Parser
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_WHITESPACE) {
-            throw ParseError::expectedWhiteSpace($token[2]);
+            throw ParseError::unexpectedTokenFound(' ', $token);
         }
 
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_STRING) {
-            throw ParseError::expectedString($token[2]);
+            throw ParseError::expectedString($token);
         }
 
         $name = $token[1];
@@ -191,7 +192,7 @@ final class Parser
         }
 
         if ($token[1] !== '=') {
-            throw ParseError::expectedEquals($token[2]);
+            throw ParseError::unexpectedTokenFound('=', $token);
         }
 
         return [$name, $token];
@@ -202,13 +203,13 @@ final class Parser
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_WHITESPACE) {
-            throw ParseError::expectedWhiteSpace($token[2]);
+            throw ParseError::unexpectedTokenFound(' ', $token);
         }
 
         $token = $this->nextToken($tokens, $position);
 
         if ($token[0] !== T_STRING) {
-            throw ParseError::expectedString($token[2]);
+            throw ParseError::expectedString($token);
         }
 
         $name = $token[1];
@@ -229,7 +230,7 @@ final class Parser
             }
 
             if ($token[0] !== T_STRING) {
-                throw ParseError::invalidToken($token[2]);
+                throw ParseError::unexpectedTokenFound('T_STRING', $token);
             }
 
             $messageName = $token[1];
@@ -250,7 +251,7 @@ final class Parser
         }
 
         if ($token[1] !== '=') {
-            throw ParseError::expectedEquals($token[2]);
+            throw ParseError::unexpectedTokenFound('=', $token);
         }
 
         return [$name, $messageName, $token];
@@ -267,7 +268,7 @@ final class Parser
         }
 
         if ($token[1] !== '{') {
-            throw ParseError::expectedCurlyBraces($token[2]);
+            throw ParseError::unexpectedTokenFound('{', $token);
         }
 
         $token = $this->nextToken($tokens, $position);
@@ -285,20 +286,20 @@ final class Parser
             }
 
             if ($token[0] !== T_STRING) {
-                throw ParseError::expectedString($token[2]);
+                throw ParseError::expectedString($token);
             }
 
             $typehint .= $token[1];
             $token = $this->nextToken($tokens, $position);
 
             if ($token[0] !== T_WHITESPACE) {
-                throw ParseError::expectedWhiteSpace($token[2]);
+                throw ParseError::unexpectedTokenFound(' ', $token);
             }
 
             $token = $this->nextToken($tokens, $position);
 
             if ($token[0] !== T_VARIABLE) {
-                throw ParseError::expectedVariable($token[2]);
+                throw ParseError::unexpectedTokenFound('T_VARIABLE', $token);
             }
 
             $name = substr($token[1], 1);
@@ -351,7 +352,7 @@ final class Parser
         }
 
         if ($token[1] !== '(') {
-            throw ParseError::expectedRoundBraces($token[2]);
+            throw ParseError::unexpectedTokenFound('(', $token);
         }
 
         $token = $this->nextToken($tokens, $position);
@@ -362,7 +363,7 @@ final class Parser
             }
 
             if ($token[0] !== T_STRING) {
-                throw ParseError::expectedString($token[2]);
+                throw ParseError::expectedString($token);
             }
 
             if (! Deriving::has($token[1])) {
@@ -374,7 +375,7 @@ final class Parser
             $token = $this->nextToken($tokens, $position);
 
             if ($token[0] === T_WHITESPACE) {
-                throw ParseError::expectedWhiteSpace($token[2]);
+                throw ParseError::unexpectedTokenFound(' ', $token);
             }
 
             if ($token[1] === ',') {

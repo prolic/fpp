@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Fpp;
 
 if (! isset($argv[1])) {
-    echo "Missing input directory argument";
+    echo "Missing input directory or file argument";
     exit(1);
 }
 

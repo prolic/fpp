@@ -6,14 +6,14 @@ namespace Fpp;
 
 final class ParseError extends \RuntimeException
 {
-    public static function expectedWhiteSpace(int $line): ParseError
+    public static function unexpectedTokenFound(string $expected, array $actual): ParseError
     {
-        return new self('Expected T_WHITESPACE at line ' . $line);
+        return new self("Syntax error, unexpected '$actual[1]', expecting '$expected' at line $actual[2]");
     }
 
-    public static function expectedString(int $line): ParseError
+    public static function expectedString(array $actual): ParseError
     {
-        return new self('Expected T_STRING at line ' . $line);
+        return new self("Syntax error, unexpected '$actual[1]', expecting identifier (T_STRING) at line $actual[2]");
     }
 
     public static function unexpectedEndOfFile(): ParseError
@@ -21,44 +21,9 @@ final class ParseError extends \RuntimeException
         return new self('Unexpected end of file');
     }
 
-    public static function unexpectedDeriving(int $line): ParseError
-    {
-        return new self('Unexpected deriving at line ' . $line);
-    }
-
-    public static function expectedNamespaceSeparator(int $line): ParseError
-    {
-        return new self('Expected T_NS_SEPARATOR at line ' . $line);
-    }
-
     public static function nestedNamespacesDetected(int $line): ParseError
     {
         return new self('Namespace declarations cannot be nested at line ' . $line);
-    }
-
-    public static function expectedEquals(int $line): ParseError
-    {
-        return new self('Expected equals sign at line ' . $line);
-    }
-
-    public static function expectedRoundBraces(int $line): ParseError
-    {
-        return new self('Expected round braces at line ' . $line);
-    }
-
-    public static function invalidToken(int $line): ParseError
-    {
-        return new self('Invalid token at line ' . $line);
-    }
-
-    public static function expectedCurlyBraces(int $line): ParseError
-    {
-        return new self('Expected curly braces at line ' . $line);
-    }
-
-    public static function expectedVariable(int $line): ParseError
-    {
-        return new self('Expected variable at line ' . $line);
     }
 
     public static function unknownDeriving(int $line): ParseError
