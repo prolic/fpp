@@ -6,7 +6,7 @@
 
 ### What it this?
 
-This library can generate php code bases on fpp definitions, the syntax is inspired by Haskell.
+This library can generate php code based on fpp definitions, the syntax is inspired by Haskell.
 
 ### So what really is it?
 
@@ -28,7 +28,7 @@ echo \Model\Foo\Person\age($p); // 36
 
 $p2 = \Model\Foo\Person\setAge($p, 37);
 
-echo \Model\Foo\Person\age($p2); // 36
+echo \Model\Foo\Person\age($p2); // 37
 
 var_dump($p === $p2); // false
 ```
@@ -50,7 +50,7 @@ var_dump($blue->sameAs(MyEnum\Red())); // false
 
 function (MyEnum\Color $color): string
 {
-    return $color->value();
+    return $color::VALUE;
 }
 ```
 
