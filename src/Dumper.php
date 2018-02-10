@@ -135,10 +135,10 @@ CODE;
                     $argument = current($definition->arguments());
                     $code .= <<<CODE
     
-    $indent    public function __toString(): string
-    $indent    {
-    $indent        return (string) \$this->{$argument->name()};
-    $indent    }
+$indent    public function __toString(): string
+$indent    {
+$indent        return (string) \$this->{$argument->name()};
+$indent    }
 
 CODE;
 
