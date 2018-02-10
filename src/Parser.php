@@ -23,7 +23,7 @@ final class Parser
     /**
      * @var bool
      */
-    private $namespaceFound = false;
+    private $namespaceFound;
 
     /**
      * @var string
@@ -32,6 +32,7 @@ final class Parser
 
     public function parseFile(string $filename): DefinitionCollection
     {
+        $this->namespaceFound = false;
         $this->filename = $filename;
 
         $collection = $this->parse(file_get_contents($filename));
@@ -43,6 +44,7 @@ final class Parser
 
     public function parse(string $contents): DefinitionCollection
     {
+        $this->namespaceFound = false;
         $collection = new DefinitionCollection();
 
         $tokens = token_get_all("<?php\n\n$contents");
