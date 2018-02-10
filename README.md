@@ -108,6 +108,7 @@ php bin/fpp.php demo/enum.fpp demo/generated.php
 - [x] Generate prooph queries
 - [x] Generate prooph aggregate changed events
 - [x] Generate enums
+- [x] Ability to switch dumper implementation for custom output
 - [ ] Allow creating of custom constructors
 - [ ] Show deriving feature
 - [ ] Make parser more robust
