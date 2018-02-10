@@ -47,27 +47,36 @@ final class Parser
                     $namespace = $this->parseNamespace($tokens, $position);
                     break;
                 case T_STRING:
-                    switch ($token[1]) {
-                        case Type::DATA:
+                    switch (ucfirst($token[1])) {
+                        case (new Data())->value():
                             list($name, $token) = $this->parseName($tokens, $position);
                             list($arguments, $token) = $this->parseArguments($tokens, $position);
                             list($derivings, $token) = $this->parseDerivings($tokens, $position, true);
-                            $collection->addDefinition(new Definition(Type::DATA(), $namespace, $name, $arguments, $derivings));
+                            $collection->addDefinition(new Definition(new Data(), $namespace, $name, $arguments, $derivings));
 
                             if ($token[0] === T_STRING) {
                                 // next definition found
                                 continue 3;
                             }
                             break;
-                        case Type::AGGREGATE_CHANGED:
-                        case Type::COMMAND:
-                        case Type::DOMAIN_EVENT:
-                        case Type::QUERY:
-                            $type = Type::get($token[1]);
+                        case (new Enum())->value():
+                            list($name, $token) = $this->parseName($tokens, $position);
+                            list($arguments, $token) = $this->parseEnumTypes($tokens, $position);
+                            $collection->addDefinition(new Definition(new Enum(), $namespace, $name, $arguments, [], null));
+
+                            if ($token[0] === T_STRING) {
+                                // next definition found
+                                continue 3;
+                            }
+                            break;
+                        case (new AggregateChanged())->value():
+                        case (new Command())->value():
+                        case (new DomainEvent())->value():
+                        case (new Query())->value():
                             list($name, $messageName, $token) = $this->parseNameWithMessage($tokens, $position);
                             list($arguments, $token) = $this->parseArguments($tokens, $position);
                             list($derivings, $token) = $this->parseDerivings($tokens, $position, false);
-                            $collection->addDefinition(new Definition($type, $namespace, $name, $arguments, $derivings, $messageName));
+                            $collection->addDefinition(new Definition(new Query(), $namespace, $name, $arguments, $derivings, $messageName));
 
                             if ($token[0] === T_STRING) {
                                 // next definition found
@@ -319,9 +328,60 @@ final class Parser
         return [$arguments, $token];
     }
 
+    private function parseEnumTypes(array $tokens, int &$position): array
+    {
+        $arguments = [];
+
+        $token = $this->nextToken($tokens, $position);
+
+        while (true) {
+            if ($token[0] === T_WHITESPACE) {
+                $token = $this->nextToken($tokens, $position);
+            }
+
+            if ($token[0] !== T_STRING) {
+                throw ParseError::expectedString($token);
+            }
+
+            $name = $token[1];
+
+            $arguments[] = new Argument($name, null);
+
+            if ($position === $this->tokenCount - 1) {
+                break;
+            }
+
+            $token = $this->nextToken($tokens, $position);
+
+            if ($token[0] === T_WHITESPACE) {
+                if ($position === $this->tokenCount - 1) {
+                    break;
+                }
+                $token = $this->nextToken($tokens, $position);
+            }
+
+            if ($token[1] === '|') {
+                $token = $this->nextToken($tokens, $position);
+            }
+
+            if ($token[0] === T_WHITESPACE) {
+                if ($position === $this->tokenCount - 1) {
+                    break;
+                }
+                $token = $this->nextToken($tokens, $position);
+            }
+
+            if (in_array(ucfirst($token[1]), Type::OPTION_VALUES)) {
+                break;
+            }
+        }
+
+        return [$arguments, $token];
+    }
+
     private function parseDerivings(array $tokens, int &$position, bool $allow): array
     {
-        $derivings = new DerivingSet();
+        $derivings = [];
 
         if (($this->tokenCount - 1) === $position) {
             return [$derivings, null];
@@ -366,11 +426,12 @@ final class Parser
                 throw ParseError::expectedString($token);
             }
 
-            if (! Deriving::has($token[1])) {
+            if (! in_array($token[1], Deriving::OPTION_VALUES, true)) {
                 throw ParseError::unknownDeriving($token[2]);
             }
 
-            $derivings->attach(Deriving::get($token[1]));
+            $fqcn = __NAMESPACE__ . '\\' . $token[1];
+            $derivings[] = new $fqcn;
 
             $token = $this->nextToken($tokens, $position);
 

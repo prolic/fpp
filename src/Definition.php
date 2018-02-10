@@ -41,24 +41,31 @@ final class Definition
         string $namespace,
         string $name,
         array $arguments = [],
-        DerivingSet $derivings = null,
+        array $derivings = [],
         string $messageName = null
     ) {
         if (empty($name)) {
             throw new \InvalidArgumentException('Name cannot be empty string');
         }
 
-        if ($type->is(Type::DATA()) && null !== $messageName) {
+        if ($type->sameAs(new Data())
+            && null !== $messageName
+        ) {
             throw new \InvalidArgumentException('Message name cannot be passed to data type');
-        } elseif (! $type->is(Type::DATA()) && empty($messageName)) {
+        } elseif (! $type->sameAs(new Data())
+            && ! $type->sameAs(new Enum())
+            && empty($messageName)
+        ) {
             throw new \InvalidArgumentException('Message name cannot be empty string');
         }
 
-        if (null === $derivings) {
-            $derivings = new DerivingSet();
+        if ($type->sameAs(new Enum()) && empty($arguments)) {
+            throw new \InvalidArgumentException('Enums need at least one implementation');
         }
 
-        if (count($arguments) > 1 && $derivings->contains(Deriving::STRING_CONVERTER())) {
+        if (count($arguments) > 1
+            && in_array((new StringConverter)->value(), $derivings)
+        ) {
             throw new \InvalidArgumentException(sprintf(
                 'Cannot derive from StringConverter using more than one argument for %s\\%s',
                 $namespace,
@@ -77,10 +84,15 @@ final class Definition
             if ($argument->name() === $name) {
                 throw new \InvalidArgumentException('Argument name is not allowed to be same as object name');
             }
+            if ($argument->typehint() !== null
+                && $type->sameAs(new Enum())
+            ) {
+                throw new \InvalidArgumentException('Argument typehint is not allowed for enums');
+            }
             $this->arguments[] = $argument;
         }
 
-        $this->derivings = $derivings;
+        $this->derivings = array_unique($derivings);
         $this->messageName = $messageName;
     }
 
@@ -116,7 +128,7 @@ final class Definition
         return $this->arguments;
     }
 
-    public function derivings(): DerivingSet
+    public function derivings(): array
     {
         return $this->derivings;
     }

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace FppTest;
 
 use Fpp\Argument;
+use Fpp\Data;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
-use Fpp\Deriving;
-use Fpp\DerivingSet;
 use Fpp\Dumper;
-use Fpp\Type;
+use Fpp\ValueObject;
 use PHPUnit\Framework\TestCase;
 
 class DumperTest extends TestCase
@@ -24,8 +23,8 @@ class DumperTest extends TestCase
             new Argument('name', 'string'),
             new Argument('age', 'int'),
         ];
-        $derivings = (new DerivingSet())->attach(Deriving::VALUE_OBJECT());
-        $definition = new Definition(Type::DATA(), 'Foo\Bar', 'Person', $arguments, $derivings);
+        $derivings = [(new ValueObject())->value()];
+        $definition = new Definition(new Data(), 'Foo\Bar', 'Person', $arguments, $derivings);
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
 
@@ -43,7 +42,7 @@ class DumperTest extends TestCase
             new Argument('name', 'string'),
             new Argument('age', 'int'),
         ];
-        $definition = new Definition(Type::DATA(), '', 'Person', $arguments);
+        $definition = new Definition(new Data(), '', 'Person', $arguments);
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
 

@@ -19,20 +19,23 @@ declare(strict_types=1);
 CODE;
         foreach ($collection->definitions() as $definition) {
             /* @var Definition $definition */
-            switch ($definition->type()->getValue()) {
-                case Type::DATA:
+            switch (ucfirst($definition->type()->value())) {
+                case (new Data())->value():
                     $code .= $this->dumpData($definition);
                     break;
-                case Type::AGGREGATE_CHANGED:
+                case (new Enum())->value():
+                    $code .= $this->dumpEnum($definition);
+                    break;
+                case (new AggregateChanged())->value():
                     $code .= $this->dumpAggregateChanged($definition);
                     break;
-                case Type::COMMAND:
+                case (new Command())->value():
                     $code .= $this->dumpCommand($definition);
                     break;
-                case Type::DOMAIN_EVENT:
+                case (new DomainEvent())->value():
                     $code .= $this->dumpEvent($definition);
                     break;
-                case Type::QUERY:
+                case (new Query())->value():
                     $code .= $this->dumpCommand($definition);
                     break;
             }
@@ -41,7 +44,6 @@ CODE;
         return substr($code, 0, -1);
     }
 
-
     private function dumpData(Definition $definition): string
     {
         $dataClass = $this->generateDataClass($definition);
@@ -49,6 +51,15 @@ CODE;
         $accessors = $this->generateFunctionalAccessors($definition);
         $setters = $this->generateFunctionalSetters($definition);
         $functions = $this->generateFunctionNamespace($definition, $constructor . $accessors . $setters);
+
+        return $dataClass . $functions;
+    }
+
+    private function dumpEnum(Definition $definition): string
+    {
+        $dataClass = $this->generateEnumClasses($definition);
+        $constructors = $this->generateFunctionalEnumConstructors($definition);
+        $functions = $this->generateFunctionNamespace($definition, $constructors);
 
         return $dataClass . $functions;
     }
@@ -129,9 +140,9 @@ CODE;
 
         foreach ($definition->derivings() as $deriving) {
             switch ($deriving) {
-                case Deriving::SHOW():
+                case (new Show())->value():
                     break;
-                case Deriving::STRING_CONVERTER():
+                case (new StringConverter())->value():
                     $argument = current($definition->arguments());
                     $code .= <<<CODE
     
@@ -143,7 +154,7 @@ $indent    }
 CODE;
 
                     break;
-                case Deriving::ARRAY_CONVERTER():
+                case (new ArrayConverter())->value():
                     $code .= <<<CODE
     
 $indent    public function toArray(): array
@@ -182,7 +193,7 @@ CODE;
                         . substr($constructorParams, 0, -2)
                         . ");\n$indent    }\n";
                     break;
-                case Deriving::VALUE_OBJECT():
+                case (new ValueObject())->value():
                     $fqcn = '\\' . $definition->name();
 
                     if ('' !== $definition->namespace()) {
@@ -214,6 +225,93 @@ CODE;
         }
 
         $code .= "\n\n";
+
+        return $code;
+    }
+
+    private function generateEnumClasses(Definition $definition): string
+    {
+        $code = '';
+        $indent = '';
+
+        if ($definition->namespace() !== '') {
+            $code = "namespace {$definition->namespace()} {\n    ";
+            $indent = '    ';
+        }
+
+        $code .= "abstract class {$definition->name()}\n$indent{\n";
+        $code .= "$indent    const OPTIONS = [\n";
+
+        foreach ($definition->arguments() as $argument) {
+            $code .= "$indent        {$argument->name()}::class,\n";
+        }
+
+        $code .= <<<CODE
+$indent    ];
+
+$indent    const OPTION_VALUES = [
+
+CODE;
+
+        foreach ($definition->arguments() as $argument) {
+            $code .= "$indent        '{$argument->name()}',\n";
+        }
+
+        $code .= <<<CODE
+$indent    ];
+
+$indent    protected \$value;
+
+$indent    final public function __construct()
+$indent    {
+$indent        \$valid = false;
+
+$indent        foreach(self::OPTIONS as \$value) {
+$indent            if (\$this instanceof \$value) {
+$indent                \$valid = true;
+$indent                break;
+$indent            }
+$indent        }
+
+$indent        if (! \$valid) {
+$indent            \$self = get_class(\$this);
+$indent            throw new \LogicException("Invalid {$definition->name()} '\$self' given");
+$indent        }
+$indent    }
+
+$indent    public function value(): string
+$indent    {
+$indent        return \$this->value;
+$indent    }
+
+$indent    public function sameAs({$definition->name()} \$other): bool
+$indent    {
+$indent        return get_class(\$this) === get_class(\$other);
+$indent    }
+
+$indent    public function __toString(): string
+$indent    {
+$indent        return \$this->value;
+$indent    }
+$indent}
+
+CODE;
+
+        foreach ($definition->arguments() as $argument) {
+            $code .= "\n$indent" . <<<CODE
+final class {$argument->name()} extends {$definition->name()}
+$indent{
+$indent    protected \$value = '{$argument->name()}';
+$indent}
+
+CODE;
+        }
+
+        if ($definition->namespace() !== '') {
+            $code .= "}\n";
+        }
+
+        $code .= "\n";
 
         return $code;
     }
@@ -585,6 +683,29 @@ CODE;
         }
 
         $code .= ");\n    }\n\n";
+
+        return $code;
+    }
+
+    private function generateFunctionalEnumConstructors(Definition $definition): string
+    {
+        $prefix = $definition->namespace() !== ''
+            ? '\\' . $definition->namespace() . '\\'
+            : '\\';
+
+        $code = "";
+        foreach ($definition->arguments() as $argument) {
+            $code .= <<<CODE
+    const {$argument->name()} = '{$argument->name()}';
+
+    function {$argument->name()}()
+    {
+        return new $prefix{$argument->name()}();
+    }
+
+
+CODE;
+        }
 
         return $code;
     }

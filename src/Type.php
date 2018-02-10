@@ -4,20 +4,57 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use MabeEnum\Enum;
-
-/**
- * @method static Type AGGREGATE_CHANGED()
- * @method static Type DATA()
- * @method static Type COMMAND()
- * @method static Type DOMAIN_EVENT()
- * @method static Type QUERY()
- */
-final class Type extends Enum
+abstract class Type
 {
-    const DATA = 'data';
-    const AGGREGATE_CHANGED = 'aggregateChanged';
-    const COMMAND = 'command';
-    const DOMAIN_EVENT = 'domainEvent';
-    const QUERY = 'query';
+    const OPTIONS = [
+        AggregateChanged::class,
+        Data::class,
+        Enum::class,
+        Command::class,
+        DomainEvent::class,
+        Query::class,
+    ];
+
+    const OPTION_VALUES = [
+        'AggregateChanged',
+        'Data',
+        'Enum',
+        'Command',
+        'DomainEvent',
+        'Query',
+    ];
+
+    protected $value;
+
+    final public function __construct()
+    {
+        $valid = false;
+
+        foreach(self::OPTIONS as $value) {
+            if ($this instanceof $value) {
+                $valid = true;
+                break;
+            }
+        }
+
+        if (! $valid) {
+            $self = get_class($this);
+            throw new \LogicException("Invalid Type '$self' given");
+        }
+    }
+
+    public function value(): string
+    {
+        return $this->value;
+    }
+
+    public function sameAs(Type $other): bool
+    {
+        return get_class($this) === get_class($other);
+    }
+
+    public function __toString(): string
+    {
+        return $this->value;
+    }
 }

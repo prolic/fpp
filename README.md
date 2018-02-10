@@ -33,6 +33,27 @@ echo \Model\Foo\Person\age($p2); // 36
 var_dump($p === $p2); // false
 ```
 
+### Enums?
+
+No problem
+
+```console
+namespace MyEnum;
+
+enum Color = Red | Blue | Green | Yellow
+```
+
+```php
+$blue = Blue();
+var_dump($blue->sameAs(Blue())); // true
+var_dump($blue->sameAs(Red())); // false
+
+function (Color $color): string
+{
+    return $color->value();
+}
+```
+
 ### Derivings
 
 There are 4 deriving types for now:
@@ -60,15 +81,21 @@ $p->sameAs($p) // true
 
 ### Usage
 
-`php bin/fpp.php <source dir> <target file>`
+`php bin/fpp.php <source dir or file> <target file>`
 
 ### Demo
 
-```
+```console
 git clone https://github.com/prolic/fpp
 cd fpp
 composer install
 php bin/fpp.php demo demo/generated.php
+```
+
+or for a single file:
+
+```console
+php bin/enum.php demo demo/generated.php
 ```
 
 ### Features
@@ -80,7 +107,8 @@ php bin/fpp.php demo demo/generated.php
 - [x] Generate prooph events
 - [x] Generate prooph queries
 - [x] Generate prooph aggregate changed events
-- [ ] Allow creating of or-types (f.e. data Color = Red | Blue | Green)
+- [x] Generate enums
+- [ ] Allow creating of custom constructors
 - [ ] Show deriving feature
 - [ ] Make parser more robust
 - [ ] More to come
