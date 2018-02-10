@@ -44,11 +44,11 @@ enum Color = Red | Blue | Green | Yellow
 ```
 
 ```php
-$blue = Blue();
-var_dump($blue->sameAs(Blue())); // true
-var_dump($blue->sameAs(Red())); // false
+$blue = MyEnum\Blue();
+var_dump($blue->sameAs(MyEnum\Blue())); // true
+var_dump($blue->sameAs(MyEnum\Red())); // false
 
-function (Color $color): string
+function (MyEnum\Color $color): string
 {
     return $color->value();
 }
