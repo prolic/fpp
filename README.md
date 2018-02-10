@@ -77,9 +77,9 @@ php bin/fpp.php demo demo/generated.php
 - [x] Strict types always
 - [x] Functional accessors and setters
 - [x] Generate prooph commands
-- [ ] Generate prooph events
-- [ ] Generate prooph queries
-- [ ] Generate prooph aggregate changed events
+- [x] Generate prooph events
+- [x] Generate prooph queries
+- [x] Generate prooph aggregate changed events
 - [ ] Allow creating of or-types (f.e. data Color = Red | Blue | Green)
 - [ ] Show deriving feature
 - [ ] Make parser more robust
