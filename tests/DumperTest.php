@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FppTest;
 
 use Fpp\Argument;
+use Fpp\Dumper\UuidDumper;
 use Fpp\Type\Data;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
@@ -41,6 +42,7 @@ class DumperTest extends TestCase
             'Command' => new CommandDumper(),
             'DomainEvent' => new DomainEventDumper(),
             'Query' => new QueryDumper(),
+            'Uuid' => new UuidDumper(),
         ]);
         $code = $dumper->dump($collection);
 
@@ -68,6 +70,7 @@ class DumperTest extends TestCase
             'Command' => new CommandDumper(),
             'DomainEvent' => new DomainEventDumper(),
             'Query' => new QueryDumper(),
+            'Uuid' => new UuidDumper(),
         ]);
         $code = $dumper->dump($collection);
 

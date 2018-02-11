@@ -13,6 +13,7 @@ abstract class Type
         Type\Command::class,
         Type\DomainEvent::class,
         Type\Query::class,
+        Type\Uuid::class,
     ];
 
     const OPTION_VALUES = [
@@ -22,6 +23,7 @@ abstract class Type
         'Command',
         'DomainEvent',
         'Query',
+        'Uuid',
     ];
 
     protected $value;

@@ -26,9 +26,16 @@ final class FunctionalSettersDumper implements Dumper
                 $code .= '\\' . "{$definition->name()}\\";
             }
 
-            $code .= $functionName . "';\n\n";
             $code .= <<<CODE
+$functionName ';
+
     function $functionName($type $param, {$argument->typehint()} \${$argument->name()}): $type {
+
+CODE;
+
+
+            if (count($definition->arguments()) > 1) {
+                $code .= <<<CODE
         \$f = \Closure::bind(
             function ($type $param, \$value) {
                 return $param->{\$value};
@@ -37,6 +44,10 @@ final class FunctionalSettersDumper implements Dumper
             $param
         );
     
+CODE;
+            }
+
+            $code .= <<<CODE
         return new $type(
 CODE;
 

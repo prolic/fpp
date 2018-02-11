@@ -10,6 +10,7 @@ use Fpp\Dumper\DataDumper;
 use Fpp\Dumper\EnumDumper;
 use Fpp\Dumper\DomainEventDumper;
 use Fpp\Dumper\QueryDumper;
+use Fpp\Dumper\UuidDumper;
 
 if (! isset($argv[1])) {
     echo 'Missing input directory or file argument';
@@ -48,6 +49,7 @@ $dumper = new DefinitionCollectionDumper([
     'Command' => new CommandDumper(),
     'DomainEvent' => new DomainEventDumper(),
     'Query' => new QueryDumper(),
+    'Uuid' => new UuidDumper(),
 ]);
 $php = $dumper->dump($collection);
 

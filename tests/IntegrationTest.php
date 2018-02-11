@@ -11,6 +11,7 @@ use Fpp\Dumper\DataDumper;
 use Fpp\Dumper\DomainEventDumper;
 use Fpp\Dumper\EnumDumper;
 use Fpp\Dumper\QueryDumper;
+use Fpp\Dumper\UuidDumper;
 use Fpp\Parser;
 use PHPUnit\Framework\TestCase;
 
@@ -40,6 +41,7 @@ FPP;
             'Command' => new CommandDumper(),
             'DomainEvent' => new DomainEventDumper(),
             'Query' => new QueryDumper(),
+            'Uuid' => new UuidDumper(),
         ]);
         $code = $dumper->dump($collection);
 

@@ -81,7 +81,7 @@ final class Parser
                         case Type\Enum::VALUE:
                             list($name) = $this->parseName($tokens, $position);
                             list($arguments, $token) = $this->parseEnumTypes($tokens, $position);
-                            $collection->addDefinition(new Definition(new Type\Enum(), $namespace, $name, $arguments, [], null));
+                            $collection->addDefinition(new Definition(new Type\Enum(), $namespace, $name, $arguments));
 
                             if ($token[0] === T_STRING) {
                                 // next definition found
@@ -102,6 +102,10 @@ final class Parser
                                 // next definition found
                                 continue 3;
                             }
+                            break;
+                        case Type\Uuid::VALUE:
+                            list($name) = $this->parseName($tokens, $position, false);
+                            $collection->addDefinition(new Definition(new Type\Uuid(), $namespace, $name));
                             break;
                     }
                     break;
@@ -198,7 +202,7 @@ final class Parser
         return $namespace;
     }
 
-    private function parseName(array $tokens, int &$position): array
+    private function parseName(array $tokens, int &$position, bool $withAssignment = true): array
     {
         $token = $this->nextToken($tokens, $position);
 
@@ -213,6 +217,10 @@ final class Parser
         }
 
         $name = $token[1];
+
+        if (! $withAssignment) {
+            return [$name, $token];
+        }
 
         $token = $this->nextToken($tokens, $position);
 
