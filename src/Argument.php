@@ -25,6 +25,7 @@ final class Argument
     {
         $this->name = $name;
         $this->typeHint = $typeHint;
+        $this->nullable = $nullable;
     }
 
     public function name(): string
