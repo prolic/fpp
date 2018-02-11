@@ -83,10 +83,22 @@ final class Definition
                 if (empty($arguments)) {
                     throw new \InvalidArgumentException('Enums need at least one implementation');
                 }
+
+                if (count($derivings) > 0) {
+                    throw new \InvalidArgumentException('No derivings allowed for enum type');
+                }
                 break;
             case Type\Uuid::VALUE:
                 if (null !== $messageName) {
                     throw new \InvalidArgumentException('Message name cannot be passed to uuid type');
+                }
+
+                if (count($arguments) > 0) {
+                    throw new \InvalidArgumentException('No arguments allowed for uuid type');
+                }
+
+                if (count($derivings) > 0) {
+                    throw new \InvalidArgumentException('No derivings allowed for uuid type');
                 }
                 break;
             default:
@@ -94,6 +106,11 @@ final class Definition
                 if (null !== $messageName && empty($messageName)) {
                     throw new \InvalidArgumentException("Message name cannot be empty string for $typeString type");
                 }
+
+                if (count($derivings) > 0) {
+                    throw new \InvalidArgumentException('No derivings allowed for enum type');
+                }
+                break;
         }
 
         $this->type = $type;
