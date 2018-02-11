@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fpp\Dumper;
 
+use Fpp\Argument;
 use Fpp\Definition;
 use Fpp\Deriving;
 
@@ -107,43 +108,24 @@ CODE;
                     break;
                 case Deriving\ScalarConverter::VALUE:
                     $argument = current($definition->arguments());
-                    $code .= <<<CODE
-
-$indent    public function toScalar(): {$argument}
-$indent    {
-$indent        return [
-
-CODE;
-
-                    foreach ($definition->arguments() as $argument) {
-                        $code .= "$indent            '{$argument->name()}' => \$this->{$argument->name()},\n";
+                    /* @var Argument $argument */
+                    $type = $argument->typeHint();
+                    if ($argument->nullable()) {
+                        $type = '?' . $type;
                     }
-
                     $code .= <<<CODE
-$indent        ];
+
+$indent    public function toScalar(): $type
+$indent    {
+$indent        return \$this->{$argument->name()};
 $indent    }
 
-$indent    public static function fromArray(array \$data): {$definition->name()}
+$indent    public static function fromScalar($type \${$argument->name()}): {$definition->name()}
 $indent    {
+$indent        return new {$definition->name()}(\${$argument->name()});
+$indent    }
 
 CODE;
-                    $constructorParams = '';
-                    foreach ($definition->arguments() as $argument) {
-                        $code .= <<<CODE
-$indent        if (!isset(\$data['{$argument->name()}'])) {
-$indent            throw new \InvalidArgumentException(
-$indent                'Key {$argument->name()} is missing in \$data'
-$indent            );
-$indent        }
-
-
-CODE;
-                        $constructorParams .= '$data[\'' . $argument->name() . '\'], ';
-                    }
-
-                    $code .= "$indent        return new {$definition->name()}("
-                        . substr($constructorParams, 0, -2)
-                        . ");\n$indent    }\n";
                     break;
                 case Deriving\ValueObject::VALUE:
                     $fqcn = '\\' . $definition->name();
