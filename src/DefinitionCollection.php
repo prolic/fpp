@@ -38,7 +38,13 @@ final class DefinitionCollection
 
     public function getDefinition(string $namespace, string $name): ?Definition
     {
-        return isset($this->registry[$namespace][$name]) ? $this->registry[$namespace][$name] : null;
+        foreach ($this->definitions as $definition) {
+            if ($definition->namespace() === $namespace && $definition->name() === $name) {
+                return $definition;
+            }
+        }
+
+        return null;
     }
 
     public function merge(DefinitionCollection $collection): DefinitionCollection
