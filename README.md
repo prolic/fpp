@@ -74,7 +74,7 @@ Deriving ValueObject + ArrayConverter
 ```console
 namespace Model\Foo;
 
-data Person = {string $name, ?int $age} deriving (ArrayConveter, ValueObject)
+data Person = {string $name, ?int $age} deriving (ArrayConverter, ValueObject)
 ```
 
 Now you can do this:
