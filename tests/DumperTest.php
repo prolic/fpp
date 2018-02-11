@@ -37,7 +37,7 @@ class DumperTest extends TestCase
 
         $dumper = new DefinitionCollectionDumper([
             'AggregateChanged' => new AggregateChangedDumper(),
-            'Data' => new DataDumper(),
+            'Data' => new DataDumper($collection),
             'Enum' => new EnumDumper(),
             'Command' => new CommandDumper(),
             'DomainEvent' => new DomainEventDumper(),
@@ -65,7 +65,7 @@ class DumperTest extends TestCase
 
         $dumper = new DefinitionCollectionDumper([
             'AggregateChanged' => new AggregateChangedDumper(),
-            'Data' => new DataDumper(),
+            'Data' => new DataDumper($collection),
             'Enum' => new EnumDumper(),
             'Command' => new CommandDumper(),
             'DomainEvent' => new DomainEventDumper(),

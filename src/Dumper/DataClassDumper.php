@@ -6,10 +6,21 @@ namespace Fpp\Dumper;
 
 use Fpp\Argument;
 use Fpp\Definition;
+use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 
 final class DataClassDumper implements Dumper
 {
+    /**
+     * @var DefinitionCollection
+     */
+    private $definitionCollection;
+
+    public function __construct(DefinitionCollection $collection)
+    {
+        $this->definitionCollection = $collection;
+    }
+
     public function dump(Definition $definition): string
     {
         $code = '';

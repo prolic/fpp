@@ -36,6 +36,11 @@ final class DefinitionCollection
         return isset($this->registry[$namespace][$name]);
     }
 
+    public function getDefinition(string $namespace, string $name): ?Definition
+    {
+         return isset($this->registry[$namespace][$name]) ? $this->registry[$namespace][$name] : null;
+    }
+
     public function merge(DefinitionCollection $collection): DefinitionCollection
     {
         $registry = $this->registry;
