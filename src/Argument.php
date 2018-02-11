@@ -14,12 +14,17 @@ final class Argument
     /**
      * @var string|null
      */
-    private $typehint;
+    private $typeHint;
 
-    public function __construct(string $name, ?string $typehint)
+    /**
+     * @var bool|null
+     */
+    private $nullable;
+
+    public function __construct(string $name, ?string $typeHint, ?bool $nullable)
     {
         $this->name = $name;
-        $this->typehint = $typehint;
+        $this->typeHint = $typeHint;
     }
 
     public function name(): string
@@ -27,8 +32,26 @@ final class Argument
         return $this->name;
     }
 
-    public function typehint(): ?string
+    public function typeHint(): ?string
     {
-        return $this->typehint;
+        return $this->typeHint;
+    }
+
+    public function nullable(): ?bool
+    {
+        return $this->nullable;
+    }
+
+    public function isScalartypeHint(): bool
+    {
+        switch ($this->typeHint) {
+            case 'string':
+            case 'int':
+            case 'bool':
+            case 'float':
+                return true;
+            default:
+                return false;
+        }
     }
 }

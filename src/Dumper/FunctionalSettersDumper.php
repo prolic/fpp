@@ -26,10 +26,18 @@ final class FunctionalSettersDumper implements Dumper
                 $code .= '\\' . "{$definition->name()}\\";
             }
 
-            $code .= <<<CODE
-$functionName ';
+            $typeHint = '';
+            if ($argument->typeHint()) {
+                if ($argument->nullable()) {
+                    $typeHint = '?';
+                }
+                $typeHint .= $argument->typeHint();
+            }
 
-    function $functionName($type $param, {$argument->typehint()} \${$argument->name()}): $type {
+            $code .= <<<CODE
+$functionName';
+
+    function $functionName($type $param, $typeHint \${$argument->name()}): $type {
 
 CODE;
 
@@ -43,7 +51,8 @@ CODE;
             null,
             $param
         );
-    
+
+
 CODE;
             }
 

@@ -38,7 +38,10 @@ $indent    public function __construct(
 CODE;
 
         foreach ($definition->arguments() as $argument) {
-            $code .= "{$argument->typehint()} \${$argument->name()}, ";
+            if ($argument->nullable()) {
+                $code .= '?';
+            }
+            $code .= "{$argument->typeHint()} \${$argument->name()}, ";
         }
 
         if (! empty($definition->arguments())) {
@@ -56,9 +59,13 @@ CODE;
         $code .= "$indent    }\n\n";
 
         foreach ($definition->arguments() as $argument) {
-            $returnType = $argument->typehint() !== null
-                ? ": {$argument->typehint()}"
-                : '';
+            $returnType = '';
+            if ($argument->typeHint()) {
+                if ($argument->nullable()) {
+                    $returnType = '?';
+                }
+                $returnType = ': ' . $returnType . $argument->typeHint();
+            }
 
             $code .= <<<CODE
 $indent    public function {$argument->name()}()$returnType

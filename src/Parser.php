@@ -311,14 +311,14 @@ final class Parser
         $token = $this->nextToken($tokens, $position);
 
         while ($token[1] !== '}') {
-            $typehint = null;
+            $typeHint = null;
 
             if ($token[0] === T_WHITESPACE) {
                 $token = $this->nextToken($tokens, $position);
             }
 
             if ($token[1] === '?') {
-                $typehint = '?';
+                $typeHint = '?';
                 $token = $this->nextToken($tokens, $position);
             }
 
@@ -326,7 +326,7 @@ final class Parser
                 throw ParseError::expectedString($token, $this->filename);
             }
 
-            $typehint .= $token[1];
+            $typeHint .= $token[1];
             $token = $this->nextToken($tokens, $position);
 
             if ($token[0] !== T_WHITESPACE) {
@@ -340,7 +340,7 @@ final class Parser
             }
 
             $name = substr($token[1], 1);
-            $arguments[] = new Argument($name, $typehint);
+            $arguments[] = new Argument($name, $typeHint, null);
 
             $token = $this->nextToken($tokens, $position);
 
@@ -373,7 +373,7 @@ final class Parser
 
             $name = $token[1];
 
-            $arguments[] = new Argument($name, null);
+            $arguments[] = new Argument($name, null, null);
 
             if ($position === $this->tokenCount - 1) {
                 break;

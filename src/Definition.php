@@ -27,7 +27,7 @@ final class Definition
     private $arguments = [];
 
     /**
-     * @var DerivingSet
+     * @var []
      */
     private $derivings;
 
@@ -50,19 +50,30 @@ final class Definition
 
         $typeString = (string) $type;
 
-        if ($typeString === Type\Data::VALUE
-            && null !== $messageName
-        ) {
-            throw new \InvalidArgumentException('Message name cannot be passed to data type');
-        } elseif (! $typeString === Type\Data::VALUE
-            && ! $typeString === Type\Enum::VALUE
-            && empty($messageName)
-        ) {
-            throw new \InvalidArgumentException('Message name cannot be empty string');
-        }
-
-        if ($type->equals(new Type\Enum()) && empty($arguments)) {
-            throw new \InvalidArgumentException('Enums need at least one implementation');
+        switch ($typeString) {
+            case Type\Data::VALUE:
+                if (null !== $messageName) {
+                    throw new \InvalidArgumentException('Message name cannot be passed to data type');
+                }
+                break;
+            case Type\Enum::VALUE:
+                if (null !== $messageName) {
+                    throw new \InvalidArgumentException('Message name cannot be passed to enum type');
+                }
+                if (empty($arguments)) {
+                    throw new \InvalidArgumentException('Enums need at least one implementation');
+                }
+                break;
+            case Type\Uuid::VALUE:
+                if (null !== $messageName) {
+                    throw new \InvalidArgumentException('Message name cannot be passed to uuid type');
+                }
+                break;
+            default:
+                // prooph message types
+                if (null !== $messageName && empty($messageName)) {
+                    throw new \InvalidArgumentException("Message name cannot be empty string for $typeString type");
+                }
         }
 
         if (count($arguments) > 1
@@ -70,6 +81,16 @@ final class Definition
         ) {
             throw new \InvalidArgumentException(sprintf(
                 'Cannot derive from StringConverter using more than one argument for %s\\%s',
+                $namespace,
+                $name
+            ));
+        }
+
+        if (count($arguments) > 1
+            && in_array(Deriving\ScalarConverter::VALUE, $derivings)
+        ) {
+            throw new \InvalidArgumentException(sprintf(
+                'Cannot derive from ScalarConverter using more than one argument for %s\\%s',
                 $namespace,
                 $name
             ));
@@ -86,10 +107,10 @@ final class Definition
             if (ucfirst($argument->name()) === $name) {
                 throw new \InvalidArgumentException('Argument name is not allowed to be same as object name');
             }
-            if ($argument->typehint() !== null
+            if ($argument->typeHint() !== null
                 && $typeString === Type\Enum::VALUE
             ) {
-                throw new \InvalidArgumentException('Argument typehint is not allowed for enums');
+                throw new \InvalidArgumentException('Argument typeHint is not allowed for enums');
             }
             $this->arguments[] = $argument;
         }

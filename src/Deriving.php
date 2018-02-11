@@ -9,6 +9,7 @@ abstract class Deriving
     const OPTIONS = [
         Deriving\Show::class,
         Deriving\StringConverter::class,
+        Deriving\ScalarConverter::class,
         Deriving\ArrayConverter::class,
         Deriving\ValueObject::class,
     ];
@@ -16,6 +17,7 @@ abstract class Deriving
     const OPTION_VALUES = [
         'Show',
         'StringConverter',
+        'ScalarConverter',
         'ArrayConverter',
         'ValueObject',
     ];

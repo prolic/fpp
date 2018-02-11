@@ -32,7 +32,10 @@ final class DataClassDumper implements Dumper
         $code .= "$indent    public function __construct(";
 
         foreach ($definition->arguments() as $argument) {
-            $code .= "{$argument->typehint()} \${$argument->name()}, ";
+            if ($argument->nullable()) {
+                $code .= '?';
+            }
+            $code .= "{$argument->typeHint()} \${$argument->name()}, ";
         }
 
         if (! empty($definition->arguments())) {
@@ -92,7 +95,47 @@ $indent            throw new \InvalidArgumentException(
 $indent                'Key {$argument->name()} is missing in \$data'
 $indent            );
 $indent        }
-    
+
+
+CODE;
+                        $constructorParams .= '$data[\'' . $argument->name() . '\'], ';
+                    }
+
+                    $code .= "$indent        return new {$definition->name()}("
+                        . substr($constructorParams, 0, -2)
+                        . ");\n$indent    }\n";
+                    break;
+                case Deriving\ScalarConverter::VALUE:
+                    $argument = current($definition->arguments());
+                    $code .= <<<CODE
+
+$indent    public function toScalar(): {$argument}
+$indent    {
+$indent        return [
+
+CODE;
+
+                    foreach ($definition->arguments() as $argument) {
+                        $code .= "$indent            '{$argument->name()}' => \$this->{$argument->name()},\n";
+                    }
+
+                    $code .= <<<CODE
+$indent        ];
+$indent    }
+
+$indent    public static function fromArray(array \$data): {$definition->name()}
+$indent    {
+
+CODE;
+                    $constructorParams = '';
+                    foreach ($definition->arguments() as $argument) {
+                        $code .= <<<CODE
+$indent        if (!isset(\$data['{$argument->name()}'])) {
+$indent            throw new \InvalidArgumentException(
+$indent                'Key {$argument->name()} is missing in \$data'
+$indent            );
+$indent        }
+
 
 CODE;
                         $constructorParams .= '$data[\'' . $argument->name() . '\'], ';

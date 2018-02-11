@@ -24,8 +24,11 @@ final class FunctionalConstructorDumper implements Dumper
         $code .= "    function {$definition->name()}(";
 
         foreach ($definition->arguments() as $argument) {
-            if (null !== $argument->typehint()) {
-                $code .= "{$argument->typehint()} ";
+            if (null !== $argument->typeHint()) {
+                if ($argument->nullable()) {
+                    $code .= '?';
+                }
+                $code .= "{$argument->typeHint()} ";
             }
 
             $code .= "\${$argument->name()}, ";

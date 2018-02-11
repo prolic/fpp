@@ -56,10 +56,16 @@ function (MyEnum\Color $color): string
 
 ### Derivings
 
-There are 4 deriving types for now:
+Derivings are kind of PHP's extends keyword, the following rules apply:
+
+- Only data types can be derived
+- It's possible to derive multiple times
+
+There are 5 deriving types for now:
 
 - Show (not yet implemented)
 - StringConverter
+- ScalarConverter
 - ArrayConverter
 - ValueObject
 
@@ -108,6 +114,7 @@ php bin/fpp.php demo/enum.fpp demo/generated.php
 - [x] Generate prooph queries
 - [x] Generate prooph aggregate changed events
 - [x] Generate enums
+- [x] Generate uuids
 - [x] Ability to switch dumper implementation for custom output
 - [ ] Allow creating of custom constructors
 - [ ] Show deriving feature

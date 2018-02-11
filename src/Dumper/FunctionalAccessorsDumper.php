@@ -27,10 +27,19 @@ final class FunctionalAccessorsDumper implements Dumper
             }
 
             $code .= $argument->name() . "';\n\n";
+
+            $returnType = '';
+            if ($argument->typeHint()) {
+                if ($argument->nullable()) {
+                    $returnType = '?';
+                }
+                $returnType = ': ' . $returnType . $argument->typeHint();
+            }
+
             $code .= <<<CODE
-    function {$argument->name()}($type $param): {$argument->typehint()} {
+    function {$argument->name()}($type $param)$returnType {
         \$f = \Closure::bind(
-            function ($type $param): {$argument->typehint()} {
+            function ($type $param)$returnType {
                 return $param->{$argument->name()};
             },
             null,
