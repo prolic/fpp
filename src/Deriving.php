@@ -11,7 +11,7 @@ abstract class Deriving
         Deriving\StringConverter::class,
         Deriving\ScalarConverter::class,
         Deriving\ArrayConverter::class,
-        Deriving\ValueObject::class,
+        Deriving\Equals::class,
     ];
 
     const OPTION_VALUES = [
@@ -19,7 +19,7 @@ abstract class Deriving
         'StringConverter',
         'ScalarConverter',
         'ArrayConverter',
-        'ValueObject',
+        'Equals',
     ];
 
     final public function __construct()

@@ -8,7 +8,7 @@ use Fpp\Argument;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionCollectionDumper;
-use Fpp\Deriving\ValueObject;
+use Fpp\Deriving\Equals;
 use Fpp\Dumper\AggregateChangedDumper;
 use Fpp\Dumper\CommandDumper;
 use Fpp\Dumper\DataDumper;
@@ -27,10 +27,10 @@ class DumperTest extends TestCase
     public function it_dumps_data(): void
     {
         $arguments = [
-            new Argument('name', 'string'),
-            new Argument('age', 'int'),
+            new Argument('', 'name', 'string', false),
+            new Argument('', 'age', 'int', false),
         ];
-        $derivings = [(new ValueObject())->value()];
+        $derivings = [(new Equals())->value()];
         $definition = new Definition(new Data(), 'Foo\Bar', 'Person', $arguments, $derivings);
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
@@ -56,8 +56,8 @@ class DumperTest extends TestCase
     public function it_dumps_data_without_namespace(): void
     {
         $arguments = [
-            new Argument('name', 'string'),
-            new Argument('age', 'int'),
+            new Argument('', 'name', 'string', false),
+            new Argument('', 'age', 'int', false),
         ];
         $definition = new Definition(new Data(), '', 'Person', $arguments);
         $collection = new DefinitionCollection();

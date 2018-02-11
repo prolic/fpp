@@ -47,7 +47,12 @@ final class DataClassDumper implements Dumper
             if ($argument->nullable()) {
                 $code .= '?';
             }
-            $code .= "{$argument->typeHint()} \${$argument->name()}, ";
+            if ($argument->namespace() && substr($argument->namespace(), 0, 1) !== '\\') {
+                $ns = '\\' . $definition->namespace() . '\\' . $argument->namespace();
+            } else {
+                $ns = $argument->namespace();
+            }
+            $code .= "$ns{$argument->typeHint()} \${$argument->name()}, ";
         }
 
         if (! empty($definition->arguments())) {
@@ -138,7 +143,7 @@ $indent    }
 
 CODE;
                     break;
-                case Deriving\ValueObject::VALUE:
+                case Deriving\Equals::VALUE:
                     $fqcn = '\\' . $definition->name();
 
                     if ('' !== $definition->namespace()) {

@@ -117,6 +117,7 @@ final class Definition
         $this->namespace = $namespace;
         $this->name = $name;
 
+        $argumentNames = [];
         foreach ($arguments as $argument) {
             if (! $argument instanceof Argument) {
                 throw new \InvalidArgumentException('Invalid argument given, must be an instance of ' . Argument::class);
@@ -129,6 +130,10 @@ final class Definition
             ) {
                 throw new \InvalidArgumentException('Argument typeHint is not allowed for enums');
             }
+            if (isset($argumentNames[$argument->name()])) {
+                throw new \InvalidArgumentException('Duplicate argument name given');
+            }
+            $argumentNames[$argument->name()] = true;
             $this->arguments[] = $argument;
         }
 

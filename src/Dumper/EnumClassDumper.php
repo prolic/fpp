@@ -22,7 +22,8 @@ final class EnumClassDumper implements Dumper
         $code .= "$indent    const OPTIONS = [\n";
 
         foreach ($definition->arguments() as $argument) {
-            $code .= "$indent        {$argument->name()}::class,\n";
+            $ns = $argument->namespace() ? $argument->namespace() . '\\' : '';
+            $code .= "$indent        $ns{$argument->name()}::class,\n";
         }
 
         $code .= <<<CODE
@@ -33,7 +34,7 @@ $indent    const OPTION_VALUES = [
 CODE;
 
         foreach ($definition->arguments() as $argument) {
-            $code .= "$indent        '{$argument->name()}',\n";
+            $code .= "$indent        '$ns{$argument->name()}',\n";
         }
 
         $code .= <<<CODE
@@ -70,16 +71,24 @@ $indent}
 CODE;
 
         foreach ($definition->arguments() as $argument) {
+            $dns = $definition->namespace() ? '\\' . $definition->namespace() . '\\' : '';
+            if ($argument->namespace()) {
+                $ns = substr($argument->namespace(), 0, 1) === '//'
+                    ? $argument->namespace()
+                    : $definition->namespace() . '\\' . $argument->namespace();
+                $code .= "}\n\nnamespace $ns {\n";
+            }
             $code .= "\n$indent" . <<<CODE
-final class {$argument->name()} extends {$definition->name()}
+final class {$argument->name()} extends $dns{$definition->name()}
 $indent{
 $indent    const VALUE = '{$argument->name()}';
 $indent}
 
 CODE;
+
         }
 
-        if ($definition->namespace() !== '') {
+        if (!$definition->namespace() !== '') {
             $code .= "}\n";
         }
 

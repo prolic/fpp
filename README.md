@@ -67,14 +67,14 @@ There are 5 deriving types for now:
 - StringConverter
 - ScalarConverter
 - ArrayConverter
-- ValueObject
+- Equals
 
-Deriving ValueObject + ArrayConverter
+Deriving Equals + ArrayConverter
 
 ```console
 namespace Model\Foo;
 
-data Person = {string $name, ?int $age} deriving (ArrayConverter, ValueObject)
+data Person = {string $name, ?int $age} deriving (ArrayConverter, Equals)
 ```
 
 Now you can do this:

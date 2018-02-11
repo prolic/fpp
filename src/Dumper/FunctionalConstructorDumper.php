@@ -18,7 +18,7 @@ final class FunctionalConstructorDumper implements Dumper
         $code .= "{$definition->namespace()}";
 
         if ($definition->namespace() !== '') {
-            $code .= '\\' . "{$definition->name()}';\n\n";
+            $code .= '\\' . "{$definition->name()}" . '\\' . "{$definition->name()}'" . ";\n\n";
         }
 
         $code .= "    function {$definition->name()}(";
@@ -28,7 +28,12 @@ final class FunctionalConstructorDumper implements Dumper
                 if ($argument->nullable()) {
                     $code .= '?';
                 }
-                $code .= "{$argument->typeHint()} ";
+                if ($argument->namespace() && substr($argument->namespace(), 0, 1) !== '\\') {
+                    $ns = '\\' . $definition->namespace() . '\\' . $argument->namespace();
+                } else {
+                    $ns = $argument->namespace();
+                }
+                $code .= "$ns{$argument->typeHint()} ";
             }
 
             $code .= "\${$argument->name()}, ";

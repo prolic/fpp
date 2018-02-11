@@ -56,11 +56,12 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_data_defintion_with_arguments(): void
     {
-        $definition = new Definition(new Data(), 'Foo', 'Person', [new Argument('name', 'string', false)]);
+        $definition = new Definition(new Data(), 'Foo', 'Person', [new Argument('My', 'name', 'string', false)]);
 
         $this->assertTrue($definition->type()->equals(new Data()));
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
+        $this->assertSame('My', (current($definition->arguments()))->ns());
         $this->assertSame('name', (current($definition->arguments()))->name());
         $this->assertSame('string', (current($definition->arguments()))->typeHint());
         $this->assertFalse((current($definition->arguments()))->nullable());
@@ -75,7 +76,7 @@ class DefinitionTest extends TestCase
             new Data(),
             'Foo',
             'Person',
-            [new Argument('name', 'string', false)],
+            [new Argument('', 'name', 'string', false)],
             [new ScalarConverter()]
         );
 
@@ -127,8 +128,8 @@ class DefinitionTest extends TestCase
             'Foo',
             'Person',
             [
-                new Argument('name', 'string', false),
-                new Argument('age', 'int', false),
+                new Argument('','name', 'string', false),
+                new Argument('', 'age', 'int', false),
             ],
             [new ScalarConverter()]
         );
@@ -146,8 +147,8 @@ class DefinitionTest extends TestCase
             'Foo',
             'Person',
             [
-                new Argument('name', 'string', false),
-                new Argument('age', 'int', false),
+                new Argument('', 'name', 'string', false),
+                new Argument('', 'age', 'int', false),
             ],
             [new StringConverter()]
         );
@@ -179,7 +180,7 @@ class DefinitionTest extends TestCase
             new Data(),
             'Foo',
             'Person',
-            [new Argument('person', null, null)]
+            [new Argument('', 'person', null, false)]
         );
     }
 
@@ -194,7 +195,7 @@ class DefinitionTest extends TestCase
             new Enum(),
             'Foo',
             'Color',
-            [new Argument('name', 'int', false)]
+            [new Argument('', 'name', 'int', false)]
         );
     }
 
@@ -238,8 +239,8 @@ class DefinitionTest extends TestCase
             'Foo',
             'Color',
             [
-                new Argument('Blue', null, null),
-                new Argument('Red', null, null),
+                new Argument('', 'Blue', null, false),
+                new Argument('', 'Red', null, false),
             ],
             [new ScalarConverter()]
         );
@@ -256,7 +257,7 @@ class DefinitionTest extends TestCase
             new Uuid(),
             'Foo',
             'PersonId',
-            [new Argument('Red', null, null)]
+            [new Argument('', 'Red', null, false)]
         );
     }
 
@@ -325,5 +326,23 @@ class DefinitionTest extends TestCase
 
         $this->assertTrue($definition->type()->equals(new Command()));
         $this->assertSame('register.person', $definition->messageName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_forbids_duplicate_argument_names(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Definition(
+            new Command(),
+            'Foo',
+            'RegisterPerson',
+            [
+                new Argument('', 'same', null, false),
+                new Argument('', 'same', null, false)
+            ]
+        );
     }
 }

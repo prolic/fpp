@@ -31,7 +31,12 @@ final class FunctionalSettersDumper implements Dumper
                 if ($argument->nullable()) {
                     $typeHint = '?';
                 }
-                $typeHint .= $argument->typeHint();
+                if ($argument->namespace() && substr($argument->namespace(), 0, 1) !== '\\') {
+                    $ns = '\\' . $definition->namespace() . '\\' . $argument->namespace();
+                } else {
+                    $ns = $argument->namespace();
+                }
+                $typeHint .= $ns . $argument->typeHint();
             }
 
             $code .= <<<CODE

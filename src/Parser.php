@@ -311,23 +311,42 @@ final class Parser
         $token = $this->nextToken($tokens, $position);
 
         while ($token[1] !== '}') {
+            $namespace = '';
             $typeHint = null;
+            $nullable = false;
 
             if ($token[0] === T_WHITESPACE) {
                 $token = $this->nextToken($tokens, $position);
             }
 
             if ($token[1] === '?') {
-                $typeHint = '?';
+                $nullable = true;
                 $token = $this->nextToken($tokens, $position);
+            }
+
+            if ($token[0] === T_NS_SEPARATOR) {
+                $namespace = '\\';
+                $token = $this->nextToken($tokens, $position);
+
+                if ($token[0] !== T_STRING) {
+                    throw ParseError::expectedString($token, $this->filename);
+                }
             }
 
             if ($token[0] !== T_STRING) {
                 throw ParseError::expectedString($token, $this->filename);
             }
 
-            $typeHint .= $token[1];
+            $typeHint = $token[1];
             $token = $this->nextToken($tokens, $position);
+
+            while($token[0] === T_NS_SEPARATOR) {
+                $namespace .= $typeHint . '\\';
+                $token = $this->nextToken($tokens, $position);
+
+                $typeHint = $token[1];
+                $token = $this->nextToken($tokens, $position);
+            }
 
             if ($token[0] !== T_WHITESPACE) {
                 throw ParseError::unexpectedTokenFound(' ', $token, $this->filename);
@@ -340,7 +359,7 @@ final class Parser
             }
 
             $name = substr($token[1], 1);
-            $arguments[] = new Argument($name, $typeHint, null);
+            $arguments[] = new Argument($namespace, $name, $typeHint, $nullable);
 
             $token = $this->nextToken($tokens, $position);
 
@@ -363,8 +382,18 @@ final class Parser
         $token = $this->nextToken($tokens, $position);
 
         while (true) {
+            $namespace = '';
             if ($token[0] === T_WHITESPACE) {
                 $token = $this->nextToken($tokens, $position);
+            }
+
+            if ($token[0] === T_NS_SEPARATOR) {
+                $namespace = '\\';
+                $token = $this->nextToken($tokens, $position);
+
+                if ($token[0] !== T_STRING) {
+                    throw ParseError::expectedString($token, $this->filename);
+                }
             }
 
             if ($token[0] !== T_STRING) {
@@ -372,8 +401,17 @@ final class Parser
             }
 
             $name = $token[1];
+            $token = $this->nextToken($tokens, $position);
 
-            $arguments[] = new Argument($name, null, null);
+            while($token[0] === T_NS_SEPARATOR) {
+                $namespace .= $name . '\\';
+                $token = $this->nextToken($tokens, $position);
+
+                $name = $token[1];
+                $token = $this->nextToken($tokens, $position);
+            }
+
+            $arguments[] = new Argument((string) substr($namespace, 0, -1), $name, null, false);
 
             if ($position === $this->tokenCount - 1) {
                 break;
@@ -399,7 +437,9 @@ final class Parser
                 $token = $this->nextToken($tokens, $position);
             }
 
-            if (in_array(ucfirst($token[1]), Type::OPTION_VALUES)) {
+            if (in_array(ucfirst($token[1]), Type::OPTION_VALUES)
+                || $token[1] === '}'
+            ) {
                 break;
             }
         }
@@ -430,6 +470,9 @@ final class Parser
         }
 
         if ($token[1] !== 'deriving') {
+            if ($token[1] === '}') {
+                $token = $tokens[--$position];
+            }
             return [$derivings, $token];
         }
 

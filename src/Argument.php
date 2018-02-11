@@ -9,6 +9,11 @@ final class Argument
     /**
      * @var string
      */
+    private $namespace;
+
+    /**
+     * @var string
+     */
     private $name;
 
     /**
@@ -17,15 +22,21 @@ final class Argument
     private $typeHint;
 
     /**
-     * @var bool|null
+     * @var bool
      */
     private $nullable;
 
-    public function __construct(string $name, ?string $typeHint, ?bool $nullable)
+    public function __construct(string $namespace, string $name, ?string $typeHint, bool $nullable)
     {
+        $this->namespace = $namespace;
         $this->name = $name;
         $this->typeHint = $typeHint;
         $this->nullable = $nullable;
+    }
+
+    public function namespace(): string
+    {
+        return $this->namespace;
     }
 
     public function name(): string
@@ -38,7 +49,7 @@ final class Argument
         return $this->typeHint;
     }
 
-    public function nullable(): ?bool
+    public function nullable(): bool
     {
         return $this->nullable;
     }

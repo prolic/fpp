@@ -46,7 +46,12 @@ CODE;
             if ($argument->nullable()) {
                 $code .= '?';
             }
-            $code .= "{$argument->typeHint()} \${$argument->name()}, ";
+            if ($argument->namespace() && substr($argument->namespace(), 0, 1) !== '\\') {
+                $ns = '\\' . $definition->namespace() . '\\' . $argument->namespace();
+            } else {
+                $ns = $argument->namespace();
+            }
+            $code .= "$ns{$argument->typeHint()} \${$argument->name()}, ";
         }
 
         if (! empty($definition->arguments())) {

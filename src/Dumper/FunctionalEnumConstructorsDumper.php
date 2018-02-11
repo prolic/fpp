@@ -16,13 +16,14 @@ final class FunctionalEnumConstructorsDumper implements Dumper
 
         $code = '';
         foreach ($definition->arguments() as $argument) {
+            $ns = $argument->namespace() ? $argument->namespace() . '\\' : '';
             $code .= "    const {$argument->name()} = '$prefix{$definition->name()}\\";
             $code .= <<<CODE
 {$argument->name()}';
 
     function {$argument->name()}()
     {
-        return new $prefix{$argument->name()}();
+        return new $prefix{$ns}{$argument->name()}();
     }
 
 
