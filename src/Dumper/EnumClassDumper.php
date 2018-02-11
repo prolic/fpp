@@ -34,7 +34,7 @@ $indent    const OPTION_VALUES = [
 CODE;
 
         foreach ($definition->arguments() as $argument) {
-            $code .= "$indent        '$ns{$argument->name()}',\n";
+            $code .= "$indent        '{$argument->name()}',\n";
         }
 
         $code .= <<<CODE
@@ -85,10 +85,9 @@ $indent    const VALUE = '{$argument->name()}';
 $indent}
 
 CODE;
-
         }
 
-        if (!$definition->namespace() !== '') {
+        if (! $definition->namespace() !== '') {
             $code .= "}\n";
         }
 

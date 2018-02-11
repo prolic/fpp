@@ -340,7 +340,7 @@ final class Parser
             $typeHint = $token[1];
             $token = $this->nextToken($tokens, $position);
 
-            while($token[0] === T_NS_SEPARATOR) {
+            while ($token[0] === T_NS_SEPARATOR) {
                 $namespace .= $typeHint . '\\';
                 $token = $this->nextToken($tokens, $position);
 
@@ -403,7 +403,7 @@ final class Parser
             $name = $token[1];
             $token = $this->nextToken($tokens, $position);
 
-            while($token[0] === T_NS_SEPARATOR) {
+            while ($token[0] === T_NS_SEPARATOR) {
                 $namespace .= $name . '\\';
                 $token = $this->nextToken($tokens, $position);
 
@@ -473,6 +473,7 @@ final class Parser
             if ($token[1] === '}') {
                 $token = $tokens[--$position];
             }
+
             return [$derivings, $token];
         }
 

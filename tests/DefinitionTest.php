@@ -61,9 +61,10 @@ class DefinitionTest extends TestCase
         $this->assertTrue($definition->type()->equals(new Data()));
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
-        $this->assertSame('My', (current($definition->arguments()))->ns());
+        $this->assertSame('My', (current($definition->arguments()))->namespace());
         $this->assertSame('name', (current($definition->arguments()))->name());
         $this->assertSame('string', (current($definition->arguments()))->typeHint());
+        $this->assertTrue((current($definition->arguments()))->isScalarTypeHint());
         $this->assertFalse((current($definition->arguments()))->nullable());
     }
 
@@ -128,7 +129,7 @@ class DefinitionTest extends TestCase
             'Foo',
             'Person',
             [
-                new Argument('','name', 'string', false),
+                new Argument('', 'name', 'string', false),
                 new Argument('', 'age', 'int', false),
             ],
             [new ScalarConverter()]
@@ -341,7 +342,7 @@ class DefinitionTest extends TestCase
             'RegisterPerson',
             [
                 new Argument('', 'same', null, false),
-                new Argument('', 'same', null, false)
+                new Argument('', 'same', null, false),
             ]
         );
     }

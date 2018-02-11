@@ -16,8 +16,8 @@ final class DefinitionCollectionDumper
     public function __construct(array $dumpers)
     {
         foreach ($dumpers as $name => $dumper) {
-            if (! is_string($name)) {
-                throw new \InvalidArgumentException('Dumpers array need a non-empty string as dumper name');
+            if (! in_array($name, Type::OPTION_VALUES)) {
+                throw new \InvalidArgumentException('Dumpers name must be a Type name');
             }
             if (! $dumper instanceof Dumper) {
                 throw new \InvalidArgumentException('Dumper must be an instance of ' . Dumper::class);
