@@ -55,6 +55,26 @@ final class Definition
                 if (null !== $messageName) {
                     throw new \InvalidArgumentException('Message name cannot be passed to data type');
                 }
+
+                if (count($arguments) > 1
+                    && in_array(Deriving\StringConverter::VALUE, $derivings)
+                ) {
+                    throw new \InvalidArgumentException(sprintf(
+                        'Cannot derive from StringConverter using more than one argument for %s\\%s',
+                        $namespace,
+                        $name
+                    ));
+                }
+t
+                if (count($arguments) > 1
+                    && in_array(Deriving\ScalarConverter::VALUE, $derivings)
+                ) {
+                    throw new \InvalidArgumentException(sprintf(
+                        'Cannot derive from ScalarConverter using more than one argument for %s\\%s',
+                        $namespace,
+                        $name
+                    ));
+                }
                 break;
             case Type\Enum::VALUE:
                 if (null !== $messageName) {
@@ -74,26 +94,6 @@ final class Definition
                 if (null !== $messageName && empty($messageName)) {
                     throw new \InvalidArgumentException("Message name cannot be empty string for $typeString type");
                 }
-        }
-
-        if (count($arguments) > 1
-            && in_array(Deriving\StringConverter::VALUE, $derivings)
-        ) {
-            throw new \InvalidArgumentException(sprintf(
-                'Cannot derive from StringConverter using more than one argument for %s\\%s',
-                $namespace,
-                $name
-            ));
-        }
-
-        if (count($arguments) > 1
-            && in_array(Deriving\ScalarConverter::VALUE, $derivings)
-        ) {
-            throw new \InvalidArgumentException(sprintf(
-                'Cannot derive from ScalarConverter using more than one argument for %s\\%s',
-                $namespace,
-                $name
-            ));
         }
 
         $this->type = $type;
