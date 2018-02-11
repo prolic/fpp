@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace FppTest;
 
 use Fpp\Argument;
-use Fpp\Dumper\UuidDumper;
-use Fpp\Type\Data;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionCollectionDumper;
+use Fpp\Deriving\ValueObject;
 use Fpp\Dumper\AggregateChangedDumper;
 use Fpp\Dumper\CommandDumper;
 use Fpp\Dumper\DataDumper;
 use Fpp\Dumper\DomainEventDumper;
 use Fpp\Dumper\EnumDumper;
 use Fpp\Dumper\QueryDumper;
-use Fpp\Deriving\ValueObject;
+use Fpp\Dumper\UuidDumper;
+use Fpp\Type\Data;
 use PHPUnit\Framework\TestCase;
 
 class DumperTest extends TestCase

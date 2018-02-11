@@ -41,7 +41,6 @@ $functionName';
 
 CODE;
 
-
             if (count($definition->arguments()) > 1) {
                 $code .= <<<CODE
         \$f = \Closure::bind(

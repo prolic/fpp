@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace FppTest;
 
 use Fpp\Argument;
+use Fpp\Definition;
 use Fpp\Deriving\ScalarConverter;
 use Fpp\Deriving\StringConverter;
 use Fpp\Type\Command;
 use Fpp\Type\Data;
-use Fpp\Definition;
 use Fpp\Type\Enum;
 use Fpp\Type\Uuid;
 use PHPUnit\Framework\TestCase;
@@ -239,7 +239,7 @@ class DefinitionTest extends TestCase
             'Color',
             [
                 new Argument('Blue', null, null),
-                new Argument('Red', null, null)
+                new Argument('Red', null, null),
             ],
             [new ScalarConverter()]
         );

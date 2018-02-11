@@ -96,7 +96,7 @@ final class Parser
                             list($arguments) = $this->parseArguments($tokens, $position);
                             list($derivings, $token) = $this->parseDerivings($tokens, $position, false);
                             $typeClass = __NAMESPACE__ . '\\Type\\' . $typeString;
-                            $collection->addDefinition(new Definition(new $typeClass, $namespace, $name, $arguments, $derivings, $messageName));
+                            $collection->addDefinition(new Definition(new $typeClass(), $namespace, $name, $arguments, $derivings, $messageName));
 
                             if ($token[0] === T_STRING) {
                                 // next definition found

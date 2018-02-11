@@ -7,8 +7,8 @@ namespace Fpp;
 use Fpp\Dumper\AggregateChangedDumper;
 use Fpp\Dumper\CommandDumper;
 use Fpp\Dumper\DataDumper;
-use Fpp\Dumper\EnumDumper;
 use Fpp\Dumper\DomainEventDumper;
+use Fpp\Dumper\EnumDumper;
 use Fpp\Dumper\QueryDumper;
 use Fpp\Dumper\UuidDumper;
 
