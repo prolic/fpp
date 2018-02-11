@@ -65,7 +65,7 @@ final class Definition
                         $name
                     ));
                 }
-t
+
                 if (count($arguments) > 1
                     && in_array(Deriving\ScalarConverter::VALUE, $derivings)
                 ) {
