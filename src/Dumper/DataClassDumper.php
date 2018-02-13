@@ -71,7 +71,7 @@ final class DataClassDumper implements Dumper
             switch ((string) $deriving) {
                 case Deriving\Show::VALUE:
                     break;
-                case Deriving\StringConverter::VALUE:
+                case Deriving\ToString::VALUE:
                     $argument = current($definition->arguments());
                     $code .= <<<CODE
     
@@ -83,7 +83,7 @@ $indent    }
 CODE;
 
                     break;
-                case Deriving\ArrayConverter::VALUE:
+                case Deriving\ArrayConvertable::VALUE:
                     $code .= <<<CODE
     
 $indent    public function toArray(): array
@@ -105,11 +105,11 @@ CODE;
                         } elseif ($this->definitionCollection->hasDefinition($argumentNamespace, $argument->typeHint())) {
                             $argumentDefinition = $this->definitionCollection->definition($argumentNamespace, $argument->typeHint());
 
-                            if (in_array(new Deriving\ArrayConverter(), $argumentDefinition->derivings())) {
+                            if (in_array(new Deriving\ArrayConvertable(), $argumentDefinition->derivings())) {
                                 $return = "\$this->{$argument->name()}->toArray(),\n";
-                            } elseif (in_array(new Deriving\StringConverter(), $argumentDefinition->derivings())) {
+                            } elseif (in_array(new Deriving\ToString(), $argumentDefinition->derivings())) {
                                 $return = "\$this->{$argument->name()}->__toString(),\n";
-                            } elseif (in_array(new Deriving\ScalarConverter(), $argumentDefinition->derivings())) {
+                            } elseif (in_array(new Deriving\ScalarConvertable(), $argumentDefinition->derivings())) {
                                 $return = "\$this->{$argument->name()}->toScalar(),\n";
                             }
                         } elseif (class_exists($argumentNamespace . '\\' . $argument->typeHint())) {
@@ -173,11 +173,11 @@ CODE;
                         } elseif ($this->definitionCollection->hasDefinition($argumentNamespace, $argument->typeHint())) {
                             $argumentDefinition = $this->definitionCollection->definition($argumentNamespace, $argument->typeHint());
 
-                            if (in_array(new Deriving\ArrayConverter(), $argumentDefinition->derivings())) {
+                            if (in_array(new Deriving\ArrayConvertable(), $argumentDefinition->derivings())) {
                                 $param = "$class::fromArray(\$data['{$argument->name()}']), ";
-                            } elseif (in_array(new Deriving\StringConverter(), $argumentDefinition->derivings())) {
+                            } elseif (in_array(new Deriving\ToString(), $argumentDefinition->derivings())) {
                                 $param = "new $class(\$data['{$argument->name()}']), ";
-                            } elseif (in_array(new Deriving\ScalarConverter(), $argumentDefinition->derivings())) {
+                            } elseif (in_array(new Deriving\ScalarConvertable(), $argumentDefinition->derivings())) {
                                 $param = "$class::fromScalar(\$data['{$argument->name()}']), ";
                             }
                         } elseif (class_exists($argumentNamespace . '\\' . $argument->typeHint())) {
@@ -226,7 +226,7 @@ CODE;
                         . substr($constructorParams, 0, -2)
                         . ");\n$indent    }\n";
                     break;
-                case Deriving\ScalarConverter::VALUE:
+                case Deriving\ScalarConvertable::VALUE:
                     $argument = current($definition->arguments());
                     /* @var Argument $argument */
                     $type = $argument->typeHint();

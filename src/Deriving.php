@@ -8,17 +8,17 @@ abstract class Deriving
 {
     const OPTIONS = [
         Deriving\Show::class,
-        Deriving\StringConverter::class,
-        Deriving\ScalarConverter::class,
-        Deriving\ArrayConverter::class,
+        Deriving\ToString::class,
+        Deriving\ScalarConvertable::class,
+        Deriving\ArrayConvertable::class,
         Deriving\Equals::class,
     ];
 
     const OPTION_VALUES = [
         'Show',
-        'StringConverter',
-        'ScalarConverter',
-        'ArrayConverter',
+        'ToString',
+        'ScalarConvertable',
+        'ArrayConvertable',
         'Equals',
     ];
 

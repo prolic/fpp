@@ -6,8 +6,8 @@ namespace FppTest;
 
 use Fpp\Argument;
 use Fpp\Definition;
-use Fpp\Deriving\ScalarConverter;
-use Fpp\Deriving\StringConverter;
+use Fpp\Deriving\ScalarConvertable;
+use Fpp\Deriving\ToString;
 use Fpp\Type\Command;
 use Fpp\Type\Data;
 use Fpp\Type\Enum;
@@ -78,13 +78,13 @@ class DefinitionTest extends TestCase
             'Foo',
             'Person',
             [new Argument('', 'name', 'string', false)],
-            [new ScalarConverter()]
+            [new ScalarConvertable()]
         );
 
         $this->assertTrue($definition->type()->equals(new Data()));
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
-        $this->assertTrue((current($definition->derivings()))->equals(new ScalarConverter()));
+        $this->assertTrue((current($definition->derivings()))->equals(new ScalarConvertable()));
     }
 
     /**
@@ -132,7 +132,7 @@ class DefinitionTest extends TestCase
                 new Argument('', 'name', 'string', false),
                 new Argument('', 'age', 'int', false),
             ],
-            [new ScalarConverter()]
+            [new ScalarConvertable()]
         );
     }
 
@@ -151,7 +151,7 @@ class DefinitionTest extends TestCase
                 new Argument('', 'name', 'string', false),
                 new Argument('', 'age', 'int', false),
             ],
-            [new StringConverter()]
+            [new ToString()]
         );
     }
 
@@ -243,7 +243,7 @@ class DefinitionTest extends TestCase
                 new Argument('', 'Blue', null, false),
                 new Argument('', 'Red', null, false),
             ],
-            [new ScalarConverter()]
+            [new ScalarConvertable()]
         );
     }
 
@@ -274,7 +274,7 @@ class DefinitionTest extends TestCase
             'Foo',
             'PersonId',
             [],
-            [new ScalarConverter()]
+            [new ScalarConvertable()]
         );
     }
 
@@ -290,7 +290,7 @@ class DefinitionTest extends TestCase
             'Foo',
             'RegisterPerson',
             [],
-            [new ScalarConverter()]
+            [new ScalarConvertable()]
         );
     }
 

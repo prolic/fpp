@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class ArrayConverter extends FppDeriving
+final class ScalarConvertable extends FppDeriving
 {
-    const VALUE = 'ArrayConverter';
+    const VALUE = 'ScalarConvertable';
 }

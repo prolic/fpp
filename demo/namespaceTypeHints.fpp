@@ -7,5 +7,5 @@ namespace Model\Foo\Type {
 }
 
 namespace Model\Foo {
-    data Person = { \Model\Foo\Name $name, Type\Age $age } deriving (ArrayConverter, Equals)
+    data Person = { \Model\Foo\Name $name, Type\Age $age } deriving (ArrayConvertable, Equals)
 }

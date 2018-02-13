@@ -1,4 +1,4 @@
 namespace My\Foo;
 
-data Length = {int $l} deriving (StringConverter, Equals)
+data Length = {int $l} deriving (ToString, Equals)
 data Red = {}

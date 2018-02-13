@@ -57,20 +57,20 @@ final class Definition
                 }
 
                 if (count($arguments) > 1
-                    && in_array(new Deriving\StringConverter(), $derivings)
+                    && in_array(new Deriving\ToString(), $derivings)
                 ) {
                     throw new \InvalidArgumentException(sprintf(
-                        'Cannot derive from StringConverter using more than one argument for %s\\%s',
+                        'Cannot derive from ToString using more than one argument for %s\\%s',
                         $namespace,
                         $name
                     ));
                 }
 
                 if (count($arguments) > 1
-                    && in_array(new Deriving\ScalarConverter(), $derivings)
+                    && in_array(new Deriving\ScalarConvertable(), $derivings)
                 ) {
                     throw new \InvalidArgumentException(sprintf(
-                        'Cannot derive from ScalarConverter using more than one argument for %s\\%s',
+                        'Cannot derive from ScalarConvertable using more than one argument for %s\\%s',
                         $namespace,
                         $name
                     ));
