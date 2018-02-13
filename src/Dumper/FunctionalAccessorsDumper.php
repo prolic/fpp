@@ -33,8 +33,8 @@ final class FunctionalAccessorsDumper implements Dumper
                 if ($argument->nullable()) {
                     $returnType = '?';
                 }
-                if ($argument->namespace() && substr($argument->namespace(), 0, 1) !== '\\') {
-                    $ns = '\\' . $definition->namespace() . '\\' . $argument->namespace();
+                if ($argument->namespace() === '') {
+                    $ns = '\\' . $definition->namespace() . '\\';
                 } else {
                     $ns = $argument->namespace();
                 }

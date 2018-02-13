@@ -93,7 +93,52 @@ $indent        return [
 CODE;
 
                     foreach ($definition->arguments() as $argument) {
-                        $code .= "$indent            '{$argument->name()}' => \$this->{$argument->name()},\n";
+                        $return = "\$this->{$argument->name()},\n";
+                        $argumentNamespace = substr($argument->namespace(), 0, 1) === '\\'
+                            ? substr($argument->namespace(), 1, -1)
+                            : ($argument->namespace() === ''
+                                ? $definition->namespace()
+                                : $definition->namespace() . '\\' . $argument->namespace());
+
+                        if ($argument->isScalartypeHint()) {
+                            // ignore
+                        } elseif ($this->definitionCollection->hasDefinition($argumentNamespace, $argument->typeHint())) {
+                            $argumentDefinition = $this->definitionCollection->definition($argumentNamespace, $argument->typeHint());
+
+                            if (in_array(new Deriving\ArrayConverter(), $argumentDefinition->derivings())) {
+                                $return = "\$this->{$argument->name()}->toArray(),\n";
+                            } elseif (in_array(new Deriving\StringConverter(), $argumentDefinition->derivings())) {
+                                $return = "\$this->{$argument->name()}->__toString(),\n";
+                            } elseif (in_array(new Deriving\ScalarConverter(), $argumentDefinition->derivings())) {
+                                $return = "\$this->{$argument->name()}->toScalar(),\n";
+                            }
+                        } elseif (class_exists($argumentNamespace . '\\' . $argument->typeHint())) {
+                            $reflectionClass = new \ReflectionClass($argumentNamespace . '\\' . $argument->typeHint());
+
+                            if ($reflectionClass->hasMethod('toArray')) {
+                                $method = $reflectionClass->getMethod('toArray');
+                                if ($method->isPublic()) {
+                                    $return = "\$this->{$argument->name()}->toArray(),\n";
+                                }
+                            } elseif ($reflectionClass->hasMethod('__toString')) {
+                                $method = $reflectionClass->getMethod('__toString');
+                                if ($method->isPublic()) {
+                                    $return = "\$this->{$argument->name()}->__toString(),\n";
+                                }
+                            } elseif ($reflectionClass->hasMethod('toString')) {
+                                $method = $reflectionClass->getMethod('toString');
+                                if ($method->isPublic()) {
+                                    $return = "\$this->{$argument->name()}->toString(),\n";
+                                }
+                            } elseif ($reflectionClass->hasMethod('toScalar')) {
+                                $method = $reflectionClass->getMethod('toScalar');
+                                if ($method->isPublic()) {
+                                    $return = "\$this->{$argument->name()}->toScalar(),\n";
+                                }
+                            }
+                        }
+
+                        $code .= "$indent            '{$argument->name()}' => $return";
                     }
 
                     $code .= <<<CODE
@@ -115,7 +160,66 @@ $indent        }
 
 
 CODE;
-                        $constructorParams .= '$data[\'' . $argument->name() . '\'], ';
+                        $param = '$data[\'' . $argument->name() . '\'], ';
+                        $argumentNamespace = substr($argument->namespace(), 0, 1) === '\\'
+                            ? substr($argument->namespace(), 1, -1)
+                            : ($argument->namespace() === ''
+                                ? $definition->namespace()
+                                : $definition->namespace() . '\\' . $argument->namespace());
+                        $class = $argument->namespace() . $argument->typeHint();
+
+                        if ($argument->isScalartypeHint()) {
+                            // ignore
+                        } elseif ($this->definitionCollection->hasDefinition($argumentNamespace, $argument->typeHint())) {
+                            $argumentDefinition = $this->definitionCollection->definition($argumentNamespace, $argument->typeHint());
+
+                            if (in_array(new Deriving\ArrayConverter(), $argumentDefinition->derivings())) {
+                                $param = "$class::fromArray(\$data['{$argument->name()}']), ";
+                            } elseif (in_array(new Deriving\StringConverter(), $argumentDefinition->derivings())) {
+                                $param = "new $class(\$data['{$argument->name()}']), ";
+                            } elseif (in_array(new Deriving\ScalarConverter(), $argumentDefinition->derivings())) {
+                                $param = "$class::fromScalar(\$data['{$argument->name()}']), ";
+                            }
+                        } elseif (class_exists($argumentNamespace . '\\' . $argument->typeHint())) {
+                            $reflectionClass = new \ReflectionClass($argumentNamespace . '\\' . $argument->typeHint());
+
+                            if ($reflectionClass->hasMethod('fromArray')) {
+                                $method = $reflectionClass->getMethod('fromArray');
+                                if ($method->isPublic() && $method->isStatic()) {
+                                    $param = "\\$class::fromArray(\$data['{$argument->name()}']), ";
+                                }
+                            } elseif ($reflectionClass->hasMethod('fromScalar')) {
+                                $method = $reflectionClass->getMethod('fromScalar');
+                                if ($method->isPublic() && $method->isStatic()) {
+                                    $param = "\\$class::fromScalar(\$data['{$argument->name()}']), ";
+                                }
+                            } elseif ($reflectionClass->hasMethod('fromString')) {
+                                $method = $reflectionClass->getMethod('fromString');
+                                if ($method->isPublic() && $method->isStatic()) {
+                                    $param = "\\$class::fromString(\$data['{$argument->name()}']), ";
+                                }
+                            } else {
+                                $constructor = $reflectionClass->getConstructor();
+                                if ($constructor->isPublic() && $constructor->getNumberOfParameters() === 1) {
+                                    $parameters = $constructor->getParameters();
+                                    $parameter = current($parameters);
+                                    /* @var \ReflectionParameter $parameter */
+                                    if ($type = $parameter->getType()) {
+                                        switch ($type->getName()) {
+                                            case 'string':
+                                            case 'int':
+                                            case 'bool':
+                                            case 'float':
+                                            case 'array':
+                                                $param = "new \\$class(\$data['{$argument->name()}']), ";
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        $constructorParams .= $param;
                     }
 
                     $code .= "$indent        return new {$definition->name()}("

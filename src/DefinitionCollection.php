@@ -36,7 +36,7 @@ final class DefinitionCollection
         return isset($this->registry[$namespace][$name]);
     }
 
-    public function getDefinition(string $namespace, string $name): ?Definition
+    public function definition(string $namespace, string $name): ?Definition
     {
         foreach ($this->definitions as $definition) {
             if ($definition->namespace() === $namespace && $definition->name() === $name) {

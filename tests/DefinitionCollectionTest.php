@@ -33,8 +33,8 @@ class DefinitionCollectionTest extends TestCase
         $this->assertCount(1, $collection->definitions());
 
         $this->assertTrue($collection->hasDefinition('Foo\Bar', 'Person'));
-        $this->assertSame($definition, $collection->getDefinition('Foo\Bar', 'Person'));
-        $this->assertNull($collection->getDefinition('Foo\Bar', 'Unknown'));
+        $this->assertSame($definition, $collection->definition('Foo\Bar', 'Person'));
+        $this->assertNull($collection->definition('Foo\Bar', 'Unknown'));
     }
 
     /**
