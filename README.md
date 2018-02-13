@@ -116,6 +116,9 @@ php bin/fpp.php demo/enum.fpp demo/generated.php
 - [x] Generate enums
 - [x] Generate uuids
 - [x] Ability to switch dumper implementation for custom output
+- [x] Allow composite data objects
+- [ ] Allow composite prooph objects
+- [ ] Constructor validation
 - [ ] Allow creating of custom constructors
 - [ ] Show deriving feature
 - [ ] Make parser more robust
