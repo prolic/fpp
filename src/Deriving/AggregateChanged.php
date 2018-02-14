@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class ArrayConvertable extends FppDeriving
+final class AggregateChanged extends FppDeriving
 {
-    const VALUE = 'ArrayConvertable';
+    const VALUE = 'AggregateChanged';
 }

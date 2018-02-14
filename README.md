@@ -65,16 +65,16 @@ There are 5 deriving types for now:
 
 - Show (not yet implemented)
 - ToString
-- ScalarConvertable
-- ArrayConvertable
+- ToScalar
+- ToArray
 - Equals
 
-Deriving Equals + ArrayConvertable
+Deriving Equals + ToArray
 
 ```console
 namespace Model\Foo;
 
-data Person = {string $name, ?int $age} deriving (ArrayConvertable, Equals)
+data Person = {string $name, ?int $age} deriving (ToArray, Equals)
 ```
 
 Now you can do this:

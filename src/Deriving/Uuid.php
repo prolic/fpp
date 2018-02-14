@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class ScalarConvertable extends FppDeriving
+final class Uuid extends FppDeriving
 {
-    const VALUE = 'ScalarConvertable';
+    const VALUE = 'Uuid';
 }

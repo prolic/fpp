@@ -6,7 +6,7 @@ namespace FppTest;
 
 use Fpp\Argument;
 use Fpp\Definition;
-use Fpp\Deriving\ScalarConvertable;
+use Fpp\Deriving\ToScalar;
 use Fpp\Deriving\ToString;
 use Fpp\Type\Command;
 use Fpp\Type\Data;
@@ -78,13 +78,13 @@ class DefinitionTest extends TestCase
             'Foo',
             'Person',
             [new Argument('', 'name', 'string', false)],
-            [new ScalarConvertable()]
+            [new ToScalar()]
         );
 
         $this->assertTrue($definition->type()->equals(new Data()));
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
-        $this->assertTrue((current($definition->derivings()))->equals(new ScalarConvertable()));
+        $this->assertTrue((current($definition->derivings()))->equals(new ToScalar()));
     }
 
     /**
@@ -132,7 +132,7 @@ class DefinitionTest extends TestCase
                 new Argument('', 'name', 'string', false),
                 new Argument('', 'age', 'int', false),
             ],
-            [new ScalarConvertable()]
+            [new ToScalar()]
         );
     }
 
@@ -243,7 +243,7 @@ class DefinitionTest extends TestCase
                 new Argument('', 'Blue', null, false),
                 new Argument('', 'Red', null, false),
             ],
-            [new ScalarConvertable()]
+            [new ToScalar()]
         );
     }
 
@@ -274,7 +274,7 @@ class DefinitionTest extends TestCase
             'Foo',
             'PersonId',
             [],
-            [new ScalarConvertable()]
+            [new ToScalar()]
         );
     }
 
@@ -290,7 +290,7 @@ class DefinitionTest extends TestCase
             'Foo',
             'RegisterPerson',
             [],
-            [new ScalarConvertable()]
+            [new ToScalar()]
         );
     }
 

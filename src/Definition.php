@@ -7,11 +7,6 @@ namespace Fpp;
 final class Definition
 {
     /**
-     * @var Type
-     */
-    private $type;
-
-    /**
      * @var string
      */
     private $namespace;
@@ -22,131 +17,145 @@ final class Definition
     private $name;
 
     /**
-     * @var Argument[]
+     * @var Constructor[]
      */
-    private $arguments = [];
+    private $constructors;
 
     /**
-     * @var []
+     * @var Deriving[]
      */
     private $derivings;
+
+    /**
+     * @var Condition[]
+     */
+    private $conditions;
 
     /**
      * @var string|null
      */
     private $messageName;
 
+    /**
+     * @param string $namespace
+     * @param string $name
+     * @param Constructor[] $constructors
+     * @param Deriving[] $derivings
+     * @param Condition[] $conditions
+     * @param string|null $messageName
+     */
     public function __construct(
-        Type $type,
         string $namespace,
         string $name,
-        array $arguments = [],
+        array $constructors = [],
         array $derivings = [],
+        array $conditions = [],
         string $messageName = null
     ) {
+        $this->namespace = $namespace;
+        $this->name = $name;
+
+        $constructorNames = [];
+        foreach ($constructors as $constructor) {
+            if (! $constructor instanceof Constructor) {
+                throw new \InvalidArgumentException('Invalid constructor given, must be an instance of ' . Constructor::class);
+            }
+            if (isset($constructorNames[$constructor->name()])) {
+                throw new \InvalidArgumentException('Duplicate argument name given');
+            }
+            $constructorNames[$constructor->name()] = true;
+            $this->constructors[] = $constructor;
+        }
+
+        $derivingNames = [];
+        foreach ($derivings as $deriving) {
+            if (! $deriving instanceof Deriving) {
+                throw new \InvalidArgumentException('Invalid deriving given, must be an instance of ' . Deriving::class);
+            }
+            if (isset($derivingNames[$deriving->name()])) {
+                throw new \InvalidArgumentException('Duplicate deriving given');
+            }
+            $derivingNames[$constructor->name()] = true;
+            $this->derivings[] = $deriving;
+        }
+
+        foreach ($conditions as $condition) {
+            if (! $condition instanceof Condition) {
+                throw new \InvalidArgumentException('Invalid condition given, must be an instance of ' . Condition::class);
+            }
+            $this->conditions[] = $condition;
+        }
+
+        $this->messageName = $messageName;
+
         if (empty($name)) {
             throw new \InvalidArgumentException('Name cannot be empty string');
         }
 
-        $typeString = (string) $type;
-
-        switch ($typeString) {
-            case Type\Data::VALUE:
-                if (null !== $messageName) {
-                    throw new \InvalidArgumentException('Message name cannot be passed to data type');
-                }
-
-                if (count($arguments) > 1
-                    && in_array(new Deriving\ToString(), $derivings)
-                ) {
-                    throw new \InvalidArgumentException(sprintf(
-                        'Cannot derive from ToString using more than one argument for %s\\%s',
-                        $namespace,
-                        $name
-                    ));
-                }
-
-                if (count($arguments) > 1
-                    && in_array(new Deriving\ScalarConvertable(), $derivings)
-                ) {
-                    throw new \InvalidArgumentException(sprintf(
-                        'Cannot derive from ScalarConvertable using more than one argument for %s\\%s',
-                        $namespace,
-                        $name
-                    ));
-                }
-                break;
-            case Type\Enum::VALUE:
-                if (null !== $messageName) {
-                    throw new \InvalidArgumentException('Message name cannot be passed to enum type');
-                }
-                if (empty($arguments)) {
-                    throw new \InvalidArgumentException('Enums need at least one implementation');
-                }
-
-                if (count($derivings) > 0) {
-                    throw new \InvalidArgumentException('No derivings allowed for enum type');
-                }
-                break;
-            case Type\Uuid::VALUE:
-                if (null !== $messageName) {
-                    throw new \InvalidArgumentException('Message name cannot be passed to uuid type');
-                }
-
-                if (count($arguments) > 0) {
-                    throw new \InvalidArgumentException('No arguments allowed for uuid type');
-                }
-
-                if (count($derivings) > 0) {
-                    throw new \InvalidArgumentException('No derivings allowed for uuid type');
-                }
-                break;
-            default:
-                // prooph message types
-                if (null !== $messageName && empty($messageName)) {
-                    throw new \InvalidArgumentException("Message name cannot be empty string for $typeString type");
-                }
-
-                if (count($derivings) > 0) {
-                    throw new \InvalidArgumentException('No derivings allowed for enum type');
-                }
-                break;
+        if ('' === $messageName) {
+            throw $this->invalid('Message name cannot be empty string');
         }
 
-        $this->type = $type;
-        $this->namespace = $namespace;
-        $this->name = $name;
+        $allowMessageName = (null === $this->messageName);
 
-        $argumentNames = [];
-        foreach ($arguments as $argument) {
-            if (! $argument instanceof Argument) {
-                throw new \InvalidArgumentException('Invalid argument given, must be an instance of ' . Argument::class);
+        foreach ($derivings as $deriving) {
+            switch ((string) $deriving) {
+                case Deriving\AggregateChanged::VALUE:
+                case Deriving\Command::VALUE:
+                case Deriving\DomainEvent::VALUE:
+                case Deriving\Query::VALUE:
+                    $allowMessageName = true;
+                    break;
+                case Deriving\Enum::VALUE:
+                    if (count($constructors) < 2) {
+                        throw $this->invalid('Enum need at least two constructors');
+                    }
+                    foreach ($constructors as $constructor) {
+                        if (count($constructor->arguments()) > 0) {
+                            throw $this->invalid('Enum cannot have constructor arguments');
+                        }
+                    }
+                    break;
+                case Deriving\FromArray::VALUE:
+                case Deriving\ToArray::VALUE:
+                    if (count($constructors) === 0) {
+                        throw $this->invalid((string) $deriving . ' needs at least one constructor');
+                    }
+                    foreach ($constructors as $constructor) {
+                        if (count($constructor->arguments()) < 2) {
+                            throw $this->invalid((string) $deriving . ' constructor needs at least two arguments');
+                        }
+                    }
+                    break;
+                case Deriving\FromScalar::VALUE:
+                case Deriving\FromString::VALUE:
+                case Deriving\ToScalar::VALUE:
+                case Deriving\ToString::VALUE:
+                    if (count($constructors) === 0) {
+                        throw $this->invalid((string) $deriving . ' needs at least one constructor');
+                    }
+                    foreach ($constructors as $constructor) {
+                        if (count($constructor) !== 1) {
+                            throw $this->invalid((string) $deriving . ' constructor needs exactly one argument');
+                        }
+                    }
+                    break;
+                case Deriving\Uuid::VALUE:
+                    if (count($constructors) < 1) {
+                        throw $this->invalid('Uuid cannot have more than one constructor');
+                    }
+                    foreach ($constructors as $constructor) {
+                        if (count($constructor->arguments()) > 0) {
+                            throw $this->invalid('Uuid cannot have constructor arguments');
+                        }
+                    }
+                    break;
             }
-            if (ucfirst($argument->name()) === $name) {
-                throw new \InvalidArgumentException('Argument name is not allowed to be same as object name');
-            }
-            if ($argument->typeHint() !== null
-                && $typeString === Type\Enum::VALUE
-            ) {
-                throw new \InvalidArgumentException('Argument typeHint is not allowed for enums');
-            }
-            if (isset($argumentNames[$argument->name()])) {
-                throw new \InvalidArgumentException('Duplicate argument name given');
-            }
-            $argumentNames[$argument->name()] = true;
-            $this->arguments[] = $argument;
         }
 
-        $this->derivings = array_unique($derivings);
-        $this->messageName = $messageName;
-    }
-
-    /**
-     * @return Type
-     */
-    public function type(): Type
-    {
-        return $this->type;
+        if (! $allowMessageName) {
+            throw $this->invalid('Message name is only allowed for AggregateChanged, Command, DomainEvent or Query');
+        }
     }
 
     /**
@@ -166,20 +175,47 @@ final class Definition
     }
 
     /**
-     * @return Argument[]
+     * @return Constructor[]
      */
-    public function arguments(): array
+    public function constructors(): array
     {
-        return $this->arguments;
+        return $this->constructors;
     }
 
+    /**
+     * @return Deriving[]
+     */
     public function derivings(): array
     {
         return $this->derivings;
     }
 
+    /**
+     * @return Condition[]
+     */
+    public function conditions(): array
+    {
+        return $this->conditions;
+    }
+
     public function messageName(): ?string
     {
         return $this->messageName;
+    }
+
+    private function invalid(string $message): \InvalidArgumentException
+    {
+        $namespace = '';
+
+        if ('' !== $this->namespace) {
+            $namespace = "(namespace $namespace)";
+        }
+
+        return new \InvalidArgumentException(sprintf(
+            'Error on %s %s: %s',
+            $this->name,
+            $namespace,
+            $message
+        ));
     }
 }

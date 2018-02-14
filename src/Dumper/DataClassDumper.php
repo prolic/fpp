@@ -69,8 +69,6 @@ final class DataClassDumper implements Dumper
 
         foreach ($definition->derivings() as $deriving) {
             switch ((string) $deriving) {
-                case Deriving\Show::VALUE:
-                    break;
                 case Deriving\ToString::VALUE:
                     $argument = current($definition->arguments());
                     $code .= <<<CODE
@@ -83,7 +81,7 @@ $indent    }
 CODE;
 
                     break;
-                case Deriving\ArrayConvertable::VALUE:
+                case Deriving\ToArray::VALUE:
                     $code .= <<<CODE
     
 $indent    public function toArray(): array
@@ -105,11 +103,11 @@ CODE;
                         } elseif ($this->definitionCollection->hasDefinition($argumentNamespace, $argument->typeHint())) {
                             $argumentDefinition = $this->definitionCollection->definition($argumentNamespace, $argument->typeHint());
 
-                            if (in_array(new Deriving\ArrayConvertable(), $argumentDefinition->derivings())) {
+                            if (in_array(new Deriving\ToArray(), $argumentDefinition->derivings())) {
                                 $return = "\$this->{$argument->name()}->toArray(),\n";
                             } elseif (in_array(new Deriving\ToString(), $argumentDefinition->derivings())) {
                                 $return = "\$this->{$argument->name()}->__toString(),\n";
-                            } elseif (in_array(new Deriving\ScalarConvertable(), $argumentDefinition->derivings())) {
+                            } elseif (in_array(new Deriving\ToScalar(), $argumentDefinition->derivings())) {
                                 $return = "\$this->{$argument->name()}->toScalar(),\n";
                             }
                         } elseif (class_exists($argumentNamespace . '\\' . $argument->typeHint())) {
@@ -173,11 +171,11 @@ CODE;
                         } elseif ($this->definitionCollection->hasDefinition($argumentNamespace, $argument->typeHint())) {
                             $argumentDefinition = $this->definitionCollection->definition($argumentNamespace, $argument->typeHint());
 
-                            if (in_array(new Deriving\ArrayConvertable(), $argumentDefinition->derivings())) {
+                            if (in_array(new Deriving\ToArray(), $argumentDefinition->derivings())) {
                                 $param = "$class::fromArray(\$data['{$argument->name()}']), ";
                             } elseif (in_array(new Deriving\ToString(), $argumentDefinition->derivings())) {
                                 $param = "new $class(\$data['{$argument->name()}']), ";
-                            } elseif (in_array(new Deriving\ScalarConvertable(), $argumentDefinition->derivings())) {
+                            } elseif (in_array(new Deriving\ToScalar(), $argumentDefinition->derivings())) {
                                 $param = "$class::fromScalar(\$data['{$argument->name()}']), ";
                             }
                         } elseif (class_exists($argumentNamespace . '\\' . $argument->typeHint())) {
@@ -226,7 +224,7 @@ CODE;
                         . substr($constructorParams, 0, -2)
                         . ");\n$indent    }\n";
                     break;
-                case Deriving\ScalarConvertable::VALUE:
+                case Deriving\ToScalar::VALUE:
                     $argument = current($definition->arguments());
                     /* @var Argument $argument */
                     $type = $argument->typeHint();
