@@ -8,15 +8,21 @@
     }
   ],
   "require": {
-    "php": "^7.1"
+    "php": "^7.1",
+    "phunkie/phunkie": "^0.10.2"
   },
   "require-dev": {
+    "mikey179/vfsStream": "^1.6.5",
     "phpunit/phpunit": "^7.0",
     "prooph/php-cs-fixer-config": "^0.2.1"
   },
   "autoload": {
     "psr-4": {
       "Fpp\\": "src/"
-    }
+    },
+    "files": [
+      "src/parse.php",
+      "src/scan.php"
+    ]
   }
 }
