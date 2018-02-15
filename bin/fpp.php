@@ -25,21 +25,12 @@ if (! isset($argv[2])) {
 $path = $argv[1];
 $output = $argv[2];
 
-if (! is_readable($path)) {
-    echo "$path is not readable";
-    exit(1);
-}
-
 require __DIR__ . '/../vendor/autoload.php';
 
-$scanner = new Scanner($path);
-$parser = new Parser();
 $collection = new DefinitionCollection();
 
-foreach ($scanner as $file) {
-    /* @var \SplFileInfo $file */
-    $definition = $parser->parseFile($file->getRealPath());
-    $collection = $collection->merge($definition);
+foreach (scan($path) as $file) {
+    $collection = $collection->merge(parse($file->getRealPath()));
 }
 
 $dumper = new DefinitionCollectionDumper([
@@ -54,3 +45,6 @@ $dumper = new DefinitionCollectionDumper([
 $php = $dumper->dump($collection);
 
 file_put_contents($output, $php);
+
+echo "Successfully generated to and written to '$output'\n";
+exit(0);
