@@ -6,6 +6,18 @@ namespace Fpp;
 
 final class ParseError extends \RuntimeException
 {
+    public static function unknownDefinition(array $actual, string $filename): ParseError
+    {
+        $filePart = empty($filename) ? '' : ' on file \'' . $filename . '\'';
+
+        return new self(sprintf(
+            "Syntax error, unexpected '%s', expecting 'data' at line %d%s",
+            $actual[1],
+            $actual[2],
+            $filePart
+        ));
+    }
+
     public static function unexpectedTokenFound(string $expected, array $actual, string $filename): ParseError
     {
         $filePart = empty($filename) ? '' : ' on file \'' . $filename . '\'';
