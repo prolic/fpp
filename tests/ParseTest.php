@@ -100,8 +100,10 @@ CODE;
         $collection = parse($this->createDefaultFile($contents));
 
         $this->assertTrue($collection->hasDefinition('Something', 'Name'));
+
         $definition = $collection->definition('Something', 'Name');
         $this->assertCount(1, $definition->constructors());
+
         $constructor = $definition->constructors()[0];
         $this->assertSame('String', $constructor->name());
         $this->assertEmpty($constructor->arguments());
@@ -193,13 +195,47 @@ CODE;
         $collection = parse($this->createDefaultFile($contents));
 
         $this->assertTrue($collection->hasDefinition('Something', 'Name'));
+
         $definition = $collection->definition('Something', 'Name');
         $this->assertCount(2, $definition->constructors());
+
         $constructor1 = $definition->constructors()[0];
         $this->assertSame('Name', $constructor1->name());
         $this->assertEmpty($constructor1->arguments());
+
         $constructor2 = $definition->constructors()[1];
         $this->assertSame('FirstName', $constructor2->name());
         $this->assertEmpty($constructor2->arguments());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_multiple_objects(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Name = Name | FirstName;
+data Age = Int;
+CODE;
+        $collection = parse($this->createDefaultFile($contents));
+
+        $this->assertTrue($collection->hasDefinition('Something', 'Name'));
+        $this->assertTrue($collection->hasDefinition('Something', 'Age'));
+
+        $definition1 = $collection->definition('Something', 'Name');
+        $this->assertCount(2, $definition1->constructors());
+        $constructor1 = $definition1->constructors()[0];
+        $this->assertSame('Name', $constructor1->name());
+        $this->assertEmpty($constructor1->arguments());
+        $constructor2 = $definition1->constructors()[1];
+        $this->assertSame('FirstName', $constructor2->name());
+        $this->assertEmpty($constructor2->arguments());
+
+        $definition2 = $collection->definition('Something', 'Age');
+        $this->assertCount(1, $definition2->constructors());
+        $constructor = $definition2->constructors()[0];
+        $this->assertSame('Int', $constructor->name());
+        $this->assertEmpty($constructor->arguments());
     }
 }
