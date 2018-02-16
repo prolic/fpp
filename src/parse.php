@@ -68,13 +68,19 @@ function parse(string $filename): DefinitionCollection
 
     $requireString = function(array $token) use ($filename): void {
         if ($token[0] !== T_STRING) {
-            throw ParseError::expectedString($token, $filename);
+            throw ParseError::unexpectedTokenFound('T_STRING', $token, $filename);
+        }
+    };
+
+    $requireVariable = function(array $token) use ($filename): void {
+        if ($token[0] !== T_VARIABLE) {
+            throw ParseError::unexpectedTokenFound('T_VARIABLE', $token, $filename);
         }
     };
 
     $requireUcFirstString = function(array $token) use ($filename): void {
         if ($token[0] !== T_STRING) {
-            throw ParseError::expectedString($token, $filename);
+            throw ParseError::unexpectedTokenFound('T_STRING', $token, $filename);
         }
 
         if ($token[1][0] === strtolower($token[1][0])) {
@@ -148,6 +154,8 @@ function parse(string $filename): DefinitionCollection
                 // parse constructors
                 $constructors = [];
                 parseConstructor:
+
+                $arguments = [];
                 $token = $nextToken($tokens);
                 $token = $skipWhitespace($token, $tokens);
                 $requireUcFirstString($token);
@@ -155,15 +163,76 @@ function parse(string $filename): DefinitionCollection
                 $token = $nextToken($tokens);
                 $token = $skipWhitespace($token, $tokens);
 
-                if ($token[1] === ';') {
-                    $constructors[] = new Constructor($constructorName);
-                    goto buildDefinition;
+                if ($token[1] === '{') {
+                    $arguments = [];
+                    parseArguments:
+
+                    while ($token[1] !== '}') {
+                        $token = $nextToken($tokens);
+                        $type = null;
+                        $nullable = false;
+
+                        $token = $skipWhitespace($token, $tokens);
+
+                        if ($token[1] === '?') {
+                            $nullable = true;
+                            $token = $nextToken($tokens);
+                            $requireString($token);
+                        }
+
+                        if ($token[0] === T_STRING) {
+                            $type = $token[1];
+
+                            if (!in_array($type, ['string', 'int', 'bool', 'float'])) {
+                                $requireUcFirstString($token);
+
+                                if (substr($type, 0, 1) !== '\\') {
+                                    $type = $namespace . '\\' . $type;
+                                }
+                            }
+
+                            $token = $nextToken($tokens);
+                            $requireWhitespace($token);
+                            $token = $nextToken($tokens);
+                            $requireVariable($token);
+                            $argumentName = substr($token[1], 1);
+                            $token = $nextToken($tokens);
+                            $token = $skipWhitespace($token, $tokens);
+
+                            if (in_array($token[1], [',', '}'], true)) {
+                                $arguments[] = new Argument($argumentName, $type, $nullable);
+                                goto parseArguments;
+                            }
+                        }
+                    }
                 }
 
                 if ('|' === $token[1]) {
-                    $constructors[] = new Constructor($constructorName);
+                    $constructors[] = new Constructor($constructorName, $arguments);
                     goto parseConstructor;
                 }
+
+                if (';' === $token[1]) {
+                    $constructors[] = new Constructor($constructorName, $arguments);
+                    goto buildDefinition;
+                }
+
+                if (! $isEndOfFile()) {
+                    $token = $nextToken($tokens);
+                }
+
+                $token = $skipWhitespace($token, $tokens);
+
+                if ('|' === $token[1]) {
+                    $constructors[] = new Constructor($constructorName, $arguments);
+                    goto parseConstructor;
+                }
+
+                if (';' === $token[1]) {
+                    $constructors[] = new Constructor($constructorName, $arguments);
+                    goto buildDefinition;
+                }
+
                 buildDefinition:
                 $collection->addDefinition(new Definition($namespace, $name, $constructors, [], [], $messageName));
                 break;
