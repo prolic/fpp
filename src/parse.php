@@ -153,6 +153,7 @@ function parse(string $filename): DefinitionCollection
 
                 // parse constructors
                 $constructors = [];
+                $derivings = [];
                 parseConstructor:
 
                 $arguments = [];
@@ -233,8 +234,42 @@ function parse(string $filename): DefinitionCollection
                     goto buildDefinition;
                 }
 
+                if ('deriving' === $token[1]) {
+                    $constructors[] = new Constructor($constructorName, $arguments);
+                    $token = $nextToken($tokens);
+                    $token = $skipWhitespace($token, $tokens);
+
+                    if ($token[1] !== '(') {
+                        throw ParseError::unexpectedTokenFound('(', $token, $this->filename);
+                    }
+
+                    $token = $nextToken($tokens);
+
+                    while ($token[1] !== ')') {
+                        $token = $skipWhitespace($token, $tokens);
+                        $requireString($token);
+
+                        if (! in_array($token[1], Deriving::OPTION_VALUES, true)) {
+                            throw ParseError::unknownDeriving($token[2], $this->filename);
+                        }
+
+                        $fqcn = __NAMESPACE__ . '\\Deriving\\' . $token[1];
+                        $derivings[] = new $fqcn();
+                        $token = $nextToken($tokens);
+                        $token = $skipWhitespace($token, $tokens);
+
+                        if ($token[1] === ',') {
+                            $token = $nextToken($tokens);
+                        }
+                    }
+                    $token = $nextToken($tokens);
+                    if (';' === $token[1]) {
+                        goto buildDefinition;
+                    }
+                }
+
                 buildDefinition:
-                $collection->addDefinition(new Definition($namespace, $name, $constructors, [], [], $messageName));
+                $collection->addDefinition(new Definition($namespace, $name, $constructors, $derivings, [], $messageName));
                 break;
             case T_WHITESPACE:
                 break;
