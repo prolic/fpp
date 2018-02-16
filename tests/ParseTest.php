@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace FppTest;
 
-use function Fpp\parse;
 use Fpp\ParseError;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
+use function Fpp\parse;
 
 class ParseTest extends TestCase
 {
@@ -27,6 +27,7 @@ class ParseTest extends TestCase
     protected function createDefaultFile(string $contents): string
     {
         vfsStream::newFile('file.fpp')->withContent($contents)->at($this->root);
+
         return $this->root->getChild('file.fpp')->url();
     }
 

@@ -16,7 +16,7 @@ class DerivingTest extends TestCase
     {
         $this->expectException(\LogicException::class);
 
-        new class extends Deriving {
+        new class() extends Deriving {
         };
     }
 }

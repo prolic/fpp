@@ -16,7 +16,7 @@ class TypeTest extends TestCase
     {
         $this->expectException(\LogicException::class);
 
-        new class extends Type {
+        new class() extends Type {
         };
     }
 }

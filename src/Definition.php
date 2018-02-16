@@ -19,17 +19,17 @@ final class Definition
     /**
      * @var Constructor[]
      */
-    private $constructors;
+    private $constructors = [];
 
     /**
      * @var Deriving[]
      */
-    private $derivings;
+    private $derivings = [];
 
     /**
      * @var Condition[]
      */
-    private $conditions;
+    private $conditions = [];
 
     /**
      * @var string|null

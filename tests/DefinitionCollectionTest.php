@@ -7,9 +7,7 @@ namespace FppTest;
 use Fpp\Argument;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
-use Fpp\DefinitionCollectionDumper;
 use Fpp\Deriving\Equals;
-use Fpp\Dumper\Dumper;
 use Fpp\Type\Data;
 use PHPUnit\Framework\TestCase;
 

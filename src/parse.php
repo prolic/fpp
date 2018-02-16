@@ -31,7 +31,7 @@ function parse(string $filename): DefinitionCollection
     $line = 1;
     $namespace = '';
 
-    $nextToken = function(array $tokens) use (&$position, &$tokenCount, &$line, $filename): array {
+    $nextToken = function (array $tokens) use (&$position, &$tokenCount, &$line, $filename): array {
         if ($position === $tokenCount - 1) {
             throw ParseError::unexpectedEndOfFile($filename);
         }
@@ -42,7 +42,7 @@ function parse(string $filename): DefinitionCollection
             $token = [
                 T_OTHER,
                 $token,
-                $line
+                $line,
             ];
         } else {
             $token[2] = $token[2] - 1;
@@ -52,33 +52,33 @@ function parse(string $filename): DefinitionCollection
         return $token;
     };
 
-    $skipWhitespace = function(array $token, array $tokens) use (&$position, $nextToken): array {
+    $skipWhitespace = function (array $token, array $tokens) use (&$position, $nextToken): array {
         if ($token[0] === T_WHITESPACE) {
             $token = $nextToken($tokens);
-        };
+        }
 
         return $token;
     };
 
-    $requireWhitespace = function(array $token) use ($filename): void {
+    $requireWhitespace = function (array $token) use ($filename): void {
         if ($token[0] !== T_WHITESPACE) {
             throw ParseError::unexpectedTokenFound(' ', $token, $filename);
         }
     };
 
-    $requireString = function(array $token) use ($filename): void {
+    $requireString = function (array $token) use ($filename): void {
         if ($token[0] !== T_STRING) {
             throw ParseError::unexpectedTokenFound('T_STRING', $token, $filename);
         }
     };
 
-    $requireVariable = function(array $token) use ($filename): void {
+    $requireVariable = function (array $token) use ($filename): void {
         if ($token[0] !== T_VARIABLE) {
             throw ParseError::unexpectedTokenFound('T_VARIABLE', $token, $filename);
         }
     };
 
-    $requireUcFirstString = function(array $token) use ($filename): void {
+    $requireUcFirstString = function (array $token) use ($filename): void {
         if ($token[0] !== T_STRING) {
             throw ParseError::unexpectedTokenFound('T_STRING', $token, $filename);
         }
@@ -88,7 +88,7 @@ function parse(string $filename): DefinitionCollection
         }
     };
 
-    $isEndOfFile = function() use (&$position, &$tokenCount): bool {
+    $isEndOfFile = function () use (&$position, &$tokenCount): bool {
         return $position === ($tokenCount - 1);
     };
 
@@ -183,7 +183,7 @@ function parse(string $filename): DefinitionCollection
                         if ($token[0] === T_STRING) {
                             $type = $token[1];
 
-                            if (!in_array($type, ['string', 'int', 'bool', 'float'])) {
+                            if (! in_array($type, ['string', 'int', 'bool', 'float'])) {
                                 $requireUcFirstString($token);
 
                                 if (substr($type, 0, 1) !== '\\') {
@@ -255,8 +255,7 @@ function parse(string $filename): DefinitionCollection
         } else {
             ++$position;
         }
-
-    };
+    }
 
     return $collection;
 }

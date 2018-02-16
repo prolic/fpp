@@ -23,7 +23,7 @@ final class ParseError extends \RuntimeException
         $filePart = empty($filename) ? '' : ' on file \'' . $filename . '\'';
 
         return new self(sprintf(
-            "Syntax error, definiton name %s must be upper case at line %d%s",
+            'Syntax error, definiton name %s must be upper case at line %d%s',
             $actual[1],
             $actual[2],
             $filePart
@@ -38,18 +38,6 @@ final class ParseError extends \RuntimeException
             "Syntax error, unexpected '%s', expecting '%s' at line %d%s",
             $actual[1],
             $expected,
-            $actual[2],
-            $filePart
-        ));
-    }
-
-    public static function expectedString(array $actual, string $filename): ParseError
-    {
-        $filePart = empty($filename) ? '' : ' on file \'' . $filename . '\'';
-
-        return new self(sprintf(
-            "Syntax error, unexpected '%s', expecting identifier (T_STRING) at line %d%s",
-            $actual[1],
             $actual[2],
             $filePart
         ));
