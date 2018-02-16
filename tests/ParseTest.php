@@ -368,4 +368,45 @@ data Name = string;
 CODE;
         parse($this->createDefaultFile($contents));
     }
+
+    /**
+     * @test
+     */
+    public function it_reads_constructor_arguments(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } ;
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+        $constructor = $definition->constructors()[0];
+        $this->assertCount(2, $constructor->arguments());
+
+        $argument1 = $constructor->arguments()[0];
+        $this->assertSame('string', $argument1->type());
+        $this->assertSame('name', $argument1->name());
+        $this->assertFalse($argument1->nullable());
+
+        $argument2 = $constructor->arguments()[1];
+        $this->assertSame('int', $argument2->type());
+        $this->assertSame('age', $argument2->name());
+        $this->assertTrue($argument2->nullable());
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_invalid_constructor_argument_definitions(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string name, ?int \$age } ;
+CODE;
+
+        parse($this->createDefaultFile($contents));
+    }
 }
