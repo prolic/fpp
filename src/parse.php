@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Phunkie\Validation\Validation;
-
 if (! defined('T_OTHER')) {
     define('T_OTHER', 100000);
 }
@@ -47,7 +45,8 @@ function parse(string $filename): DefinitionCollection
                 $line
             ];
         } else {
-            $token[2] = $token[2] - 2;
+            $token[2] = $token[2] - 1;
+            $line = $token[2];
         }
 
         return $token;
@@ -83,20 +82,20 @@ function parse(string $filename): DefinitionCollection
         }
     };
 
-    $checkEndOfFile = function(array $token) use (&$position, &$tokenCount, &$filename): bool {
-        return $position === $tokenCount - 1;
+    $isEndOfFile = function() use (&$position, &$tokenCount): bool {
+        return $position === ($tokenCount - 1);
     };
 
-    $token = $nextToken($tokens);
+    $nextToken($tokens);
 
-    if ($checkEndOfFile($token)) {
+    if ($isEndOfFile()) {
         return $collection;
     }
 
-    while ($position < $tokenCount - 1) {
+    $token = $nextToken($tokens);
+
+    while ($position < $tokenCount) {
         switch ($token[0]) {
-            case T_OPEN_TAG:
-                break;
             case T_NAMESPACE:
                 if ($namespaceFound) {
                     throw ParseError::nestedNamespacesDetected($token[2], $filename);
@@ -142,26 +141,8 @@ function parse(string $filename): DefinitionCollection
                 $token = $skipWhitespace($token, $tokens);
                 $messageName = null;
 
-                if ($token[1] === ':') {
-                    $token = $nextToken($tokens);
-                    $token = $skipWhitespace($token, $tokens);
-                    $requireString($token);
-                    $messageName = $token[1];
-                    $token = $nextToken($tokens);
-
-                    while ($token[0] !== T_WHITESPACE
-                        && $token[1] !== '='
-                    ) {
-                        $messageName .= $token[1];
-
-                        $token = $nextToken($tokens);
-                    }
-
-                    $token = $skipWhitespace($token, $tokens);
-                }
-
                 if ($token[1] !== '=') {
-                    throw ParseError::unexpectedTokenFound('=', $token, $this->filename);
+                    throw ParseError::unexpectedTokenFound('=', $token, $filename);
                 }
 
                 // parse constructors
@@ -189,23 +170,24 @@ function parse(string $filename): DefinitionCollection
             case T_WHITESPACE:
                 break;
             case T_OTHER:
-                if ($token[1] === '}') {
-                    if ($namespaceFound) {
-                        $namespaceFound = false;
-                        $namespace = '';
-                    } else {
-                        throw ParseError::unexpectedTokenFound('T_STRING or T_WHITESPACE', $token, $this->filename);
-                    }
+                if ($token[1] === '}' && $namespaceFound) {
+                    $namespaceFound = false;
+                    $namespace = '';
+                    break;
                 }
+                throw ParseError::unexpectedTokenFound('T_STRING', $token, $filename);
                 break;
             default:
-                throw ParseError::unexpectedTokenFound('T_STRING or T_WHITESPACE', $token, $this->filename);
+                throw ParseError::unexpectedTokenFound('T_STRING', $token, $filename);
         }
 
-        if ($position + 1 < $tokenCount) {
+        if ($position < $tokenCount - 1) {
             $token = $nextToken($tokens);
+        } else {
+            ++$position;
         }
-    }
+
+    };
 
     return $collection;
 }
