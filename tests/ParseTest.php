@@ -13,24 +13,41 @@ use PHPUnit\Framework\TestCase;
 class ParseTest extends TestCase
 {
     /**
-     * root directory
-     *
-     * @type  vfsStreamDirectory
+     * @var vfsStreamDirectory
      */
     private $root;
 
-    /**
-     * set up test environmemt
-     */
     protected function setUp()
     {
         $this->root = vfsStream::setup('test-dir');
+        vfsStream::newFile('not_readable.fpp')->withContent('')->at($this->root);
+        $this->root->getChild('not_readable.fpp')->chmod('0000');
     }
 
     protected function createDefaultFile(string $contents): string
     {
         vfsStream::newFile('file.fpp')->withContent($contents)->at($this->root);
         return $this->root->getChild('file.fpp')->url();
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_if_file_not_found(): void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        parse($this->root->url() . '/invalid');
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_if_file_not_readable(): void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        parse($this->root->url() . '/not_readable.fpp');
     }
 
     /**
@@ -91,6 +108,18 @@ class ParseTest extends TestCase
     /**
      * @test
      */
+    public function it_detects_wrong_namespace_declaration(): void
+    {
+        $this->expectException(ParseError::class);
+        $contents = <<<CODE
+namespace \;
+CODE;
+        parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     */
     public function it_parses_string_wrapped_object(): void
     {
         $contents = <<<CODE
@@ -130,12 +159,47 @@ CODE;
     /**
      * @test
      */
+    public function it_parses_from_multiple_namespaces(): void
+    {
+        $contents = <<<CODE
+namespace Foo {
+    data Name = String;
+}
+namespace Bar {
+    data Name = String;
+}
+CODE;
+        $collection = parse($this->createDefaultFile($contents));
+
+        $this->assertTrue($collection->hasDefinition('Foo', 'Name'));
+        $this->assertTrue($collection->hasDefinition('Bar', 'Name'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_wrong_declaration_of_second_namespaces(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Foo {
+    data Name = String;
+}
+}
+CODE;
+        parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     */
     public function it_detects_missing_end_of_declaration(): void
     {
         $this->expectException(ParseError::class);
 
         $contents = <<<CODE
-namespace Something;
+namespace Something\Here;
 data Name = String
 CODE;
         parse($this->createDefaultFile($contents));
@@ -179,6 +243,46 @@ CODE;
         $contents = <<<CODE
 namespace Something;
 data = ;
+CODE;
+        parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_missing_data_assignment_symbol(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person Person;
+CODE;
+        parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_wrong_syntax(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+=
+CODE;
+        parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_wrong_syntax2(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+function
 CODE;
         parse($this->createDefaultFile($contents));
     }
@@ -237,5 +341,31 @@ CODE;
         $constructor = $definition2->constructors()[0];
         $this->assertSame('Int', $constructor->name());
         $this->assertEmpty($constructor->arguments());
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_wrong_definitions(): void
+    {
+        $this->expectException(ParseError::class);
+        $contents = <<<CODE
+namespace Something;
+invalid Name = String;
+CODE;
+        parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_lower_case_definitions(): void
+    {
+        $this->expectException(ParseError::class);
+        $contents = <<<CODE
+namespace Something;
+data Name = string;
+CODE;
+        parse($this->createDefaultFile($contents));
     }
 }
