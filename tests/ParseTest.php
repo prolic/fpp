@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace FppTest;
 
+use Fpp\Deriving\FromArray;
+use Fpp\Deriving\ToArray;
 use Fpp\ParseError;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -394,6 +396,92 @@ CODE;
         $this->assertSame('int', $argument2->type());
         $this->assertSame('age', $argument2->name());
         $this->assertTrue($argument2->nullable());
+    }
+
+    /**
+     * @test
+     */
+    public function it_reads_constructors_with_different_amount_of_arguments(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } | Chef { string \$name };
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $constructor1 = $definition->constructors()[0];
+        $this->assertCount(2, $constructor1->arguments());
+
+        $argument1 = $constructor1->arguments()[0];
+        $this->assertSame('string', $argument1->type());
+        $this->assertSame('name', $argument1->name());
+        $this->assertFalse($argument1->nullable());
+
+        $argument2 = $constructor1->arguments()[1];
+        $this->assertSame('int', $argument2->type());
+        $this->assertSame('age', $argument2->name());
+        $this->assertTrue($argument2->nullable());
+
+        $constructor2 = $definition->constructors()[1];
+        $this->assertCount(1, $constructor2->arguments());
+
+        $argument1 = $constructor2->arguments()[0];
+        $this->assertSame('string', $argument1->type());
+        $this->assertSame('name', $argument1->name());
+        $this->assertFalse($argument1->nullable());
+    }
+
+    /**
+     * @test
+     */
+    public function it_reads_constructors_with_arguments_and_without(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } | Chef;
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $constructor1 = $definition->constructors()[0];
+        $this->assertCount(2, $constructor1->arguments());
+
+        $argument1 = $constructor1->arguments()[0];
+        $this->assertSame('string', $argument1->type());
+        $this->assertSame('name', $argument1->name());
+        $this->assertFalse($argument1->nullable());
+
+        $argument2 = $constructor1->arguments()[1];
+        $this->assertSame('int', $argument2->type());
+        $this->assertSame('age', $argument2->name());
+        $this->assertTrue($argument2->nullable());
+
+        $constructor2 = $definition->constructors()[1];
+        $this->assertCount(0, $constructor2->arguments());
+    }
+
+    /**
+     * @test
+     * @group by
+     */
+    public function it_reads_derivings(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } deriving (ToArray, FromArray);
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $derivings = $definition->derivings();
+        $this->assertCount(2, $derivings);
+
+        $this->assertSame(ToArray::VALUE, $derivings[0]::VALUE);
+        $this->assertSame(FromArray::VALUE, $derivings[1]::VALUE);
     }
 
     /**
