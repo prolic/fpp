@@ -57,7 +57,7 @@ final class ParseError extends \RuntimeException
 
     public static function unexpectedEndOfFile(string $filename): ParseError
     {
-        $filePart = empty($filename) ? '' : ' on file \'' . $filename . '\'';
+        $filePart = empty($filename) ? '' : ' at \'' . $filename . '\'';
 
         return new self('Unexpected end of file' . $filePart);
     }
