@@ -4,51 +4,57 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use ArrayIterator;
 use FilterIterator;
-use Iterator;
+use Phunkie\Types\ImmList;
 use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RuntimeException;
 use SplFileInfo;
 
 const scan = '\Fpp\scan';
 
-function scan (string $directoryOrFile): Iterator
+function scan(string $directoryOrFile): ImmList
 {
     if (! is_readable($directoryOrFile)) {
-        throw new \RuntimeException("'$directoryOrFile' is not readable");
+        throw new RuntimeException("'$directoryOrFile' is not readable");
     }
-
-    $filterIterator = function (Iterator $iterator): FilterIterator {
-        return new class($iterator) extends FilterIterator {
-            public function accept()
-            {
-                $file = $this->getInnerIterator()->current();
-
-                if (! $file instanceof \SplFileInfo) {
-                    return false;
-                }
-
-                if (! $file->isFile()) {
-                    return false;
-                }
-
-                return $file->getExtension() === 'fpp';
-            }
-        };
-    };
 
     if (is_file($directoryOrFile)) {
-        $iterator = new ArrayIterator();
-        $iterator->append(new SplFileInfo($directoryOrFile));
-
-        return $filterIterator($iterator);
+        return ImmList($directoryOrFile);
     }
 
-    if (! is_dir($directoryOrFile)) {
-        throw new \RuntimeException("'$directoryOrFile' is not a directory or file");
+    $iterator = new class(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directoryOrFile))) extends FilterIterator {
+        public function __construct($directoryOrFile)
+        {
+            parent::__construct($directoryOrFile);
+        }
+
+        public function accept()
+        {
+            $file = $this->getInnerIterator()->current();
+
+            if (! $file->isFile()) {
+                return false;
+            }
+
+            if (! $file->isReadable()) {
+                return false;
+            }
+
+            return $file->getExtension() === 'fpp';
+        }
+    };
+
+    $files = [];
+
+    foreach ($iterator as $file) {
+        /* @var SplFileInfo $file */
+        $files[] = $file->getPathname();
     }
 
-    $iterator = new RecursiveDirectoryIterator($directoryOrFile);
+    if (empty($files)) {
+        throw new RuntimeException("No .fpp files found in '$directoryOrFile'");
+    }
 
-    return $filterIterator($iterator);
+    return ImmList(...$files);
 }
