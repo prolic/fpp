@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class Uuid extends FppDeriving
+class Uuid extends FppDeriving
 {
     const VALUE = 'Uuid';
 }

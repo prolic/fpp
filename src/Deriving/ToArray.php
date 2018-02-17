@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class ToArray extends FppDeriving
+class ToArray extends FppDeriving
 {
     const VALUE = 'ToArray';
 }

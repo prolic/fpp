@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class Equals extends FppDeriving
+class Equals extends FppDeriving
 {
     const VALUE = 'Equals';
 }

@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class Query extends FppDeriving
+class Query extends FppDeriving
 {
     const VALUE = 'Query';
 }

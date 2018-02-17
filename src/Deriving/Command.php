@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class Command extends FppDeriving
+class Command extends FppDeriving
 {
     const VALUE = 'Command';
 }

@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class ToString extends FppDeriving
+class ToString extends FppDeriving
 {
     const VALUE = 'ToString';
 }

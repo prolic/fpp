@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class Enum extends FppDeriving
+class Enum extends FppDeriving
 {
     const VALUE = 'Enum';
 }

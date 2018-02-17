@@ -6,7 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-final class FromScalar extends FppDeriving
+class FromScalar extends FppDeriving
 {
     const VALUE = 'FromScalar';
 }
