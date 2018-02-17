@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-final class Constructor
+class Constructor
 {
     /**
      * @var string

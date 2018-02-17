@@ -6,7 +6,7 @@ namespace Fpp;
 
 use Fpp\Dumper\Dumper;
 
-final class DefinitionCollectionDumper
+class DefinitionCollectionDumper
 {
     /**
      * @var array

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-final class ParseError extends \RuntimeException
+class ParseError extends \RuntimeException
 {
     public static function unknownDefinition(array $actual, string $filename): ParseError
     {
