@@ -55,11 +55,6 @@ abstract class Deriving
         }
     }
 
-    public function equals(Deriving $other): bool
-    {
-        return get_class($this) === get_class($other);
-    }
-
     public function __toString(): string
     {
         return static::VALUE;
