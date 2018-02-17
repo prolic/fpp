@@ -712,7 +712,7 @@ CODE;
     {
         $contents = <<<CODE
 namespace Something;
-data Person = Person { string \$name, ?int \$age } where 
+data Person = Person { string \$name, int \$age } where 
     | strlen(\$name) < 0 => "Name too short"
     | \$age < 18 => "Too young";
 CODE;
@@ -764,5 +764,74 @@ data Person = Person { string \$name, ?int \$age } where
 CODE;
 
         parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     * @group by
+     */
+    public function it_parses_multiple_conditions_for_multiple_constructors(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, int \$age } | Chef { string \$name, } where
+    Person:
+        | strlen(\$name) < 0 => "Name too short"
+        | \$age < 18 => "Too young"
+    Chef:
+        | strlen(\$name) < 0 => "Name too short";
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $conditions = $definition->conditions();
+        $this->assertCount(3, $conditions);
+
+        $condition1 = $conditions[0];
+        $this->assertSame('Person', $condition1->constructor());
+        $this->assertSame('strlen($name) < 0', $condition1->code());
+        $this->assertSame('Name too short', $condition1->errorMessage());
+
+        $condition2 = $conditions[1];
+        $this->assertSame('Person', $condition2->constructor());
+        $this->assertSame('$age < 18', $condition2->code());
+        $this->assertSame('Too young', $condition2->errorMessage());
+
+        $condition3 = $conditions[2];
+        $this->assertSame('Chef', $condition3->constructor());
+        $this->assertSame('strlen($name) < 0', $condition3->code());
+        $this->assertSame('Name too short', $condition3->errorMessage());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_multiple_conditions_for_multiple_constructors_with_defaults(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, int \$age } | Chef { string \$name, } where
+    Person:
+        | \$age < 18 => "Too young"
+    _:
+        | strlen(\$name) < 0 => "Name too short";
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $conditions = $definition->conditions();
+        $this->assertCount(2, $conditions);
+
+        $condition1 = $conditions[0];
+        $this->assertSame('Person', $condition1->constructor());
+        $this->assertSame('$age < 18', $condition1->code());
+        $this->assertSame('Too young', $condition1->errorMessage());
+
+        $condition2 = $conditions[1];
+        $this->assertSame('_', $condition2->constructor());
+        $this->assertSame('strlen($name) < 0', $condition2->code());
+        $this->assertSame('Name too short', $condition2->errorMessage());
     }
 }
