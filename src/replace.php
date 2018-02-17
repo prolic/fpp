@@ -1,12 +1,12 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Fpp;
 
 const replace = '\Fpp\replace';
 
-function replace (Definition $definition, string $template): string
+function replace(Definition $definition, string $template): string
 {
     $template = str_replace('{{namespace_name}}', $definition->namespace(), $template);
     $template = str_replace('{{class_name}}', $definition->name(), $template);

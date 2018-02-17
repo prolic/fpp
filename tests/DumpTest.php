@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace FppTest;
 
@@ -9,12 +9,12 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving\FromString;
 use Fpp\Deriving\ToString;
-use function Fpp\dump;
-use function Fpp\loadTemplates;
+use PHPUnit\Framework\TestCase;
 use const Fpp\mapToBodyTemplates;
 use const Fpp\mapToClassTemplate;
 use const Fpp\replace;
-use PHPUnit\Framework\TestCase;
+use function Fpp\dump;
+use function Fpp\loadTemplates;
 
 class DumpTest extends TestCase
 {
@@ -114,7 +114,7 @@ CODE;
         $this->assertSame($expected, $dump($collection));
     }
 
-    private function buildCollection (Definition ...$definition): DefinitionCollection
+    private function buildCollection(Definition ...$definition): DefinitionCollection
     {
         $collection = new DefinitionCollection();
 

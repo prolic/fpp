@@ -20,7 +20,7 @@ use Fpp\Deriving\Uuid;
 
 const mapToClassTemplate = '\Fpp\mapToClassTemplate';
 
-function mapToClassTemplate (Definition $definition): string
+function mapToClassTemplate(Definition $definition): string
 {
     $prefix = __DIR__ . '/templates/';
     $constructors = $definition->constructors();
@@ -67,7 +67,7 @@ const mapToBodyTemplates = '\Fpp\mapToBodyTemplates';
  * @param Definition $definition
  * @return string[]
  */
-function mapToBodyTemplates (Definition $definition): array
+function mapToBodyTemplates(Definition $definition): array
 {
     $prefix = __DIR__ . '/templates/';
 

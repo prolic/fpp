@@ -1,12 +1,12 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace Fpp;
 
 const dump = '\Fpp\dump';
 
-function dump (DefinitionCollection $collection, callable $loadTemplates, callable $replace): string
+function dump(DefinitionCollection $collection, callable $loadTemplates, callable $replace): string
 {
     $code = '';
 

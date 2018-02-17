@@ -6,7 +6,7 @@ namespace Fpp;
 
 const loadTemplates = '\Fpp\loadTemplates';
 
-function loadTemplates (DefinitionCollection $collection, callable $mapToClassTemplate, callable $mapToBodyTemplates): array
+function loadTemplates(DefinitionCollection $collection, callable $mapToClassTemplate, callable $mapToBodyTemplates): array
 {
     $templates = [];
     $cache = [];
