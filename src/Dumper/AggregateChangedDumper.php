@@ -6,7 +6,7 @@ namespace Fpp\Dumper;
 
 use Fpp\Definition;
 
-final class AggregateChangedDumper implements Dumper
+class AggregateChangedDumper implements Dumper
 {
     public function dump(Definition $definition): string
     {

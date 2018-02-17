@@ -6,7 +6,7 @@ namespace Fpp\Dumper;
 
 use Fpp\Definition;
 
-final class CommandClassDumper implements Dumper
+class CommandClassDumper implements Dumper
 {
     public function dump(Definition $definition): string
     {

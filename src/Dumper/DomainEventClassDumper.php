@@ -6,7 +6,7 @@ namespace Fpp\Dumper;
 
 use Fpp\Definition;
 
-final class DomainEventClassDumper implements Dumper
+class DomainEventClassDumper implements Dumper
 {
     public function dump(Definition $definition): string
     {

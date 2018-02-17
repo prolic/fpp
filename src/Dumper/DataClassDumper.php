@@ -9,7 +9,7 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 
-final class DataClassDumper implements Dumper
+class DataClassDumper implements Dumper
 {
     /**
      * @var DefinitionCollection

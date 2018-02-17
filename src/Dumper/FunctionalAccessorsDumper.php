@@ -6,7 +6,7 @@ namespace Fpp\Dumper;
 
 use Fpp\Definition;
 
-final class FunctionalAccessorsDumper implements Dumper
+class FunctionalAccessorsDumper implements Dumper
 {
     public function dump(Definition $definition): string
     {

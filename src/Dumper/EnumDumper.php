@@ -6,7 +6,7 @@ namespace Fpp\Dumper;
 
 use Fpp\Definition;
 
-final class EnumDumper implements Dumper
+class EnumDumper implements Dumper
 {
     public function dump(Definition $definition): string
     {

@@ -7,7 +7,7 @@ namespace Fpp\Dumper;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 
-final class DataDumper implements Dumper
+class DataDumper implements Dumper
 {
     /**
      * @var DefinitionCollection

@@ -6,7 +6,7 @@ namespace Fpp\Dumper;
 
 use Fpp\Definition;
 
-final class FunctionalUuidConstructorDumper implements Dumper
+class FunctionalUuidConstructorDumper implements Dumper
 {
     public function dump(Definition $definition): string
     {

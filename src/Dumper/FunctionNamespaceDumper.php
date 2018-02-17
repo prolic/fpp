@@ -6,7 +6,7 @@ namespace Fpp\Dumper;
 
 use Fpp\Definition;
 
-final class FunctionNamespaceDumper implements Dumper
+class FunctionNamespaceDumper implements Dumper
 {
     /**
      * @var string
