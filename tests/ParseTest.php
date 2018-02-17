@@ -609,4 +609,34 @@ CODE;
         $this->assertSame(Command::VALUE, $derivings[1]::VALUE);
         $this->assertSame('do-something', $definition->messageName());
     }
+
+    /**
+     * @test
+     */
+    public function it_detects_wrong_deriving_syntax(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } deriving Equals;
+CODE;
+
+        parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_on_unknown_derivings(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } deriving (Unknown);
+CODE;
+
+        parse($this->createDefaultFile($contents));
+    }
 }

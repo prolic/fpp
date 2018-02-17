@@ -240,7 +240,7 @@ function parse(string $filename): DefinitionCollection
                     $token = $skipWhitespace($token, $tokens);
 
                     if ($token[1] !== '(') {
-                        throw ParseError::unexpectedTokenFound('(', $token, $this->filename);
+                        throw ParseError::unexpectedTokenFound('(', $token, $filename);
                     }
 
                     $token = $nextToken($tokens);
@@ -250,7 +250,7 @@ function parse(string $filename): DefinitionCollection
                         $requireString($token);
 
                         if (! in_array($token[1], Deriving::OPTION_VALUES, true)) {
-                            throw ParseError::unknownDeriving($token[2], $this->filename);
+                            throw ParseError::unknownDeriving($token[2], $filename);
                         }
 
                         $deriving = $token[1];
