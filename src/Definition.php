@@ -135,7 +135,7 @@ class Definition
                         throw $this->invalid((string) $deriving . ' needs at least one constructor');
                     }
                     foreach ($constructors as $constructor) {
-                        if (count($constructor) !== 1) {
+                        if (count($constructor->arguments()) > 1) {
                             throw $this->invalid((string) $deriving . ' constructor needs exactly one argument');
                         }
                     }
