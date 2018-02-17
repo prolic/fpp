@@ -253,10 +253,29 @@ function parse(string $filename): DefinitionCollection
                             throw ParseError::unknownDeriving($token[2], $this->filename);
                         }
 
-                        $fqcn = __NAMESPACE__ . '\\Deriving\\' . $token[1];
+                        $deriving = $token[1];
+                        $fqcn = __NAMESPACE__ . '\\Deriving\\' . $deriving;
                         $derivings[] = new $fqcn();
                         $token = $nextToken($tokens);
                         $token = $skipWhitespace($token, $tokens);
+
+                        if (in_array($deriving, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)
+                            && ':' === $token[1]
+                        ) {
+                            $token = $nextToken($tokens);
+                            $token = $skipWhitespace($token, $tokens);
+                            $messageName = $token[1];
+
+                            while (true) {
+                                $token = $nextToken($tokens);
+                                if (in_array($token[1], [',', ')'], true)
+                                    || T_WHITESPACE === $token[0]
+                                ) {
+                                    break;
+                                }
+                                $messageName .= $token[1];
+                            }
+                        }
 
                         if ($token[1] === ',') {
                             $token = $nextToken($tokens);
