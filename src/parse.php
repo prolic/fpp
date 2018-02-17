@@ -265,17 +265,15 @@ function parse(string $filename): DefinitionCollection
                         ) {
                             $token = $nextToken();
                             $token = $skipWhitespace($token);
-                            $messageName = $token[1];
 
-                            while (true) {
-                                $token = $nextToken();
-                                if (in_array($token[1], [',', ')'], true)
-                                    || T_WHITESPACE === $token[0]
-                                ) {
-                                    break;
-                                }
-                                $messageName .= $token[1];
+                            if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
+                                throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
                             }
+
+                            $messageName = substr($token[1], 1, -1);
+
+                            $token = $nextToken();
+                            $token = $skipWhitespace($token);
                         }
 
                         if ($token[1] === ',') {

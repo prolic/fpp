@@ -551,11 +551,31 @@ CODE;
     /**
      * @test
      */
+    public function it_parses_derivings_without_message_name_for_prooph_messages(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command);
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'DoSomething');
+
+        $derivings = $definition->derivings();
+        $this->assertCount(1, $derivings);
+
+        $this->assertSame(Command::VALUE, $derivings[0]::VALUE);
+        $this->assertSame(null, $definition->messageName());
+    }
+
+    /**
+     * @test
+     */
     public function it_parses_derivings_with_message_name_for_prooph_messages(): void
     {
         $contents = <<<CODE
 namespace Something;
-data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:do-something);
+data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:'do-something');
 CODE;
 
         $collection = parse($this->createDefaultFile($contents));
@@ -575,7 +595,7 @@ CODE;
     {
         $contents = <<<CODE
 namespace Something;
-data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:do-something, Equals);
+data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:'do-something', Equals);
 CODE;
 
         $collection = parse($this->createDefaultFile($contents));
@@ -596,7 +616,7 @@ CODE;
     {
         $contents = <<<CODE
 namespace Something;
-data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Equals, Command:do-something);
+data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Equals, Command:'do-something');
 CODE;
 
         $collection = parse($this->createDefaultFile($contents));
