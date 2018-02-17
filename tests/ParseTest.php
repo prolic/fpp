@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace FppTest;
 
+use Fpp\Deriving\Command;
+use Fpp\Deriving\Equals;
 use Fpp\Deriving\FromArray;
 use Fpp\Deriving\ToArray;
 use Fpp\ParseError;
@@ -401,7 +403,7 @@ CODE;
     /**
      * @test
      */
-    public function it_reads_constructors_with_different_amount_of_arguments(): void
+    public function it_parses_constructors_with_different_amount_of_arguments(): void
     {
         $contents = <<<CODE
 namespace Something;
@@ -436,7 +438,7 @@ CODE;
     /**
      * @test
      */
-    public function it_reads_constructors_with_arguments_and_without(): void
+    public function it_parses_constructors_with_arguments_and_without(): void
     {
         $contents = <<<CODE
 namespace Something;
@@ -465,9 +467,71 @@ CODE;
 
     /**
      * @test
-     * @group by
      */
-    public function it_reads_derivings(): void
+    public function it_parses_constructor_arguments_with_subnamespace(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { Data\Name \$name }; 
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $constructor = $definition->constructors()[0];
+        $this->assertCount(1, $constructor->arguments());
+
+        $argument = $constructor->arguments()[0];
+
+        $this->assertSame('Something\Data\Name', $argument->type());
+        $this->assertSame('name', $argument->name());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_constructor_arguments_with_root_namespace(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { \Data\Name \$name }; 
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $constructor = $definition->constructors()[0];
+        $this->assertCount(1, $constructor->arguments());
+
+        $argument = $constructor->arguments()[0];
+
+        $this->assertSame('Data\Name', $argument->type());
+        $this->assertSame('name', $argument->name());
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_invalid_constructor_argument_definitions(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string name, ?int \$age } ;
+CODE;
+
+        parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_derivings(): void
     {
         $contents = <<<CODE
 namespace Something;
@@ -487,15 +551,62 @@ CODE;
     /**
      * @test
      */
-    public function it_detects_invalid_constructor_argument_definitions(): void
+    public function it_parses_derivings_with_message_name_for_prooph_messages(): void
     {
-        $this->expectException(ParseError::class);
-
         $contents = <<<CODE
 namespace Something;
-data Person = Person { string name, ?int \$age } ;
+data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:do-something);
 CODE;
 
-        parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'DoSomething');
+
+        $derivings = $definition->derivings();
+        $this->assertCount(1, $derivings);
+
+        $this->assertSame(Command::VALUE, $derivings[0]::VALUE);
+        $this->assertSame('do-something', $definition->messageName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_derivings_with_message_name_for_prooph_messages_incl_second_deriving(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:do-something, Equals);
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'DoSomething');
+
+        $derivings = $definition->derivings();
+        $this->assertCount(2, $derivings);
+
+        $this->assertSame(Command::VALUE, $derivings[0]::VALUE);
+        $this->assertSame(Equals::VALUE, $derivings[1]::VALUE);
+        $this->assertSame('do-something', $definition->messageName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_derivings_with_message_name_for_prooph_messages_incl_second_deriving_2(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Equals, Command:do-something);
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'DoSomething');
+
+        $derivings = $definition->derivings();
+        $this->assertCount(2, $derivings);
+
+        $this->assertSame(Equals::VALUE, $derivings[0]::VALUE);
+        $this->assertSame(Command::VALUE, $derivings[1]::VALUE);
+        $this->assertSame('do-something', $definition->messageName());
     }
 }
