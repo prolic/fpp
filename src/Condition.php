@@ -18,13 +18,13 @@ class Condition
     /**
      * @var string
      */
-    private $error;
+    private $errorMessage;
 
-    public function __construct(string $constructor, string $code, string $error)
+    public function __construct(string $constructor, string $code, string $errorMessage)
     {
         $this->constructor = $constructor;
         $this->code = $code;
-        $this->error = $error;
+        $this->errorMessage = $errorMessage;
     }
 
     public function constructor(): string
@@ -37,8 +37,8 @@ class Condition
         return $this->code;
     }
 
-    public function error(): string
+    public function errorMessage(): string
     {
-        return $this->error;
+        return $this->errorMessage;
     }
 }

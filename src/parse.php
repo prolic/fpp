@@ -31,7 +31,7 @@ function parse(string $filename): DefinitionCollection
     $line = 1;
     $namespace = '';
 
-    $nextToken = function (array $tokens) use (&$position, &$tokenCount, &$line, $filename): array {
+    $nextToken = function () use ($tokens, &$position, &$tokenCount, &$line, $filename): array {
         if ($position === $tokenCount - 1) {
             throw ParseError::unexpectedEndOfFile($filename);
         }
@@ -52,9 +52,9 @@ function parse(string $filename): DefinitionCollection
         return $token;
     };
 
-    $skipWhitespace = function (array $token, array $tokens) use (&$position, $nextToken): array {
+    $skipWhitespace = function (array $token) use ($tokens, &$position, $nextToken): array {
         if ($token[0] === T_WHITESPACE) {
-            $token = $nextToken($tokens);
+            $token = $nextToken();
         }
 
         return $token;
@@ -92,13 +92,13 @@ function parse(string $filename): DefinitionCollection
         return $position === ($tokenCount - 1);
     };
 
-    $nextToken($tokens);
+    $nextToken();
 
     if ($isEndOfFile()) {
         return $collection;
     }
 
-    $token = $nextToken($tokens);
+    $token = $nextToken();
 
     while ($position < $tokenCount) {
         switch ($token[0]) {
@@ -107,21 +107,21 @@ function parse(string $filename): DefinitionCollection
                     throw ParseError::nestedNamespacesDetected($token[2], $filename);
                 }
 
-                $token = $nextToken($tokens);
+                $token = $nextToken();
                 $requireWhitespace($token);
-                $token = $nextToken($tokens);
+                $token = $nextToken();
                 $requireString($token);
                 $namespace = $token[1];
-                $token = $nextToken($tokens);
+                $token = $nextToken();
 
                 while ($token[0] === T_NS_SEPARATOR) {
-                    $token = $nextToken($tokens);
+                    $token = $nextToken();
                     $requireString($token);
                     $namespace .= '\\' . $token[1];
-                    $token = $nextToken($tokens);
+                    $token = $nextToken();
                 }
 
-                $token = $skipWhitespace($token, $tokens);
+                $token = $skipWhitespace($token);
 
                 if ($token[1] === '{') {
                     $namespaceFound = true;
@@ -138,13 +138,13 @@ function parse(string $filename): DefinitionCollection
                 }
 
                 // parse name (incl. message name for prooph messages)
-                $token = $nextToken($tokens);
+                $token = $nextToken();
                 $requireWhitespace($token);
-                $token = $nextToken($tokens);
+                $token = $nextToken();
                 $requireUcFirstString($token);
                 $name = $token[1];
-                $token = $nextToken($tokens);
-                $token = $skipWhitespace($token, $tokens);
+                $token = $nextToken();
+                $token = $skipWhitespace($token);
                 $messageName = null;
 
                 if ($token[1] !== '=') {
@@ -154,30 +154,31 @@ function parse(string $filename): DefinitionCollection
                 // parse constructors
                 $constructors = [];
                 $derivings = [];
+                $conditions = [];
                 parseConstructor:
 
                 $arguments = [];
-                $token = $nextToken($tokens);
-                $token = $skipWhitespace($token, $tokens);
+                $token = $nextToken();
+                $token = $skipWhitespace($token);
                 $requireUcFirstString($token);
                 $constructorName = $token[1];
-                $token = $nextToken($tokens);
-                $token = $skipWhitespace($token, $tokens);
+                $token = $nextToken();
+                $token = $skipWhitespace($token);
 
                 if ($token[1] === '{') {
                     $arguments = [];
                     parseArguments:
 
                     while ($token[1] !== '}') {
-                        $token = $nextToken($tokens);
+                        $token = $nextToken();
                         $type = null;
                         $nullable = false;
 
-                        $token = $skipWhitespace($token, $tokens);
+                        $token = $skipWhitespace($token);
 
                         if ($token[1] === '?') {
                             $nullable = true;
-                            $token = $nextToken($tokens);
+                            $token = $nextToken();
                             $requireString($token);
                         }
 
@@ -192,13 +193,13 @@ function parse(string $filename): DefinitionCollection
                                 }
                             }
 
-                            $token = $nextToken($tokens);
+                            $token = $nextToken();
                             $requireWhitespace($token);
-                            $token = $nextToken($tokens);
+                            $token = $nextToken();
                             $requireVariable($token);
                             $argumentName = substr($token[1], 1);
-                            $token = $nextToken($tokens);
-                            $token = $skipWhitespace($token, $tokens);
+                            $token = $nextToken();
+                            $token = $skipWhitespace($token);
 
                             if (in_array($token[1], [',', '}'], true)) {
                                 $arguments[] = new Argument($argumentName, $type, $nullable);
@@ -219,10 +220,10 @@ function parse(string $filename): DefinitionCollection
                 }
 
                 if (! $isEndOfFile()) {
-                    $token = $nextToken($tokens);
+                    $token = $nextToken();
                 }
 
-                $token = $skipWhitespace($token, $tokens);
+                $token = $skipWhitespace($token);
 
                 if ('|' === $token[1]) {
                     $constructors[] = new Constructor($constructorName, $arguments);
@@ -236,17 +237,17 @@ function parse(string $filename): DefinitionCollection
 
                 if ('deriving' === $token[1]) {
                     $constructors[] = new Constructor($constructorName, $arguments);
-                    $token = $nextToken($tokens);
-                    $token = $skipWhitespace($token, $tokens);
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
 
                     if ($token[1] !== '(') {
                         throw ParseError::unexpectedTokenFound('(', $token, $filename);
                     }
 
-                    $token = $nextToken($tokens);
+                    $token = $nextToken();
 
                     while ($token[1] !== ')') {
-                        $token = $skipWhitespace($token, $tokens);
+                        $token = $skipWhitespace($token);
                         $requireString($token);
 
                         if (! in_array($token[1], Deriving::OPTION_VALUES, true)) {
@@ -256,18 +257,18 @@ function parse(string $filename): DefinitionCollection
                         $deriving = $token[1];
                         $fqcn = __NAMESPACE__ . '\\Deriving\\' . $deriving;
                         $derivings[] = new $fqcn();
-                        $token = $nextToken($tokens);
-                        $token = $skipWhitespace($token, $tokens);
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
 
                         if (in_array($deriving, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)
                             && ':' === $token[1]
                         ) {
-                            $token = $nextToken($tokens);
-                            $token = $skipWhitespace($token, $tokens);
+                            $token = $nextToken();
+                            $token = $skipWhitespace($token);
                             $messageName = $token[1];
 
                             while (true) {
-                                $token = $nextToken($tokens);
+                                $token = $nextToken();
                                 if (in_array($token[1], [',', ')'], true)
                                     || T_WHITESPACE === $token[0]
                                 ) {
@@ -278,17 +279,70 @@ function parse(string $filename): DefinitionCollection
                         }
 
                         if ($token[1] === ',') {
-                            $token = $nextToken($tokens);
+                            $token = $nextToken();
                         }
                     }
-                    $token = $nextToken($tokens);
+                    $token = $nextToken();
                     if (';' === $token[1]) {
                         goto buildDefinition;
                     }
                 }
 
+                if ('where' === $token[1]) {
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
+
+                    if ('|' !== $token[1]) {
+                        throw ParseError::unexpectedTokenFound('|', $token, $filename);
+                    }
+
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
+
+                    parseCondition:
+                    $bracesOpened = 0;
+                    $code = '';
+
+                    while (true) {
+                        if (in_array($token[1], ['(', '['], true)) {
+                            ++$bracesOpened;
+                        }
+
+                        if (in_array($token[1], [')', ']'], true)) {
+                            --$bracesOpened;
+                        }
+
+                        if (0 === $bracesOpened && T_DOUBLE_ARROW === $token[0]) {
+                            break;
+                        }
+
+                        $code .= $token[1];
+                        $token = $nextToken();
+                    }
+
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
+
+                    if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
+                        throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
+                    }
+
+                    $errorMessage = $token[1];
+
+                    $conditions[] = new Condition('_', trim($code), substr($errorMessage, 1, -1));
+
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
+
+                    if ('|' === $token[1]) {
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+                        goto parseCondition;
+                    }
+                }
+
                 buildDefinition:
-                $collection->addDefinition(new Definition($namespace, $name, $constructors, $derivings, [], $messageName));
+                $collection->addDefinition(new Definition($namespace, $name, $constructors, $derivings, $conditions, $messageName));
                 break;
             case T_WHITESPACE:
                 break;
@@ -305,7 +359,7 @@ function parse(string $filename): DefinitionCollection
         }
 
         if ($position < $tokenCount - 1) {
-            $token = $nextToken($tokens);
+            $token = $nextToken();
         } else {
             ++$position;
         }
