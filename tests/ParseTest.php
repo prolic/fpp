@@ -639,4 +639,110 @@ CODE;
 
         parse($this->createDefaultFile($contents));
     }
+
+    /**
+     * @test
+     */
+    public function it_parses_a_simple_condition(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } where 
+    | strlen(\$name) < 0 => "Name too short";
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $conditions = $definition->conditions();
+        $this->assertCount(1, $conditions);
+
+        $condition = $conditions[0];
+        $this->assertSame('_', $condition->constructor());
+        $this->assertSame('strlen($name) < 0', $condition->code());
+        $this->assertSame('Name too short', $condition->errorMessage());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_a_simple_condition_2(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } where 
+    | strlen(\$name) < 0 => 'Name too short';
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $conditions = $definition->conditions();
+
+        $condition1 = $conditions[0];
+        $this->assertSame('_', $condition1->constructor());
+        $this->assertSame('strlen($name) < 0', $condition1->code());
+        $this->assertSame('Name too short', $condition1->errorMessage());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_multiple_conditions(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } where 
+    | strlen(\$name) < 0 => "Name too short"
+    | \$age < 18 => "Too young";
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents));
+        $definition = $collection->definition('Something', 'Person');
+
+        $conditions = $definition->conditions();
+        $this->assertCount(2, $conditions);
+
+        $condition1 = $conditions[0];
+        $this->assertSame('_', $condition1->constructor());
+        $this->assertSame('strlen($name) < 0', $condition1->code());
+        $this->assertSame('Name too short', $condition1->errorMessage());
+
+        $condition2 = $conditions[1];
+        $this->assertSame('_', $condition2->constructor());
+        $this->assertSame('$age < 18', $condition2->code());
+        $this->assertSame('Too young', $condition2->errorMessage());
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_wrong_condition_syntax(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } where 
+    strlen(\$name) < 0 => "Name too short";
+CODE;
+
+        parse($this->createDefaultFile($contents));
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_wrong_condition_syntax_2(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } where 
+    | strlen(\$name) < 0 => Name too short;
+CODE;
+
+        parse($this->createDefaultFile($contents));
+    }
 }
