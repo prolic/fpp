@@ -1,0 +1,12 @@
+namespace {{namespace_name}} {
+    class {{class_name}}
+    {
+        private $value;
+
+        public function __construct(string $value)
+        {
+            $this->value = $value;
+        }
+        {{body}}
+    }
+}
