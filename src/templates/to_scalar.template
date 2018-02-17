@@ -1,4 +1,4 @@
-        public function toArray(): array
+        public function toScalar(): {{type}}
         {
-            {{to_array_body}}
+            {{to_scalar_body}}
         }

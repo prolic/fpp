@@ -1,4 +1,9 @@
-        public function toScalar(): {{type}}
+        public function toString(): string
         {
-            {{to_scalar_body}}
+            {{to_string_body}}
+        }
+
+        public function __toString(): string
+        {
+            {{to_string_body}}
         }

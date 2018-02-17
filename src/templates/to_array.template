@@ -1,4 +1,4 @@
-        public static function fromArray(array $data): {{class_name}}
+        public static function toArray(): array
         {
-            {{from_array_body}}
+            {{to_array_body}}
         }

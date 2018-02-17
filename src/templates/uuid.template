@@ -1,6 +1,6 @@
 namespace {{namespace_name}} {
-    class {{class_name}}{{class_extends}}
+    class {{class_name}}
     {
-        {{body}}
+        {{uuid_body}}
     }
 }

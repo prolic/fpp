@@ -3,9 +3,14 @@ namespace {{namespace_name}} {
     {
         private $value;
 
-        public function __construct(string $value)
+        public function __construct(int $value)
         {
             $this->value = $value;
+        }
+
+        public function value(): int
+        {
+            return $this->value;
         }
         {{body}}
     }

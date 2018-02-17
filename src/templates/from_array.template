@@ -1,4 +1,4 @@
-        public function equals({{class_name}} {{variable_name}}): bool
+        public function fromArray(array $data): {{class_name}}
         {
-            {{equals_body}}
+            {{from_array_body}}
         }

@@ -1,4 +1,4 @@
-        public function equals({{class_name}} {{variable_name}}): bool
+        public function equals({{class_name}} ${{variable_name}}): bool
         {
             {{equals_body}}
         }
