@@ -287,8 +287,22 @@ function parse(string $filename): DefinitionCollection
                 }
 
                 if ('where' === $token[1]) {
+                    $conditionContructor = '_';
                     $token = $nextToken();
                     $token = $skipWhitespace($token);
+
+                    if (T_STRING === $token[0]) {
+                        parseConditionsForConstructor:
+                        $conditionContructor = $token[1];
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+                        if (':' !== $token[1]) {
+                            throw ParseError::unexpectedTokenFound(':', $token, $filename);
+                        }
+
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+                    }
 
                     if ('|' !== $token[1]) {
                         throw ParseError::unexpectedTokenFound('|', $token, $filename);
@@ -327,7 +341,7 @@ function parse(string $filename): DefinitionCollection
 
                     $errorMessage = $token[1];
 
-                    $conditions[] = new Condition('_', trim($code), substr($errorMessage, 1, -1));
+                    $conditions[] = new Condition($conditionContructor, trim($code), substr($errorMessage, 1, -1));
 
                     $token = $nextToken();
                     $token = $skipWhitespace($token);
@@ -336,6 +350,10 @@ function parse(string $filename): DefinitionCollection
                         $token = $nextToken();
                         $token = $skipWhitespace($token);
                         goto parseCondition;
+                    }
+
+                    if (T_STRING === $token[0]) {
+                        goto parseConditionsForConstructor;
                     }
                 }
 
