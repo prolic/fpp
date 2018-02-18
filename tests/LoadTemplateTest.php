@@ -25,7 +25,7 @@ class LoadTemplateTest extends TestCase
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
-    class {{class_name}}{{class_extends}}
+    {{abstract_final}}class {{class_name}}{{class_extends}}
     {
     }
 }
@@ -47,7 +47,7 @@ TEMPLATE;
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
-    class {{class_name}}{{class_extends}}
+    {{abstract_final}}class {{class_name}}{{class_extends}}
     {
         private \$value;
 
@@ -80,7 +80,7 @@ TEMPLATE;
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
-    class {{class_name}}{{class_extends}}
+    {{abstract_final}}class {{class_name}}{{class_extends}}
     {
         public function toString(): string
         {

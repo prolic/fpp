@@ -1,5 +1,5 @@
 namespace {{namespace_name}} {
-    class {{class_name}}{{class_extends}}
+    {{abstract_final}}class {{class_name}}{{class_extends}}
     {
         {{body}}
     }

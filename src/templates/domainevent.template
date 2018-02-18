@@ -1,0 +1,15 @@
+        use \Prooph\Common\Messaging\PayloadTrait;
+
+        protected $messageName = '{{message_name}}';
+
+        {{properties}}
+
+        {{static_constructor}}
+
+        {{accessors}}
+
+        protected function setPayload(array $payload): void
+        {
+            {{payload_validation}}
+            parent::setPayload($payload);
+        }
