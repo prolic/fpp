@@ -624,48 +624,6 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_derivings_with_message_name_for_prooph_messages_incl_second_deriving(): void
-    {
-        $contents = <<<CODE
-namespace Something;
-data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:'do-something', Equals);
-CODE;
-
-        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
-        $definition = $collection->definition('Something', 'DoSomething');
-
-        $derivings = $definition->derivings();
-        $this->assertCount(2, $derivings);
-
-        $this->assertSame(Deriving\Command::VALUE, $derivings[0]::VALUE);
-        $this->assertSame(Deriving\Equals::VALUE, $derivings[1]::VALUE);
-        $this->assertSame('do-something', $definition->messageName());
-    }
-
-    /**
-     * @test
-     */
-    public function it_parses_derivings_with_message_name_for_prooph_messages_incl_second_deriving_2(): void
-    {
-        $contents = <<<CODE
-namespace Something;
-data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Equals, Command:'do-something');
-CODE;
-
-        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
-        $definition = $collection->definition('Something', 'DoSomething');
-
-        $derivings = $definition->derivings();
-        $this->assertCount(2, $derivings);
-
-        $this->assertSame(Deriving\Equals::VALUE, $derivings[0]::VALUE);
-        $this->assertSame(Deriving\Command::VALUE, $derivings[1]::VALUE);
-        $this->assertSame('do-something', $definition->messageName());
-    }
-
-    /**
-     * @test
-     */
     public function it_detects_wrong_deriving_syntax(): void
     {
         $this->expectException(ParseError::class);

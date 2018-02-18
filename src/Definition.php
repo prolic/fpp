@@ -54,6 +54,7 @@ class Definition
     ) {
         $this->namespace = $namespace;
         $this->name = $name;
+        $allowMessageName = (null === $this->messageName);
 
         if (empty($constructors)) {
             throw new \InvalidArgumentException('At least one constructor required');
@@ -81,6 +82,25 @@ class Definition
             }
             $derivingNames[(string) $deriving] = true;
             $this->derivings[] = $deriving;
+
+            if (! $deriving->fulfillsConstructorRequirements($constructors)) {
+                throw $this->unfulfilledConstructorRequirements();
+            }
+
+            foreach ($derivings as $deriving2) {
+                if (in_array((string) $deriving2, $deriving->forbidsDerivings(), true)) {
+                    throw $this->checkForbiddenDerivings($deriving, $derivings);
+                }
+            }
+
+            if (in_array((string) $deriving, [
+                Deriving\AggregateChanged::VALUE,
+                Deriving\Command::VALUE,
+                Deriving\DomainEvent::VALUE,
+                Deriving\Query::VALUE,
+            ], true)) {
+                $allowMessageName = true;
+            }
         }
 
         foreach ($conditions as $condition) {
@@ -98,73 +118,6 @@ class Definition
 
         if ('' === $messageName) {
             throw $this->invalid('Message name cannot be empty string');
-        }
-
-        $allowMessageName = (null === $this->messageName);
-
-        foreach ($derivings as $deriving) {
-            switch ((string) $deriving) {
-                case Deriving\AggregateChanged::VALUE:
-                case Deriving\Command::VALUE:
-                case Deriving\DomainEvent::VALUE:
-                case Deriving\Query::VALUE:
-                    $allowMessageName = true;
-                    break;
-                case Deriving\Enum::VALUE:
-                    if (count($constructors) < 2) {
-                        throw $this->invalid('Enum need at least two constructors');
-                    }
-                    foreach ($constructors as $constructor) {
-                        if (count($constructor->arguments()) > 0) {
-                            throw $this->invalid('Enum cannot have constructor arguments');
-                        }
-                    }
-                    foreach ($derivings as $deriving2) {
-                        if (in_array((string) $deriving2, [Deriving\Equals::VALUE, Deriving\ToString::VALUE], true)) {
-                            throw $this->invalid('Enum can not be derived from Equals or ToString');
-                        }
-                    }
-                    break;
-                case Deriving\FromArray::VALUE:
-                case Deriving\ToArray::VALUE:
-                    if (count($constructors) === 0) {
-                        throw $this->invalid((string) $deriving . ' needs at least one constructor');
-                    }
-                    foreach ($constructors as $constructor) {
-                        if (count($constructor->arguments()) < 2) {
-                            throw $this->invalid((string) $deriving . ' constructor needs at least two arguments');
-                        }
-                    }
-                    break;
-                case Deriving\FromScalar::VALUE:
-                case Deriving\FromString::VALUE:
-                case Deriving\ToScalar::VALUE:
-                case Deriving\ToString::VALUE:
-                    if (count($constructors) === 0) {
-                        throw $this->invalid((string) $deriving . ' needs at least one constructor');
-                    }
-                    foreach ($constructors as $constructor) {
-                        if (count($constructor->arguments()) > 1) {
-                            throw $this->invalid((string) $deriving . ' constructor needs exactly one argument');
-                        }
-                    }
-                    break;
-                case Deriving\Uuid::VALUE:
-                    if (count($constructors) !== 1) {
-                        throw $this->invalid('Uuid need exactly one constructor');
-                    }
-                    foreach ($constructors as $constructor) {
-                        if (count($constructor->arguments()) > 0) {
-                            throw $this->invalid('Uuid cannot have constructor arguments');
-                        }
-                    }
-                    foreach ($derivings as $deriving2) {
-                        if (in_array((string) $deriving2, [Deriving\Equals::VALUE, Deriving\ToString::VALUE, Deriving\FromString::VALUE], true)) {
-                            throw $this->invalid('Uuid can not be derived from Equals, ToString or FromString');
-                        }
-                    }
-                    break;
-            }
         }
 
         if (! $allowMessageName) {
@@ -215,6 +168,20 @@ class Definition
     public function messageName(): ?string
     {
         return $this->messageName;
+    }
+
+    private function unfulfilledConstructorRequirements(): \InvalidArgumentException
+    {
+        return $this->invalid('Does not fulfill constructor requirements');
+    }
+
+    private function checkForbiddenDerivings(Deriving $deriving, array $givenDerivings): \InvalidArgumentException
+    {
+        foreach ($givenDerivings as $givenDeriving) {
+            if (in_array((string) $givenDeriving, $deriving->forbidsDerivings(), true)) {
+                throw $this->invalid('Has additional forbidden derivings');
+            }
+        }
     }
 
     private function invalid(string $message): \InvalidArgumentException

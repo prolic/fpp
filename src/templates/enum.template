@@ -2,10 +2,6 @@
             {{enum_options}}
         ];
 
-        const OPTION_VALUES = [
-            {{enum_values}}
-        ];
-
         final public function __construct()
         {
             $valid = false;
@@ -21,6 +17,16 @@
                 $self = get_class($this);
                 throw new \LogicException("Invalid {$definition->name()} '$self' given");
             }
+        }
+
+        public static function fromString(string $value): self
+        {
+            if (! isset(self::OPTIONS[$value])) {
+                throw new \InvalidArgumentException('Unknown enum value given');
+            }
+
+            $class = self::OPTIONS[$value];
+            return new $class();
         }
 
         public function equals({$definition->name()} $other): bool

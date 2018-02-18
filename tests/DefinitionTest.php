@@ -106,8 +106,9 @@ class DefinitionTest extends TestCase
 
     /**
      * @test
+     * @group by
      */
-    public function it_forbids_scalar_converter_deriving_for_more_then_one_argument_on_data_type(): void
+    public function it_forbids_to_scalar_deriving_for_more_then_one_argument_on_data_type(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -296,7 +297,9 @@ class DefinitionTest extends TestCase
         $definition = new Definition(
             'Foo',
             'RegisterPerson',
-            [new Constructor('RegisterPerson')],
+            [new Constructor('RegisterPerson', [
+                new Argument('id', 'string'),
+            ])],
             [new Deriving\Command()],
             [],
             'register.person'
