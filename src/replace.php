@@ -11,6 +11,7 @@ function replace(Definition $definition, string $template): string
     $template = str_replace('{{namespace_name}}', $definition->namespace(), $template);
     $template = str_replace('{{class_name}}', $definition->name(), $template);
     $template = str_replace('{{variable_name}}', lcfirst($definition->name()), $template);
+    $template = str_replace('{{class_extends}}', '', $template); // @todo fix
 
     if (false !== strstr($template, '{{to_string_body}}')) {
         // only one constructor assumed @todo fix

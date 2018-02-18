@@ -103,6 +103,7 @@ namespace Foo {
         {
             return new Bar(\$bar);
         }
+
         public function toString(): string
         {
             return \$this->value;

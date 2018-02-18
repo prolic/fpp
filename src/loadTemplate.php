@@ -20,15 +20,15 @@ use Fpp\Deriving\Uuid;
 
 const loadTemplate = '\Fpp\loadTemplate';
 
-function loadTemplate(Definition $definition): Template
+function loadTemplate(Definition $definition): string
 {
     static $cache = [];
 
     $prefix = __DIR__ . '/templates/';
     $constructors = $definition->constructors();
-    $derivings = $definition->derivings();
 
     $classTemplateFile = $prefix . 'class.template';
+    $bodyTemplatesFiles = [];
 
     if (1 === count($constructors)) {
         switch ($constructors[0]->name()) {
@@ -36,20 +36,7 @@ function loadTemplate(Definition $definition): Template
             case 'Int':
             case 'Bool':
             case 'Float':
-                $classTemplateFile = $prefix . strtolower($constructors[0]->name()) . '.template';
-                break;
-        }
-    }
-
-    foreach ($derivings as $deriving) {
-        switch ((string) $deriving) {
-            case AggregateChanged::VALUE:
-            case Command::VALUE:
-            case DomainEvent::VALUE:
-            case Query::VALUE:
-            case Enum::VALUE:
-            case Uuid::VALUE:
-                $classTemplateFile = $prefix . strtolower((string) $deriving) . '.template';
+                $bodyTemplatesFiles[] = $prefix . strtolower($constructors[0]->name()) . '.template';
                 break;
         }
     }
@@ -60,10 +47,14 @@ function loadTemplate(Definition $definition): Template
 
     $classTemplate = $cache[$classTemplateFile];
 
-    $bodyTemplatesFiles = [];
-
     foreach ($definition->derivings() as $deriving) {
         switch ((string) $deriving) {
+            case AggregateChanged::VALUE:
+            case Command::VALUE:
+            case DomainEvent::VALUE:
+            case Query::VALUE:
+            case Enum::VALUE:
+            case Uuid::VALUE:
             case Equals::VALUE:
             case FromArray::VALUE:
             case FromScalar::VALUE:
@@ -76,15 +67,19 @@ function loadTemplate(Definition $definition): Template
         }
     }
 
-    $bodyTemplates = [];
+    $bodyTemplate = '';
 
     foreach ($bodyTemplatesFiles as $file) {
         if (! isset($cache[$file])) {
             $cache[$file] = file_get_contents($file);
         }
 
-        $bodyTemplates[] = $cache[$file];
+        $bodyTemplate .= $cache[$file] . "\n\n";;
     }
 
-    return new Template($classTemplate, $bodyTemplates);
+    if (! empty($bodyTemplate)) {
+        $bodyTemplate = substr($bodyTemplate, 0, -1);
+    }
+
+    return str_replace("        {{body}}\n", $bodyTemplate, $classTemplate);
 }

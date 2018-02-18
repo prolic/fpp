@@ -14,16 +14,6 @@ use function Fpp\loadTemplate;
 class LoadTemplateTest extends TestCase
 {
     /**
-     * @var string
-     */
-    private $templatePath;
-
-    protected function setUp(): void
-    {
-        $this->templatePath = __DIR__ . '/../src/templates/';
-    }
-
-    /**
      * @test
      */
     public function it_loads_default_class_template(): void
@@ -33,22 +23,16 @@ class LoadTemplateTest extends TestCase
 
         $template = loadTemplate($definition);
 
-        $this->assertSame(file_get_contents($this->templatePath . '/class.template'), $template->classTemplate());
-        $this->assertCount(0, $template->bodyTemplates());
-    }
-
-    /**
-     * @test
-     */
-    public function it_loads_string_template(): void
+        $expected = <<<TEMPLATE
+namespace {{namespace_name}} {
+    class {{class_name}}{{class_extends}}
     {
-        $constructor = new Constructor('String');
-        $definition = new Definition('Foo', 'Bar', [$constructor]);
+    }
+}
 
-        $template = loadTemplate($definition);
+TEMPLATE;
 
-        $this->assertSame(file_get_contents($this->templatePath . '/string.template'), $template->classTemplate());
-        $this->assertCount(0, $template->bodyTemplates());
+        $this->assertSame($expected, $template);
     }
 
     /**
@@ -61,22 +45,29 @@ class LoadTemplateTest extends TestCase
 
         $template = loadTemplate($definition);
 
-        $this->assertSame(file_get_contents($this->templatePath . '/class.template'), $template->classTemplate());
-        $this->assertCount(2, $template->bodyTemplates());
-        $this->assertSame(file_get_contents($this->templatePath . '/tostring.template'), $template->bodyTemplates()[0]);
-        $this->assertSame(file_get_contents($this->templatePath . '/fromstring.template'), $template->bodyTemplates()[1]);
-    }
-
-    /**
-     * @test
-     */
-    public function it_loads_uuid_template(): void
+        $expected = <<<TEMPLATE
+namespace {{namespace_name}} {
+    class {{class_name}}{{class_extends}}
     {
-        $constructor = new Constructor('Bar');
-        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\Uuid()]);
+        public function toString(): string
+        {
+            {{to_string_body}}
+        }
 
-        $template = loadTemplate($definition);
+        public function __toString(): string
+        {
+            {{to_string_body}}
+        }
 
-        $this->assertSame(file_get_contents($this->templatePath . '/uuid.template'), $template->classTemplate());
+        public static function fromString(string \${{variable_name}}): {{class_name}}
+        {
+            return new {{class_name}}(\${{variable_name}});
+        }
+    }
+}
+
+TEMPLATE;
+
+        $this->assertSame($expected, $template);
     }
 }
