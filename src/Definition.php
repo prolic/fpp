@@ -61,7 +61,7 @@ class Definition
                 throw new \InvalidArgumentException('Invalid constructor given, must be an instance of ' . Constructor::class);
             }
             if (isset($constructorNames[$constructor->name()])) {
-                throw new \InvalidArgumentException('Duplicate argument name given');
+                throw new \InvalidArgumentException('Duplicate constructor name given');
             }
             $constructorNames[$constructor->name()] = true;
             $this->constructors[] = $constructor;
@@ -141,8 +141,8 @@ class Definition
                     }
                     break;
                 case Deriving\Uuid::VALUE:
-                    if (count($constructors) < 1) {
-                        throw $this->invalid('Uuid cannot have more than one constructor');
+                    if (count($constructors) !== 1) {
+                        throw $this->invalid('Uuid need exactly one constructor');
                     }
                     foreach ($constructors as $constructor) {
                         if (count($constructor->arguments()) > 0) {

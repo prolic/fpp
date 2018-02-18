@@ -28,7 +28,7 @@ class ParseTest extends TestCase
         $this->root = vfsStream::setup('test-dir');
         vfsStream::newFile('not_readable.fpp')->withContent('')->at($this->root);
         $this->root->getChild('not_readable.fpp')->chmod('0000');
-        
+
         $this->derivingsMap = [
             'AggregateChanged' => new Deriving\AggregateChanged(),
             'Command' => new Deriving\Command(),
