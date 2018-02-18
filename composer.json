@@ -22,11 +22,10 @@
     },
     "files": [
       "src/dump.php",
-      "src/loadTemplates.php",
-      "src/mapTemplates.php",
       "src/parse.php",
       "src/replace.php",
-      "src/scan.php"
+      "src/scan.php",
+      "src/templates.php"
     ]
   }
 }
