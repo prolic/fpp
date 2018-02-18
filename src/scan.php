@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Fpp;
 
 use FilterIterator;
-use Phunkie\Types\ImmList;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -13,14 +12,18 @@ use SplFileInfo;
 
 const scan = '\Fpp\scan';
 
-function scan(string $directoryOrFile): ImmList
+/**
+ * @param string $directoryOrFile
+ * @return string[]
+ */
+function scan(string $directoryOrFile): array
 {
     if (! is_readable($directoryOrFile)) {
         throw new RuntimeException("'$directoryOrFile' is not readable");
     }
 
     if (is_file($directoryOrFile)) {
-        return ImmList($directoryOrFile);
+        return [$directoryOrFile];
     }
 
     $iterator = new class(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directoryOrFile))) extends FilterIterator {
@@ -56,5 +59,5 @@ function scan(string $directoryOrFile): ImmList
         throw new RuntimeException("No .fpp files found in '$directoryOrFile'");
     }
 
-    return ImmList(...$files);
+    return $files;
 }

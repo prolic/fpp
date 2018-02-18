@@ -41,8 +41,8 @@ class ScanTest extends TestCase
     {
         $list = scan($this->root->getChild('foo/Bar/Baz/fpp2.fpp')->url());
 
-        $this->assertCount(1, $list->toArray());
-        $this->assertSame('vfs://foo/Bar/Baz/fpp2.fpp', $list->head());
+        $this->assertCount(1, $list);
+        $this->assertSame('vfs://foo/Bar/Baz/fpp2.fpp', $list[0]);
     }
 
     /**
@@ -57,7 +57,7 @@ class ScanTest extends TestCase
                 'vfs://foo/Bar/Baz/fpp2.fpp',
                 'vfs://foo/fpp3.fpp',
             ],
-            $list->toArray()
+            $list
         );
     }
 
