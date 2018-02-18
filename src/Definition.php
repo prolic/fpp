@@ -154,6 +154,11 @@ class Definition
                             throw $this->invalid('Uuid cannot have constructor arguments');
                         }
                     }
+                    foreach ($derivings as $deriving2) {
+                        if (in_array((string) $deriving2, [Deriving\Equals::VALUE, Deriving\ToString::VALUE, Deriving\FromString::VALUE], true)) {
+                            throw $this->invalid('Uuid can not be derived from Equals, ToString or FromString');
+                        }
+                    }
                     break;
             }
         }

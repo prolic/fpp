@@ -1,6 +1,31 @@
-namespace {{namespace_name}} {
-    class {{class_name}}
-    {
-        {{uuid_body}}
-    }
-}
+        private $uuid;
+
+        public static function generate(): {{class_name}}
+        {
+            return new self(Uuid::uuid4());
+        }
+
+        public static function fromString(string $value): {{class_name}}
+        {
+            return new self(Uuid::fromString($value));
+        }
+
+        private function __construct(Uuid $value)
+        {
+            $this->uuid = $value;
+        }
+
+        public function toString(): string
+        {
+            return $this->uuid->toString();
+        }
+
+        public function __toString(): string
+        {
+            return $this->uuid->toString();
+        }
+
+        public function equals({{class_name}} $other): bool
+        {
+            return $this->uuid->equals($other->uuid);
+        }

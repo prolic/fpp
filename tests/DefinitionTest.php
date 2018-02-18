@@ -144,7 +144,7 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_forbids_enum_deriving_to_tring(): void
+    public function it_forbids_enum_deriving_to_string(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -155,6 +155,51 @@ class DefinitionTest extends TestCase
             'Color',
             [$constructor],
             [new Deriving\Enum(), new Deriving\ToString()]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_forbids_uuid_deriving_equals(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Definition(
+            'Foo',
+            'Color',
+            [],
+            [new Deriving\Uuid(), new Deriving\Equals()]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_forbids_uuid_deriving_to_string(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Definition(
+            'Foo',
+            'Color',
+            [],
+            [new Deriving\Uuid(), new Deriving\ToString()]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_forbids_uuid_deriving_from_string(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Definition(
+            'Foo',
+            'Color',
+            [],
+            [new Deriving\Uuid(), new Deriving\FromString()]
         );
     }
 
