@@ -7,6 +7,7 @@ namespace FppTest;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\replace;
 
@@ -58,5 +59,16 @@ class ReplaceTest extends TestCase
         $template = '{{to_string_body}}';
 
         $this->assertEquals('return $this->value->toString();', replace($definiton, $template));
+    }
+
+    /**
+     * @test
+     */
+    public function it_add_abstract_keyword_for_enum_base_class(): void
+    {
+        $definiton = new Definition('Foo', 'Color', [new Constructor('Red'), new Constructor('Blue')], [new Deriving\Enum()]);
+        $template = '{{abstract_final}}class Color';
+
+        $this->assertEquals('abstract class Color', replace($definiton, $template));
     }
 }

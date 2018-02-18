@@ -127,6 +127,40 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
+    public function it_forbids_enum_deriving_equals(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $constructor = new Constructor('Blue');
+
+        new Definition(
+            'Foo',
+            'Color',
+            [$constructor],
+            [new Deriving\Enum(), new Deriving\Equals()]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_forbids_enum_deriving_to_tring(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $constructor = new Constructor('Blue');
+
+        new Definition(
+            'Foo',
+            'Color',
+            [$constructor],
+            [new Deriving\Enum(), new Deriving\ToString()]
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_forbids_string_converter_deriving_for_more_then_one_argument_on_data_type(): void
     {
         $this->expectException(\InvalidArgumentException::class);

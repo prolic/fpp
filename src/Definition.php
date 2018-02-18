@@ -115,6 +115,11 @@ class Definition
                             throw $this->invalid('Enum cannot have constructor arguments');
                         }
                     }
+                    foreach ($derivings as $deriving2) {
+                        if (in_array((string) $deriving2, [Deriving\Equals::VALUE, Deriving\ToString::VALUE], true)) {
+                            throw $this->invalid('Enum can not be derived from Equals or ToString');
+                        }
+                    }
                     break;
                 case Deriving\FromArray::VALUE:
                 case Deriving\ToArray::VALUE:
