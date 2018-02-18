@@ -21,7 +21,7 @@ class ReplaceTest extends TestCase
         $definiton = new Definition('Foo', 'Bar', [new Constructor('Bar')]);
         $template = '{{namespace_name}} {{class_name}} ${{variable_name}}';
 
-        $this->assertEquals('Foo Bar $bar', replace($definiton, $template));
+        $this->assertSame('Foo Bar $bar', replace($definiton, $template));
     }
 
     /**
@@ -32,7 +32,7 @@ class ReplaceTest extends TestCase
         $definiton = new Definition('Foo', 'Bar', [new Constructor('String')]);
         $template = '{{to_string_body}}';
 
-        $this->assertEquals('return $this->value;', replace($definiton, $template));
+        $this->assertSame('return $this->value;', replace($definiton, $template));
     }
 
     /**
@@ -45,7 +45,7 @@ class ReplaceTest extends TestCase
         ])]);
         $template = '{{to_string_body}}';
 
-        $this->assertEquals('return $this->value;', replace($definiton, $template));
+        $this->assertSame('return $this->value;', replace($definiton, $template));
     }
 
     /**
@@ -58,7 +58,7 @@ class ReplaceTest extends TestCase
         ])]);
         $template = '{{to_string_body}}';
 
-        $this->assertEquals('return $this->value->toString();', replace($definiton, $template));
+        $this->assertSame('return $this->value->toString();', replace($definiton, $template));
     }
 
     /**
@@ -69,6 +69,55 @@ class ReplaceTest extends TestCase
         $definiton = new Definition('Foo', 'Color', [new Constructor('Red'), new Constructor('Blue')], [new Deriving\Enum()]);
         $template = '{{abstract_final}}class Color';
 
-        $this->assertEquals('abstract class Color', replace($definiton, $template));
+        $this->assertSame('abstract class Color', replace($definiton, $template));
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_aggregate_changed(): void
+    {
+        $definition = new Definition(
+            'My',
+            'UserRegistered',
+            [
+                new Constructor('UserRegistered', [
+                    new Argument('id', 'string'),
+                    new Argument('name', 'string', true),
+                    new Argument('email', 'string'),
+                ])
+            ],
+            [
+                new Deriving\AggregateChanged()
+            ]
+        );
+
+        $template = <<<TEMPLATE
+{{abstract_final}} {{class_extends}} {{message_name}} {{arguments}} {{class_name}}
+{{static_constructor_body}}
+            {{payload_validation}}
+TEMPLATE;
+
+        $expected = <<<EXPECTED
+  extends \Prooph\Common\Messaging\DomainEvent My\UserRegistered string \$id, ?string \$name, string \$email UserRegistered
+return new self(\$id, [
+                'name' => \$name,
+                'email' => \$email,
+            ]);
+            if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
+                throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
+            }
+
+            if (! isset(\$payload['email'])) {
+                throw new \InvalidArgumentException("Key 'email' is missing in payload");
+            }
+
+            if (! is_string(\$payload['email'])) {
+                throw new \InvalidArgumentException("Value for 'email' is not a string in payload");
+            }
+
+EXPECTED;
+
+        $this->assertSame($expected, replace($definition, $template));
     }
 }
