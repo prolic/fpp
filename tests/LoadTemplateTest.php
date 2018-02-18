@@ -65,7 +65,6 @@ namespace {{namespace_name}} {
 
 TEMPLATE;
 
-
         $this->assertSame($expected, $template);
     }
 

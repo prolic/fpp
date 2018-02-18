@@ -74,7 +74,7 @@ function loadTemplate(Definition $definition): string
             $cache[$file] = file_get_contents($file);
         }
 
-        $bodyTemplate .= $cache[$file] . "\n\n";;
+        $bodyTemplate .= $cache[$file] . "\n\n";
     }
 
     if (! empty($bodyTemplate)) {
