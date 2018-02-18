@@ -17,7 +17,7 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_simple_data_defintion(): void
     {
-        $definition = new Definition('', 'Person');
+        $definition = new Definition('', 'Person', [new Constructor('Person')]);
 
         $this->assertSame('', $definition->namespace());
         $this->assertSame('Person', $definition->name());
@@ -39,7 +39,7 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_data_defintion_with_namespace(): void
     {
-        $definition = new Definition('Foo', 'Person');
+        $definition = new Definition('Foo', 'Person', [new Constructor('Person')]);
 
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
@@ -296,7 +296,7 @@ class DefinitionTest extends TestCase
         $definition = new Definition(
             'Foo',
             'RegisterPerson',
-            [],
+            [new Constructor('RegisterPerson')],
             [new Deriving\Command()],
             [],
             'register.person'
@@ -469,5 +469,15 @@ class DefinitionTest extends TestCase
         );
 
         $this->assertSame(Deriving\Enum::VALUE, $definition->derivings()[0]->__toString());
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_at_least_one_constructor(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Definition('Foo', 'Person');
     }
 }

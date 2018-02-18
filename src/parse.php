@@ -224,19 +224,17 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                 }
 
                 $token = $skipWhitespace($token);
+                $constructors[] = new Constructor($constructorName, $arguments);
 
                 if ('|' === $token[1]) {
-                    $constructors[] = new Constructor($constructorName, $arguments);
                     goto parseConstructor;
                 }
 
                 if (';' === $token[1]) {
-                    $constructors[] = new Constructor($constructorName, $arguments);
                     goto buildDefinition;
                 }
 
                 if ('deriving' === $token[1]) {
-                    $constructors[] = new Constructor($constructorName, $arguments);
                     $token = $nextToken();
                     $token = $skipWhitespace($token);
 

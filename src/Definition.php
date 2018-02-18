@@ -55,6 +55,10 @@ class Definition
         $this->namespace = $namespace;
         $this->name = $name;
 
+        if (empty($constructors)) {
+            throw new \InvalidArgumentException('At least one constructor required');
+        }
+
         $constructorNames = [];
         foreach ($constructors as $constructor) {
             if (! $constructor instanceof Constructor) {
