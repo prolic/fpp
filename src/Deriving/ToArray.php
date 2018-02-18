@@ -6,7 +6,12 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-class ToArray extends FppDeriving
+class ToArray implements FppDeriving
 {
     const VALUE = 'ToArray';
+
+    public function __toString(): string
+    {
+        return self::VALUE;
+    }
 }

@@ -6,7 +6,12 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-class ToScalar extends FppDeriving
+class ToScalar implements FppDeriving
 {
     const VALUE = 'ToScalar';
+
+    public function __toString(): string
+    {
+        return self::VALUE;
+    }
 }

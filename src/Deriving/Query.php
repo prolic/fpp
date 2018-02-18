@@ -6,7 +6,12 @@ namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
 
-class Query extends FppDeriving
+class Query implements FppDeriving
 {
     const VALUE = 'Query';
+
+    public function __toString(): string
+    {
+        return self::VALUE;
+    }
 }
