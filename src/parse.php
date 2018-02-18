@@ -10,7 +10,7 @@ if (! defined('T_OTHER')) {
 
 const parse = '\Fpp\parse';
 
-function parse(string $filename): DefinitionCollection
+function parse(string $filename, array $derivingsMap): DefinitionCollection
 {
     if (! is_file($filename)) {
         throw new \RuntimeException("'$filename' is not a file");
@@ -250,17 +250,16 @@ function parse(string $filename): DefinitionCollection
                         $token = $skipWhitespace($token);
                         $requireString($token);
 
-                        if (! in_array($token[1], Deriving::OPTION_VALUES, true)) {
+                        if (! isset($derivingsMap[$token[1]])) {
                             throw ParseError::unknownDeriving($token[2], $filename);
                         }
 
-                        $deriving = $token[1];
-                        $fqcn = __NAMESPACE__ . '\\Deriving\\' . $deriving;
-                        $derivings[] = new $fqcn();
+                        $derivingName = $token[1];
+                        $derivings[] = $derivingsMap[$token[1]];
                         $token = $nextToken();
                         $token = $skipWhitespace($token);
 
-                        if (in_array($deriving, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)
+                        if (in_array($derivingName, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)
                             && ':' === $token[1]
                         ) {
                             $token = $nextToken();

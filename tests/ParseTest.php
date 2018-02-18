@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace FppTest;
 
-use Fpp\Deriving\Command;
-use Fpp\Deriving\Equals;
-use Fpp\Deriving\FromArray;
-use Fpp\Deriving\ToArray;
+use Fpp\Deriving;
 use Fpp\ParseError;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -21,11 +18,32 @@ class ParseTest extends TestCase
      */
     private $root;
 
+    /**
+     * @var array
+     */
+    private $derivingsMap = [];
+
     protected function setUp()
     {
         $this->root = vfsStream::setup('test-dir');
         vfsStream::newFile('not_readable.fpp')->withContent('')->at($this->root);
         $this->root->getChild('not_readable.fpp')->chmod('0000');
+        
+        $this->derivingsMap = [
+            'AggregateChanged' => new Deriving\AggregateChanged(),
+            'Command' => new Deriving\Command(),
+            'DomainEvent' => new Deriving\DomainEvent(),
+            'Enum' => new Deriving\Enum(),
+            'Equals' => new Deriving\Equals(),
+            'FromArray' => new Deriving\FromArray(),
+            'FromScalar' => new Deriving\FromScalar(),
+            'FromString' => new Deriving\FromString(),
+            'Query' => new Deriving\Query(),
+            'ToArray' => new Deriving\ToArray(),
+            'ToScalar' => new Deriving\ToScalar(),
+            'ToString' => new Deriving\ToString(),
+            'Uuid' => new Deriving\Uuid(),
+        ];
     }
 
     protected function createDefaultFile(string $contents): string
@@ -42,7 +60,7 @@ class ParseTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        parse($this->root->url() . '/invalid');
+        parse($this->root->url() . '/invalid', $this->derivingsMap);
     }
 
     /**
@@ -52,7 +70,7 @@ class ParseTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        parse($this->root->url() . '/not_readable.fpp');
+        parse($this->root->url() . '/not_readable.fpp', $this->derivingsMap);
     }
 
     /**
@@ -61,7 +79,7 @@ class ParseTest extends TestCase
     public function it_parses_empty_file(): void
     {
         $contents = '';
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
 
         $this->assertCount(0, $collection->definitions());
     }
@@ -72,7 +90,7 @@ class ParseTest extends TestCase
     public function it_parses_file_with_only_whitespace(): void
     {
         $contents = '     ';
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
 
         $this->assertCount(0, $collection->definitions());
     }
@@ -85,7 +103,7 @@ class ParseTest extends TestCase
         $this->expectException(ParseError::class);
 
         $contents = 'namespace Something Invalid';
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -96,7 +114,7 @@ class ParseTest extends TestCase
         $this->expectException(ParseError::class);
 
         $contents = 'namespace Something{ namespace Foo; }';
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -107,7 +125,7 @@ class ParseTest extends TestCase
         $this->expectException(ParseError::class);
 
         $contents = 'namespace Something ';
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -119,7 +137,7 @@ class ParseTest extends TestCase
         $contents = <<<CODE
 namespace \;
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -131,7 +149,7 @@ CODE;
 namespace Something;
 data Name = String;
 CODE;
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
 
         $this->assertTrue($collection->hasDefinition('Something', 'Name'));
 
@@ -151,7 +169,7 @@ CODE;
         $contents = <<<CODE
 data Name = String;
 CODE;
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
 
         $this->assertTrue($collection->hasDefinition('', 'Name'));
         $definition = $collection->definition('', 'Name');
@@ -174,7 +192,7 @@ namespace Bar {
     data Name = String;
 }
 CODE;
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
 
         $this->assertTrue($collection->hasDefinition('Foo', 'Name'));
         $this->assertTrue($collection->hasDefinition('Bar', 'Name'));
@@ -193,7 +211,7 @@ namespace Foo {
 }
 }
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -207,7 +225,7 @@ CODE;
 namespace Something\Here;
 data Name = String
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -221,7 +239,7 @@ CODE;
 namespace Something;
 data Name =;
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -235,7 +253,7 @@ CODE;
 namespace Something;
 data;
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -249,7 +267,7 @@ CODE;
 namespace Something;
 data = ;
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -263,7 +281,7 @@ CODE;
 namespace Something;
 data Person Person;
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -276,7 +294,7 @@ CODE;
         $contents = <<<CODE
 =
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -289,7 +307,7 @@ CODE;
         $contents = <<<CODE
 function
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -301,7 +319,7 @@ CODE;
 namespace Something;
 data Name = Name | FirstName;
 CODE;
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
 
         $this->assertTrue($collection->hasDefinition('Something', 'Name'));
 
@@ -327,7 +345,7 @@ namespace Something;
 data Name = Name | FirstName;
 data Age = Int;
 CODE;
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
 
         $this->assertTrue($collection->hasDefinition('Something', 'Name'));
         $this->assertTrue($collection->hasDefinition('Something', 'Age'));
@@ -358,7 +376,7 @@ CODE;
 namespace Something;
 invalid Name = String;
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -371,7 +389,7 @@ CODE;
 namespace Something;
 data Name = string;
 CODE;
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -384,7 +402,7 @@ namespace Something;
 data Person = Person { string \$name, ?int \$age } ;
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
         $constructor = $definition->constructors()[0];
         $this->assertCount(2, $constructor->arguments());
@@ -410,7 +428,7 @@ namespace Something;
 data Person = Person { string \$name, ?int \$age } | Chef { string \$name };
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $constructor1 = $definition->constructors()[0];
@@ -445,7 +463,7 @@ namespace Something;
 data Person = Person { string \$name, ?int \$age } | Chef;
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $constructor1 = $definition->constructors()[0];
@@ -477,7 +495,7 @@ namespace Something;
 data Person = Person { Data\Name \$name }; 
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $constructor = $definition->constructors()[0];
@@ -501,7 +519,7 @@ namespace Something;
 data Person = Person { \Data\Name \$name }; 
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $constructor = $definition->constructors()[0];
@@ -525,7 +543,7 @@ namespace Something;
 data Person = Person { string name, ?int \$age } ;
 CODE;
 
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -538,14 +556,14 @@ namespace Something;
 data Person = Person { string \$name, ?int \$age } deriving (ToArray, FromArray);
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $derivings = $definition->derivings();
         $this->assertCount(2, $derivings);
 
-        $this->assertSame(ToArray::VALUE, $derivings[0]::VALUE);
-        $this->assertSame(FromArray::VALUE, $derivings[1]::VALUE);
+        $this->assertSame(Deriving\ToArray::VALUE, $derivings[0]::VALUE);
+        $this->assertSame(Deriving\FromArray::VALUE, $derivings[1]::VALUE);
     }
 
     /**
@@ -558,13 +576,13 @@ namespace Something;
 data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command);
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'DoSomething');
 
         $derivings = $definition->derivings();
         $this->assertCount(1, $derivings);
 
-        $this->assertSame(Command::VALUE, $derivings[0]::VALUE);
+        $this->assertSame(Deriving\Command::VALUE, $derivings[0]::VALUE);
         $this->assertSame(null, $definition->messageName());
     }
 
@@ -578,13 +596,13 @@ namespace Something;
 data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:'do-something');
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'DoSomething');
 
         $derivings = $definition->derivings();
         $this->assertCount(1, $derivings);
 
-        $this->assertSame(Command::VALUE, $derivings[0]::VALUE);
+        $this->assertSame(Deriving\Command::VALUE, $derivings[0]::VALUE);
         $this->assertSame('do-something', $definition->messageName());
     }
 
@@ -598,14 +616,14 @@ namespace Something;
 data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:'do-something', Equals);
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'DoSomething');
 
         $derivings = $definition->derivings();
         $this->assertCount(2, $derivings);
 
-        $this->assertSame(Command::VALUE, $derivings[0]::VALUE);
-        $this->assertSame(Equals::VALUE, $derivings[1]::VALUE);
+        $this->assertSame(Deriving\Command::VALUE, $derivings[0]::VALUE);
+        $this->assertSame(Deriving\Equals::VALUE, $derivings[1]::VALUE);
         $this->assertSame('do-something', $definition->messageName());
     }
 
@@ -619,14 +637,14 @@ namespace Something;
 data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Equals, Command:'do-something');
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'DoSomething');
 
         $derivings = $definition->derivings();
         $this->assertCount(2, $derivings);
 
-        $this->assertSame(Equals::VALUE, $derivings[0]::VALUE);
-        $this->assertSame(Command::VALUE, $derivings[1]::VALUE);
+        $this->assertSame(Deriving\Equals::VALUE, $derivings[0]::VALUE);
+        $this->assertSame(Deriving\Command::VALUE, $derivings[1]::VALUE);
         $this->assertSame('do-something', $definition->messageName());
     }
 
@@ -642,7 +660,7 @@ namespace Something;
 data Person = Person { string \$name, ?int \$age } deriving Equals;
 CODE;
 
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -657,7 +675,7 @@ namespace Something;
 data Person = Person { string \$name, ?int \$age } deriving (Unknown);
 CODE;
 
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -671,7 +689,7 @@ data Person = Person { string \$name, ?int \$age } where
     | strlen(\$name) < 0 => "Name too short";
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $conditions = $definition->conditions();
@@ -694,7 +712,7 @@ data Person = Person { string \$name, ?int \$age } where
     | strlen(\$name) < 0 => 'Name too short';
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $conditions = $definition->conditions();
@@ -717,7 +735,7 @@ data Person = Person { string \$name, int \$age } where
     | \$age < 18 => "Too young";
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $conditions = $definition->conditions();
@@ -747,7 +765,7 @@ data Person = Person { string \$name, ?int \$age } where
     strlen(\$name) < 0 => "Name too short";
 CODE;
 
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -763,7 +781,7 @@ data Person = Person { string \$name, ?int \$age } where
     | strlen(\$name) < 0 => Name too short;
 CODE;
 
-        parse($this->createDefaultFile($contents));
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
     }
 
     /**
@@ -782,7 +800,7 @@ data Person = Person { string \$name, int \$age } | Chef { string \$name, } wher
         | strlen(\$name) < 0 => "Name too short";
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $conditions = $definition->conditions();
@@ -818,7 +836,7 @@ data Person = Person { string \$name, int \$age } | Chef { string \$name, } wher
         | strlen(\$name) < 0 => "Name too short";
 CODE;
 
-        $collection = parse($this->createDefaultFile($contents));
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
         $definition = $collection->definition('Something', 'Person');
 
         $conditions = $definition->conditions();
