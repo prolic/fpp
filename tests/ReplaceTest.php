@@ -1,16 +1,14 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace FppTest;
 
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
-use Fpp\Deriving;
-use function Fpp\loadTemplate;
-use function Fpp\replace;
 use PHPUnit\Framework\TestCase;
+use function Fpp\replace;
 
 class ReplaceTest extends TestCase
 {
@@ -42,7 +40,7 @@ class ReplaceTest extends TestCase
     public function it_replaces_to_string_body_for_constructor_with_string_argument(): void
     {
         $definiton = new Definition('Foo', 'Bar', [new Constructor('Bar', [
-            new Argument('name', 'string')
+            new Argument('name', 'string'),
         ])]);
         $template = '{{to_string_body}}';
 
@@ -55,7 +53,7 @@ class ReplaceTest extends TestCase
     public function it_replaces_to_string_body_for_constructor_with_object_argument(): void
     {
         $definiton = new Definition('Foo', 'Bar', [new Constructor('Baz', [
-            new Argument('name', 'Baz', false)
+            new Argument('name', 'Baz', false),
         ])]);
         $template = '{{to_string_body}}';
 

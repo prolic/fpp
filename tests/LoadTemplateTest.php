@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace FppTest;
 
@@ -8,8 +8,8 @@ use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\Deriving;
-use function Fpp\loadTemplate;
 use PHPUnit\Framework\TestCase;
+use function Fpp\loadTemplate;
 
 class LoadTemplateTest extends TestCase
 {
@@ -36,7 +36,6 @@ class LoadTemplateTest extends TestCase
         $this->assertSame(file_get_contents($this->templatePath . '/class.template'), $template->classTemplate());
         $this->assertCount(0, $template->bodyTemplates());
     }
-
 
     /**
      * @test

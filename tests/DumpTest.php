@@ -10,9 +10,9 @@ use Fpp\DefinitionCollection;
 use Fpp\Deriving\FromString;
 use Fpp\Deriving\ToString;
 use PHPUnit\Framework\TestCase;
+use const Fpp\loadTemplate;
 use const Fpp\replace;
 use function Fpp\dump;
-use const Fpp\loadTemplate;
 
 class DumpTest extends TestCase
 {

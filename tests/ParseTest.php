@@ -609,6 +609,21 @@ CODE;
     /**
      * @test
      */
+    public function it_throws_on_derivings_with_invalid_syntax_for_message_name_for_prooph_messages(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data DoSomething = DoSomething { string \$name, ?int \$age } deriving (Command:do-something);
+CODE;
+
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
+    }
+
+    /**
+     * @test
+     */
     public function it_parses_derivings_with_message_name_for_prooph_messages_incl_second_deriving(): void
     {
         $contents = <<<CODE
@@ -779,6 +794,22 @@ CODE;
 namespace Something;
 data Person = Person { string \$name, ?int \$age } where 
     | strlen(\$name) < 0 => Name too short;
+CODE;
+
+        parse($this->createDefaultFile($contents), $this->derivingsMap);
+    }
+
+    /**
+     * @test
+     */
+    public function it_detects_wrong_condition_syntax_3(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } where 
+    \ strlen(\$name) < 0 => Name too short;
 CODE;
 
         parse($this->createDefaultFile($contents), $this->derivingsMap);
