@@ -700,7 +700,7 @@ CODE;
     {
         $contents = <<<CODE
 namespace Something;
-data Person = Person { string \$name, ?int \$age } where 
+data Person = Person { string \$name, ?int \$age } where
     | strlen(\$name) < 0 => "Name too short";
 CODE;
 
@@ -723,7 +723,7 @@ CODE;
     {
         $contents = <<<CODE
 namespace Something;
-data Person = Person { string \$name, ?int \$age } where 
+data Person = Person { string \$name, ?int \$age } where
     | strlen(\$name) < 0 => 'Name too short';
 CODE;
 
@@ -745,7 +745,7 @@ CODE;
     {
         $contents = <<<CODE
 namespace Something;
-data Person = Person { string \$name, int \$age } where 
+data Person = Person { string \$name, int \$age } where
     | strlen(\$name) < 0 => "Name too short"
     | \$age < 18 => "Too young";
 CODE;
@@ -776,7 +776,7 @@ CODE;
 
         $contents = <<<CODE
 namespace Something;
-data Person = Person { string \$name, ?int \$age } where 
+data Person = Person { string \$name, ?int \$age } where
     strlen(\$name) < 0 => "Name too short";
 CODE;
 
@@ -792,7 +792,7 @@ CODE;
 
         $contents = <<<CODE
 namespace Something;
-data Person = Person { string \$name, ?int \$age } where 
+data Person = Person { string \$name, ?int \$age } where
     | strlen(\$name) < 0 => Name too short;
 CODE;
 
@@ -808,7 +808,7 @@ CODE;
 
         $contents = <<<CODE
 namespace Something;
-data Person = Person { string \$name, ?int \$age } where 
+data Person = Person { string \$name, ?int \$age } where
     \ strlen(\$name) < 0 => Name too short;
 CODE;
 
