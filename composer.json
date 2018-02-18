@@ -8,8 +8,7 @@
     }
   ],
   "require": {
-    "php": "^7.1",
-    "phunkie/phunkie": "^0.10.2"
+    "php": "^7.1"
   },
   "require-dev": {
     "mikey179/vfsStream": "^1.6.5",
