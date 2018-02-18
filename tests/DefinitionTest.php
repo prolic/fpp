@@ -167,8 +167,8 @@ class DefinitionTest extends TestCase
 
         new Definition(
             'Foo',
-            'Color',
-            [],
+            'UserId',
+            [new Constructor('UserId')],
             [new Deriving\Uuid(), new Deriving\Equals()]
         );
     }
@@ -182,8 +182,8 @@ class DefinitionTest extends TestCase
 
         new Definition(
             'Foo',
-            'Color',
-            [],
+            'UserId',
+            [new Constructor('UserId')],
             [new Deriving\Uuid(), new Deriving\ToString()]
         );
     }
@@ -197,8 +197,8 @@ class DefinitionTest extends TestCase
 
         new Definition(
             'Foo',
-            'Color',
-            [],
+            'UserId',
+            [new Constructor('UserId')],
             [new Deriving\Uuid(), new Deriving\FromString()]
         );
     }
