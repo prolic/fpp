@@ -10,11 +10,9 @@ use Fpp\DefinitionCollection;
 use Fpp\Deriving\FromString;
 use Fpp\Deriving\ToString;
 use PHPUnit\Framework\TestCase;
-use const Fpp\mapToBodyTemplates;
-use const Fpp\mapToClassTemplate;
 use const Fpp\replace;
 use function Fpp\dump;
-use function Fpp\loadTemplates;
+use const Fpp\loadTemplate;
 
 class DumpTest extends TestCase
 {
@@ -25,12 +23,8 @@ class DumpTest extends TestCase
 
     protected function setUp(): void
     {
-        $loadTemplates = function (DefinitionCollection $collection): array {
-            return loadTemplates($collection, mapToClassTemplate, mapToBodyTemplates);
-        };
-
-        $this->dump = function (DefinitionCollection $collection) use ($loadTemplates): string {
-            return dump($collection, $loadTemplates, replace);
+        $this->dump = function (DefinitionCollection $collection): string {
+            return dump($collection, loadTemplate, replace);
         };
     }
 

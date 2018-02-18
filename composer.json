@@ -25,7 +25,7 @@
       "src/parse.php",
       "src/replace.php",
       "src/scan.php",
-      "src/templates.php"
+      "src/loadTemplate.php"
     ]
   }
 }
