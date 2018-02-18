@@ -4,7 +4,10 @@
 
         {{properties}}
 
-        {{static_constructor}}
+        public static function with({{arguments}}): {{class_name}}
+        {
+            {{static_constructor_body}}
+        }
 
         {{accessors}}
 

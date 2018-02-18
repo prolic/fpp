@@ -3,10 +3,15 @@
          */
         protected $payload = [];
 
+        public static function with({{arguments}}): {{class_name}}
+        {
+            {{static_constructor_body}}
+        }
+
         /**
          * @return static
          */
-        public static function occur(string $aggregateId, array $payload = []): self
+        public static function occur(string $aggregateId, array $payload = []): {{class_name}}
         {
             return new static($aggregateId, $payload);
         }
@@ -43,7 +48,7 @@
             return $this->metadata['_aggregate_version'];
         }
 
-        public function withVersion(int $version): AggregateChanged
+        public function withVersion(int $version): {{class_name}}
         {
             $self = clone $this;
             $self->setVersion($version);
@@ -68,5 +73,6 @@
          */
         protected function setPayload(array $payload): void
         {
+            {{payload_validation}}
             $this->payload = $payload;
         }
