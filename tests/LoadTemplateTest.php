@@ -38,6 +38,40 @@ TEMPLATE;
     /**
      * @test
      */
+    public function it_loads_template_for_string_constructor(): void
+    {
+        $constructor = new Constructor('String');
+        $definition = new Definition('Foo', 'Bar', [$constructor]);
+
+        $template = loadTemplate($definition);
+
+        $expected = <<<TEMPLATE
+namespace {{namespace_name}} {
+    class {{class_name}}{{class_extends}}
+    {
+        private \$value;
+
+        public function __construct(string \$value)
+        {
+            \$this->value = \$value;
+        }
+
+        public function value(): string
+        {
+            return \$this->value;
+        }
+    }
+}
+
+TEMPLATE;
+
+
+        $this->assertSame($expected, $template);
+    }
+
+    /**
+     * @test
+     */
     public function it_loads_class_template_with_deriving_body_templates(): void
     {
         $constructor = new Constructor('Bar', [new Argument('name', 'string')]);
