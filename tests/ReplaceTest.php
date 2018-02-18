@@ -85,10 +85,10 @@ class ReplaceTest extends TestCase
                     new Argument('id', 'string'),
                     new Argument('name', 'string', true),
                     new Argument('email', 'string'),
-                ])
+                ]),
             ],
             [
-                new Deriving\AggregateChanged()
+                new Deriving\AggregateChanged(),
             ]
         );
 

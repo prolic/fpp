@@ -68,7 +68,7 @@ STRING;
                         }
                     }
                     if (! empty($payload)) {
-                        $staticConstructorBody = "return new self($aggregateId, [\n" . $payload . "            ]);";
+                        $staticConstructorBody = "return new self($aggregateId, [\n" . $payload . '            ]);';
                     }
                     $template = str_replace('{{arguments}}', substr($arguments, 0, -2), $template);
                     $template = str_replace('{{static_constructor_body}}', $staticConstructorBody, $template);

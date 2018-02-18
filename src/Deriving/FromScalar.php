@@ -37,7 +37,7 @@ class FromScalar implements FppDeriving
             if (isset($constructor->arguments()[0])) {
                 $argument = $constructor->arguments()[0];
 
-                if (!$argument->isScalartypeHint()) {
+                if (! $argument->isScalartypeHint()) {
                     return false;
                 }
 
