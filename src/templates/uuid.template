@@ -2,17 +2,17 @@
 
         public static function generate(): {{class_name}}
         {
-            return new self(Uuid::uuid4());
+            return new self(\Ramsey\Uuid\Uuid::uuid4());
         }
 
-        public static function fromString(string $value): {{class_name}}
+        public static function fromString(string ${{variable_name}}): {{class_name}}
         {
-            return new self(Uuid::fromString($value));
+            return new self(\Ramsey\Uuid\Uuid::fromString(${{variable_name}}));
         }
 
-        private function __construct(Uuid $value)
+        private function __construct(Uuid ${{variable_name}})
         {
-            $this->uuid = $value;
+            $this->uuid = ${{variable_name}};
         }
 
         public function toString(): string
