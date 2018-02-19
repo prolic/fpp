@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace FppTest\Helpers;
 
 use Fpp\Argument;
-use function Fpp\buildAccessors;
-use function Fpp\buildMessageName;
 use Fpp\Constructor;
 use Fpp\Definition;
-use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
+use function Fpp\buildMessageName;
 
 class BuildMessageNameTest extends TestCase
 {

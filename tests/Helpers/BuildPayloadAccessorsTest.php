@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace FppTest\Helpers;
 
 use Fpp\Argument;
-use function Fpp\buildEventAccessors;
-use function Fpp\buildPayloadAccessors;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use PHPUnit\Framework\TestCase;
+use function Fpp\buildPayloadAccessors;
 
 class BuildPayloadAccessorsTest extends TestCase
 {

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace FppTest\Helpers;
 
 use Fpp\Argument;
-use function Fpp\buildAccessors;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use PHPUnit\Framework\TestCase;
+use function Fpp\buildAccessors;
 
 class BuildAccessorsTest extends TestCase
 {

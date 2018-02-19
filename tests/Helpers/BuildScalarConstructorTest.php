@@ -6,7 +6,6 @@ namespace FppTest\Helpers;
 
 use Fpp\Constructor;
 use Fpp\Definition;
-use Fpp\DefinitionCollection;
 use PHPUnit\Framework\TestCase;
 use function Fpp\buildScalarConstructor;
 use function Fpp\buildScalarConstructorFromPayload;
