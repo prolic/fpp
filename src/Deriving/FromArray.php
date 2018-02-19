@@ -29,6 +29,10 @@ class FromArray implements FppDeriving
      */
     public function fulfillsConstructorRequirements(array $constructors): bool
     {
+        if (count($constructors) > 1) {
+            return false;
+        }
+
         foreach ($constructors as $constructor) {
             if (2 > count($constructor->arguments())) {
                 return false;

@@ -29,12 +29,6 @@ class Equals implements FppDeriving
      */
     public function fulfillsConstructorRequirements(array $constructors): bool
     {
-        foreach ($constructors as $constructor) {
-            if (0 === count($constructor->arguments())) {
-                return false;
-            }
-        }
-
         return true;
     }
 

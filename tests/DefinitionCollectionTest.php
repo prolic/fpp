@@ -38,6 +38,27 @@ class DefinitionCollectionTest extends TestCase
     /**
      * @test
      */
+    public function it_adds_definitions_on_constructor(): void
+    {
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
+        $derivings = [new Equals()];
+        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
+
+        $collection = new DefinitionCollection($definition);
+
+        $this->assertCount(1, $collection->definitions());
+
+        $this->assertTrue($collection->hasDefinition('Foo\Bar', 'Person'));
+        $this->assertSame($definition, $collection->definition('Foo\Bar', 'Person'));
+        $this->assertNull($collection->definition('Foo\Bar', 'Unknown'));
+    }
+
+    /**
+     * @test
+     */
     public function it_forbids_duplicate_definitions(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -105,5 +126,33 @@ class DefinitionCollectionTest extends TestCase
         $collection2->addDefinition($definition);
 
         $collection->merge($collection2);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_constructor_definition(): void
+    {
+        $constructor1 = new Constructor('Foo\Bar\Person', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
+
+        $constructor2 = new Constructor('Foo\Bar\Boss', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
+
+        $derivings = [new Equals()];
+        $definition = new Definition('Foo\Bar', 'Person', [$constructor1, $constructor2], $derivings);
+
+        $collection = new DefinitionCollection();
+        $collection->addDefinition($definition);
+
+        $this->assertTrue($collection->hasConstructorDefinition('Foo\Bar\Boss'));
+
+        $definition2 = $collection->constructorDefinition('Foo\Bar\Boss');
+
+        $this->assertSame($definition, $definition2);
     }
 }

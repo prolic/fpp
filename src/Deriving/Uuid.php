@@ -41,10 +41,6 @@ class Uuid implements FppDeriving
 
         $constructor = $constructors[0];
 
-        if (1 !== count($constructor->arguments())) {
-            return false;
-        }
-
         if (0 !== count($constructor->arguments())) {
             return false;
         }

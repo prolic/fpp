@@ -3,6 +3,8 @@
          */
         protected $payload = [];
 
+        {{properties}}
+
         public static function with({{arguments}}): {{class_name}}
         {
             {{static_constructor_body}}
@@ -15,6 +17,8 @@
         {
             return new static($aggregateId, $payload);
         }
+
+        {{accessors}}
 
         protected function __construct(string $aggregateId, array $payload, array $metadata = [])
         {

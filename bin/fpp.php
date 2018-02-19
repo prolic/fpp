@@ -41,7 +41,11 @@ foreach (scan($path) as $file) {
     $collection = $collection->merge(parse($file, $derivingsMap));
 }
 
-file_put_contents($output, dump($collection, loadTemplate, replace));
+$replace = function (Definition $definition, string $template) use ($collection) {
+    return replace($definition, $template, $collection);
+};
+
+file_put_contents($output, dump($collection, loadTemplate, $replace));
 
 echo "Successfully generated to and written to '$output'\n";
 exit(0);

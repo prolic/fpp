@@ -19,7 +19,7 @@ declare(strict_types=1);
 CODE;
 
     foreach ($collection->definitions() as $definition) {
-        $code .= $replace($definition, $loadTemplate($definition));
+        $code .= $replace($definition, $loadTemplate($definition), $collection);
     }
 
     return $code;

@@ -193,6 +193,10 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                                 }
                             }
 
+                            if (substr($type, 0, 1) === '\\') {
+                                $type = substr($type, 1);
+                            }
+
                             $token = $nextToken();
                             $requireWhitespace($token);
                             $token = $nextToken();

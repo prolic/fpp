@@ -29,6 +29,10 @@ class FromString implements FppDeriving
      */
     public function fulfillsConstructorRequirements(array $constructors): bool
     {
+        if (count($constructors) > 1) {
+            return false;
+        }
+
         foreach ($constructors as $constructor) {
             if (count($constructor->arguments()) > 1) {
                 return false;

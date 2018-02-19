@@ -7,6 +7,7 @@ namespace FppTest;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\replace;
@@ -18,10 +19,10 @@ class ReplaceTest extends TestCase
      */
     public function it_replaces_default_values(): void
     {
-        $definiton = new Definition('Foo', 'Bar', [new Constructor('Bar')]);
+        $definition = new Definition('Foo', 'Bar', [new Constructor('Bar')]);
         $template = '{{namespace_name}} {{class_name}} ${{variable_name}}';
 
-        $this->assertSame('Foo Bar $bar', replace($definiton, $template));
+        $this->assertSame('Foo Bar $bar', replace($definition, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -29,10 +30,10 @@ class ReplaceTest extends TestCase
      */
     public function it_replaces_to_string_body_for_string_constructor(): void
     {
-        $definiton = new Definition('Foo', 'Bar', [new Constructor('String')]);
+        $definition = new Definition('Foo', 'Bar', [new Constructor('String')]);
         $template = '{{to_string_body}}';
 
-        $this->assertSame('return $this->value;', replace($definiton, $template));
+        $this->assertSame('return $this->value;', replace($definition, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -40,12 +41,12 @@ class ReplaceTest extends TestCase
      */
     public function it_replaces_to_string_body_for_constructor_with_string_argument(): void
     {
-        $definiton = new Definition('Foo', 'Bar', [new Constructor('Bar', [
+        $definition = new Definition('Foo', 'Bar', [new Constructor('Bar', [
             new Argument('name', 'string'),
         ])]);
         $template = '{{to_string_body}}';
 
-        $this->assertSame('return $this->value;', replace($definiton, $template));
+        $this->assertSame('return $this->value;', replace($definition, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -53,12 +54,12 @@ class ReplaceTest extends TestCase
      */
     public function it_replaces_to_string_body_for_constructor_with_object_argument(): void
     {
-        $definiton = new Definition('Foo', 'Bar', [new Constructor('Baz', [
+        $definition = new Definition('Foo', 'Bar', [new Constructor('Baz', [
             new Argument('name', 'Baz', false),
         ])]);
         $template = '{{to_string_body}}';
 
-        $this->assertSame('return $this->value->toString();', replace($definiton, $template));
+        $this->assertSame('return $this->value->toString();', replace($definition, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -66,25 +67,49 @@ class ReplaceTest extends TestCase
      */
     public function it_add_abstract_keyword_for_enum_base_class(): void
     {
-        $definiton = new Definition('Foo', 'Color', [new Constructor('Red'), new Constructor('Blue')], [new Deriving\Enum()]);
+        $definition = new Definition('Foo', 'Color', [new Constructor('Red'), new Constructor('Blue')], [new Deriving\Enum()]);
         $template = '{{abstract_final}}class Color';
 
-        $this->assertSame('abstract class Color', replace($definiton, $template));
+        $this->assertSame('abstract class Color', replace($definition, $template, new DefinitionCollection($definition)));
     }
 
     /**
      * @test
+     * @group by
      */
     public function it_replaces_aggregate_changed(): void
     {
+        $userId = new Definition(
+            'My',
+            'UserId',
+            [
+                new Constructor('UserId'),
+            ],
+            [
+                new Deriving\Uuid(),
+            ]
+        );
+
+        $email = new Definition(
+            'Some',
+            'Email',
+            [
+                new Constructor('String'),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
         $definition = new Definition(
             'My',
             'UserRegistered',
             [
                 new Constructor('UserRegistered', [
-                    new Argument('id', 'string'),
+                    new Argument('id', 'My\UserId'),
                     new Argument('name', 'string', true),
-                    new Argument('email', 'string'),
+                    new Argument('email', 'Some\Email'),
                 ]),
             ],
             [
@@ -93,18 +118,28 @@ class ReplaceTest extends TestCase
         );
 
         $template = <<<TEMPLATE
-{{abstract_final}} {{class_extends}} {{message_name}} {{arguments}} {{class_name}}
+{{abstract_final}}
+{{class_extends}}
+{{message_name}}
+{{arguments}}
+{{class_name}}
 {{static_constructor_body}}
-            {{payload_validation}}
+{{payload_validation}}
+{{properties}}
+{{accessors}}
 TEMPLATE;
 
         $expected = <<<EXPECTED
-  extends \Prooph\Common\Messaging\DomainEvent My\UserRegistered string \$id, ?string \$name, string \$email UserRegistered
+
+ extends \Prooph\Common\Messaging\DomainEvent
+My\UserRegistered
+string \$id, ?string \$name, string \$email
+UserRegistered
 return new self(\$id, [
                 'name' => \$name,
                 'email' => \$email,
             ]);
-            if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
+if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
                 throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
             }
 
@@ -116,8 +151,13 @@ return new self(\$id, [
                 throw new \InvalidArgumentException("Value for 'email' is not a string in payload");
             }
 
-EXPECTED;
+private \$id;
+        private \$name;
+        private \$email;
 
-        $this->assertSame($expected, replace($definition, $template));
+{{accessors}}
+EXPECTED;
+        //var_dump($expected, replace($definition, $template, new DefinitionCollection($definition))); die;
+        $this->assertSame($expected, replace($definition, $template, new DefinitionCollection($definition, $userId, $email)));
     }
 }

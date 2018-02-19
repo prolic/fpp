@@ -6,7 +6,7 @@ namespace Fpp;
 
 const replace = '\Fpp\replace';
 
-function replace(Definition $definition, string $template): string
+function replace(Definition $definition, string $template, DefinitionCollection $collection): string
 {
     $template = str_replace('{{namespace_name}}', $definition->namespace(), $template);
     $template = str_replace('{{class_name}}', $definition->name(), $template);
@@ -19,10 +19,14 @@ function replace(Definition $definition, string $template): string
                 break;
             case Deriving\AggregateChanged::VALUE:
                     $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
+                    $template = str_replace('{{properties}}', buildProperties($definition->constructors()[0]), $template);
+                    $template = str_replace('{{properties}}', buildEventAccessors($definition, $collection), $template);
+
                     $messageName = $definition->messageName();
                     if (null === $messageName) {
                         $messageName = $definition->namespace() . '\\' . $definition->name();
                     }
+
                     $template = str_replace('{{message_name}}', $messageName, $template);
                     $arguments = '';
                     $staticConstructorBody = '';
@@ -72,7 +76,7 @@ STRING;
                     }
                     $template = str_replace('{{arguments}}', substr($arguments, 0, -2), $template);
                     $template = str_replace('{{static_constructor_body}}', $staticConstructorBody, $template);
-                    $template = str_replace('            {{payload_validation}}', substr($payloadValidation, 1), $template);
+                    $template = str_replace('{{payload_validation}}', ltrim(substr($payloadValidation, 1)), $template);
                 break;
         }
     }

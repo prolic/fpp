@@ -186,13 +186,13 @@ class Definition
         $namespace = '';
 
         if ('' !== $this->namespace) {
-            $namespace = "(namespace $namespace)";
+            $namespace = "$this->namespace\\";
         }
 
         return new \InvalidArgumentException(sprintf(
-            'Error on %s %s: %s',
-            $this->name,
+            'Error on %s%s: %s',
             $namespace,
+            $this->name,
             $message
         ));
     }
