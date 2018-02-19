@@ -27,7 +27,7 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_required_defintion_name(): void
+    public function it_requires_defintion_name(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -101,127 +101,21 @@ class DefinitionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Definition('Foo', 'Person', [], [], [], 'invalid');
-    }
+        $constructor = new Constructor('Person', [new Argument('name', 'string', false)]);
 
-    /**
-     * @test
-     * @group by
-     */
-    public function it_forbids_to_scalar_deriving_for_more_then_one_argument_on_data_type(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $constructor = new Constructor('Person', [
-            new Argument('name', 'string', false),
-            new Argument('age', 'int', false),
-        ]);
-
-        new Definition(
-            'Foo',
-            'Person',
-            [$constructor],
-            [new Deriving\ToScalar()]
-        );
+        new Definition('Foo', 'Person', [$constructor], [], [], 'invalid');
     }
 
     /**
      * @test
      */
-    public function it_forbids_enum_deriving_equals(): void
+    public function it_forbids_empty_string_message_name_for_prooph_message_deriving(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $constructor = new Constructor('Blue');
+        $constructor = new Constructor('Person', [new Argument('name', 'string', false)]);
 
-        new Definition(
-            'Foo',
-            'Color',
-            [$constructor],
-            [new Deriving\Enum(), new Deriving\Equals()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_enum_deriving_to_string(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $constructor = new Constructor('Blue');
-
-        new Definition(
-            'Foo',
-            'Color',
-            [$constructor],
-            [new Deriving\Enum(), new Deriving\ToString()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_uuid_deriving_equals(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            'Foo',
-            'UserId',
-            [new Constructor('UserId')],
-            [new Deriving\Uuid(), new Deriving\Equals()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_uuid_deriving_to_string(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            'Foo',
-            'UserId',
-            [new Constructor('UserId')],
-            [new Deriving\Uuid(), new Deriving\ToString()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_uuid_deriving_from_string(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            'Foo',
-            'UserId',
-            [new Constructor('UserId')],
-            [new Deriving\Uuid(), new Deriving\FromString()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_string_converter_deriving_for_more_then_one_argument_on_data_type(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $constructor = new Constructor('Person', [
-            new Argument('name', 'string', false),
-            new Argument('age', 'int', false),
-        ]);
-
-        new Definition(
-            'Foo',
-            'Person',
-            [$constructor],
-            [new Deriving\ToString()]
-        );
+        new Definition('Foo', 'Person', [$constructor], [new Deriving\Command()], [], '');
     }
 
     /**
@@ -235,57 +129,6 @@ class DefinitionTest extends TestCase
             'Foo',
             'Person',
             ['invalid']
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_requires_at_least_one_enum_type_implementation(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            'Foo',
-            'Color',
-            [],
-            [new Deriving\Enum()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_arguments_for_uuid_type(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $constructor = new Constructor('Person', [
-            new Argument('name', 'string', false),
-        ]);
-
-        new Definition(
-            'Foo',
-            'PersonId',
-            [$constructor],
-            [new Deriving\Uuid()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_empty_message_name_string_for_prooph_message_types(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            'Foo',
-            'RegisterPerson',
-            [],
-            [new Deriving\Command()],
-            [],
-            ''
         );
     }
 
@@ -388,99 +231,77 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_forbids_constructor_arguments_for_enums(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $constructor1 = new Constructor('Blue', [
-            new Argument('name', 'string', false),
-        ]);
-
-        $constructor2 = new Constructor('Red', [
-            new Argument('name', 'string', false),
-        ]);
-
-        new Definition(
-            'Foo',
-            'Color',
-            [$constructor1, $constructor2],
-            [new Deriving\Enum()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_to_array_deriving_without_any_constructors(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            'Foo',
-            'Color',
-            [],
-            [new Deriving\ToArray()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_to_string_deriving_without_any_constructors(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            'Foo',
-            'Color',
-            [],
-            [new Deriving\ToString()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_uuid_deriving_with_many_constructors(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $constructor1 = new Constructor('Blue');
-        $constructor2 = new Constructor('Red');
-
-        new Definition(
-            'Foo',
-            'Color',
-            [$constructor1, $constructor2],
-            [new Deriving\Uuid()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_allow_enums_defintions_without_constructor_arguments(): void
-    {
-        $constructor1 = new Constructor('Blue');
-        $constructor2 = new Constructor('Red');
-
-        $definition = new Definition(
-            'Foo',
-            'Color',
-            [$constructor1, $constructor2],
-            [new Deriving\Enum()]
-        );
-
-        $this->assertSame(Deriving\Enum::VALUE, $definition->derivings()[0]->__toString());
-    }
-
-    /**
-     * @test
-     */
     public function it_requires_at_least_one_constructor(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         new Definition('Foo', 'Person');
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_deriving_requirements(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $deriving1 = new Deriving\Command();
+        $deriving2 = new Deriving\ToArray();
+
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+        ]);
+
+        new Definition(
+            'Foo',
+            'Person',
+            [$constructor],
+            [$deriving1, $deriving2],
+            []
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_deriving_requirements_2(): void
+    {
+        $deriving1 = new Deriving\FromString();
+        $deriving2 = new Deriving\ToString();
+
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+        ]);
+
+        $definition = new Definition(
+            'Foo',
+            'Person',
+            [$constructor],
+            [$deriving1, $deriving2],
+            []
+        );
+
+        $this->assertCount(2, $definition->derivings());
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_constructor_requirements(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $constructor = new Constructor('Person', [
+            new Argument('firstName', 'string', false),
+            new Argument('lastName', 'string', false),
+        ]);
+
+        new Definition(
+            'Foo',
+            'Person',
+            [$constructor],
+            [new Deriving\ToString()],
+            []
+        );
     }
 }

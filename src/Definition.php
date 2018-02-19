@@ -54,7 +54,12 @@ class Definition
     ) {
         $this->namespace = $namespace;
         $this->name = $name;
-        $allowMessageName = (null === $this->messageName);
+
+        $allowMessageName = false;
+
+        if (empty($name)) {
+            throw new \InvalidArgumentException('Name cannot be empty string');
+        }
 
         if (empty($constructors)) {
             throw new \InvalidArgumentException('At least one constructor required');
@@ -87,11 +92,7 @@ class Definition
                 throw $this->unfulfilledConstructorRequirements();
             }
 
-            foreach ($derivings as $deriving2) {
-                if (in_array((string) $deriving2, $deriving->forbidsDerivings(), true)) {
-                    throw $this->checkForbiddenDerivings($deriving, $derivings);
-                }
-            }
+            $this->checkForbiddenDerivings($deriving, $derivings);
 
             if (in_array((string) $deriving, [
                 Deriving\AggregateChanged::VALUE,
@@ -112,16 +113,12 @@ class Definition
 
         $this->messageName = $messageName;
 
-        if (empty($name)) {
-            throw new \InvalidArgumentException('Name cannot be empty string');
+        if (! $allowMessageName && ! empty($messageName)) {
+            throw $this->invalid('Message name is only allowed for AggregateChanged, Command, DomainEvent or Query');
         }
 
         if ('' === $messageName) {
             throw $this->invalid('Message name cannot be empty string');
-        }
-
-        if (! $allowMessageName) {
-            throw $this->invalid('Message name is only allowed for AggregateChanged, Command, DomainEvent or Query');
         }
     }
 
@@ -175,7 +172,7 @@ class Definition
         return $this->invalid('Does not fulfill constructor requirements');
     }
 
-    private function checkForbiddenDerivings(Deriving $deriving, array $givenDerivings): \InvalidArgumentException
+    private function checkForbiddenDerivings(Deriving $deriving, array $givenDerivings): void
     {
         foreach ($givenDerivings as $givenDeriving) {
             if (in_array((string) $givenDeriving, $deriving->forbidsDerivings(), true)) {
