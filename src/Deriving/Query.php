@@ -22,7 +22,6 @@ class Query implements FppDeriving
             FromArray::VALUE,
             FromScalar::VALUE,
             FromString::VALUE,
-            Query::VALUE,
             ToArray::VALUE,
             ToScalar::VALUE,
             ToString::VALUE,

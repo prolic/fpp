@@ -21,13 +21,7 @@ function replace(Definition $definition, string $template, DefinitionCollection 
                     $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
                     $template = str_replace('{{properties}}', buildProperties($definition->constructors()[0]), $template);
                     $template = str_replace('{{properties}}', buildEventAccessors($definition, $collection), $template);
-
-                    $messageName = $definition->messageName();
-                    if (null === $messageName) {
-                        $messageName = $definition->namespace() . '\\' . $definition->name();
-                    }
-
-                    $template = str_replace('{{message_name}}', $messageName, $template);
+                    $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                     $arguments = '';
                     $staticConstructorBody = '';
                     $payload = '';

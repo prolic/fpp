@@ -135,9 +135,9 @@ TEMPLATE;
 My\UserRegistered
 string \$id, ?string \$name, string \$email
 UserRegistered
-return new self(\$id, [
+return new self(\$id->toString(), [
                 'name' => \$name,
-                'email' => \$email,
+                'email' => \$email->toString(),
             ]);
 if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
                 throw new \InvalidArgumentException("Value for 'name' is not a string in payload");

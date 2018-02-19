@@ -235,3 +235,14 @@ CODE;
 
     return ltrim(substr($accessors, 0, -1));
 }
+
+function buildMessageName(Definition $definition): string
+{
+    $messageName = $definition->messageName();
+
+    if (null === $messageName) {
+        $messageName = $definition->namespace() . '\\' . $definition->name();
+    }
+
+    return $messageName;
+}
