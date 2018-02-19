@@ -22,6 +22,7 @@ function replace(Definition $definition, string $template, DefinitionCollection 
                     $template = str_replace('{{properties}}', buildProperties($definition->constructors()[0]), $template);
                     $template = str_replace('{{properties}}', buildEventAccessors($definition, $collection), $template);
                     $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
+                    $template = str_replace('{{accessors}}', buildEventAccessors($definition, $collection), $template);
                     $arguments = '';
                     $staticConstructorBody = '';
                     $payload = '';

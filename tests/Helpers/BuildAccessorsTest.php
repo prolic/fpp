@@ -28,19 +28,19 @@ class BuildAccessorsTest extends TestCase
 
         $expected = <<<STRING
 public function name(): string
-            {
-                return \$this->name;
-            }
+        {
+            return \$this->name;
+        }
 
-            public function age(): ?int
-            {
-                return \$this->age;
-            }
+        public function age(): ?int
+        {
+            return \$this->age;
+        }
 
-            public function whatever()
-            {
-                return \$this->whatever;
-            }
+        public function whatever()
+        {
+            return \$this->whatever;
+        }
 
 STRING;
 

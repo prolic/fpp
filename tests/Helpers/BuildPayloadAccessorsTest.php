@@ -29,19 +29,19 @@ class BuildPayloadAccessorsTest extends TestCase
 
         $expected = <<<STRING
 public function name(): string
-            {
-                return \$this->payload['name'];
-            }
+        {
+            return \$this->payload['name'];
+        }
 
-            public function age(): ?int
-            {
-                return isset(\$this->payload['age']) ? \$this->payload['age'] : null;
-            }
+        public function age(): ?int
+        {
+            return isset(\$this->payload['age']) ? \$this->payload['age'] : null;
+        }
 
-            public function whatever()
-            {
-                return \$this->payload['whatever'];
-            }
+        public function whatever()
+        {
+            return \$this->payload['whatever'];
+        }
 
 STRING;
 

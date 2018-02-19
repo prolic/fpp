@@ -28,31 +28,31 @@ class BuildEventAccessorsTest extends TestCase
 
         $expected = <<<STRING
 public function name(): string
-            {
-                if (! isset(\$this->name)) {
-                    \$this->name = \$this->payload['name'];
-                }
-
-                return \$this->name;
+        {
+            if (! isset(\$this->name)) {
+                \$this->name = \$this->payload['name'];
             }
 
-            public function age(): ?int
-            {
-                if (! isset(\$this->age) && isset(\$this->payload['age'])) {
-                    \$this->age = \$this->payload['age'];
-                }
+            return \$this->name;
+        }
 
-                return \$this->age;
+        public function age(): ?int
+        {
+            if (! isset(\$this->age) && isset(\$this->payload['age'])) {
+                \$this->age = \$this->payload['age'];
             }
 
-            public function whatever()
-            {
-                if (! isset(\$this->whatever)) {
-                    \$this->whatever = \$this->payload['whatever'];
-                }
+            return \$this->age;
+        }
 
-                return \$this->whatever;
+        public function whatever()
+        {
+            if (! isset(\$this->whatever)) {
+                \$this->whatever = \$this->payload['whatever'];
             }
+
+            return \$this->whatever;
+        }
 
 STRING;
 
