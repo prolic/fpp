@@ -349,7 +349,7 @@ function buildStaticConstructorBodyConvertingToPayload(
         $code .= $addArgument($key, $argument->name(), "\${$argument->name()}");
     }
 
-    return $start . ltrim($code) . "            ]);";
+    return $start . ltrim($code) . '            ]);';
 }
 
 function buildPayloadValidation(
