@@ -37,8 +37,13 @@ $derivingsMap = [
 
 $collection = new DefinitionCollection();
 
-foreach (scan($path) as $file) {
-    $collection = $collection->merge(parse($file, $derivingsMap));
+try {
+    foreach (scan($path) as $file) {
+        $collection = $collection->merge(parse($file, $derivingsMap));
+    }
+} catch (ParseError $e) {
+    echo $e;
+    exit(1);
 }
 
 $replace = function (Definition $definition, string $template) use ($collection) {
