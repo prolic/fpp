@@ -139,13 +139,8 @@ return new self(\$id->toString(), [
                 'name' => \$name,
                 'email' => \$email->toString(),
             ]);
-
 if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
                 throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
-            }
-
-            if (! isset(\$payload['name'])) {
-                throw new \InvalidArgumentException("Key 'name' is missing in payload");
             }
 
             if (! isset(\$payload['email']) || ! is_string(\$payload['email'])) {

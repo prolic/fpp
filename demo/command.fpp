@@ -1,3 +1,3 @@
 namespace Model\Foo\Command;
 
-command RegisterUser : register-user = {string $name, string $email}
+data RegisterUser = RegisterUser {string $name, string $email} deriving (Command:"register-user");

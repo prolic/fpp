@@ -25,8 +25,18 @@ function replace(Definition $definition, string $template, DefinitionCollection 
                     $template = str_replace('{{properties}}', buildProperties($constructor), $template);
                     $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                     $template = str_replace('{{accessors}}', buildEventAccessors($definition, $collection), $template);
-                    $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection), $template);
-                    $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection), $template);
+                    $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, false), $template);
+                    $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, false), $template);
+                break;
+            case Deriving\Command::VALUE:
+                // command has always exactly one constructor
+                $constructor = $definition->constructors()[0];
+                $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Command', $template);
+                $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
+                $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
+                $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
+                $template = str_replace('{{accessors}}', buildPayloadAccessors($definition, $collection), $template);
+                $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
         }
     }

@@ -286,13 +286,19 @@ function buildArgumentList(Constructor $constructor, Definition $definition): st
     return substr($argumentList, 0, -2);
 }
 
-function buildStaticConstructorBodyConvertingToPayload(Constructor $constructor, DefinitionCollection $collection): string
-{
+function buildStaticConstructorBodyConvertingToPayload(
+    Constructor $constructor,
+    DefinitionCollection $collection,
+    bool $inclFirstArgument
+): string {
     $start = 'return new self(';
+    if ($inclFirstArgument) {
+        $start .= "[\n                ";
+    }
     $code = '';
 
-    $addArgument = function (int $key, string $name, string $value): string {
-        if (0 === $key) {
+    $addArgument = function (int $key, string $name, string $value) use ($inclFirstArgument): string {
+        if (false === $inclFirstArgument && 0 === $key) {
             return "$value, [\n";
         }
 
@@ -343,14 +349,17 @@ function buildStaticConstructorBodyConvertingToPayload(Constructor $constructor,
         $code .= $addArgument($key, $argument->name(), "\${$argument->name()}");
     }
 
-    return $start . ltrim($code) . "            ]);\n";
+    return $start . ltrim($code) . "            ]);";
 }
 
-function buildPayloadValidation(Constructor $constructor, DefinitionCollection $collection): string
-{
+function buildPayloadValidation(
+    Constructor $constructor,
+    DefinitionCollection $collection,
+    bool $inclFirstArgument
+): string {
     $code = '';
     foreach ($constructor->arguments() as $key => $argument) {
-        if (0 === $key) {
+        if (false === $inclFirstArgument && 0 === $key) {
             // ignore first argument, it's the aggregate id
             continue;
         }
@@ -362,7 +371,10 @@ function buildPayloadValidation(Constructor $constructor, DefinitionCollection $
 
 
 CODE;
-        } elseif ($argument->isScalartypeHint() && ! $argument->nullable()) {
+            continue;
+        }
+
+        if ($argument->isScalartypeHint() && ! $argument->nullable()) {
             $code .= <<<CODE
             if (! isset(\$payload['{$argument->name()}']) || ! is_{$argument->type()}(\$payload['{$argument->name()}'])) {
                 throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a {$argument->type()}");
@@ -370,7 +382,10 @@ CODE;
 
 
 CODE;
-        } elseif ($argument->isScalartypeHint() && $argument->nullable()) {
+            continue;
+        }
+
+        if ($argument->isScalartypeHint() && $argument->nullable()) {
             $code .= <<<CODE
             if (isset(\$payload['{$argument->name()}']) && ! is_{$argument->type()}(\$payload['{$argument->name()}'])) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$argument->type()} in payload");
@@ -378,6 +393,7 @@ CODE;
 
 
 CODE;
+            continue;
         }
 
         $position = strrpos($argument->type(), '\\');
