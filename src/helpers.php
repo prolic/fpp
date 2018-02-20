@@ -378,7 +378,6 @@ CODE;
 
 
 CODE;
-
         }
 
         $position = strrpos($argument->type(), '\\');

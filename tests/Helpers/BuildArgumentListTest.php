@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace FppTest\Helpers;
 
 use Fpp\Argument;
-use function Fpp\buildArgumentList;
 use Fpp\Constructor;
 use Fpp\Definition;
 use PHPUnit\Framework\TestCase;
+use function Fpp\buildArgumentList;
 
 class BuildArgumentListTest extends TestCase
 {

@@ -6,13 +6,12 @@ declare(strict_types=1);
 namespace FppTest\Helpers;
 
 use Fpp\Argument;
-use function Fpp\buildPayloadValidation;
-use function Fpp\buildStaticConstructorBodyConvertingToPayload;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
+use function Fpp\buildPayloadValidation;
 
 class BuildPayloadValidationTest extends TestCase
 {
