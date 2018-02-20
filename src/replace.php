@@ -49,6 +49,11 @@ function replace(Definition $definition, string $template, DefinitionCollection 
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
+            case Deriving\Equals::VALUE:
+                // @todo only one constructor for now
+                $constructor = $definition->constructors()[0];
+                $template = str_replace('{{equals_body}}', buildEqualsBody($constructor, lcfirst($definition->name()), $collection), $template);
+                break;
         }
     }
 
