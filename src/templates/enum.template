@@ -34,6 +34,11 @@
             return get_class($this) === get_class($other);
         }
 
+        public function toString(): string
+        {
+            return static::VALUE;
+        }
+
         public function __toString(): string
         {
             return static::VALUE;

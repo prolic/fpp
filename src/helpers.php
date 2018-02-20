@@ -246,3 +246,208 @@ function buildMessageName(Definition $definition): string
 
     return $messageName;
 }
+
+function buildArgumentList(Constructor $constructor, Definition $definition): string
+{
+    $argumentList = '';
+
+    foreach ($constructor->arguments() as $argument) {
+        if (null === $argument->type()) {
+            $argumentList .= '$' . $argument->name() . ', ';
+            continue;
+        }
+
+        if ($argument->nullable()) {
+            $argumentList .= '?';
+        }
+
+        if ($argument->isScalartypeHint()) {
+            $argumentList .= $argument->type() . ' $' . $argument->name() . ', ';
+            continue;
+        }
+
+        $nsPosition = strrpos($argument->type(), '\\');
+
+        if (false !== $nsPosition) {
+            $namespace = substr($argument->type(), 0, $nsPosition);
+            $name = substr($argument->type(), $nsPosition + 1);
+        } else {
+            $namespace = '';
+            $name = $argument->type();
+        }
+
+        $type = $namespace === $definition->namespace()
+            ? $name
+            : '\\' . $argument->type();
+
+        $argumentList .= $type . ' $' . $argument->name() . ', ';
+    }
+
+    return substr($argumentList, 0, -2);
+}
+
+function buildStaticConstructorBodyConvertingToPayload(Constructor $constructor, DefinitionCollection $collection): string
+{
+    $start = 'return new self(';
+    $code = '';
+
+    $addArgument = function (int $key, string $name, string $value): string {
+        if (0 === $key) {
+            return "$value, [\n";
+        }
+
+        return "                '{$name}' => {$value},\n";
+    };
+
+    foreach ($constructor->arguments() as $key => $argument) {
+        if ($argument->isScalartypeHint() || null === $argument->type()) {
+            $code .= $addArgument($key, $argument->name(), "\${$argument->name()}");
+            continue;
+        }
+
+        $position = strrpos($argument->type(), '\\');
+
+        if (false !== $position) {
+            $namespace = substr($argument->type(), 0, $position);
+            $name = substr($argument->type(), $position + 1);
+        } else {
+            $namespace = '';
+            $name = $argument->type();
+        }
+
+        if ($collection->hasDefinition($namespace, $name)) {
+            $definition = $collection->definition($namespace, $name);
+        } elseif ($collection->hasConstructorDefinition($argument->type())) {
+            $definition = $collection->constructorDefinition($argument->type());
+        } else {
+            $code .= $addArgument($key, $argument->name(), "\${$argument->name()}");
+            continue;
+        }
+
+        foreach ($definition->derivings() as $deriving) {
+            switch ((string) $deriving) {
+                case Deriving\ToArray::VALUE:
+                    $code .= $addArgument($key, $argument->name(), "\${$argument->name()}->toArray()");
+                    continue 3;
+                case Deriving\ToScalar::VALUE:
+                    $code .= $addArgument($key, $argument->name(), "\${$argument->name()}->toScalar()");
+                    continue 3;
+                case Deriving\Enum::VALUE:
+                case Deriving\ToString::VALUE:
+                case Deriving\Uuid::VALUE:
+                $code .= $addArgument($key, $argument->name(), "\${$argument->name()}->toString()");
+                    continue 3;
+            }
+        }
+
+        $code .= $addArgument($key, $argument->name(), "\${$argument->name()}");
+    }
+
+    return $start . ltrim($code) . "            ]);\n";
+}
+
+function buildPayloadValidation(Constructor $constructor, DefinitionCollection $collection): string
+{
+    $code = '';
+    foreach ($constructor->arguments() as $key => $argument) {
+        if (0 === $key) {
+            // ignore first argument, it's the aggregate id
+            continue;
+        }
+        if (null === $argument->type()) {
+            $code .= <<<CODE
+            if (! isset(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload");
+            }
+
+
+CODE;
+        } elseif ($argument->isScalartypeHint() && ! $argument->nullable()) {
+            $code .= <<<CODE
+            if (! isset(\$payload['{$argument->name()}']) || ! is_{$argument->type()}(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a {$argument->type()}");
+            }
+
+
+CODE;
+        } elseif ($argument->isScalartypeHint() && $argument->nullable()) {
+            $code .= <<<CODE
+            if (isset(\$payload['{$argument->name()}']) && ! is_{$argument->type()}(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$argument->type()} in payload");
+            }
+
+
+CODE;
+
+        }
+
+        $position = strrpos($argument->type(), '\\');
+
+        if (false !== $position) {
+            $namespace = substr($argument->type(), 0, $position);
+            $name = substr($argument->type(), $position + 1);
+        } else {
+            $namespace = '';
+            $name = $argument->type();
+        }
+
+        if ($collection->hasDefinition($namespace, $name)) {
+            $definition = $collection->definition($namespace, $name);
+        } elseif ($collection->hasConstructorDefinition($argument->type())) {
+            $definition = $collection->constructorDefinition($argument->type());
+        } else {
+            $code .= <<<CODE
+            if (! isset(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload");
+            }
+
+
+CODE;
+            continue;
+        }
+
+        foreach ($definition->derivings() as $deriving) {
+            switch ((string) $deriving) {
+                case Deriving\ToArray::VALUE:
+                    $code .= <<<CODE
+            if (! isset(\$payload['{$argument->name()}']) || ! is_array(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not an array");
+            }
+
+
+CODE;
+                    continue 3;
+                case Deriving\ToScalar::VALUE:
+                    $code .= <<<CODE
+            if (! isset(\$payload['{$argument->name()}']) || ! is_{$argument->type()}(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a {$argument->type()}");
+            }
+
+
+CODE;
+                    continue 3;
+                case Deriving\Enum::VALUE:
+                case Deriving\ToString::VALUE:
+                case Deriving\Uuid::VALUE:
+                $code .= <<<CODE
+            if (! isset(\$payload['{$argument->name()}']) || ! is_string(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a string");
+            }
+
+
+CODE;
+                    continue 3;
+            }
+        }
+
+        $code .= <<<CODE
+            if (! isset(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload");
+            }
+
+
+CODE;
+    }
+
+    return substr($code, 12, -1);
+}

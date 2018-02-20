@@ -133,31 +133,58 @@ TEMPLATE;
 
  extends \Prooph\Common\Messaging\DomainEvent
 My\UserRegistered
-string \$id, ?string \$name, string \$email
+UserId \$id, ?string \$name, \Some\Email \$email
 UserRegistered
 return new self(\$id->toString(), [
                 'name' => \$name,
                 'email' => \$email->toString(),
             ]);
+
 if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
                 throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
             }
 
-            if (! isset(\$payload['email'])) {
-                throw new \InvalidArgumentException("Key 'email' is missing in payload");
+            if (! isset(\$payload['name'])) {
+                throw new \InvalidArgumentException("Key 'name' is missing in payload");
             }
 
-            if (! is_string(\$payload['email'])) {
-                throw new \InvalidArgumentException("Value for 'email' is not a string in payload");
+            if (! isset(\$payload['email']) || ! is_string(\$payload['email'])) {
+                throw new \InvalidArgumentException("Key 'email' is missing in payload or is not a string");
             }
 
 private \$id;
         private \$name;
         private \$email;
 
-{{accessors}}
+public function id(): UserId
+        {
+            if (! isset(\$this->id)) {
+                \$this->id = UserId::fromString(\$this->payload['id']);
+            }
+
+            return \$this->id;
+        }
+
+        public function name(): ?string
+        {
+            if (! isset(\$this->name) && isset(\$this->payload['name'])) {
+                \$this->name = \$this->payload['name'];
+            }
+
+            return \$this->name;
+        }
+
+        public function email(): \Some\Email
+        {
+            if (! isset(\$this->email)) {
+                \$this->email = \Some\Email::fromString(\$this->payload['email']);
+            }
+
+            return \$this->email;
+        }
+
 EXPECTED;
-        //var_dump($expected, replace($definition, $template, new DefinitionCollection($definition))); die;
+
         $this->assertSame($expected, replace($definition, $template, new DefinitionCollection($definition, $userId, $email)));
     }
 }
