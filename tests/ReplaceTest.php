@@ -463,12 +463,8 @@ CODE;
         $definition = new Definition(
             'My',
             'UserId',
-            [
-                new Constructor('Int'),
-            ],
-            [
-                new Deriving\FromScalar(),
-            ]
+            [new Constructor('Int')],
+            [new Deriving\FromScalar()]
         );
 
         $template = '{{type}}';
@@ -476,6 +472,28 @@ CODE;
         $expected = "int\n";
 
         $this->assertSame($expected, replace($definition, new Constructor('Int'), $template, new DefinitionCollection($definition), new FinalKeyword()));
+    }
+
+    /**
+     * @test
+     * @group by
+     */
+    public function it_replaces_from_scalar_2(): void
+    {
+        $constructor = new Constructor('My\UserId', [new Argument('id', 'int')]);
+
+        $definition = new Definition(
+            'My',
+            'UserId',
+            [$constructor],
+            [new Deriving\FromScalar()]
+        );
+
+        $template = '{{type}}';
+
+        $expected = "int\n";
+
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
     }
 
     /**
