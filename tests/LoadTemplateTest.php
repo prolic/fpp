@@ -127,7 +127,7 @@ namespace {{namespace_name}} {
         {
             \$valid = false;
 
-            foreach(self::OPTIONS as \$value) {
+            foreach (self::OPTIONS as \$value) {
                 if (\$this instanceof \$value) {
                     \$valid = true;
                     break;
@@ -147,6 +147,7 @@ namespace {{namespace_name}} {
             }
 
             \$class = self::OPTIONS[\$value];
+
             return new \$class();
         }
 

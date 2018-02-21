@@ -358,4 +358,24 @@ EXPECTED;
 
         $this->assertSame($expected, replace($definition, $constructor1, $template, new DefinitionCollection($definition), new FinalKeyword()));
     }
+
+    /**
+     * @test
+     */
+    public function it_replaces_equals(): void
+    {
+        $constructor = new Constructor('My\Color', [new Argument('name', 'string')]);
+        $definition = new Definition(
+            'My',
+            'Color',
+            [$constructor],
+            [new Deriving\Equals()]
+        );
+
+        $template = '{{equals_body}}';
+
+        $expected = "return \$this->name === \$color->name;\n";
+
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
+    }
 }
