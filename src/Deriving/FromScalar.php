@@ -6,6 +6,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Constructor;
 use Fpp\Deriving as FppDeriving;
+use function Fpp\isScalarConstructor;
 
 class FromScalar implements FppDeriving
 {
@@ -44,7 +45,7 @@ class FromScalar implements FppDeriving
                 if (! $argument->isScalartypeHint()) {
                     return false;
                 }
-            } elseif (! in_array($constructor->name(), ['String', 'Int', 'Float', 'Bool'], true)) {
+            } elseif (! isScalarConstructor($constructor)) {
                 return false;
             }
         }

@@ -21,7 +21,7 @@ class LoadTemplateTest extends TestCase
         $constructor = new Constructor('Bar');
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $template = loadTemplate($definition);
+        $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
@@ -43,7 +43,7 @@ TEMPLATE;
         $constructor = new Constructor('String');
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $template = loadTemplate($definition);
+        $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
@@ -76,7 +76,7 @@ TEMPLATE;
         $constructor = new Constructor('Bar', [new Argument('name', 'string')]);
         $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\ToString(), new Deriving\FromString()]);
 
-        $template = loadTemplate($definition);
+        $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
@@ -96,6 +96,98 @@ namespace {{namespace_name}} {
         {
             return new {{class_name}}(\${{variable_name}});
         }
+    }
+}
+
+TEMPLATE;
+
+        $this->assertSame($expected, $template);
+    }
+
+    /**
+     * @test
+     */
+    public function it_loads_body_template_for_base_enum_class(): void
+    {
+        $constructor1 = new Constructor('Blue');
+        $constructor2 = new Constructor('Red');
+        $definition = new Definition('Foo', 'Color', [$constructor1, $constructor2], [new Deriving\Enum()]);
+
+        $template = loadTemplate($definition, null);
+
+        $expected = <<<TEMPLATE
+namespace {{namespace_name}} {
+    {{abstract_final}}class {{class_name}}{{class_extends}}
+    {
+        const OPTIONS = [
+            {{enum_options}}
+        ];
+
+        final public function __construct()
+        {
+            \$valid = false;
+
+            foreach(self::OPTIONS as \$value) {
+                if (\$this instanceof \$value) {
+                    \$valid = true;
+                    break;
+                }
+            }
+
+            if (! \$valid) {
+                \$self = get_class(\$this);
+                throw new \LogicException("Invalid {\$definition->name()} '\$self' given");
+            }
+        }
+
+        public static function fromString(string \$value): self
+        {
+            if (! isset(self::OPTIONS[\$value])) {
+                throw new \InvalidArgumentException('Unknown enum value given');
+            }
+
+            \$class = self::OPTIONS[\$value];
+            return new \$class();
+        }
+
+        public function equals({\$definition->name()} \$other): bool
+        {
+            return get_class(\$this) === get_class(\$other);
+        }
+
+        public function toString(): string
+        {
+            return static::VALUE;
+        }
+
+        public function __toString(): string
+        {
+            return static::VALUE;
+        }
+    }
+}
+
+TEMPLATE;
+
+        $this->assertSame($expected, $template);
+    }
+
+    /**
+     * @test
+     */
+    public function it_loads_body_template_for_enum_instance_class(): void
+    {
+        $constructor1 = new Constructor('Blue');
+        $constructor2 = new Constructor('Red');
+        $definition = new Definition('Foo', 'Color', [$constructor1, $constructor2], [new Deriving\Enum()]);
+
+        $template = loadTemplate($definition, $constructor2);
+
+        $expected = <<<TEMPLATE
+namespace {{namespace_name}} {
+    {{abstract_final}}class {{class_name}}{{class_extends}}
+    {
+        const VALUE = '{{enum_value}}';
     }
 }
 

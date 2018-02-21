@@ -46,11 +46,7 @@ try {
     exit(1);
 }
 
-$replace = function (Definition $definition, string $template) use ($collection) {
-    return replace($definition, $template, $collection);
-};
-
-file_put_contents($output, dump($collection, loadTemplate, $replace));
+file_put_contents($output, dump($collection, loadTemplate, replace));
 
 echo "Successfully generated to and written to '$output'\n";
 exit(0);

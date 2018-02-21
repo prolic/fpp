@@ -20,23 +20,21 @@ use Fpp\Deriving\Uuid;
 
 const loadTemplate = '\Fpp\loadTemplate';
 
-function loadTemplate(Definition $definition): string
+function loadTemplate(Definition $definition, ?Constructor $constructor): string
 {
     static $cache = [];
 
     $prefix = __DIR__ . '/templates/';
-    $constructors = $definition->constructors();
-
     $classTemplateFile = $prefix . 'class.template';
     $bodyTemplatesFiles = [];
 
-    if (1 === count($constructors)) {
-        switch ($constructors[0]->name()) {
+    if (null !== $constructor) {
+        switch ($constructor->name()) {
             case 'String':
             case 'Int':
             case 'Bool':
             case 'Float':
-                $bodyTemplatesFiles[] = $prefix . strtolower($constructors[0]->name()) . '.template';
+                $bodyTemplatesFiles[] = $prefix . strtolower($constructor->name()) . '.template';
                 break;
         }
     }
@@ -53,7 +51,6 @@ function loadTemplate(Definition $definition): string
             case Command::VALUE:
             case DomainEvent::VALUE:
             case Query::VALUE:
-            case Enum::VALUE:
             case Uuid::VALUE:
             case Equals::VALUE:
             case FromArray::VALUE:
@@ -63,6 +60,13 @@ function loadTemplate(Definition $definition): string
             case ToScalar::VALUE:
             case ToString::VALUE:
                 $bodyTemplatesFiles[] = $prefix . strtolower((string) $deriving) . '.template';
+                break;
+            case Enum::VALUE:
+                if (null === $constructor) {
+                    $bodyTemplatesFiles[] = $prefix . 'enum.template';
+                } else {
+                    $bodyTemplatesFiles[] = $prefix . 'enum.instance.template';
+                }
                 break;
         }
     }

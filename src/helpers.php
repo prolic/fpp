@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+function isScalarConstructor(Constructor $constructor): bool
+{
+    return in_array($constructor->name(), ['String', 'Int', 'Float', 'Bool'], true);
+}
+
 function buildArgumentType(Argument $argument, Definition $definition): string
 {
     $code = '';

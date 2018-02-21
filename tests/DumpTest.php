@@ -30,8 +30,9 @@ class DumpTest extends TestCase
 
     /**
      * @test
+     * @group by
      */
-    public function it_dumps_string_class(): void
+    public function it_dumps_simple_class(): void
     {
         $dump = $this->dump;
 
@@ -46,7 +47,7 @@ class DumpTest extends TestCase
 declare(strict_types=1);
 
 namespace Foo {
-    class Bar
+    final class Bar
     {
         private \$value;
 
@@ -70,11 +71,19 @@ CODE;
     /**
      * @test
      */
-    public function it_dumps_string_class_deriving_from_and_to_string(): void
+    public function it_dumps_class_incl_its_child(): void
     {
         $dump = $this->dump;
 
-        $definition = new Definition('Foo', 'Bar', [new Constructor('String')], [new FromString(), new ToString()]);
+        $definition = new Definition(
+            'Foo',
+            'Bar',
+            [
+                new Constructor('Foo\Bar'),
+                new Constructor('Foo\Baz'),
+            ]
+        );
+
         $collection = $this->buildCollection($definition);
 
         $expected = <<<CODE
@@ -87,32 +96,12 @@ declare(strict_types=1);
 namespace Foo {
     class Bar
     {
-        private \$value;
+    }
+}
 
-        public function __construct(string \$value)
-        {
-            \$this->value = \$value;
-        }
-
-        public function value(): string
-        {
-            return \$this->value;
-        }
-
-        public static function fromString(string \$bar): Bar
-        {
-            return new Bar(\$bar);
-        }
-
-        public function toString(): string
-        {
-            return \$this->value;
-        }
-
-        public function __toString(): string
-        {
-            return \$this->value;
-        }
+namespace Foo {
+    final class Baz extends Bar
+    {
     }
 }
 
