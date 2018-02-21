@@ -211,6 +211,8 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                             }
                         }
                     }
+
+                    $token = $nextToken();
                 }
 
                 if ('|' === $token[1]) {
@@ -221,10 +223,6 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                 if (';' === $token[1]) {
                     $constructors[] = new Constructor($constructorName, $arguments);
                     goto buildDefinition;
-                }
-
-                if (! $isEndOfFile()) {
-                    $token = $nextToken();
                 }
 
                 $token = $skipWhitespace($token);

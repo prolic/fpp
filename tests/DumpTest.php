@@ -28,7 +28,6 @@ class DumpTest extends TestCase
 
     /**
      * @test
-     * @group by
      */
     public function it_dumps_simple_class(): void
     {

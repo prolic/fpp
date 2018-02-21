@@ -94,6 +94,17 @@ function replace(
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
+            case Deriving\Enum::VALUE:
+                if ($constructor) {
+                    $template = str_replace('{{enum_value}}', $constructor->name(), $template);
+                } else {
+                    $replace = '';
+                    foreach ($definition->constructors() as $constructor) {
+                        $replace .= "            {$constructor->name()}::VALUE => {$constructor->name()}::class,\n";
+                    }
+                    $template = str_replace('{{enum_options}}', substr($replace, 12, -1), $template);
+                }
+                break;
             case Deriving\Equals::VALUE:
                 if ($constructor) {
                     $template = str_replace('{{equals_body}}', buildEqualsBody($constructor, lcfirst($definition->name()), $collection), $template);
@@ -119,7 +130,7 @@ function replace(
         }
     }
 
-    if ($constructor && $fqcn !== $constructor->name() && ! isScalarConstructor($constructor)) {
+    if (isset($fqcn) && $fqcn !== $constructor->name() && ! isScalarConstructor($constructor)) {
         $template = str_replace('{{class_extends}}', ' extends ' . $baseClass, $template);
     }
 

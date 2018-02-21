@@ -322,4 +322,40 @@ EXPECTED;
 
         $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
     }
+
+    /**
+     * @test
+     */
+    public function it_replaces_enum(): void
+    {
+        $constructor1 = new Constructor('Red');
+        $constructor2 = new Constructor('Blue');
+
+        $definition = new Definition(
+            'My',
+            'Color',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum()]
+        );
+
+        $template = <<<TEMPLATE
+{{class_name}}
+{{enum_options}}
+TEMPLATE;
+
+        $expected = <<<EXPECTED
+Color
+Red::VALUE => Red::class,
+            Blue::VALUE => Blue::class,
+
+EXPECTED;
+
+        $this->assertSame($expected, replace($definition, null, $template, new DefinitionCollection($definition), new AbstractKeyword()));
+
+        $template = '{{enum_value}}';
+
+        $expected = "Red\n";
+
+        $this->assertSame($expected, replace($definition, $constructor1, $template, new DefinitionCollection($definition), new FinalKeyword()));
+    }
 }

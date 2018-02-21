@@ -136,7 +136,7 @@ namespace {{namespace_name}} {
 
             if (! \$valid) {
                 \$self = get_class(\$this);
-                throw new \LogicException("Invalid {\$definition->name()} '\$self' given");
+                throw new \LogicException("Invalid {{class_name}} '\$self' given");
             }
         }
 
@@ -150,7 +150,7 @@ namespace {{namespace_name}} {
             return new \$class();
         }
 
-        public function equals({\$definition->name()} \$other): bool
+        public function equals({{class_name}} \$other): bool
         {
             return get_class(\$this) === get_class(\$other);
         }
