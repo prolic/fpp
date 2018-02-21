@@ -96,11 +96,12 @@ function replace(
                 break;
             case Deriving\Enum::VALUE:
                 if ($constructor) {
-                    $template = str_replace('{{enum_value}}', $constructor->name(), $template);
+                    $template = str_replace('{{enum_value}}', buildReferencedClass($definition->namespace(), $constructor->name()), $template);
                 } else {
                     $replace = '';
                     foreach ($definition->constructors() as $constructor) {
-                        $replace .= "            {$constructor->name()}::VALUE => {$constructor->name()}::class,\n";
+                        $class = buildReferencedClass($definition->namespace(), $constructor->name());
+                        $replace .= "            $class::VALUE => $class::class,\n";
                     }
                     $template = str_replace('{{enum_options}}', substr($replace, 12, -1), $template);
                 }
@@ -109,6 +110,9 @@ function replace(
                 if ($constructor) {
                     $template = str_replace('{{equals_body}}', buildEqualsBody($constructor, lcfirst($definition->name()), $collection), $template);
                 }
+                break;
+            case Deriving\FromArray::VALUE:
+                $template = str_replace('{{from_array_body}}', buildFromArrayBody($constructor, $definition, $collection), $template);
                 break;
         }
     }

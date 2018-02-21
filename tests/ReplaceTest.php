@@ -22,7 +22,7 @@ class ReplaceTest extends TestCase
      */
     public function it_replaces_default_values(): void
     {
-        $definition = new Definition('Foo', 'Bar', [new Constructor('Bar')]);
+        $definition = new Definition('Foo', 'Bar', [new Constructor('Foo\Bar')]);
         $template = '{{namespace_name}} {{class_name}} ${{variable_name}}';
 
         $this->assertSame("Foo Bar \$bar\n", replace($definition, null, $template, new DefinitionCollection($definition), new NoKeyword()));
@@ -33,7 +33,7 @@ class ReplaceTest extends TestCase
      */
     public function it_adds_abstract_keyword(): void
     {
-        $definition = new Definition('Foo', 'Color', [new Constructor('Red')]);
+        $definition = new Definition('Foo', 'Color', [new Constructor('Foo\Red')]);
         $template = '{{abstract_final}}class Color';
 
         $this->assertSame("abstract class Color\n", replace($definition, null, $template, new DefinitionCollection($definition), new AbstractKeyword()));
@@ -44,7 +44,7 @@ class ReplaceTest extends TestCase
      */
     public function it_adds_final_keyword(): void
     {
-        $definition = new Definition('Foo', 'Color', [new Constructor('Red')]);
+        $definition = new Definition('Foo', 'Color', [new Constructor('Foo\Red')]);
         $template = '{{abstract_final}}class Color';
 
         $this->assertSame("final class Color\n", replace($definition, new Constructor('Red'), $template, new DefinitionCollection($definition), new FinalKeyword()));
@@ -55,10 +55,10 @@ class ReplaceTest extends TestCase
      */
     public function it_adds_no_keyword(): void
     {
-        $definition = new Definition('Foo', 'Bar', [new Constructor('Bar')]);
+        $definition = new Definition('Foo', 'Bar', [new Constructor('Foo\Bar')]);
         $template = '{{abstract_final}}class Bar';
 
-        $this->assertSame("class Bar\n", replace($definition, new Constructor('Bar'), $template, new DefinitionCollection($definition), new NoKeyword()));
+        $this->assertSame("class Bar\n", replace($definition, new Constructor('Foo\Bar'), $template, new DefinitionCollection($definition), new NoKeyword()));
     }
 
     /**
@@ -70,7 +70,7 @@ class ReplaceTest extends TestCase
             'My',
             'UserId',
             [
-                new Constructor('UserId'),
+                new Constructor('My\UserId'),
             ],
             [
                 new Deriving\Uuid(),
@@ -89,7 +89,7 @@ class ReplaceTest extends TestCase
             ]
         );
 
-        $constructor = new Constructor('UserRegistered', [
+        $constructor = new Constructor('My\UserRegistered', [
             new Argument('id', 'My\UserId'),
             new Argument('name', 'string', true),
             new Argument('email', 'Some\Email'),
@@ -180,14 +180,14 @@ EXPECTED;
             'My',
             'UserId',
             [
-                new Constructor('UserId'),
+                new Constructor('My\UserId'),
             ],
             [
                 new Deriving\Uuid(),
             ]
         );
 
-        $constructor = new Constructor('UserRegistered', [
+        $constructor = new Constructor('My\UserRegistered', [
             new Argument('id', 'My\UserId'),
             new Argument('name', 'string', true),
         ]);
@@ -252,7 +252,7 @@ EXPECTED;
      */
     public function it_replaces_domain_event(): void
     {
-        $constructor = new Constructor('UserRegistered', [
+        $constructor = new Constructor('My\UserRegistered', [
             new Argument('id', 'string'),
             new Argument('name', 'string', true),
         ]);
@@ -328,8 +328,8 @@ EXPECTED;
      */
     public function it_replaces_enum(): void
     {
-        $constructor1 = new Constructor('Red');
-        $constructor2 = new Constructor('Blue');
+        $constructor1 = new Constructor('My\Red');
+        $constructor2 = new Constructor('My\Blue');
 
         $definition = new Definition(
             'My',
@@ -377,5 +377,81 @@ EXPECTED;
         $expected = "return \$this->name === \$color->name;\n";
 
         $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_from_array(): void
+    {
+        $userId = new Definition(
+            'My',
+            'UserId',
+            [
+                new Constructor('My\UserId'),
+            ],
+            [
+                new Deriving\Uuid(),
+            ]
+        );
+
+        $email = new Definition(
+            'Some',
+            'Email',
+            [
+                new Constructor('String'),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $constructor = new Constructor('My\Person', [
+            new Argument('id', 'My\UserId'),
+            new Argument('name', 'string', true),
+            new Argument('email', 'Some\Email'),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'Person',
+            [$constructor],
+            [
+                new Deriving\FromArray(),
+            ]
+        );
+
+        $template = '{{from_array_body}}';
+
+        $expected = <<<CODE
+            if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
+                throw new \InvalidArgumentException("Key 'id' is missing in data array or is not a string");
+            }
+
+            \$id = UserId::fromString(\$data['id']);
+
+            if (isset(\$data['name'])) {
+                if (! is_string(\$data['name']) {
+                    throw new \InvalidArgumentException("Value for 'name' is not a string in data array");
+                }
+
+                \$name = \$data['name'];
+            } else {
+                \$name = null;
+            }
+
+            if (! isset(\$data['email']) || ! is_string(\$data['email'])) {
+                throw new \InvalidArgumentException("Key 'email' is missing in data array or is not a string");
+            }
+
+            \$email = \Some\Email::fromString(\$data['email']);
+
+            return new(UserId \$id, ?string \$name, \Some\Email \$email);
+
+
+CODE;
+
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
     }
 }
