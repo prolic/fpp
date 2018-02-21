@@ -65,7 +65,6 @@ function replace(
     foreach ($definition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\AggregateChanged::VALUE:
-                    // aggregate changed has always exactly one constructor
                     $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
                     $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
                     $template = str_replace('{{properties}}', buildProperties($constructor), $template);
@@ -75,7 +74,6 @@ function replace(
                     $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, false), $template);
                 break;
             case Deriving\Command::VALUE:
-                // command has always exactly one constructor
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Command', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
                 $template = str_replace("{{properties}}\n", '', $template);
@@ -85,7 +83,6 @@ function replace(
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
             case Deriving\DomainEvent::VALUE:
-                // domain event has always exactly one constructor
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
                 $template = str_replace('{{properties}}', buildProperties($constructor), $template);
@@ -123,6 +120,15 @@ function replace(
                 }
 
                 $template = str_replace('{{type}}', $type, $template);
+                break;
+            case Deriving\Query::VALUE:
+                $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Query', $template);
+                $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
+                $template = str_replace('{{properties}}', buildProperties($constructor), $template);
+                $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
+                $template = str_replace('{{accessors}}', buildPayloadAccessors($definition, $collection), $template);
+                $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
+                $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
         }
     }

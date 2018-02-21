@@ -477,4 +477,57 @@ CODE;
 
         $this->assertSame($expected, replace($definition, new Constructor('Int'), $template, new DefinitionCollection($definition), new FinalKeyword()));
     }
+
+    /**
+     * @test
+     */
+    public function it_replaces_query(): void
+    {
+        $constructor = new Constructor('My\FindUser', [
+            new Argument('id', 'string'),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'FindUser',
+            [$constructor],
+            [
+                new Deriving\Query(),
+            ]
+        );
+
+        $template = <<<TEMPLATE
+{{abstract_final}}
+{{class_extends}}
+{{message_name}}
+{{arguments}}
+{{class_name}}
+{{static_constructor_body}}
+{{payload_validation}}
+{{accessors}}
+TEMPLATE;
+
+        $expected = <<<EXPECTED
+final 
+ extends \Prooph\Common\Messaging\Query
+My\FindUser
+string \$id
+FindUser
+return new self([
+                'id' => \$id,
+            ]);
+if (! isset(\$payload['id']) || ! is_string(\$payload['id'])) {
+                throw new \InvalidArgumentException("Key 'id' is missing in payload or is not a string");
+            }
+
+public function id(): string
+        {
+            return \$this->payload['id'];
+        }
+
+
+EXPECTED;
+
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
+    }
 }
