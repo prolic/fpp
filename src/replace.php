@@ -78,6 +78,7 @@ function replace(
                 // command has always exactly one constructor
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Command', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
+                $template = str_replace("{{properties}}\n", '', $template);
                 $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                 $template = str_replace('{{accessors}}', buildPayloadAccessors($definition, $collection), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);

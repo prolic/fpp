@@ -170,4 +170,156 @@ EXPECTED;
 
         $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
     }
+
+    /**
+     * @test
+     */
+    public function it_replaces_command(): void
+    {
+        $userId = new Definition(
+            'My',
+            'UserId',
+            [
+                new Constructor('UserId'),
+            ],
+            [
+                new Deriving\Uuid(),
+            ]
+        );
+
+        $constructor = new Constructor('UserRegistered', [
+            new Argument('id', 'My\UserId'),
+            new Argument('name', 'string', true),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'RegisterUser',
+            [$constructor],
+            [
+                new Deriving\Command(),
+            ]
+        );
+
+        $template = <<<TEMPLATE
+{{abstract_final}}
+{{class_extends}}
+{{message_name}}
+{{arguments}}
+{{class_name}}
+{{static_constructor_body}}
+{{payload_validation}}
+{{properties}}
+{{accessors}}
+TEMPLATE;
+
+        $expected = <<<EXPECTED
+final 
+ extends \Prooph\Common\Messaging\Command
+My\RegisterUser
+UserId \$id, ?string \$name
+UserRegistered
+return new self([
+                'id' => \$id->toString(),
+                'name' => \$name,
+            ]);
+if (! isset(\$payload['id']) || ! is_string(\$payload['id'])) {
+                throw new \InvalidArgumentException("Key 'id' is missing in payload or is not a string");
+            }
+
+            if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
+                throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
+            }
+
+public function id(): UserId
+        {
+            return UserId::fromString(\$this->payload['id']);
+        }
+
+        public function name(): ?string
+        {
+            return isset(\$this->payload['name']) ? \$this->payload['name'] : null;
+        }
+
+
+EXPECTED;
+
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId), new FinalKeyword()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_domain_event(): void
+    {
+        $constructor = new Constructor('UserRegistered', [
+            new Argument('id', 'string'),
+            new Argument('name', 'string', true),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'UserRegistered',
+            [$constructor],
+            [
+                new Deriving\DomainEvent(),
+            ]
+        );
+
+        $template = <<<TEMPLATE
+{{abstract_final}}
+{{class_extends}}
+{{message_name}}
+{{arguments}}
+{{class_name}}
+{{static_constructor_body}}
+{{payload_validation}}
+{{properties}}
+{{accessors}}
+TEMPLATE;
+
+        $expected = <<<EXPECTED
+final 
+ extends \Prooph\Common\Messaging\DomainEvent
+My\UserRegistered
+string \$id, ?string \$name
+UserRegistered
+return new self([
+                'id' => \$id,
+                'name' => \$name,
+            ]);
+if (! isset(\$payload['id']) || ! is_string(\$payload['id'])) {
+                throw new \InvalidArgumentException("Key 'id' is missing in payload or is not a string");
+            }
+
+            if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
+                throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
+            }
+
+private \$id;
+        private \$name;
+
+public function id(): string
+        {
+            if (! isset(\$this->id)) {
+                \$this->id = \$this->payload['id'];
+            }
+
+            return \$this->id;
+        }
+
+        public function name(): ?string
+        {
+            if (! isset(\$this->name) && isset(\$this->payload['name'])) {
+                \$this->name = \$this->payload['name'];
+            }
+
+            return \$this->name;
+        }
+
+
+EXPECTED;
+
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
+    }
 }
