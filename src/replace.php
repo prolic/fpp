@@ -114,6 +114,16 @@ function replace(
             case Deriving\FromArray::VALUE:
                 $template = str_replace('{{from_array_body}}', buildFromArrayBody($constructor, $definition, $collection), $template);
                 break;
+            case Deriving\FromScalar::VALUE:
+                if (isScalarConstructor($constructor)) {
+                    $type = strtolower($constructor->name());
+                } else {
+                    $argument = $constructor->arguments()[0];
+                    $type = strtolower($argument->type());
+                }
+
+                $template = str_replace('{{type}}', $type, $template);
+                break;
         }
     }
 

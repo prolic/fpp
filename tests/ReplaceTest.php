@@ -454,4 +454,27 @@ CODE;
 
         $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
     }
+
+    /**
+     * @test
+     */
+    public function it_replaces_from_scalar(): void
+    {
+        $definition = new Definition(
+            'My',
+            'UserId',
+            [
+                new Constructor('Int'),
+            ],
+            [
+                new Deriving\FromScalar(),
+            ]
+        );
+
+        $template = '{{type}}';
+
+        $expected = "int\n";
+
+        $this->assertSame($expected, replace($definition, new Constructor('Int'), $template, new DefinitionCollection($definition), new FinalKeyword()));
+    }
 }
