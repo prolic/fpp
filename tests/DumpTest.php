@@ -7,8 +7,6 @@ namespace FppTest;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
-use Fpp\Deriving\FromString;
-use Fpp\Deriving\ToString;
 use PHPUnit\Framework\TestCase;
 use const Fpp\loadTemplate;
 use const Fpp\replace;

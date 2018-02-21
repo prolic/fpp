@@ -7,6 +7,7 @@ namespace Fpp;
 use Fpp\ClassKeyword\AbstractKeyword;
 use Fpp\ClassKeyword\FinalKeyword;
 use Fpp\ClassKeyword\NoKeyword;
+
 const replace = '\Fpp\replace';
 
 function replace(
