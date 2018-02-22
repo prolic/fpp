@@ -130,6 +130,9 @@ function replace(
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
+            case Deriving\ToArray::VALUE:
+                $template = str_replace('{{to_array_body}}', buildToArrayBody($constructor, $definition, $collection), $template);
+                break;
         }
     }
 

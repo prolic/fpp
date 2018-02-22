@@ -476,7 +476,6 @@ CODE;
 
     /**
      * @test
-     * @group by
      */
     public function it_replaces_from_scalar_2(): void
     {
@@ -547,5 +546,64 @@ public function id(): string
 EXPECTED;
 
         $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_to_array(): void
+    {
+        $userId = new Definition(
+            'My',
+            'UserId',
+            [
+                new Constructor('My\UserId'),
+            ],
+            [
+                new Deriving\Uuid(),
+            ]
+        );
+
+        $email = new Definition(
+            'Some',
+            'Email',
+            [
+                new Constructor('String'),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $constructor = new Constructor('My\Person', [
+            new Argument('id', 'My\UserId'),
+            new Argument('name', 'string', true),
+            new Argument('email', 'Some\Email'),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'Person',
+            [$constructor],
+            [
+                new Deriving\ToArray(),
+            ]
+        );
+
+        $template = '{{to_array_body}}';
+
+        $expected = <<<CODE
+return [
+                \$this->id->toString(),
+                \$this->name,
+                \$this->email->toString(),
+            ];
+
+
+CODE;
+
+
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
     }
 }
