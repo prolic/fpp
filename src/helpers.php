@@ -715,9 +715,7 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
     $class .= $definition->name();
 
     foreach ($constructor->arguments() as $key => $argument) {
-        if (null === $argument->type()) {
-            throw new \RuntimeException("Cannot build ToArray for $class , unknown argument {$argument->type()} given");
-        } elseif ($argument->nullable()) {
+        if ($argument->nullable()) {
             $code .= "                null === \$this->{$argument->name()} ? null : ";
         } else {
             $code .= "                ";
@@ -743,7 +741,7 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
         } elseif ($collection->hasConstructorDefinition($argument->type())) {
             $argumentDefinition = $collection->constructorDefinition($argument->type());
         } else {
-            throw new \RuntimeException("Cannot build ToArray for $class , unknown argument {$argument->type()} given");
+            throw new \RuntimeException("Cannot build ToArray for $class, no argument type hint for {$argument->type()} given");
         }
 
         foreach ($argumentDefinition->derivings() as $deriving) {
@@ -762,7 +760,7 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
             }
         }
 
-        throw new \RuntimeException("Cannot build ToArray for $class , no derivin to build array or scalar for {$argument->type()} given");
+        throw new \RuntimeException("Cannot build ToArray for $class, no deriving to build array or scalar for {$argument->type()} given");
     }
 
     $code .= "            ];\n";
@@ -774,25 +772,8 @@ function buildToScalarBody(Constructor $constructor, Definition $definition, Def
 {
     $argument = $constructor->arguments()[0];
 
-    $class = $definition->namespace();
-
-    if ('' !== $class) {
-        $class .= '\\';
-    }
-
-    $class .= $definition->name();
-
-    if (null === $argument->type()) {
-        throw new \RuntimeException("Cannot build ToArray for $class , unknown argument {$argument->type()} given");
-    } elseif ($argument->nullable()) {
-        $code = "return null === \$this->{$argument->name()} ? null : ";
-    } else {
-        $code = "return ";
-    }
-
     if ($argument->isScalartypeHint()) {
-        $code .= "\$this->{$argument->name()};\n";
-        return $code;
+        return "return \$this->{$argument->name()};\n";
     }
 
     $position = strrpos($argument->type(), '\\');
@@ -805,21 +786,32 @@ function buildToScalarBody(Constructor $constructor, Definition $definition, Def
         $name = $argument->type();
     }
 
+    $class = $definition->namespace();
+
+    if ('' !== $class) {
+        $class .= '\\';
+    }
+
+    $class .= $definition->name();
+
     if ($collection->hasDefinition($namespace, $name)) {
         $argumentDefinition = $collection->definition($namespace, $name);
     } elseif ($collection->hasConstructorDefinition($argument->type())) {
         $argumentDefinition = $collection->constructorDefinition($argument->type());
     } else {
-        throw new \RuntimeException("Cannot build ToScalar for $class , unknown argument {$argument->type()} given");
+        throw new \RuntimeException("Cannot build ToScalar for $class, unknown argument {$argument->type()} given");
     }
 
     foreach ($argumentDefinition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\ToScalar::VALUE:
-                $code .= "\$this->{$argument->name()}->toScalar();\n";
-                return $code;
+                return "return \$this->{$argument->name()}->toScalar();\n";
+            case Deriving\Enum::VALUE:
+            case Deriving\ToString::VALUE:
+            case Deriving\Uuid::VALUE:
+            return "return \$this->{$argument->name()}->toString();\n";
         }
     }
 
-    throw new \RuntimeException("Cannot build ToArray for $class , no derivin to build scalar for {$argument->type()} given");
+    throw new \RuntimeException("Cannot build ToScalar for $class, no deriving to build scalar for {$argument->type()} given");
 }

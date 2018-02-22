@@ -632,7 +632,7 @@ CODE;
         );
 
         $constructor = new Constructor('My\Email', [
-            new Argument('value', 'string', true),
+            new Argument('value', 'string'),
         ]);
 
         $definition = new Definition(
@@ -647,7 +647,7 @@ CODE;
         $template = '{{to_scalar_body}}';
 
         $expected = <<<CODE
-return null === \$this->value ? null : \$this->value;
+return \$this->value;
 
 
 CODE;
