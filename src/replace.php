@@ -150,23 +150,6 @@ function replace(
         }
     }
 
-    //@todo
-    if (false !== strstr($template, '{{to_string_body}}')) {
-        // only one constructor assumed @todo fix
-        $constructor = $definition->constructors()[0];
-        // only one argument assumed (rightfully)
-        if ('String' === $constructor->name()) {
-            $template = str_replace('{{to_string_body}}', 'return $this->value;', $template);
-        } elseif (1 === count($constructor->arguments())) {
-            $argument = $constructor->arguments()[0];
-            if ('string' === $argument->type()) {
-                $template = str_replace('{{to_string_body}}', 'return $this->value;', $template);
-            } elseif (! $argument->isScalartypeHint()) {
-                $template = str_replace('{{to_string_body}}', 'return $this->value->toString();', $template);
-            }
-        }
-    }
-
     if (isset($fqcn) && $fqcn !== $constructor->name() && ! isScalarConstructor($constructor)) {
         $template = str_replace('{{class_extends}}', ' extends ' . $baseClass, $template);
     }
