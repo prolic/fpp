@@ -144,6 +144,9 @@ function replace(
                 $template = str_replace('{{type}}', $type, $template);
                 $template = str_replace('{{to_scalar_body}}', buildToScalarBody($constructor, $definition, $collection), $template);
                 break;
+            case Deriving\ToString::VALUE:
+                $template = str_replace('{{to_string_body}}', buildToScalarBody($constructor, $definition, $collection), $template);
+                break;
         }
     }
 
