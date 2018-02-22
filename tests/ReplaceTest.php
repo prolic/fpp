@@ -425,14 +425,14 @@ EXPECTED;
         $template = '{{from_array_body}}';
 
         $expected = <<<CODE
-            if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
+if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
                 throw new \InvalidArgumentException("Key 'id' is missing in data array or is not a string");
             }
 
             \$id = UserId::fromString(\$data['id']);
 
             if (isset(\$data['name'])) {
-                if (! is_string(\$data['name']) {
+                if (! is_string(\$data['name'])) {
                     throw new \InvalidArgumentException("Value for 'name' is not a string in data array");
                 }
 
@@ -447,7 +447,7 @@ EXPECTED;
 
             \$email = \Some\Email::fromString(\$data['email']);
 
-            return new(UserId \$id, ?string \$name, \Some\Email \$email);
+            return new self(\$id, \$name, \$email);
 
 
 CODE;

@@ -66,7 +66,7 @@ function replace(
         switch ((string) $deriving) {
             case Deriving\AggregateChanged::VALUE:
                     $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
-                    $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
+                    $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                     $template = str_replace('{{properties}}', buildProperties($constructor), $template);
                     $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                     $template = str_replace('{{accessors}}', buildEventAccessors($definition, $collection), $template);
@@ -75,7 +75,7 @@ function replace(
                 break;
             case Deriving\Command::VALUE:
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Command', $template);
-                $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
+                $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace("{{properties}}\n", '', $template);
                 $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                 $template = str_replace('{{accessors}}', buildPayloadAccessors($definition, $collection), $template);
@@ -84,7 +84,7 @@ function replace(
                 break;
             case Deriving\DomainEvent::VALUE:
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
-                $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
+                $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{properties}}', buildProperties($constructor), $template);
                 $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                 $template = str_replace('{{accessors}}', buildEventAccessors($definition, $collection), $template);
@@ -123,7 +123,7 @@ function replace(
                 break;
             case Deriving\Query::VALUE:
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Query', $template);
-                $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition), $template);
+                $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{properties}}', buildProperties($constructor), $template);
                 $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                 $template = str_replace('{{accessors}}', buildPayloadAccessors($definition, $collection), $template);

@@ -327,11 +327,11 @@ CODE;
         $this->assertCount(2, $definition->constructors());
 
         $constructor1 = $definition->constructors()[0];
-        $this->assertSame('Name', $constructor1->name());
+        $this->assertSame('Something\Name', $constructor1->name());
         $this->assertEmpty($constructor1->arguments());
 
         $constructor2 = $definition->constructors()[1];
-        $this->assertSame('FirstName', $constructor2->name());
+        $this->assertSame('Something\FirstName', $constructor2->name());
         $this->assertEmpty($constructor2->arguments());
     }
 
@@ -353,10 +353,10 @@ CODE;
         $definition1 = $collection->definition('Something', 'Name');
         $this->assertCount(2, $definition1->constructors());
         $constructor1 = $definition1->constructors()[0];
-        $this->assertSame('Name', $constructor1->name());
+        $this->assertSame('Something\Name', $constructor1->name());
         $this->assertEmpty($constructor1->arguments());
         $constructor2 = $definition1->constructors()[1];
-        $this->assertSame('FirstName', $constructor2->name());
+        $this->assertSame('Something\FirstName', $constructor2->name());
         $this->assertEmpty($constructor2->arguments());
 
         $definition2 = $collection->definition('Something', 'Age');

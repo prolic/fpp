@@ -30,6 +30,9 @@ class BuildArgumentListTest extends TestCase
         );
 
         $expected = 'UserId $id, ?string $name, \Some\Email $email';
-        $this->assertSame($expected, buildArgumentList($constructor, $definition));
+        $this->assertSame($expected, buildArgumentList($constructor, $definition, true));
+
+        $expected = '$id, $name, $email';
+        $this->assertSame($expected, buildArgumentList($constructor, $definition, false));
     }
 }

@@ -162,6 +162,14 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                 $token = $skipWhitespace($token);
                 $requireUcFirstString($token);
                 $constructorName = $token[1];
+
+                if ($namespace
+                    && substr($constructorName, 0, 1) !== '\\'
+                    && ! in_array($constructorName, ['String', 'Int', 'Float', 'Bool'], true)
+                ) {
+                    $constructorName = $namespace . '\\' . $constructorName;
+                }
+
                 $token = $nextToken();
                 $token = $skipWhitespace($token);
 

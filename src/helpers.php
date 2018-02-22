@@ -267,7 +267,7 @@ function buildMessageName(Definition $definition): string
     return $messageName;
 }
 
-function buildArgumentList(Constructor $constructor, Definition $definition): string
+function buildArgumentList(Constructor $constructor, Definition $definition, bool $withTypeHints): string
 {
     $argumentList = '';
 
@@ -277,30 +277,38 @@ function buildArgumentList(Constructor $constructor, Definition $definition): st
             continue;
         }
 
-        if ($argument->nullable()) {
+        if ($withTypeHints && $argument->nullable()) {
             $argumentList .= '?';
         }
 
         if ($argument->isScalartypeHint()) {
-            $argumentList .= $argument->type() . ' $' . $argument->name() . ', ';
+            if ($withTypeHints) {
+                $argumentList .= $argument->type() . ' ';
+            }
+
+            $argumentList .= '$' . $argument->name() . ', ';
             continue;
         }
 
-        $nsPosition = strrpos($argument->type(), '\\');
+        if ($withTypeHints) {
+            $nsPosition = strrpos($argument->type(), '\\');
 
-        if (false !== $nsPosition) {
-            $namespace = substr($argument->type(), 0, $nsPosition);
-            $name = substr($argument->type(), $nsPosition + 1);
-        } else {
-            $namespace = '';
-            $name = $argument->type();
+            if (false !== $nsPosition) {
+                $namespace = substr($argument->type(), 0, $nsPosition);
+                $name = substr($argument->type(), $nsPosition + 1);
+            } else {
+                $namespace = '';
+                $name = $argument->type();
+            }
+
+            $type = $namespace === $definition->namespace()
+                ? $name
+                : '\\' . $argument->type();
+
+            $argumentList .= $type . ' ';
         }
 
-        $type = $namespace === $definition->namespace()
-            ? $name
-            : '\\' . $argument->type();
-
-        $argumentList .= $type . ' $' . $argument->name() . ', ';
+        $argumentList .= '$' . $argument->name() . ', ';
     }
 
     return substr($argumentList, 0, -2);
@@ -602,7 +610,7 @@ CODE;
         if ($argument->isScalartypeHint() && $argument->nullable()) {
             $code .= <<<CODE
             if (isset(\$data['{$argument->name()}'])) {
-                if (! is_{$argument->type()}(\$data['{$argument->name()}']) {
+                if (! is_{$argument->type()}(\$data['{$argument->name()}'])) {
                     throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$argument->type()} in data array");
                 }
 
@@ -697,9 +705,9 @@ CODE;
 CODE;
     }
 
-    $code .= '            return new(' . buildArgumentList($constructor, $definition) . ");\n";
+    $code .= '            return new self(' . buildArgumentList($constructor, $definition, false) . ");\n";
 
-    return $code;
+    return ltrim($code);
 }
 
 function buildToArrayBody(Constructor $constructor, Definition $definition, DefinitionCollection $collection): string
