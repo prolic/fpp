@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-final class DefinitionCollection
+class DefinitionCollection
 {
     /**
      * @var array
@@ -15,6 +15,18 @@ final class DefinitionCollection
      * @var Definition[]
      */
     private $definitions = [];
+
+    /**
+     * @var Definition[]
+     */
+    private $constructorDefinitions = [];
+
+    public function __construct(Definition ...$definitions)
+    {
+        foreach ($definitions as $definition) {
+            $this->addDefinition($definition);
+        }
+    }
 
     public function addDefinition(Definition $definition)
     {
@@ -29,11 +41,20 @@ final class DefinitionCollection
         $this->registry[$definition->namespace()][$definition->name()] = true;
 
         $this->definitions[] = $definition;
+
+        foreach ($definition->constructors() as $key => $constructor) {
+            $this->constructorDefinitions[$constructor->name()] = $definition;
+        }
     }
 
     public function hasDefinition(string $namespace, string $name): bool
     {
         return isset($this->registry[$namespace][$name]);
+    }
+
+    public function hasConstructorDefinition(string $name): bool
+    {
+        return isset($this->constructorDefinitions[$name]);
     }
 
     public function definition(string $namespace, string $name): ?Definition
@@ -45,6 +66,11 @@ final class DefinitionCollection
         }
 
         return null;
+    }
+
+    public function constructorDefinition(string $name): ?Definition
+    {
+        return isset($this->constructorDefinitions[$name]) ? $this->constructorDefinitions[$name] : null;
     }
 
     public function merge(DefinitionCollection $collection): DefinitionCollection

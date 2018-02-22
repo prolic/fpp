@@ -1,0 +1,4 @@
+        public static function fromString(string ${{variable_name}}): {{class_name}}
+        {
+            return new {{class_name}}(${{variable_name}});
+        }

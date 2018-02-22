@@ -1,3 +1,3 @@
 namespace Enum;
 
-enum Color = Red | Blue | Green
+data Color = Red | Blue | Green deriving (Enum);

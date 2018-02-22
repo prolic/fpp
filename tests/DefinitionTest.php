@@ -5,13 +5,9 @@ declare(strict_types=1);
 namespace FppTest;
 
 use Fpp\Argument;
+use Fpp\Constructor;
 use Fpp\Definition;
-use Fpp\Deriving\ScalarConverter;
-use Fpp\Deriving\StringConverter;
-use Fpp\Type\Command;
-use Fpp\Type\Data;
-use Fpp\Type\Enum;
-use Fpp\Type\Uuid;
+use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 
 class DefinitionTest extends TestCase
@@ -21,9 +17,8 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_simple_data_defintion(): void
     {
-        $definition = new Definition(new Data(), '', 'Person');
+        $definition = new Definition('', 'Person', [new Constructor('Person')]);
 
-        $this->assertTrue($definition->type()->equals(new Data()));
         $this->assertSame('', $definition->namespace());
         $this->assertSame('Person', $definition->name());
         $this->assertNull($definition->messageName());
@@ -32,11 +27,11 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_required_defintion_name(): void
+    public function it_requires_defintion_name(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Definition(new Data(), '', '');
+        new Definition('', '');
     }
 
     /**
@@ -44,9 +39,8 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_data_defintion_with_namespace(): void
     {
-        $definition = new Definition(new Data(), 'Foo', 'Person');
+        $definition = new Definition('Foo', 'Person', [new Constructor('Person')]);
 
-        $this->assertTrue($definition->type()->equals(new Data()));
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
     }
@@ -54,18 +48,26 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_data_defintion_with_arguments(): void
+    public function it_creates_data_defintion_with_constructor_arguments(): void
     {
-        $definition = new Definition(new Data(), 'Foo', 'Person', [new Argument('My', 'name', 'string', false)]);
+        $constructor = new Constructor('Person', [new Argument('name', 'string', false)]);
+        $definition = new Definition('Foo', 'Person', [$constructor]);
 
-        $this->assertTrue($definition->type()->equals(new Data()));
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
-        $this->assertSame('My', (current($definition->arguments()))->namespace());
-        $this->assertSame('name', (current($definition->arguments()))->name());
-        $this->assertSame('string', (current($definition->arguments()))->typeHint());
-        $this->assertTrue((current($definition->arguments()))->isScalarTypeHint());
-        $this->assertFalse((current($definition->arguments()))->nullable());
+
+        $this->assertCount(1, $definition->constructors());
+
+        $constructor = $definition->constructors()[0];
+
+        $this->assertCount(1, $constructor->arguments());
+
+        $argument = $constructor->arguments()[0];
+
+        $this->assertSame('name', $argument->name());
+        $this->assertSame('string', $argument->type());
+        $this->assertTrue($argument->isScalarTypeHint());
+        $this->assertFalse($argument->nullable());
     }
 
     /**
@@ -73,97 +75,57 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_data_defintion_with_derivings(): void
     {
+        $constructor = new Constructor('Person', [new Argument('name', 'string', false)]);
+
         $definition = new Definition(
-            new Data(),
             'Foo',
             'Person',
-            [new Argument('', 'name', 'string', false)],
-            [new ScalarConverter()]
+            [$constructor],
+            [new Deriving\ToScalar()]
         );
 
-        $this->assertTrue($definition->type()->equals(new Data()));
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
-        $this->assertTrue((current($definition->derivings()))->equals(new ScalarConverter()));
+
+        $this->assertCount(1, $definition->derivings());
+
+        $deriving = $definition->derivings()[0];
+
+        $this->assertTrue((string) $deriving === Deriving\ToScalar::VALUE);
     }
 
     /**
      * @test
      */
-    public function it_forbids_message_name_for_data_type(): void
+    public function it_forbids_message_name_for_non_prooph_message_deriving(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Definition(new Data(), 'Foo', 'Person', [], [], 'invalid');
+        $constructor = new Constructor('Person', [new Argument('name', 'string', false)]);
+
+        new Definition('Foo', 'Person', [$constructor], [], [], 'invalid');
     }
 
     /**
      * @test
      */
-    public function it_forbids_message_name_for_enum_type(): void
+    public function it_forbids_empty_string_message_name_for_prooph_message_deriving(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Definition(new Enum(), 'Foo', 'Color', [], [], 'invalid');
+        $constructor = new Constructor('Person', [new Argument('name', 'string', false)]);
+
+        new Definition('Foo', 'Person', [$constructor], [new Deriving\Command()], [], '');
     }
 
     /**
      * @test
      */
-    public function it_forbids_message_name_for_uuid_type(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(new Uuid(), 'Foo', 'PersonId', [], [], 'invalid');
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_scalar_converter_deriving_for_more_then_one_argument_on_data_type(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Data(),
-            'Foo',
-            'Person',
-            [
-                new Argument('', 'name', 'string', false),
-                new Argument('', 'age', 'int', false),
-            ],
-            [new ScalarConverter()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_string_converter_deriving_for_more_then_one_argument_on_data_type(): void
+    public function it_requires_constructors_to_be_correct_instance(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         new Definition(
-            new Data(),
-            'Foo',
-            'Person',
-            [
-                new Argument('', 'name', 'string', false),
-                new Argument('', 'age', 'int', false),
-            ],
-            [new StringConverter()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_requires_arguments_to_be_correct_instance(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Data(),
             'Foo',
             'Person',
             ['invalid']
@@ -173,177 +135,173 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_forbids_argument_name_to_be_same_as_definition_name(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Data(),
-            'Foo',
-            'Person',
-            [new Argument('', 'person', null, false)]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_argument_type_hint_for_enums(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Enum(),
-            'Foo',
-            'Color',
-            [new Argument('', 'name', 'int', false)]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_requires_at_least_one_enum_type_implementation(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Enum(),
-            'Foo',
-            'Color'
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_creates_simple_uuid_type(): void
-    {
-        $definition = new Definition(
-            new Uuid(),
-            'Foo',
-            'PersonId'
-        );
-
-        $this->assertTrue($definition->type()->equals(new Uuid()));
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_derivings_for_enum_type(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Enum(),
-            'Foo',
-            'Color',
-            [
-                new Argument('', 'Blue', null, false),
-                new Argument('', 'Red', null, false),
-            ],
-            [new ScalarConverter()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_arguments_for_uuid_type(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Uuid(),
-            'Foo',
-            'PersonId',
-            [new Argument('', 'Red', null, false)]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_derivings_for_uuid_type(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Uuid(),
-            'Foo',
-            'PersonId',
-            [],
-            [new ScalarConverter()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_derivings_for_prooph_message_types(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Command(),
-            'Foo',
-            'RegisterPerson',
-            [],
-            [new ScalarConverter()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_empty_message_name_string_for_prooph_message_types(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            new Command(),
-            'Foo',
-            'RegisterPerson',
-            [],
-            [],
-            ''
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_creates_prooph_message_types(): void
     {
         $definition = new Definition(
-            new Command(),
             'Foo',
             'RegisterPerson',
-            [],
+            [new Constructor('RegisterPerson', [
+                new Argument('id', 'string'),
+            ])],
+            [new Deriving\Command()],
             [],
             'register.person'
         );
 
-        $this->assertTrue($definition->type()->equals(new Command()));
+        $this->assertTrue((string) $definition->derivings()[0] === (string) Deriving\Command::VALUE);
         $this->assertSame('register.person', $definition->messageName());
     }
 
     /**
      * @test
      */
-    public function it_forbids_duplicate_argument_names(): void
+    public function it_forbids_duplicate_constructor_names(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+        ]);
+
         new Definition(
-            new Command(),
             'Foo',
-            'RegisterPerson',
-            [
-                new Argument('', 'same', null, false),
-                new Argument('', 'same', null, false),
-            ]
+            'Person',
+            [$constructor, $constructor]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_forbids_invalid_derivings(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+        ]);
+
+        new Definition(
+            'Foo',
+            'Person',
+            [$constructor],
+            ['invalid']
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_forbids_duplicate_derivings(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+        ]);
+
+        new Definition(
+            'Foo',
+            'Person',
+            [$constructor],
+            [new Deriving\ToString(), new Deriving\ToString()]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_forbids_invalid_conditions(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+        ]);
+
+        new Definition(
+            'Foo',
+            'Person',
+            [$constructor],
+            [],
+            ['invalid']
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_at_least_one_constructor(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Definition('Foo', 'Person');
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_deriving_requirements(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $deriving1 = new Deriving\Command();
+        $deriving2 = new Deriving\ToArray();
+
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+        ]);
+
+        new Definition(
+            'Foo',
+            'Person',
+            [$constructor],
+            [$deriving1, $deriving2],
+            []
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_deriving_requirements_2(): void
+    {
+        $deriving1 = new Deriving\FromString();
+        $deriving2 = new Deriving\ToString();
+
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+        ]);
+
+        $definition = new Definition(
+            'Foo',
+            'Person',
+            [$constructor],
+            [$deriving1, $deriving2],
+            []
+        );
+
+        $this->assertCount(2, $definition->derivings());
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_constructor_requirements(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $constructor = new Constructor('Person', [
+            new Argument('firstName', 'string', false),
+            new Argument('lastName', 'string', false),
+        ]);
+
+        new Definition(
+            'Foo',
+            'Person',
+            [$constructor],
+            [new Deriving\ToString()],
+            []
         );
     }
 }

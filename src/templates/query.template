@@ -1,0 +1,16 @@
+        use \Prooph\Common\Messaging\PayloadTrait;
+
+        protected $messageName = '{{message_name}}';
+
+        public static function with({{arguments}}): {{class_name}}
+        {
+            {{static_constructor_body}}
+        }
+
+        {{accessors}}
+
+        protected function setPayload(array $payload): void
+        {
+            {{payload_validation}}
+            parent::setPayload($payload);
+        }

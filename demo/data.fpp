@@ -1,3 +1,3 @@
 namespace Model\Bar;
 
-data Person = {string $name, ?int $age} deriving (ArrayConverter, Equals)
+data Person = Person {string $name, ?int $age} deriving (FromArray, ToArray, Equals);

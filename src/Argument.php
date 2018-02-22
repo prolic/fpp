@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-final class Argument
+class Argument
 {
-    /**
-     * @var string
-     */
-    private $namespace;
-
     /**
      * @var string
      */
@@ -19,24 +14,18 @@ final class Argument
     /**
      * @var string|null
      */
-    private $typeHint;
+    private $type;
 
     /**
      * @var bool
      */
     private $nullable;
 
-    public function __construct(string $namespace, string $name, ?string $typeHint, bool $nullable)
+    public function __construct(string $name, string $type = null, bool $nullable = false)
     {
-        $this->namespace = $namespace;
         $this->name = $name;
-        $this->typeHint = $typeHint;
+        $this->type = $type;
         $this->nullable = $nullable;
-    }
-
-    public function namespace(): string
-    {
-        return $this->namespace;
     }
 
     public function name(): string
@@ -44,9 +33,9 @@ final class Argument
         return $this->name;
     }
 
-    public function typeHint(): ?string
+    public function type(): ?string
     {
-        return $this->typeHint;
+        return $this->type;
     }
 
     public function nullable(): bool
@@ -56,14 +45,6 @@ final class Argument
 
     public function isScalartypeHint(): bool
     {
-        switch ($this->typeHint) {
-            case 'string':
-            case 'int':
-            case 'bool':
-            case 'float':
-                return true;
-            default:
-                return false;
-        }
+        return in_array($this->type, ['string', 'int', 'bool', 'float'], true);
     }
 }

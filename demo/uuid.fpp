@@ -1,3 +1,3 @@
 namespace Model\User;
 
-uuid UserId
+data UserId = UserId

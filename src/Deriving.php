@@ -4,48 +4,15 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-abstract class Deriving
+interface Deriving
 {
-    const OPTIONS = [
-        Deriving\Show::class,
-        Deriving\StringConverter::class,
-        Deriving\ScalarConverter::class,
-        Deriving\ArrayConverter::class,
-        Deriving\Equals::class,
-    ];
+    public function forbidsDerivings(): array;
 
-    const OPTION_VALUES = [
-        'Show',
-        'StringConverter',
-        'ScalarConverter',
-        'ArrayConverter',
-        'Equals',
-    ];
+    /**
+     * @param Constructor[] $constructors
+     * @return bool
+     */
+    public function fulfillsConstructorRequirements(array $constructors): bool;
 
-    final public function __construct()
-    {
-        $valid = false;
-
-        foreach (self::OPTIONS as $value) {
-            if ($this instanceof $value) {
-                $valid = true;
-                break;
-            }
-        }
-
-        if (! $valid) {
-            $self = get_class($this);
-            throw new \LogicException("Invalid Deriving '$self' given");
-        }
-    }
-
-    public function equals(Deriving $other): bool
-    {
-        return get_class($this) === get_class($other);
-    }
-
-    public function __toString(): string
-    {
-        return static::VALUE;
-    }
+    public function __toString(): string;
 }

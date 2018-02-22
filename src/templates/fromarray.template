@@ -1,0 +1,4 @@
+        public function fromArray(array $data): {{class_name}}
+        {
+            {{from_array_body}}
+        }

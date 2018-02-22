@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace FppTest;
 
 use Fpp\Argument;
+use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
-use Fpp\DefinitionCollectionDumper;
 use Fpp\Deriving\Equals;
-use Fpp\Dumper\Dumper;
-use Fpp\Type\Data;
 use PHPUnit\Framework\TestCase;
 
 class DefinitionCollectionTest extends TestCase
@@ -20,15 +18,36 @@ class DefinitionCollectionTest extends TestCase
      */
     public function it_adds_definitions(): void
     {
-        $arguments = [
-            new Argument('', 'name', 'string', false),
-            new Argument('', 'age', 'int', false),
-        ];
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
         $derivings = [new Equals()];
-        $definition = new Definition(new Data(), 'Foo\Bar', 'Person', $arguments, $derivings);
+        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
 
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
+
+        $this->assertCount(1, $collection->definitions());
+
+        $this->assertTrue($collection->hasDefinition('Foo\Bar', 'Person'));
+        $this->assertSame($definition, $collection->definition('Foo\Bar', 'Person'));
+        $this->assertNull($collection->definition('Foo\Bar', 'Unknown'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_definitions_on_constructor(): void
+    {
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
+        $derivings = [new Equals()];
+        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
+
+        $collection = new DefinitionCollection($definition);
 
         $this->assertCount(1, $collection->definitions());
 
@@ -44,12 +63,12 @@ class DefinitionCollectionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $arguments = [
-            new Argument('', 'name', 'string', false),
-            new Argument('', 'age', 'int', false),
-        ];
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
         $derivings = [new Equals()];
-        $definition = new Definition(new Data(), 'Foo\Bar', 'Person', $arguments, $derivings);
+        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
 
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
@@ -61,22 +80,18 @@ class DefinitionCollectionTest extends TestCase
      */
     public function it_merges_definitions(): void
     {
-        $arguments = [
-            new Argument('', 'name', 'string', false),
-            new Argument('', 'age', 'int', false),
-        ];
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
         $derivings = [new Equals()];
-        $definition = new Definition(new Data(), 'Foo\Bar', 'Person', $arguments, $derivings);
+        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
 
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
 
-        $arguments = [
-            new Argument('', 'name', 'string', false),
-            new Argument('', 'age', 'int', false),
-        ];
         $derivings = [new Equals()];
-        $definition = new Definition(new Data(), 'Foo\Baz', 'Person', $arguments, $derivings);
+        $definition = new Definition('Foo\Baz', 'Person', [$constructor], $derivings);
 
         $collection2 = new DefinitionCollection();
         $collection2->addDefinition($definition);
@@ -97,12 +112,12 @@ class DefinitionCollectionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $arguments = [
-            new Argument('', 'name', 'string', false),
-            new Argument('', 'age', 'int', false),
-        ];
+        $constructor = new Constructor('Person', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
         $derivings = [new Equals()];
-        $definition = new Definition(new Data(), 'Foo\Bar', 'Person', $arguments, $derivings);
+        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
 
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
@@ -111,5 +126,33 @@ class DefinitionCollectionTest extends TestCase
         $collection2->addDefinition($definition);
 
         $collection->merge($collection2);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_constructor_definition(): void
+    {
+        $constructor1 = new Constructor('Foo\Bar\Person', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
+
+        $constructor2 = new Constructor('Foo\Bar\Boss', [
+            new Argument('name', 'string', false),
+            new Argument('age', 'int', false),
+        ]);
+
+        $derivings = [new Equals()];
+        $definition = new Definition('Foo\Bar', 'Person', [$constructor1, $constructor2], $derivings);
+
+        $collection = new DefinitionCollection();
+        $collection->addDefinition($definition);
+
+        $this->assertTrue($collection->hasConstructorDefinition('Foo\Bar\Boss'));
+
+        $definition2 = $collection->constructorDefinition('Foo\Bar\Boss');
+
+        $this->assertSame($definition, $definition2);
     }
 }

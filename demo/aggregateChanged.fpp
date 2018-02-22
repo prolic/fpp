@@ -1,3 +1,3 @@
 namespace Model\Foo\Event;
 
-aggregateChanged UserRegistered : user.registered = {string $name, string $email}
+data UserRegistered = UserRegisterd {string $id, ?string $name, string $email} deriving (AggregateChanged:"user-registerd");

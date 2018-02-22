@@ -11,12 +11,21 @@
     "php": "^7.1"
   },
   "require-dev": {
+    "mikey179/vfsStream": "^1.6.5",
     "phpunit/phpunit": "^7.0",
     "prooph/php-cs-fixer-config": "^0.2.1"
   },
   "autoload": {
     "psr-4": {
       "Fpp\\": "src/"
-    }
+    },
+    "files": [
+      "src/dump.php",
+      "src/helpers.php",
+      "src/loadTemplate.php",
+      "src/parse.php",
+      "src/replace.php",
+      "src/scan.php"
+    ]
   }
 }

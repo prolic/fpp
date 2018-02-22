@@ -15,7 +15,7 @@ class ArgumentTest extends TestCase
      */
     public function it_checks_scalar_type_hints(array $dataProvider): void
     {
-        $argument = new Argument('', 'name', $dataProvider[0], false);
+        $argument = new Argument('name', $dataProvider[0], false);
         $this->assertSame($dataProvider[1], $argument->isScalartypeHint());
     }
 

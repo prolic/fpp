@@ -64,17 +64,17 @@ Derivings are kind of PHP's extends keyword, the following rules apply:
 There are 5 deriving types for now:
 
 - Show (not yet implemented)
-- StringConverter
-- ScalarConverter
-- ArrayConverter
+- ToString
+- ToScalar
+- ToArray
 - Equals
 
-Deriving Equals + ArrayConverter
+Deriving Equals + ToArray
 
 ```console
 namespace Model\Foo;
 
-data Person = {string $name, ?int $age} deriving (ArrayConverter, Equals)
+data Person = {string $name, ?int $age} deriving (ToArray, Equals)
 ```
 
 Now you can do this:

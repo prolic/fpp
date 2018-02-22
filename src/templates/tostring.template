@@ -1,0 +1,9 @@
+        public function toString(): string
+        {
+            {{to_string_body}}
+        }
+
+        public function __toString(): string
+        {
+            {{to_string_body}}
+        }
