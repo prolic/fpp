@@ -770,6 +770,10 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
 
 function buildToScalarBody(Constructor $constructor, Definition $definition, DefinitionCollection $collection): string
 {
+    if (isScalarConstructor($constructor)) {
+        return "return \$this->value;\n";
+    }
+
     $argument = $constructor->arguments()[0];
 
     if ($argument->isScalartypeHint()) {

@@ -609,49 +609,70 @@ CODE;
 
     /**
      * @test
+     * @group by
      */
     public function it_replaces_to_scalar(): void
     {
+        $constructor1 = new Constructor('Int');
+
         $userId = new Definition(
             'My',
             'UserId',
-            [
-                new Constructor('Int'),
-            ]
+            [$constructor1],
+            [new Deriving\ToScalar()]
         );
+
+        $constructor2 = new Constructor('String');
 
         $email = new Definition(
             'Some',
             'Email',
-            [
-                new Constructor('String'),
-            ],
-            [
-                new Deriving\ToScalar(),
-            ]
+            [$constructor2],
+            [new Deriving\ToScalar()]
         );
 
-        $constructor = new Constructor('My\Email', [
-            new Argument('value', 'string'),
+        $constructor3 = new Constructor('My\Email', [
+            new Argument('key', 'string'),
         ]);
 
         $definition = new Definition(
             'My',
             'Email',
-            [$constructor],
-            [
-                new Deriving\ToScalar(),
-            ]
+            [$constructor3],
+            [new Deriving\ToScalar()]
         );
 
-        $template = '{{to_scalar_body}}';
+        $template = "{{type}}\n{{to_scalar_body}}";
 
         $expected = <<<CODE
+string
+return \$this->key;
+
+
+CODE;
+
+        $this->assertSame($expected, replace($definition, $constructor3, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
+
+        $template = "{{type}}\n{{to_scalar_body}}";
+
+        $expected = <<<CODE
+string
 return \$this->value;
 
 
 CODE;
 
-        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
+        $this->assertSame($expected, replace($email, $constructor2, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
+
+        $template = "{{type}}\n{{to_scalar_body}}";
+
+        $expected = <<<CODE
+int
+return \$this->value;
+
+
+CODE;
+
+        $this->assertSame($expected, replace($userId, $constructor1, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
     }
 }

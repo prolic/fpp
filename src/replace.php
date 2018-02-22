@@ -134,6 +134,14 @@ function replace(
                 $template = str_replace('{{to_array_body}}', buildToArrayBody($constructor, $definition, $collection), $template);
                 break;
             case Deriving\ToScalar::VALUE:
+                if (isScalarConstructor($constructor)) {
+                    $type = strtolower($constructor->name());
+                } else {
+                    $argument = $constructor->arguments()[0];
+                    $type = strtolower($argument->type());
+                }
+
+                $template = str_replace('{{type}}', $type, $template);
                 $template = str_replace('{{to_scalar_body}}', buildToScalarBody($constructor, $definition, $collection), $template);
                 break;
         }
