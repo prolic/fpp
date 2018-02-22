@@ -4,15 +4,40 @@ declare(strict_types=1);
 
 namespace Fpp\Deriving;
 
-use Fpp\Constructor;
+use Fpp\Definition;
 use Fpp\Deriving as FppDeriving;
+use Fpp\InvalidDeriving;
 use function Fpp\isScalarConstructor;
 
 class ToScalar implements FppDeriving
 {
     const VALUE = 'ToScalar';
 
-    public function forbidsDerivings(): array
+    public function checkDefinition(Definition $definition): void
+    {
+        foreach ($definition->derivings() as $deriving) {
+            if (in_array((string) $deriving, $this->forbidsDerivings(), true)) {
+                throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
+            }
+        }
+
+        foreach ($definition->constructors() as $constructor) {
+            if (isScalarConstructor($constructor)) {
+                continue;
+            }
+
+            if (count($constructor->arguments()) !== 1) {
+                throw InvalidDeriving::exactlyOneConstructorArgumentExpected($definition, self::VALUE);
+            }
+        }
+    }
+
+    public function __toString(): string
+    {
+        return self::VALUE;
+    }
+
+    private function forbidsDerivings(): array
     {
         return [
             AggregateChanged::VALUE,
@@ -22,39 +47,5 @@ class ToScalar implements FppDeriving
             Query::VALUE,
             Uuid::VALUE,
         ];
-    }
-
-    /**
-     * @param Constructor[] $constructors
-     * @return bool
-     */
-    public function fulfillsConstructorRequirements(array $constructors): bool
-    {
-        foreach ($constructors as $constructor) {
-            if (count($constructor->arguments()) > 1) {
-                return false;
-            }
-
-            if (isset($constructor->arguments()[0])) {
-                $argument = $constructor->arguments()[0];
-
-                if (! $argument->isScalartypeHint()) {
-                    return false;
-                }
-
-                if ($argument->type() !== 'string') {
-                    return false;
-                }
-            } elseif (! isScalarConstructor($constructor)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public function __toString(): string
-    {
-        return self::VALUE;
     }
 }

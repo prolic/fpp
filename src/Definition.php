@@ -70,9 +70,11 @@ class Definition
             if (! $constructor instanceof Constructor) {
                 throw new \InvalidArgumentException('Invalid constructor given, must be an instance of ' . Constructor::class);
             }
+
             if (isset($constructorNames[$constructor->name()])) {
                 throw new \InvalidArgumentException('Duplicate constructor name given');
             }
+
             $constructorNames[$constructor->name()] = true;
             $this->constructors[] = $constructor;
         }
@@ -82,17 +84,15 @@ class Definition
             if (! $deriving instanceof Deriving) {
                 throw new \InvalidArgumentException('Invalid deriving given, must be an instance of ' . Deriving::class);
             }
+
             if (isset($derivingNames[(string) $deriving])) {
                 throw new \InvalidArgumentException('Duplicate deriving given');
             }
+
+            $deriving->checkDefinition($this);
+
             $derivingNames[(string) $deriving] = true;
             $this->derivings[] = $deriving;
-
-            if (! $deriving->fulfillsConstructorRequirements($constructors)) {
-                throw $this->unfulfilledConstructorRequirements();
-            }
-
-            $this->checkForbiddenDerivings($deriving, $derivings);
 
             if (in_array((string) $deriving, [
                 Deriving\AggregateChanged::VALUE,

@@ -169,11 +169,11 @@ function replace(
     if ($constructor && $needConstructorAndProperties) {
         $properties = buildProperties($constructor);
         if ('' !== $properties) {
-            $template = str_replace("{{properties}}", buildProperties($constructor), $template);
+            $template = str_replace('{{properties}}', buildProperties($constructor), $template);
         }
         $constructor = buildConstructor($constructor, $definition);
         if ('' !== $constructor) {
-            $template = str_replace("{{constructor}}", $constructor, $template);
+            $template = str_replace('{{constructor}}', $constructor, $template);
         }
     }
 

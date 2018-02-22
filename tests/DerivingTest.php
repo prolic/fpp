@@ -32,10 +32,6 @@ class DerivingTest extends TestCase
 
         foreach ($derivingsMap as $name => $deriving) {
             $this->assertSame($name, (string) $deriving);
-
-            foreach ($deriving->forbidsDerivings() as $deriving) {
-                $this->assertArrayHasKey((string) $deriving, $derivingsMap);
-            }
         }
     }
 }

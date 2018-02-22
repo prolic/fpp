@@ -4,14 +4,43 @@ declare(strict_types=1);
 
 namespace Fpp\Deriving;
 
-use Fpp\Constructor;
+use Fpp\Definition;
 use Fpp\Deriving as FppDeriving;
+use Fpp\InvalidDeriving;
 
 class FromString implements FppDeriving
 {
     const VALUE = 'FromString';
 
-    public function forbidsDerivings(): array
+    public function checkDefinition(Definition $definition): void
+    {
+        foreach ($definition->derivings() as $deriving) {
+            if (in_array((string) $deriving, $this->forbidsDerivings(), true)) {
+                throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
+            }
+        }
+
+        if (count($definition->constructors()) > 1) {
+            throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
+        }
+
+        $constructor = $definition->constructors()[0];
+
+        if ('String' === $constructor->name()) {
+            return;
+        }
+
+        if (count($constructor->arguments()) !== 1) {
+            throw InvalidDeriving::exactlyOneConstructorArgumentExpected($definition, self::VALUE);
+        }
+    }
+
+    public function __toString(): string
+    {
+        return self::VALUE;
+    }
+
+    private function forbidsDerivings(): array
     {
         return [
             AggregateChanged::VALUE,
@@ -21,43 +50,5 @@ class FromString implements FppDeriving
             Query::VALUE,
             Uuid::VALUE,
         ];
-    }
-
-    /**
-     * @param Constructor[] $constructors
-     * @return bool
-     */
-    public function fulfillsConstructorRequirements(array $constructors): bool
-    {
-        if (count($constructors) > 1) {
-            return false;
-        }
-
-        foreach ($constructors as $constructor) {
-            if (count($constructor->arguments()) > 1) {
-                return false;
-            }
-
-            if (isset($constructor->arguments()[0])) {
-                $argument = $constructor->arguments()[0];
-
-                if (! $argument->isScalartypeHint()) {
-                    return false;
-                }
-
-                if ($argument->type() !== 'string') {
-                    return false;
-                }
-            } elseif ('String' !== $constructor->name()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public function __toString(): string
-    {
-        return self::VALUE;
     }
 }

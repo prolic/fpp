@@ -8,6 +8,7 @@ use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\Deriving;
+use Fpp\InvalidDeriving;
 use PHPUnit\Framework\TestCase;
 
 class DefinitionTest extends TestCase
@@ -243,7 +244,7 @@ class DefinitionTest extends TestCase
      */
     public function it_checks_deriving_requirements(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidDeriving::class);
 
         $deriving1 = new Deriving\Command();
         $deriving2 = new Deriving\ToArray();
@@ -289,7 +290,7 @@ class DefinitionTest extends TestCase
      */
     public function it_checks_constructor_requirements(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidDeriving::class);
 
         $constructor = new Constructor('Person', [
             new Argument('firstName', 'string', false),

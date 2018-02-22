@@ -6,13 +6,10 @@ namespace Fpp;
 
 interface Deriving
 {
-    public function forbidsDerivings(): array;
-
     /**
-     * @param Constructor[] $constructors
-     * @return bool
+     * @throws InvalidDeriving
      */
-    public function fulfillsConstructorRequirements(array $constructors): bool;
+    public function checkDefinition(Definition $definition): void;
 
     public function __toString(): string;
 }
