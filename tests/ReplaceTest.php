@@ -603,7 +603,6 @@ return [
 
 CODE;
 
-
         $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
     }
 
@@ -682,12 +681,12 @@ CODE;
             [new Deriving\ToString()]
         );
 
-        $template = "{{to_string_body}}";
+        $template = '{{to_string_body}}';
         $expected = "return \$this->key;\n\n";
 
         $this->assertSame($expected, replace($definition, $constructor2, $template, new DefinitionCollection($definition, $email), new FinalKeyword()));
 
-        $template = "{{to_string_body}}";
+        $template = '{{to_string_body}}';
         $expected = "return \$this->value;\n\n";
 
         $this->assertSame($expected, replace($email, $constructor1, $template, new DefinitionCollection($definition, $email), new FinalKeyword()));

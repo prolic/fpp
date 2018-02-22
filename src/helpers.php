@@ -718,7 +718,7 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
         if ($argument->nullable()) {
             $code .= "                null === \$this->{$argument->name()} ? null : ";
         } else {
-            $code .= "                ";
+            $code .= '                ';
         }
 
         if ($argument->isScalartypeHint()) {
