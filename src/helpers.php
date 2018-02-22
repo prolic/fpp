@@ -311,6 +311,10 @@ function buildArgumentList(Constructor $constructor, Definition $definition, boo
         $argumentList .= '$' . $argument->name() . ', ';
     }
 
+    if ('' === $argumentList) {
+        return '';
+    }
+
     return substr($argumentList, 0, -2);
 }
 
@@ -826,4 +830,23 @@ function buildToScalarBody(Constructor $constructor, Definition $definition, Def
     }
 
     throw new \RuntimeException("Cannot build ToScalar for $class, no deriving to build scalar for {$argument->type()} given");
+}
+
+function buildConstructor(Constructor $constructor, Definition $definition): string
+{
+    $argumentList = buildArgumentList($constructor, $definition, true);
+
+    if ('' === $argumentList) {
+        return '';
+    }
+
+    $code = "public function __construct($argumentList)\n        {\n";
+
+    foreach ($constructor->arguments() as $key => $argument) {
+        $code .= "            \$this->{$argument->name()} = \${$argument->name()};\n";
+    }
+
+    $code .= "        }\n\n";
+
+    return $code;
 }

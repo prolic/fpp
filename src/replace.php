@@ -18,6 +18,7 @@ function replace(
     ClassKeyword $keyword
 ): string {
     if ($constructor) {
+        $needConstructorAndProperties = true;
         $fqcn = $definition->name();
 
         if ($definition->namespace()) {
@@ -34,6 +35,7 @@ function replace(
 
         if (isScalarConstructor($constructor)) {
             $className = $definition->name();
+            $needConstructorAndProperties = false;
         } else {
             $pos = strrpos($constructor->name(), '\\');
 
@@ -65,6 +67,7 @@ function replace(
     foreach ($definition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\AggregateChanged::VALUE:
+                    $needConstructorAndProperties = false;
                     $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
                     $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                     $template = str_replace('{{properties}}', buildProperties($constructor), $template);
@@ -74,6 +77,7 @@ function replace(
                     $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, false), $template);
                 break;
             case Deriving\Command::VALUE:
+                $needConstructorAndProperties = false;
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Command', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace("{{properties}}\n", '', $template);
@@ -83,6 +87,7 @@ function replace(
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
             case Deriving\DomainEvent::VALUE:
+                $needConstructorAndProperties = false;
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{properties}}', buildProperties($constructor), $template);
@@ -92,6 +97,7 @@ function replace(
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
             case Deriving\Enum::VALUE:
+                $needConstructorAndProperties = false;
                 if ($constructor) {
                     $template = str_replace('{{enum_value}}', buildReferencedClass($definition->namespace(), $constructor->name()), $template);
                 } else {
@@ -122,6 +128,7 @@ function replace(
                 $template = str_replace('{{type}}', $type, $template);
                 break;
             case Deriving\Query::VALUE:
+                $needConstructorAndProperties = false;
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Query', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{properties}}', buildProperties($constructor), $template);
@@ -147,6 +154,9 @@ function replace(
             case Deriving\ToString::VALUE:
                 $template = str_replace('{{to_string_body}}', buildToScalarBody($constructor, $definition, $collection), $template);
                 break;
+            case Deriving\Uuid::VALUE:
+                $needConstructorAndProperties = false;
+                break;
         }
     }
 
@@ -155,6 +165,20 @@ function replace(
     }
 
     $template = str_replace('{{class_extends}}', '', $template);
+
+    if ($constructor && $needConstructorAndProperties) {
+        $properties = buildProperties($constructor);
+        if ('' !== $properties) {
+            $template = str_replace("{{properties}}", buildProperties($constructor), $template);
+        }
+        $constructor = buildConstructor($constructor, $definition);
+        if ('' !== $constructor) {
+            $template = str_replace("{{constructor}}", $constructor, $template);
+        }
+    }
+
+    $template = str_replace("        {{properties}}\n", '', $template);
+    $template = str_replace("        {{constructor}}\n", '', $template);
 
     return $template . "\n";
 }

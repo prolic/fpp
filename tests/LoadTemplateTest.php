@@ -27,6 +27,8 @@ class LoadTemplateTest extends TestCase
 namespace {{namespace_name}} {
     {{abstract_final}}class {{class_name}}{{class_extends}}
     {
+        {{properties}}
+        {{constructor}}
     }
 }
 
@@ -49,6 +51,8 @@ TEMPLATE;
 namespace {{namespace_name}} {
     {{abstract_final}}class {{class_name}}{{class_extends}}
     {
+        {{properties}}
+        {{constructor}}
         private \$value;
 
         public function __construct(string \$value)
@@ -82,6 +86,8 @@ TEMPLATE;
 namespace {{namespace_name}} {
     {{abstract_final}}class {{class_name}}{{class_extends}}
     {
+        {{properties}}
+        {{constructor}}
         public function toString(): string
         {
             {{to_string_body}}
@@ -119,6 +125,8 @@ TEMPLATE;
 namespace {{namespace_name}} {
     {{abstract_final}}class {{class_name}}{{class_extends}}
     {
+        {{properties}}
+        {{constructor}}
         const OPTIONS = [
             {{enum_options}}
         ];
@@ -188,6 +196,8 @@ TEMPLATE;
 namespace {{namespace_name}} {
     {{abstract_final}}class {{class_name}}{{class_extends}}
     {
+        {{properties}}
+        {{constructor}}
         const VALUE = '{{enum_value}}';
     }
 }
