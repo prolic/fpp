@@ -133,6 +133,9 @@ function replace(
             case Deriving\ToArray::VALUE:
                 $template = str_replace('{{to_array_body}}', buildToArrayBody($constructor, $definition, $collection), $template);
                 break;
+            case Deriving\ToScalar::VALUE:
+                $template = str_replace('{{to_scalar_body}}', buildToScalarBody($constructor, $definition, $collection), $template);
+                break;
         }
     }
 

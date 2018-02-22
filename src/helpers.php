@@ -706,8 +706,18 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
 {
     $code = "return [\n";
 
+    $class = $definition->namespace();
+
+    if ('' !== $class) {
+        $class .= '\\';
+    }
+
+    $class .= $definition->name();
+
     foreach ($constructor->arguments() as $key => $argument) {
         if (null === $argument->type()) {
+            throw new \RuntimeException("Cannot build ToArray for $class , unknown argument {$argument->type()} given");
+        } elseif ($argument->nullable()) {
             $code .= "                null === \$this->{$argument->name()} ? null : ";
         } else {
             $code .= "                ";
@@ -733,14 +743,6 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
         } elseif ($collection->hasConstructorDefinition($argument->type())) {
             $argumentDefinition = $collection->constructorDefinition($argument->type());
         } else {
-            $class = $definition->namespace();
-
-            if ('' !== $class) {
-                $class .= '\\';
-            }
-
-            $class .= $definition->name();
-
             throw new \RuntimeException("Cannot build ToArray for $class , unknown argument {$argument->type()} given");
         }
 
@@ -760,10 +762,64 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
             }
         }
 
-        $code .= "\$this->{$argument->name()},\n";
+        throw new \RuntimeException("Cannot build ToArray for $class , no derivin to build array or scalar for {$argument->type()} given");
     }
 
     $code .= "            ];\n";
 
     return $code;
+}
+
+function buildToScalarBody(Constructor $constructor, Definition $definition, DefinitionCollection $collection): string
+{
+    $argument = $constructor->arguments()[0];
+
+    $class = $definition->namespace();
+
+    if ('' !== $class) {
+        $class .= '\\';
+    }
+
+    $class .= $definition->name();
+
+    if (null === $argument->type()) {
+        throw new \RuntimeException("Cannot build ToArray for $class , unknown argument {$argument->type()} given");
+    } elseif ($argument->nullable()) {
+        $code = "return null === \$this->{$argument->name()} ? null : ";
+    } else {
+        $code = "return ";
+    }
+
+    if ($argument->isScalartypeHint()) {
+        $code .= "\$this->{$argument->name()};\n";
+        return $code;
+    }
+
+    $position = strrpos($argument->type(), '\\');
+
+    if (false !== $position) {
+        $namespace = substr($argument->type(), 0, $position);
+        $name = substr($argument->type(), $position + 1);
+    } else {
+        $namespace = '';
+        $name = $argument->type();
+    }
+
+    if ($collection->hasDefinition($namespace, $name)) {
+        $argumentDefinition = $collection->definition($namespace, $name);
+    } elseif ($collection->hasConstructorDefinition($argument->type())) {
+        $argumentDefinition = $collection->constructorDefinition($argument->type());
+    } else {
+        throw new \RuntimeException("Cannot build ToScalar for $class , unknown argument {$argument->type()} given");
+    }
+
+    foreach ($argumentDefinition->derivings() as $deriving) {
+        switch ((string) $deriving) {
+            case Deriving\ToScalar::VALUE:
+                $code .= "\$this->{$argument->name()}->toScalar();\n";
+                return $code;
+        }
+    }
+
+    throw new \RuntimeException("Cannot build ToArray for $class , no derivin to build scalar for {$argument->type()} given");
 }

@@ -596,13 +596,61 @@ EXPECTED;
         $expected = <<<CODE
 return [
                 \$this->id->toString(),
-                \$this->name,
+                null === \$this->name ? null : \$this->name,
                 \$this->email->toString(),
             ];
 
 
 CODE;
 
+
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_replaces_to_scalar(): void
+    {
+        $userId = new Definition(
+            'My',
+            'UserId',
+            [
+                new Constructor('Int'),
+            ]
+        );
+
+        $email = new Definition(
+            'Some',
+            'Email',
+            [
+                new Constructor('String'),
+            ],
+            [
+                new Deriving\ToScalar(),
+            ]
+        );
+
+        $constructor = new Constructor('My\Email', [
+            new Argument('value', 'string', true),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'Email',
+            [$constructor],
+            [
+                new Deriving\ToScalar(),
+            ]
+        );
+
+        $template = '{{to_scalar_body}}';
+
+        $expected = <<<CODE
+return null === \$this->value ? null : \$this->value;
+
+
+CODE;
 
         $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
     }
