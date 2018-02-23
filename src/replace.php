@@ -18,40 +18,31 @@ function replace(
     ClassKeyword $keyword
 ): string {
     if ($constructor) {
-        $needConstructorAndProperties = true;
-        $fqcn = $definition->name();
-
-        if ($definition->namespace()) {
-            $fqcn = $definition->namespace() . '\\' . $fqcn;
-        }
-
-        $constructorClass = str_replace($definition->namespace() . '\\', '', $constructor->name());
-
-        if (false === strpos($constructorClass, '\\')) {
-            $baseClass = $definition->name();
-        } else {
-            $baseClass = $fqcn;
-        }
-
         if (isScalarConstructor($constructor)) {
-            $className = $definition->name();
             $needConstructorAndProperties = false;
+            $className = $definition->name();
+            $namespace = $definition->namespace();
         } else {
-            $pos = strrpos($constructor->name(), '\\');
+            $needConstructorAndProperties = true;
+            $position = strrpos($constructor->name(), '\\');
 
-            if (false !== $pos) {
-                $className = substr($constructor->name(), $pos + 1);
+            if (false === $position) {
+                $namespace = '';
             } else {
-                $className = $constructor->name();
+                $namespace = substr($constructor->name(), 0, $position);
             }
+
+            $className = substr($constructor->name(), $position + 1);
         }
     } else {
         $className = $definition->name();
+        $namespace = $definition->namespace();
     }
 
-    $template = str_replace('{{namespace_name}}', $definition->namespace(), $template);
+    $template = str_replace('{{namespace_name}}', $namespace, $template);
     $template = str_replace('{{class_name}}', $className, $template);
     $template = str_replace('{{variable_name}}', lcfirst($definition->name()), $template);
+
     switch ($keyword->toString()) {
         case AbstractKeyword::VALUE:
             $template = str_replace('{{abstract_final}}', 'abstract ', $template);
@@ -99,11 +90,11 @@ function replace(
             case Deriving\Enum::VALUE:
                 $needConstructorAndProperties = false;
                 if ($constructor) {
-                    $template = str_replace('{{enum_value}}', buildReferencedClass($definition->namespace(), $constructor->name()), $template);
+                    $template = str_replace('{{enum_value}}', buildReferencedClass($namespace, $constructor->name()), $template);
                 } else {
                     $replace = '';
-                    foreach ($definition->constructors() as $constructor) {
-                        $class = buildReferencedClass($definition->namespace(), $constructor->name());
+                    foreach ($definition->constructors() as $definitionConstructor) {
+                        $class = buildReferencedClass($namespace, $definitionConstructor->name());
                         $replace .= "            $class::VALUE => $class::class,\n";
                     }
                     $template = str_replace('{{enum_options}}', substr($replace, 12, -1), $template);
@@ -159,7 +150,18 @@ function replace(
         }
     }
 
-    if (isset($fqcn) && $fqcn !== $constructor->name() && ! isScalarConstructor($constructor)) {
+    $fullQualifiedDefinitionClassName = $definition->name();
+
+    if ($definition->namespace()) {
+        $fullQualifiedDefinitionClassName = $definition->namespace() . '\\' . $fullQualifiedDefinitionClassName;
+    }
+
+    if ($constructor && ! isScalarConstructor($constructor) && $constructor->name() !== $fullQualifiedDefinitionClassName) {
+        if ($namespace === $definition->namespace()) {
+            $baseClass = $definition->name();
+        } else {
+            $baseClass = '\\' . $fullQualifiedDefinitionClassName;
+        }
         $template = str_replace('{{class_extends}}', ' extends ' . $baseClass, $template);
     }
 

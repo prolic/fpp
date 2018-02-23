@@ -325,6 +325,7 @@ EXPECTED;
 
     /**
      * @test
+     * @group by
      */
     public function it_replaces_enum(): void
     {
@@ -353,10 +354,50 @@ EXPECTED;
         $this->assertSame($expected, replace($definition, null, $template, new DefinitionCollection($definition), new AbstractKeyword()));
 
         $template = '{{enum_value}}';
-
         $expected = "Red\n";
 
         $this->assertSame($expected, replace($definition, $constructor1, $template, new DefinitionCollection($definition), new FinalKeyword()));
+    }
+
+    /**
+     * @test
+     * @group by
+     */
+    public function it_replaces_name_spaces_enum(): void
+    {
+        $constructor1 = new Constructor('My\Color\Red');
+        $constructor2 = new Constructor('What\Color\Blue');
+
+        $definition = new Definition(
+            'My',
+            'Color',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum()]
+        );
+
+        $template = <<<TEMPLATE
+{{class_name}}
+{{enum_options}}
+TEMPLATE;
+
+        $expected = <<<EXPECTED
+Color
+Color\Red::VALUE => Color\Red::class,
+            \What\Color\Blue::VALUE => \What\Color\Blue::class,
+
+EXPECTED;
+
+        $this->assertSame($expected, replace($definition, null, $template, new DefinitionCollection($definition), new AbstractKeyword()));
+
+        $template = '{{enum_value}}';
+        $expected = "Red\n";
+
+        $this->assertSame($expected, replace($definition, $constructor1, $template, new DefinitionCollection($definition), new FinalKeyword()));
+
+        $template = '{{enum_value}}';
+        $expected = "Blue\n";
+
+        $this->assertSame($expected, replace($definition, $constructor2, $template, new DefinitionCollection($definition), new FinalKeyword()));
     }
 
     /**
