@@ -659,7 +659,7 @@ CODE;
         $contents = <<<CODE
 namespace Something;
 data Person = Person { string \$name, ?int \$age } where
-    | strlen(\$name) < 0 => "Name too short";
+    | strlen(\$name) === 0 => "Name too short";
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
@@ -670,7 +670,7 @@ CODE;
 
         $condition = $conditions[0];
         $this->assertSame('_', $condition->constructor());
-        $this->assertSame('strlen($name) < 0', $condition->code());
+        $this->assertSame('strlen($name) === 0', $condition->code());
         $this->assertSame('Name too short', $condition->errorMessage());
     }
 
@@ -682,7 +682,7 @@ CODE;
         $contents = <<<CODE
 namespace Something;
 data Person = Person { string \$name, ?int \$age } where
-    | strlen(\$name) < 0 => 'Name too short';
+    | strlen(\$name) === 0 => 'Name too short';
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
@@ -692,7 +692,7 @@ CODE;
 
         $condition1 = $conditions[0];
         $this->assertSame('_', $condition1->constructor());
-        $this->assertSame('strlen($name) < 0', $condition1->code());
+        $this->assertSame('strlen($name) === 0', $condition1->code());
         $this->assertSame('Name too short', $condition1->errorMessage());
     }
 
@@ -704,7 +704,7 @@ CODE;
         $contents = <<<CODE
 namespace Something;
 data Person = Person { string \$name, int \$age } where
-    | strlen(\$name) < 0 => "Name too short"
+    | strlen(\$name) === 0 => "Name too short"
     | \$age < 18 => "Too young";
 CODE;
 
@@ -716,7 +716,7 @@ CODE;
 
         $condition1 = $conditions[0];
         $this->assertSame('_', $condition1->constructor());
-        $this->assertSame('strlen($name) < 0', $condition1->code());
+        $this->assertSame('strlen($name) === 0', $condition1->code());
         $this->assertSame('Name too short', $condition1->errorMessage());
 
         $condition2 = $conditions[1];
@@ -735,7 +735,7 @@ CODE;
         $contents = <<<CODE
 namespace Something;
 data Person = Person { string \$name, ?int \$age } where
-    strlen(\$name) < 0 => "Name too short";
+    strlen(\$name) === 0 => "Name too short";
 CODE;
 
         parse($this->createDefaultFile($contents), $this->derivingsMap);
@@ -751,7 +751,7 @@ CODE;
         $contents = <<<CODE
 namespace Something;
 data Person = Person { string \$name, ?int \$age } where
-    | strlen(\$name) < 0 => Name too short;
+    | strlen(\$name) === 0 => Name too short;
 CODE;
 
         parse($this->createDefaultFile($contents), $this->derivingsMap);
@@ -767,7 +767,7 @@ CODE;
         $contents = <<<CODE
 namespace Something;
 data Person = Person { string \$name, ?int \$age } where
-    \ strlen(\$name) < 0 => Name too short;
+    \ strlen(\$name) === 0 => Name too short;
 CODE;
 
         parse($this->createDefaultFile($contents), $this->derivingsMap);
@@ -782,10 +782,10 @@ CODE;
 namespace Something;
 data Person = Person { string \$name, int \$age } | Chef { string \$name, } where
     Person:
-        | strlen(\$name) < 0 => "Name too short"
+        | strlen(\$name) === 0 => "Name too short"
         | \$age < 18 => "Too young"
     Chef:
-        | strlen(\$name) < 0 => "Name too short";
+        | strlen(\$name) === 0 => "Name too short";
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
@@ -795,18 +795,18 @@ CODE;
         $this->assertCount(3, $conditions);
 
         $condition1 = $conditions[0];
-        $this->assertSame('Person', $condition1->constructor());
-        $this->assertSame('strlen($name) < 0', $condition1->code());
+        $this->assertSame('Something\Person', $condition1->constructor());
+        $this->assertSame('strlen($name) === 0', $condition1->code());
         $this->assertSame('Name too short', $condition1->errorMessage());
 
         $condition2 = $conditions[1];
-        $this->assertSame('Person', $condition2->constructor());
+        $this->assertSame('Something\Person', $condition2->constructor());
         $this->assertSame('$age < 18', $condition2->code());
         $this->assertSame('Too young', $condition2->errorMessage());
 
         $condition3 = $conditions[2];
-        $this->assertSame('Chef', $condition3->constructor());
-        $this->assertSame('strlen($name) < 0', $condition3->code());
+        $this->assertSame('Something\Chef', $condition3->constructor());
+        $this->assertSame('strlen($name) === 0', $condition3->code());
         $this->assertSame('Name too short', $condition3->errorMessage());
     }
 
@@ -821,7 +821,7 @@ data Person = Person { string \$name, int \$age } | Chef { string \$name, } wher
     Person:
         | \$age < 18 => "Too young"
     _:
-        | strlen(\$name) < 0 => "Name too short";
+        | strlen(\$name) === 0 => "Name too short";
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
@@ -831,13 +831,13 @@ CODE;
         $this->assertCount(2, $conditions);
 
         $condition1 = $conditions[0];
-        $this->assertSame('Person', $condition1->constructor());
+        $this->assertSame('Something\Person', $condition1->constructor());
         $this->assertSame('$age < 18', $condition1->code());
         $this->assertSame('Too young', $condition1->errorMessage());
 
         $condition2 = $conditions[1];
         $this->assertSame('_', $condition2->constructor());
-        $this->assertSame('strlen($name) < 0', $condition2->code());
+        $this->assertSame('strlen($name) === 0', $condition2->code());
         $this->assertSame('Name too short', $condition2->errorMessage());
     }
 }

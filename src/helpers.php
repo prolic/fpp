@@ -842,6 +842,20 @@ function buildConstructor(Constructor $constructor, Definition $definition): str
 
     $code = "public function __construct($argumentList)\n        {\n";
 
+    foreach ($definition->conditions() as $condition) {
+        if ('_' === $condition->constructor()
+            || false !== strrpos($constructor->name(), $condition->constructor())
+        ) {
+            $code .= <<<CODE
+            if ({$condition->code()}) {
+                throw new \\InvalidArgumentException('{$condition->errorMessage()}');
+            }
+
+
+CODE;
+        }
+    }
+
     foreach ($constructor->arguments() as $key => $argument) {
         $code .= "            \$this->{$argument->name()} = \${$argument->name()};\n";
     }
