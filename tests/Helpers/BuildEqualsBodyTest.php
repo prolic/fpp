@@ -43,13 +43,16 @@ class BuildEqualsBodyTest extends TestCase
         $collection = new DefinitionCollection($definition, $definition2, $definition3);
 
         $expected = <<<STRING
-return \$this->name === \$yeah->name &&
-                \$this->whatever === \$yeah->whatever &&
-                \$this->value === \$yeah->value &&
-                \$this->no->toString() === \$yeah->no->toString() &&
-                (null === \$this->what && null === \$yeah->what ||
-                    (null !== \$this->what && null !== \$yeah->what &&
-                    \$this->what->equals(\$yeah->what))
+return get_class(\$this) === get_class(\$yeah)
+                && \$this->name === \$yeah->name
+                && \$this->whatever === \$yeah->whatever
+                && \$this->value === \$yeah->value
+                && \$this->no->toString() === \$yeah->no->toString()
+                && ((null === \$this->what 
+                    && null === \$yeah->what)
+                    || (null !== \$this->what
+                        && null !== \$yeah->what
+                        && \$this->what->equals(\$yeah->what))
                 );
 STRING;
 

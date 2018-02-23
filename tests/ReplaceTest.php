@@ -8,7 +8,6 @@ use Fpp\Argument;
 use Fpp\ClassKeyword\AbstractKeyword;
 use Fpp\ClassKeyword\FinalKeyword;
 use Fpp\ClassKeyword\NoKeyword;
-use Fpp\Condition;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
@@ -375,85 +374,9 @@ EXPECTED;
 
         $template = '{{equals_body}}';
 
-        $expected = "return \$this->name === \$color->name;\n";
+        $expected = "return get_class(\$this) === get_class(\$color)\n                && \$this->name === \$color->name;\n";
 
         $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
-    }
-
-    /**
-     * @test
-     */
-    public function it_replaces_from_array(): void
-    {
-        $userId = new Definition(
-            'My',
-            'UserId',
-            [
-                new Constructor('My\UserId'),
-            ],
-            [
-                new Deriving\Uuid(),
-            ]
-        );
-
-        $email = new Definition(
-            'Some',
-            'Email',
-            [
-                new Constructor('String'),
-            ],
-            [
-                new Deriving\FromString(),
-                new Deriving\ToString(),
-            ]
-        );
-
-        $constructor = new Constructor('My\Person', [
-            new Argument('id', 'My\UserId'),
-            new Argument('name', 'string', true),
-            new Argument('email', 'Some\Email'),
-        ]);
-
-        $definition = new Definition(
-            'My',
-            'Person',
-            [$constructor],
-            [
-                new Deriving\FromArray(),
-            ]
-        );
-
-        $template = '{{from_array_body}}';
-
-        $expected = <<<CODE
-if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
-                throw new \InvalidArgumentException("Key 'id' is missing in data array or is not a string");
-            }
-
-            \$id = UserId::fromString(\$data['id']);
-
-            if (isset(\$data['name'])) {
-                if (! is_string(\$data['name'])) {
-                    throw new \InvalidArgumentException("Value for 'name' is not a string in data array");
-                }
-
-                \$name = \$data['name'];
-            } else {
-                \$name = null;
-            }
-
-            if (! isset(\$data['email']) || ! is_string(\$data['email'])) {
-                throw new \InvalidArgumentException("Key 'email' is missing in data array or is not a string");
-            }
-
-            \$email = \Some\Email::fromString(\$data['email']);
-
-            return new self(\$id, \$name, \$email);
-
-
-CODE;
-
-        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
     }
 
     /**
@@ -691,67 +614,5 @@ CODE;
         $expected = "return \$this->value;\n\n";
 
         $this->assertSame($expected, replace($email, $constructor1, $template, new DefinitionCollection($definition, $email), new FinalKeyword()));
-    }
-
-    /**
-     * @test
-     */
-    public function it_generates_properties_and_constructor_incl_conditions(): void
-    {
-        $name = new Definition(
-            'Foo\Bar',
-            'Name',
-            [new Constructor('String')]
-        );
-
-        $age = new Definition(
-            'Foo\Bar',
-            'Age',
-            [new Constructor('Int')]
-        );
-
-        $constructor = new Constructor('Foo\Bar\Person', [
-            new Argument('name', 'Foo\Bar\Name'),
-            new Argument('age', 'Foo\Bar\Age'),
-        ]);
-
-        $person = new Definition(
-            'Foo\Bar',
-            'Person',
-            [$constructor],
-            [],
-            [
-                new Condition('Person', 'strlen($name->value()) === 0', 'Name too short'),
-                new Condition('_', '$age->value() < 18', 'Too young'),
-                new Condition('Unknown', '$age->value() < 39', 'Too young'),
-            ]
-        );
-
-        $template = "{{properties}}\n{{constructor}}";
-
-        $expected = <<<STRING
-private \$name;
-        private \$age;
-
-public function __construct(Name \$name, Age \$age)
-        {
-            if (strlen(\$name->value()) === 0) {
-                throw new \InvalidArgumentException('Name too short');
-            }
-
-            if (\$age->value() < 18) {
-                throw new \InvalidArgumentException('Too young');
-            }
-
-            \$this->name = \$name;
-            \$this->age = \$age;
-        }
-
-
-
-STRING;
-
-        $this->assertSame($expected, replace($person, $constructor, $template, new DefinitionCollection($name, $age, $person), new FinalKeyword()));
-
     }
 }
