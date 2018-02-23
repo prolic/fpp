@@ -509,19 +509,14 @@ function buildEqualsBody(Constructor $constructor, string $variableName, Definit
         return $code;
     }
 
-    $code = '                ' . $code;
-
     $nullCheck = function (bool $nullable, $argumentName, string $code) use ($variableName): string {
         if (! $nullable) {
             return "                $code\n";
         }
 
         return <<<CODE
-                && ((null === \$this->$argumentName 
-                    && null === \${$variableName}->$argumentName)
-                    || (null !== \$this->$argumentName
-                        && null !== \${$variableName}->$argumentName
-                        $code)
+                && ((null === \$this->$argumentName && null === \${$variableName}->$argumentName)
+                    || (null !== \$this->$argumentName && null !== \${$variableName}->$argumentName $code)
                 )
 
 CODE;
@@ -572,7 +567,7 @@ CODE;
         }
     }
 
-    return 'return ' . substr($code, 16, -1) . ';';
+    return 'return ' . substr($code, 0, -1) . ';';
 }
 
 function buildFromArrayBody(Constructor $constructor, Definition $definition, DefinitionCollection $collection): string

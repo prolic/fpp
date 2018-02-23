@@ -2,8 +2,6 @@
 
         protected $messageName = '{{message_name}}';
 
-        {{properties}}
-
         public static function with({{arguments}}): {{class_name}}
         {
             {{static_constructor_body}}

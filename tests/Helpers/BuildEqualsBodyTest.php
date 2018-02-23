@@ -48,11 +48,8 @@ return get_class(\$this) === get_class(\$yeah)
                 && \$this->whatever === \$yeah->whatever
                 && \$this->value === \$yeah->value
                 && \$this->no->toString() === \$yeah->no->toString()
-                && ((null === \$this->what 
-                    && null === \$yeah->what)
-                    || (null !== \$this->what
-                        && null !== \$yeah->what
-                        && \$this->what->equals(\$yeah->what))
+                && ((null === \$this->what && null === \$yeah->what)
+                    || (null !== \$this->what && null !== \$yeah->what && \$this->what->equals(\$yeah->what))
                 );
 STRING;
 

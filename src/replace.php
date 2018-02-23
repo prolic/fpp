@@ -131,7 +131,6 @@ function replace(
                 $needConstructorAndProperties = false;
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Query', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
-                $template = str_replace('{{properties}}', buildProperties($constructor), $template);
                 $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                 $template = str_replace('{{accessors}}', buildPayloadAccessors($definition, $collection), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
@@ -168,10 +167,12 @@ function replace(
 
     if ($constructor && $needConstructorAndProperties) {
         $properties = buildProperties($constructor);
+
         if ('' !== $properties) {
             $template = str_replace('{{properties}}', buildProperties($constructor), $template);
         }
         $constructor = buildConstructor($constructor, $definition);
+
         if ('' !== $constructor) {
             $template = str_replace('{{constructor}}', $constructor, $template);
         }

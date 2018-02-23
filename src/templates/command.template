@@ -1,4 +1,4 @@
-        use \Prooph\Common\Messaging\PayloadTrait;
+use \Prooph\Common\Messaging\PayloadTrait;
 
         protected $messageName = '{{message_name}}';
 

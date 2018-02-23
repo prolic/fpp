@@ -42,7 +42,10 @@ try {
         $collection = $collection->merge(parse($file, $derivingsMap));
     }
 } catch (ParseError $e) {
-    echo $e;
+    echo 'Parse Error: ' . $e->getMessage();
+    exit(1);
+} catch (\RuntimeException $e) {
+    echo $e->getMessage();
     exit(1);
 }
 
