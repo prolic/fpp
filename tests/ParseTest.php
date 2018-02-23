@@ -817,7 +817,7 @@ CODE;
     {
         $contents = <<<CODE
 namespace Something;
-data Person = Person { string \$name, int \$age } | Chef { string \$name, } where
+data Person = Person { string \$name, int \$age } | Chef { string \$name } where
     Person:
         | \$age < 18 => "Too young"
     _:
@@ -839,5 +839,41 @@ CODE;
         $this->assertSame('_', $condition2->constructor());
         $this->assertSame('strlen($name) === 0', $condition2->code());
         $this->assertSame('Name too short', $condition2->errorMessage());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_derivings_and_conditions(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } deriving (FromArray, ToArray) where
+    _:
+        | strlen(\$name) < 2 => 'Name too short'
+        | isset(\$age) && \$age < 22 => 'Too young';
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
+        $definition = $collection->definition('Something', 'Person');
+
+        $derivings = $definition->derivings();
+        $this->assertCount(2, $derivings);
+
+        $this->assertSame('FromArray', $derivings[0]::VALUE);
+        $this->assertSame('ToArray', $derivings[1]::VALUE);
+
+        $conditions = $definition->conditions();
+        $this->assertCount(2, $conditions);
+
+        $condition1 = $conditions[0];
+        $this->assertSame('_', $condition1->constructor());
+        $this->assertSame('strlen($name) < 2', $condition1->code());
+        $this->assertSame('Name too short', $condition1->errorMessage());
+
+        $condition2 = $conditions[1];
+        $this->assertSame('_', $condition2->constructor());
+        $this->assertSame('isset($age) && $age < 22', $condition2->code());
+        $this->assertSame('Too young', $condition2->errorMessage());
     }
 }

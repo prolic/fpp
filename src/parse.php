@@ -263,6 +263,7 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                         }
 
                         $derivingName = $token[1];
+
                         $derivings[] = $derivingsMap[$token[1]];
                         $token = $nextToken();
                         $token = $skipWhitespace($token);
@@ -287,7 +288,10 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                             $token = $nextToken();
                         }
                     }
+
                     $token = $nextToken();
+                    $token = $skipWhitespace($token);
+
                     if (';' === $token[1]) {
                         goto buildDefinition;
                     }
