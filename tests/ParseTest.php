@@ -533,6 +533,27 @@ CODE;
 
     /**
      * @test
+     * @group by
+     */
+    public function it_parses_namespaced_constructors(): void
+    {
+        $contents = <<<CODE
+namespace My {
+    data Color = Color\Blue | \What\Color\Red deriving (Enum);
+}
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
+        $definition = $collection->definition('My', 'Color');
+
+        $this->assertCount(2, $definition->constructors());
+
+        $this->assertSame('My\Color\Blue', $definition->constructors()[0]->name());
+        $this->assertSame('What\Color\Red', $definition->constructors()[1]->name());
+    }
+
+    /**
+     * @test
      */
     public function it_detects_invalid_constructor_argument_definitions(): void
     {

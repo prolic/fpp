@@ -157,20 +157,37 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                 $conditions = [];
                 parseConstructor:
 
+                $constructorName = '';
                 $arguments = [];
                 $token = $nextToken();
                 $token = $skipWhitespace($token);
+
+                if ($token[0] === T_NS_SEPARATOR) {
+                    $constructorName = '\\';
+                    $token = $nextToken();
+                }
+
                 $requireUcFirstString($token);
-                $constructorName = $token[1];
+                $constructorName .= $token[1];
+                $token = $nextToken();
+
+                while ($token[0] === T_NS_SEPARATOR) {
+                    $constructorName .= $token[1];
+                    $token = $nextToken();
+                    $requireUcFirstString($token);
+                    $constructorName .= $token[1];
+                    $token = $nextToken();
+                }
 
                 if ($namespace
                     && substr($constructorName, 0, 1) !== '\\'
                     && ! in_array($constructorName, ['String', 'Int', 'Float', 'Bool'], true)
                 ) {
                     $constructorName = $namespace . '\\' . $constructorName;
+                } elseif (substr($constructorName, 0, 1) === '\\') {
+                    $constructorName = substr($constructorName, 1);
                 }
 
-                $token = $nextToken();
                 $token = $skipWhitespace($token);
 
                 if ($token[1] === '{') {
