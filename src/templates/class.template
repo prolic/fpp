@@ -3,6 +3,8 @@ namespace {{namespace_name}} {
     {
         {{properties}}
         {{constructor}}
+        {{accessors}}
+        {{setters}}
         {{body}}
     }
 }

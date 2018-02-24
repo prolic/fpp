@@ -177,10 +177,8 @@ function buildProperties(Constructor $constructor): string
     return ltrim($properties);
 }
 
-function buildAccessors(Definition $definition, DefinitionCollection $collection): string
+function buildAccessors(Definition $definition, Constructor $constructor, DefinitionCollection $collection): string
 {
-    // domain events only have a single constructor
-    $constructor = $definition->constructors()[0];
     $accessors = '';
 
     foreach ($constructor->arguments() as $argument) {
@@ -196,6 +194,32 @@ CODE;
     }
 
     return ltrim(substr($accessors, 0, -1));
+}
+
+function buildSetters(Definition $definition, Constructor $constructor, DefinitionCollection $collection): string
+{
+    $setters = '';
+
+    foreach ($constructor->arguments() as $key => $argument) {
+        $type = buildArgumentType($argument, $definition);
+        $setterName = 'with' . ucfirst($argument->name());
+        $setters .= "public function $setterName($type \${$argument->name()}): self\n        {\n";
+        $constructorArguments = '';
+
+        foreach ($constructor->arguments() as $key2 => $argument2) {
+            if ($key !== $key2) {
+                $constructorArguments .= '$this->' . $argument2->name() . ', ';
+            } else {
+                $constructorArguments .= '$' . $argument->name() . ', ';
+            }
+        }
+
+        $setters .= "            return new self(" . substr($constructorArguments, 0, -2) . ");\n        }\n";
+
+        return $setters;
+    }
+
+    return ltrim(substr($setters, 0, -1));
 }
 
 function buildEventAccessors(Definition $definition, DefinitionCollection $collection): string

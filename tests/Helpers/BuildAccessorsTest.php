@@ -16,7 +16,7 @@ class BuildAccessorsTest extends TestCase
     /**
      * @test
      */
-    public function it_builds_event_accessors(): void
+    public function it_builds_accessors(): void
     {
         $argument1 = new Argument('name', 'string');
         $argument2 = new Argument('age', 'int', true);
@@ -44,6 +44,6 @@ public function name(): string
 
 STRING;
 
-        $this->assertSame($expected, buildAccessors($definition, $collection));
+        $this->assertSame($expected, buildAccessors($definition, $constructor, $collection));
     }
 }

@@ -29,6 +29,8 @@ namespace {{namespace_name}} {
     {
         {{properties}}
         {{constructor}}
+        {{accessors}}
+        {{setters}}
     }
 }
 
@@ -53,6 +55,8 @@ namespace {{namespace_name}} {
     {
         {{properties}}
         {{constructor}}
+        {{accessors}}
+        {{setters}}
         private \$value;
 
         public function __construct(string \$value)
@@ -88,6 +92,8 @@ namespace {{namespace_name}} {
     {
         {{properties}}
         {{constructor}}
+        {{accessors}}
+        {{setters}}
         public function toString(): string
         {
             {{to_string_body}}
@@ -127,6 +133,8 @@ namespace {{namespace_name}} {
     {
         {{properties}}
         {{constructor}}
+        {{accessors}}
+        {{setters}}
         const OPTIONS = [
             {{enum_options}}
         ];
@@ -198,6 +206,8 @@ namespace {{namespace_name}} {
     {
         {{properties}}
         {{constructor}}
+        {{accessors}}
+        {{setters}}
         const VALUE = '{{enum_value}}';
     }
 }

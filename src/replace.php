@@ -173,18 +173,20 @@ function replace(
         if ('' !== $properties) {
             $template = str_replace('{{properties}}', buildProperties($constructor), $template);
         }
-        $constructor = buildConstructor($constructor, $definition);
+        $constructorString = buildConstructor($constructor, $definition);
 
-        if ('' !== $constructor) {
-            // first line: only constructor, no class body
-            // second line: constructor with class body
-            $template = str_replace("{{constructor}}\n    }", $constructor . "    }", $template);
-            $template = str_replace("{{constructor}}", $constructor, $template);
+        if ('' !== $constructorString) {
+            $template = str_replace('{{accessors}}', buildAccessors($definition, $constructor, $collection), $template);
+            $template = str_replace('{{setters}}', buildSetters($definition, $constructor, $collection), $template);
+            $template = str_replace("{{constructor}}", $constructorString, $template);
         }
     }
 
     $template = str_replace("        {{properties}}\n", '', $template);
     $template = str_replace("        {{constructor}}\n", '', $template);
+    $template = str_replace("        {{accessors}}\n", '', $template);
+    $template = str_replace("        {{setters}}\n", '', $template);
+    $template = str_replace("\n\n    }\n}", "\n    }\n}", $template);
 
     return $template . "\n";
 }
