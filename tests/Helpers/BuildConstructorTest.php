@@ -70,7 +70,6 @@ public function __construct(Name \$name, Age \$age)
         }
 
 
-
 STRING;
 
         $this->assertSame($expected, replace($person, $constructor, $template, new DefinitionCollection($name, $age, $person), new FinalKeyword()));

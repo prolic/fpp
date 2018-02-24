@@ -939,7 +939,7 @@ CODE;
         $code .= "            \$this->{$argument->name()} = \${$argument->name()};\n";
     }
 
-    $code .= "        }\n\n";
+    $code .= "        }\n";
 
     return $code;
 }

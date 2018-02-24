@@ -488,8 +488,6 @@ CODE;
      */
     public function it_parses_constructor_arguments_with_subnamespace(): void
     {
-        $this->expectException(ParseError::class);
-
         $contents = <<<CODE
 namespace Something;
 data Person = Person { Data\Name \$name }; 
@@ -512,8 +510,6 @@ CODE;
      */
     public function it_parses_constructor_arguments_with_root_namespace(): void
     {
-        $this->expectException(ParseError::class);
-
         $contents = <<<CODE
 namespace Something;
 data Person = Person { \Data\Name \$name }; 

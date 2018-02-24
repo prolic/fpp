@@ -325,7 +325,6 @@ EXPECTED;
 
     /**
      * @test
-     * @group by
      */
     public function it_replaces_enum(): void
     {
@@ -361,7 +360,6 @@ EXPECTED;
 
     /**
      * @test
-     * @group by
      */
     public function it_replaces_name_spaces_enum(): void
     {

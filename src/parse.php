@@ -207,23 +207,40 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                             $requireString($token);
                         }
 
+                        if ($token[0] === T_NS_SEPARATOR) {
+                            $type = '\\';
+                            $token = $nextToken();
+                        }
+
                         if ($token[0] === T_STRING) {
-                            $type = $token[1];
+                            $type .= $token[1];
 
-                            if (! in_array($type, ['string', 'int', 'bool', 'float'])) {
+                            if (! in_array($type, ['string', 'int', 'bool', 'float'], true)) {
                                 $requireUcFirstString($token);
+                            }
 
-                                if (substr($type, 0, 1) !== '\\') {
-                                    $type = $namespace . '\\' . $type;
+                            $token = $nextToken();
+
+                            while ($token[0] !== T_WHITESPACE) {
+                                if ($token[0] !== T_NS_SEPARATOR) {
+                                    throw ParseError::unexpectedTokenFound('T_WHITESPACE or T_NS_SEPARATOR', $token, $filename);
                                 }
+
+                                $type .= '\\';
+                                $token = $nextToken();
+                                $requireUcFirstString($token);
+                                $type .= $token[1];
+                                $token = $nextToken();
                             }
 
                             if (substr($type, 0, 1) === '\\') {
                                 $type = substr($type, 1);
+                            } elseif (substr($type, 0, 1) !== '\\'
+                                && ! in_array($type, ['string', 'int', 'bool', 'float'], true)
+                            ) {
+                                $type = $namespace . '\\' . $type;
                             }
 
-                            $token = $nextToken();
-                            $requireWhitespace($token);
                             $token = $nextToken();
                             $requireVariable($token);
                             $argumentName = substr($token[1], 1);
