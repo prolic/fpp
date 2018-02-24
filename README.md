@@ -98,20 +98,9 @@ $p->equals($p) // true
 
 `php bin/fpp.php <source dir or file> <target file>`
 
-### Demo
+### Wiki
 
-```console
-git clone https://github.com/prolic/fpp
-cd fpp
-composer install
-php bin/fpp.php demo demo/generated.php
-```
-
-or for a single file:
-
-```console
-php bin/fpp.php demo/enum.fpp demo/generated.php
-```
+[See the wiki here](https://github.com/prolic/fpp/wiki)
 
 ### Features
 
