@@ -862,13 +862,13 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
 function buildToScalarBody(Constructor $constructor, Definition $definition, DefinitionCollection $collection): string
 {
     if (isScalarConstructor($constructor)) {
-        return "return \$this->value;\n";
+        return "return \$this->value;";
     }
 
     $argument = $constructor->arguments()[0];
 
     if ($argument->isScalartypeHint()) {
-        return "return \$this->{$argument->name()};\n";
+        return "return \$this->{$argument->name()};";
     }
 
     $position = strrpos($argument->type(), '\\');
@@ -900,11 +900,11 @@ function buildToScalarBody(Constructor $constructor, Definition $definition, Def
     foreach ($argumentDefinition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\ToScalar::VALUE:
-                return "return \$this->{$argument->name()}->toScalar();\n";
+                return "return \$this->{$argument->name()}->toScalar();";
             case Deriving\Enum::VALUE:
             case Deriving\ToString::VALUE:
             case Deriving\Uuid::VALUE:
-            return "return \$this->{$argument->name()}->toString();\n";
+            return "return \$this->{$argument->name()}->toString();";
         }
     }
 

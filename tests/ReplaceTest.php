@@ -604,17 +604,17 @@ CODE;
         );
 
         $template = "{{type}}\n{{to_scalar_body}}";
-        $expected = "string\nreturn \$this->key;\n\n";
+        $expected = "string\nreturn \$this->key;\n";
 
         $this->assertSame($expected, replace($definition, $constructor3, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
 
         $template = "{{type}}\n{{to_scalar_body}}";
-        $expected = "string\nreturn \$this->value;\n\n";
+        $expected = "string\nreturn \$this->value;\n";
 
         $this->assertSame($expected, replace($email, $constructor2, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
 
         $template = "{{type}}\n{{to_scalar_body}}";
-        $expected = "int\nreturn \$this->value;\n\n";
+        $expected = "int\nreturn \$this->value;\n";
 
         $this->assertSame($expected, replace($userId, $constructor1, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
     }
@@ -645,12 +645,12 @@ CODE;
         );
 
         $template = '{{to_string_body}}';
-        $expected = "return \$this->key;\n\n";
+        $expected = "return \$this->key;\n";
 
         $this->assertSame($expected, replace($definition, $constructor2, $template, new DefinitionCollection($definition, $email), new FinalKeyword()));
 
         $template = '{{to_string_body}}';
-        $expected = "return \$this->value;\n\n";
+        $expected = "return \$this->value;\n";
 
         $this->assertSame($expected, replace($email, $constructor1, $template, new DefinitionCollection($definition, $email), new FinalKeyword()));
     }
