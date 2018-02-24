@@ -533,7 +533,6 @@ CODE;
 
     /**
      * @test
-     * @group by
      */
     public function it_parses_namespaced_constructors(): void
     {
@@ -550,6 +549,31 @@ CODE;
 
         $this->assertSame('My\Color\Blue', $definition->constructors()[0]->name());
         $this->assertSame('What\Color\Red', $definition->constructors()[1]->name());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_namespaced_constructors_2(): void
+    {
+        $contents = <<<CODE
+namespace My {
+    data Person = Person { \Other\Email \$email, Name \$name, Age \$age} deriving (ToArray, Equals);
+}
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingsMap);
+        $definition = $collection->definition('My', 'Person');
+
+        $this->assertCount(1, $definition->constructors());
+        $this->assertSame('My\Person', $definition->constructors()[0]->name());
+
+        $this->assertCount(3, $definition->constructors()[0]->arguments());
+        $arguments = $definition->constructors()[0]->arguments();
+
+        $this->assertSame('Other\Email', $arguments[0]->type());
+        $this->assertSame('My\Name', $arguments[1]->type());
+        $this->assertSame('My\Age', $arguments[2]->type());
     }
 
     /**
