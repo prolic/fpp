@@ -176,7 +176,10 @@ function replace(
         $constructor = buildConstructor($constructor, $definition);
 
         if ('' !== $constructor) {
-            $template = str_replace('{{constructor}}', $constructor, $template);
+            // first line: only constructor, no class body
+            // second line: constructor with class body
+            $template = str_replace("{{constructor}}\n    }", $constructor . "    }", $template);
+            $template = str_replace("{{constructor}}", $constructor, $template);
         }
     }
 
