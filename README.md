@@ -20,7 +20,7 @@ This will generate the following php code:
 
 ```php
 namespace  {
-    final class erson
+    final class Person
     {
         private $name;
         private $age;

@@ -27,12 +27,12 @@ function replace(
             $position = strrpos($constructor->name(), '\\');
 
             if (false === $position) {
+                $className = $constructor->name();
                 $namespace = '';
             } else {
+                $className = substr($constructor->name(), $position + 1);
                 $namespace = substr($constructor->name(), 0, $position);
             }
-
-            $className = substr($constructor->name(), $position + 1);
         }
     } else {
         $className = $definition->name();
