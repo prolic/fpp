@@ -1,12 +1,10 @@
 # FPP
 
-## Functional PHP Preprocessor
-
-### In development - API will change !!!
+## Functional PHP Preprocessor - Immutable data type generator
 
 ### What it this?
 
-This library can generate php code based on fpp definitions, the syntax is inspired by Haskell.
+This library can generate immutable data types based on fpp definitions, the syntax is inspired by Haskell.
 
 ### So what really is it?
 
@@ -15,22 +13,25 @@ Create a file and put this in it:
 ```console
 namespace Model\Foo;
 
-data Person = {string $name, ?int $age}
+data Person = Person { string $name, ?int $age };
 ```
 
-Then generate php code. Now you can do this:
+This will generate the following php code:
 
 ```php
-$p = \Model\Foo\Person\Person('sasa', 36);
+namespace Model\Foo {
+    final class Person
+    {
+        private $name;
+        private $age;
 
-echo \Model\Foo\Person\name($p); // sasa
-echo \Model\Foo\Person\age($p); // 36
-
-$p2 = \Model\Foo\Person\setAge($p, 37);
-
-echo \Model\Foo\Person\age($p2); // 37
-
-var_dump($p === $p2); // false
+        public function __construct(string $name, ?int $age)
+        {
+            $this->name = $name;
+            $this->age = $age;
+        }
+    }
+}
 ```
 
 ### Enums?
@@ -40,13 +41,13 @@ No problem
 ```console
 namespace MyEnum;
 
-enum Color = Red | Blue | Green | Yellow
+enum Color = Red | Blue | Green | Yellow deriving (Enum);
 ```
 
 ```php
-$blue = MyEnum\Blue();
-var_dump($blue->equals(MyEnum\Blue())); // true
-var_dump($blue->equals(MyEnum\Red())); // false
+$blue = new MyEnum\Blue();
+var_dump($blue->equals(new MyEnum\Blue())); // true
+var_dump($blue->equals(new MyEnum\Red())); // false
 
 function (MyEnum\Color $color): string
 {
@@ -61,26 +62,34 @@ Derivings are kind of PHP's extends keyword, the following rules apply:
 - Only data types can be derived
 - It's possible to derive multiple times
 
-There are 5 deriving types for now:
+There are 13 deriving types for now:
 
-- Show (not yet implemented)
-- ToString
-- ToScalar
-- ToArray
+- AggregateChanged
+- Command
+- DomainEvent
+- Enum
 - Equals
+- FromArray
+- FromScalar
+- FromString
+- Query
+- ToArray
+- ToScalar
+- ToString
+- Uuid
 
 Deriving Equals + ToArray
 
 ```console
 namespace Model\Foo;
 
-data Person = {string $name, ?int $age} deriving (ToArray, Equals)
+data Person = Person { string $name, ?int $age } deriving (ToArray, Equals);
 ```
 
 Now you can do this:
 
 ```php
-$p = Person::fromArray(['name' => 'sasa', 'age' => 36]);
+$p = new Model\Foo\Person(['name' => 'sasa', 'age' => 36]);
 var_dump($p->toArray()); // ['name' => 'sasa', 'age' => 36]
 $p->equals($p) // true
 ```
@@ -108,18 +117,12 @@ php bin/fpp.php demo/enum.fpp demo/generated.php
 
 - [x] Create immutable data types with ease
 - [x] Strict types always
-- [x] Functional accessors and setters
 - [x] Generate prooph commands
 - [x] Generate prooph events
 - [x] Generate prooph queries
 - [x] Generate prooph aggregate changed events
-- [x] Generate enums
-- [x] Generate uuids
 - [x] Ability to switch dumper implementation for custom output
 - [x] Allow composite data objects
-- [ ] Allow composite prooph objects
-- [ ] Constructor validation
-- [ ] Allow creating of custom constructors
-- [ ] Show deriving feature
-- [ ] Make parser more robust
-- [ ] More to come
+- [x] Allow composite prooph objects
+- [x] Constructor validation
+- [x] Allow creating of custom constructors
