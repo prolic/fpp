@@ -862,7 +862,7 @@ function buildToArrayBody(Constructor $constructor, Definition $definition, Defi
 function buildToScalarBody(Constructor $constructor, Definition $definition, DefinitionCollection $collection): string
 {
     if (isScalarConstructor($constructor)) {
-        return "return \$this->value;";
+        return 'return $this->value;';
     }
 
     $argument = $constructor->arguments()[0];
