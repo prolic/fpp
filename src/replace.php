@@ -182,7 +182,7 @@ function replace(
         if ('' !== $constructorString) {
             $template = str_replace('{{accessors}}', buildAccessors($definition, $constructor, $collection), $template);
             $template = str_replace('{{setters}}', buildSetters($definition, $constructor, $collection), $template);
-            $template = str_replace("{{constructor}}", $constructorString, $template);
+            $template = str_replace('{{constructor}}', $constructorString, $template);
         }
     }
 

@@ -114,6 +114,7 @@ class ReplaceTest extends TestCase
 {{payload_validation}}
 {{properties}}
 {{accessors}}
+
 TEMPLATE;
 
         $expected = <<<EXPECTED
@@ -211,6 +212,7 @@ EXPECTED;
 {{payload_validation}}
 {{properties}}
 {{accessors}}
+
 TEMPLATE;
 
         $expected = <<<EXPECTED
@@ -276,6 +278,7 @@ EXPECTED;
 {{payload_validation}}
 {{properties}}
 {{accessors}}
+
 TEMPLATE;
 
         $expected = <<<EXPECTED
@@ -485,6 +488,7 @@ EXPECTED;
 {{static_constructor_body}}
 {{payload_validation}}
 {{accessors}}
+
 TEMPLATE;
 
         $expected = <<<EXPECTED

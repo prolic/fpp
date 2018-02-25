@@ -214,7 +214,7 @@ function buildSetters(Definition $definition, Constructor $constructor, Definiti
             }
         }
 
-        $setters .= "            return new self(" . substr($constructorArguments, 0, -2) . ");\n        }\n";
+        $setters .= '            return new self(' . substr($constructorArguments, 0, -2) . ");\n        }\n";
 
         return $setters;
     }
