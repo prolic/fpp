@@ -251,7 +251,15 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                                 $arguments[] = new Argument($argumentName, $type, $nullable);
                                 goto parseArguments;
                             }
-                        }
+                        }/* elseif ($token[0] === T_VARIABLE) {
+                            $arguments[] = new Argument(substr($token[1], 1), null, false);
+                            $token = $nextToken();
+                            $token = $skipWhitespace($token);
+
+                            if (in_array($token[1], [',', '}'], true)) {
+                                goto parseArguments;
+                            }
+                        }*/
                     }
 
                     $token = $nextToken();
