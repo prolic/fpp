@@ -381,7 +381,10 @@ function buildStaticConstructorBodyConvertingToPayload(
 
     foreach ($constructor->arguments() as $key => $argument) {
         if ($argument->isScalartypeHint() || null === $argument->type()) {
-            $code .= $addArgument($key, $argument->name(), "\${$argument->name()}");
+            $value = $argument->nullable()
+                ? "null === \${$argument->name()} ? null : \${$argument->name()}: "
+                : "\${$argument->name()}";
+            $code .= $addArgument($key, $argument->name(), $value);
             continue;
         }
 
@@ -407,15 +410,24 @@ function buildStaticConstructorBodyConvertingToPayload(
         foreach ($definition->derivings() as $deriving) {
             switch ((string) $deriving) {
                 case Deriving\ToArray::VALUE:
-                    $code .= $addArgument($key, $argument->name(), "\${$argument->name()}->toArray()");
+                    $value = $argument->nullable()
+                        ? "null === \${$argument->name()} ? null : \${$argument->name()}->toArray()"
+                        : "\${$argument->name()}->toArray()";
+                    $code .= $addArgument($key, $argument->name(), $value);
                     continue 3;
                 case Deriving\ToScalar::VALUE:
-                    $code .= $addArgument($key, $argument->name(), "\${$argument->name()}->toScalar()");
+                    $value = $argument->nullable()
+                        ? "null === \${$argument->name()} ? null : \${$argument->name()}->toScalar()"
+                        : "\${$argument->name()}->toScalar()";
+                    $code .= $addArgument($key, $argument->name(), $value);
                     continue 3;
                 case Deriving\Enum::VALUE:
                 case Deriving\ToString::VALUE:
                 case Deriving\Uuid::VALUE:
-                $code .= $addArgument($key, $argument->name(), "\${$argument->name()}->toString()");
+                $value = $argument->nullable()
+                    ? "null === \${$argument->name()} ? null : \${$argument->name()}->toString()"
+                    : "\${$argument->name()}->toString()";
+                $code .= $addArgument($key, $argument->name(), $value);
                     continue 3;
             }
         }
