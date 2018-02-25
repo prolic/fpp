@@ -19,7 +19,7 @@ data Person = Person { string $name, ?int $age };
 This will generate the following php code:
 
 ```php
-namespace  {
+namespace Model\Foo {
     final class Person
     {
         private $name;
@@ -41,9 +41,14 @@ namespace  {
             return $this->age;
         }
 
-        public function withName(string $name): self
+        public function withName(string $name): Person
         {
             return new self($name, $this->age);
+        }
+
+        public function withAge(?int $age): Person
+        {
+            return new self($this->name, $age);
         }
     }
 }
