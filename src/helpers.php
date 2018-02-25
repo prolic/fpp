@@ -489,9 +489,10 @@ CODE;
 CODE;
                     continue 3;
                 case Deriving\ToScalar::VALUE:
+                    $type = strtolower($definition->constructors()[0]->name());
                     $code .= <<<CODE
-            if (! isset(\$payload['{$argument->name()}']) || ! is_{$argument->type()}(\$payload['{$argument->name()}'])) {
-                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a {$argument->type()}");
+            if (! isset(\$payload['{$argument->name()}']) || ! is_{$type}(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a $type");
             }
 
 

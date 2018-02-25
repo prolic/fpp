@@ -44,12 +44,14 @@ try {
 } catch (ParseError $e) {
     echo 'Parse Error: ' . $e->getMessage();
     exit(1);
-} catch (\RuntimeException $e) {
-    echo $e->getMessage();
-    exit(1);
 }
 
-file_put_contents($output, dump($collection, loadTemplate, replace));
+try {
+    file_put_contents($output, dump($collection, loadTemplate, replace));
+} catch (\RuntimeException $e) {
+    echo 'RuntimeException: ' . $e->getMessage();
+    exit(1);
+}
 
 echo "Successfully generated to and written to '$output'\n";
 exit(0);
