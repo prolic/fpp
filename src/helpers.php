@@ -498,34 +498,64 @@ CODE;
         foreach ($definition->derivings() as $deriving) {
             switch ((string) $deriving) {
                 case Deriving\ToArray::VALUE:
-                    $code .= <<<CODE
+                    if ($argument->nullable()) {
+                        $code .= <<<CODE
+            if (isset(\$payload['{$argument->name()}']) && ! is_array(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not an array in payload");
+            }
+
+
+CODE;
+                    } else {
+                        $code .= <<<CODE
             if (! isset(\$payload['{$argument->name()}']) || ! is_array(\$payload['{$argument->name()}'])) {
                 throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not an array");
             }
 
 
 CODE;
+                    }
                     continue 3;
                 case Deriving\ToScalar::VALUE:
                     $type = strtolower($definition->constructors()[0]->name());
-                    $code .= <<<CODE
+                    if ($argument->nullable()) {
+                        $code .= <<<CODE
+            if (isset(\$payload['{$argument->name()}']) && ! is_{$type}(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$type} in payload");
+            }
+
+
+CODE;
+                    } else {
+                        $code .= <<<CODE
             if (! isset(\$payload['{$argument->name()}']) || ! is_{$type}(\$payload['{$argument->name()}'])) {
                 throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a $type");
             }
 
 
 CODE;
+                    }
                     continue 3;
                 case Deriving\Enum::VALUE:
                 case Deriving\ToString::VALUE:
                 case Deriving\Uuid::VALUE:
-                $code .= <<<CODE
+                    if ($argument->nullable()) {
+                        $code .= <<<CODE
+            if (isset(\$payload['{$argument->name()}']) && ! is_string(\$payload['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a string in payload");
+            }
+
+
+CODE;
+                    } else {
+                        $code .= <<<CODE
             if (! isset(\$payload['{$argument->name()}']) || ! is_string(\$payload['{$argument->name()}'])) {
                 throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a string");
             }
 
 
 CODE;
+                    }
                     continue 3;
             }
         }
