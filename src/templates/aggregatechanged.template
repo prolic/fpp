@@ -1,3 +1,5 @@
+        protected $messageName = '{{message_name}}';
+
         /**
          * @var array
          */
