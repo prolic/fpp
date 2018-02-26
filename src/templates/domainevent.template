@@ -7,8 +7,6 @@
             {{static_constructor_body}}
         }
 
-        {{accessors}}
-
         protected function setPayload(array $payload): void
         {
             {{payload_validation}}

@@ -18,8 +18,6 @@
             return new static($aggregateId, $payload);
         }
 
-        {{accessors}}
-
         protected function __construct(string $aggregateId, array $payload, array $metadata = [])
         {
             //Metadata needs to be set before setAggregateId and setVersion is called
