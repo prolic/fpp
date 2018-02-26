@@ -25,6 +25,7 @@ CODE;
 
     foreach ($collection->definitions() as $definition) {
         $constructors = $definition->constructors();
+
         if (1 === count($constructors)) {
             $constructor = $constructors[0];
             $code .= $replace($definition, $constructor, $loadTemplate($definition, $constructor), $collection, new FinalKeyword());
