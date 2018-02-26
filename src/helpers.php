@@ -381,10 +381,7 @@ function buildStaticConstructorBodyConvertingToPayload(
 
     foreach ($constructor->arguments() as $key => $argument) {
         if ($argument->isScalartypeHint() || null === $argument->type()) {
-            $value = $argument->nullable()
-                ? "null === \${$argument->name()} ? null : \${$argument->name()}: "
-                : "\${$argument->name()}";
-            $code .= $addArgument($key, $argument->name(), $value);
+            $code .= $addArgument($key, $argument->name(), "\${$argument->name()}");
             continue;
         }
 
