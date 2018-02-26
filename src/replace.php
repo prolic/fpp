@@ -41,7 +41,6 @@ function replace(
     }
 
     $template = str_replace('{{namespace_name}}', $namespace, $template);
-    $template = str_replace('{{variable_name}}', lcfirst($definition->name()), $template);
 
     switch ($keyword->toString()) {
         case AbstractKeyword::VALUE:

@@ -23,5 +23,5 @@ function buildClassName(Definition $definition, ?Constructor $constructor, Defin
         return substr($constructor->name(), $position + 1);
     }
 
-    return  $definition->name();
+    return $definition->name();
 }

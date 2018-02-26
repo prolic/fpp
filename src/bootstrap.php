@@ -16,6 +16,7 @@ $files = [
     'builder/buildClassName.php',
     'builder/buildEqualsBody.php',
     'builder/buildFromArrayBody.php',
+    'builder/buildVariableName.php',
 ];
 
 foreach ($files as $file) {

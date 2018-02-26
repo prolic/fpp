@@ -34,6 +34,7 @@ function defaultBuilders(): array
         'class_name' => Builder\buildClassName,
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,
+        'variable_name' => Builder\buildVariableName,
     ];
 }
 
