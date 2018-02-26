@@ -6,6 +6,10 @@
 
 This library can generate immutable data types based on fpp definitions, the syntax is inspired by Haskell.
 
+### YouTube Video Tutorial
+
+[![YouTube Video Tutorial](https://i.ytimg.com/vi/MYh1_sydQ5U/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLCtO68XORuK-gEGeTJSXdSHqY3PBQ)](https://youtu.be/MYh1_sydQ5U)
+
 ### So what really is it?
 
 Create a file and put this in it:
@@ -53,10 +57,6 @@ namespace Model\Foo {
     }
 }
 ```
-
-### Tutorial
-
-[YouTube Tutorial](https://youtu.be/MYh1_sydQ5U)
 
 ### Enums?
 
