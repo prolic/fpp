@@ -9,7 +9,7 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="vendor/autoload.php"
+         bootstrap="src/bootstrap.php"
 >
     <testsuite name="Fpp Test Suite">
         <directory>./tests</directory>

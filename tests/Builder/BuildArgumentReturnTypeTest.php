@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace FppTest\Helpers;
+namespace FppTest\Builder;
 
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildArgumentType;
+use function Fpp\buildArgumentReturnType;
 
-class BuildArgumentTypeTest extends TestCase
+class BuildArgumentReturnTypeTest extends TestCase
 {
     /**
      * @test
@@ -21,7 +21,7 @@ class BuildArgumentTypeTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $this->assertEmpty(buildArgumentType($argument, $definition));
+        $this->assertEmpty(buildArgumentReturnType($argument, $definition));
     }
 
     /**
@@ -33,7 +33,7 @@ class BuildArgumentTypeTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $this->assertSame('string', buildArgumentType($argument, $definition));
+        $this->assertSame(': string', buildArgumentReturnType($argument, $definition));
     }
 
     /**
@@ -45,7 +45,7 @@ class BuildArgumentTypeTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $this->assertSame('?int', buildArgumentType($argument, $definition));
+        $this->assertSame(': ?int', buildArgumentReturnType($argument, $definition));
     }
 
     /**
@@ -57,7 +57,7 @@ class BuildArgumentTypeTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $this->assertSame('Baz', buildArgumentType($argument, $definition));
+        $this->assertSame(': Baz', buildArgumentReturnType($argument, $definition));
     }
 
     /**
@@ -69,7 +69,7 @@ class BuildArgumentTypeTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $this->assertSame('?\Other\Baz', buildArgumentType($argument, $definition));
+        $this->assertSame(': ?\Other\Baz', buildArgumentReturnType($argument, $definition));
     }
 
     /**
@@ -81,6 +81,6 @@ class BuildArgumentTypeTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $this->assertSame('?\Other', buildArgumentType($argument, $definition));
+        $this->assertSame(': ?\Other', buildArgumentReturnType($argument, $definition));
     }
 }

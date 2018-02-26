@@ -15,8 +15,13 @@ function replace(
     ?Constructor $constructor,
     string $template,
     DefinitionCollection $collection,
-    ClassKeyword $keyword
+    ClassKeyword $keyword,
+    array $builders = null
 ): string {
+    if (null === $builders) {
+        $builders = defaultBuilders();
+    }
+
     if ($constructor) {
         if (isScalarConstructor($constructor)) {
             $needConstructorAndProperties = false;
@@ -53,6 +58,10 @@ function replace(
         case NoKeyword::VALUE:
             $template = str_replace('{{abstract_final}}', '', $template);
             break;
+    }
+
+    foreach ($builders as $placeHolder => $builder) {
+        $template = str_replace('{{' . $placeHolder . '}}', $builder($definition, $constructor, $collection), $template);
     }
 
     foreach ($definition->derivings() as $deriving) {
@@ -101,11 +110,6 @@ function replace(
                         $replace .= "            $class::VALUE => $class::class,\n";
                     }
                     $template = str_replace('{{enum_options}}', substr($replace, 12, -1), $template);
-                }
-                break;
-            case Deriving\Equals::VALUE:
-                if ($constructor) {
-                    $template = str_replace('{{equals_body}}', buildEqualsBody($constructor, lcfirst($definition->name()), $collection), $template);
                 }
                 break;
             case Deriving\FromArray::VALUE:

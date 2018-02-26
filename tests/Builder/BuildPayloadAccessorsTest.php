@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace FppTest\Helpers;
+namespace FppTest\Builder;
 
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildAccessors;
+use function Fpp\buildPayloadAccessors;
 
-class BuildAccessorsTest extends TestCase
+class BuildPayloadAccessorsTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_builds_accessors(): void
+    public function it_builds_event_accessors(): void
     {
         $argument1 = new Argument('name', 'string');
         $argument2 = new Argument('age', 'int', true);
@@ -29,21 +29,21 @@ class BuildAccessorsTest extends TestCase
         $expected = <<<STRING
 public function name(): string
         {
-            return \$this->name;
+            return \$this->payload['name'];
         }
 
         public function age(): ?int
         {
-            return \$this->age;
+            return isset(\$this->payload['age']) ? \$this->payload['age'] : null;
         }
 
         public function whatever()
         {
-            return \$this->whatever;
+            return \$this->payload['whatever'];
         }
 
 STRING;
 
-        $this->assertSame($expected, buildAccessors($definition, $constructor, $collection));
+        $this->assertSame($expected, buildPayloadAccessors($definition, $collection));
     }
 }

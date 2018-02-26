@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FppTest\Helpers;
+namespace FppTest\Builder;
 
 use Fpp\Argument;
 use Fpp\Constructor;
@@ -10,7 +10,7 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildFromArrayBody;
+use function Fpp\Builder\buildFromArrayBody;
 
 class BuildFromArrayBodyTest extends TestCase
 {
@@ -80,11 +80,11 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
 
             \$email = \Some\Email::fromString(\$data['email']);
 
-            return new self(\$id, \$name, \$email);
+            return new self({{arguments}});
 
 CODE;
 
-        $this->assertSame($expected, buildFromArrayBody($constructor, $definition, new DefinitionCollection($definition, $userId, $email)));
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $userId, $email)));
     }
 
     /**
@@ -139,11 +139,11 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
                 \$age = null;
             }
 
-            return new self(\$id, \$age);
+            return new self({{arguments}});
 
 CODE;
 
-        $this->assertSame($expected, buildFromArrayBody($constructor, $definition, new DefinitionCollection($definition, $userId, $age)));
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $userId, $age)));
     }
 
     /**
@@ -206,10 +206,10 @@ if (! isset(\$data['name']) || ! is_string(\$data['name'])) {
                 \$age = null;
             }
 
-            return new self(\$name, \$age);
+            return new self({{arguments}});
 
 CODE;
 
-        $this->assertSame($expected, buildFromArrayBody($constructor, $definition, new DefinitionCollection($definition, $name, $age)));
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $name, $age)));
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FppTest\Helpers;
+namespace FppTest\Builder;
 
 use Fpp\Argument;
 use Fpp\Constructor;
@@ -10,7 +10,7 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildEqualsBody;
+use function Fpp\Builder\buildEqualsBody;
 
 class BuildEqualsBodyTest extends TestCase
 {
@@ -53,6 +53,6 @@ return get_class(\$this) === get_class(\$yeah)
                 );
 STRING;
 
-        $this->assertSame($expected, buildEqualsBody($constructor, lcfirst($definition->name()), $collection));
+        $this->assertSame($expected, buildEqualsBody($definition, $constructor, $collection));
     }
 }

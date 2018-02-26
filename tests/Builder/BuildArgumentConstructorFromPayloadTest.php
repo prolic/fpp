@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FppTest\Helpers;
+namespace FppTest\Builder;
 
 use Fpp\Argument;
 use Fpp\Constructor;
@@ -10,9 +10,9 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildArgumentConstructor;
+use function Fpp\buildArgumentConstructorFromPayload;
 
-class BuildArgumentConstructorTest extends TestCase
+class BuildArgumentConstructorFromPayloadTest extends TestCase
 {
     /**
      * @test
@@ -24,7 +24,7 @@ class BuildArgumentConstructorTest extends TestCase
         $definition = new Definition('Foo', 'Bar', [$constructor]);
         $collection = new DefinitionCollection($definition);
 
-        $this->assertSame('$name', buildArgumentConstructor($argument, $definition, $collection));
+        $this->assertSame('$this->payload[\'name\']', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -37,7 +37,7 @@ class BuildArgumentConstructorTest extends TestCase
         $definition = new Definition('Foo', 'Bar', [$constructor]);
         $collection = new DefinitionCollection($definition);
 
-        $this->assertSame('$name', buildArgumentConstructor($argument, $definition, $collection));
+        $this->assertSame('$this->payload[\'name\']', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -55,7 +55,7 @@ class BuildArgumentConstructorTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Something::fromString($name)', buildArgumentConstructor($argument, $definition, $collection));
+        $this->assertSame('\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -72,7 +72,7 @@ class BuildArgumentConstructorTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Something::fromString($name)', buildArgumentConstructor($argument, $definition, $collection));
+        $this->assertSame('\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -89,7 +89,7 @@ class BuildArgumentConstructorTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Something::fromString($name)', buildArgumentConstructor($argument, $definition, $collection));
+        $this->assertSame('\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -106,7 +106,7 @@ class BuildArgumentConstructorTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('Something::fromScalar($name)', buildArgumentConstructor($argument, $definition, $collection));
+        $this->assertSame('Something::fromScalar($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -123,7 +123,7 @@ class BuildArgumentConstructorTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Of\Something::fromArray($name)', buildArgumentConstructor($argument, $definition, $collection));
+        $this->assertSame('\Of\Something::fromArray($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -139,7 +139,7 @@ class BuildArgumentConstructorTest extends TestCase
 
         $collection = new DefinitionCollection($definition);
 
-        buildArgumentConstructor($argument, $definition, $collection);
+        buildArgumentConstructorFromPayload($argument, $definition, $collection);
     }
 
     /**
@@ -158,6 +158,6 @@ class BuildArgumentConstructorTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        buildArgumentConstructor($argument, $definition, $collection);
+        buildArgumentConstructorFromPayload($argument, $definition, $collection);
     }
 }

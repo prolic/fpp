@@ -18,14 +18,6 @@
   "autoload": {
     "psr-4": {
       "Fpp\\": "src/"
-    },
-    "files": [
-      "src/dump.php",
-      "src/helpers.php",
-      "src/loadTemplate.php",
-      "src/parse.php",
-      "src/replace.php",
-      "src/scan.php"
-    ]
+    }
   }
 }

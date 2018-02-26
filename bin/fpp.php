@@ -17,29 +17,15 @@ if (! isset($argv[2])) {
 $path = $argv[1];
 $output = $argv[2];
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../src/bootstrap.php';
 
-$derivingsMap = [
-    'AggregateChanged' => new Deriving\AggregateChanged(),
-    'Command' => new Deriving\Command(),
-    'DomainEvent' => new Deriving\DomainEvent(),
-    'Enum' => new Deriving\Enum(),
-    'Equals' => new Deriving\Equals(),
-    'FromArray' => new Deriving\FromArray(),
-    'FromScalar' => new Deriving\FromScalar(),
-    'FromString' => new Deriving\FromString(),
-    'Query' => new Deriving\Query(),
-    'ToArray' => new Deriving\ToArray(),
-    'ToScalar' => new Deriving\ToScalar(),
-    'ToString' => new Deriving\ToString(),
-    'Uuid' => new Deriving\Uuid(),
-];
+$derivingMap = defaultDerivingMap();
 
 $collection = new DefinitionCollection();
 
 try {
     foreach (scan($path) as $file) {
-        $collection = $collection->merge(parse($file, $derivingsMap));
+        $collection = $collection->merge(parse($file, $derivingMap));
     }
 } catch (ParseError $e) {
     echo 'Parse Error: ' . $e->getMessage();
