@@ -25,27 +25,22 @@ function replace(
     if ($constructor) {
         if (isScalarConstructor($constructor)) {
             $needConstructorAndProperties = false;
-            $className = $definition->name();
             $namespace = $definition->namespace();
         } else {
             $needConstructorAndProperties = true;
             $position = strrpos($constructor->name(), '\\');
 
             if (false === $position) {
-                $className = $constructor->name();
                 $namespace = '';
             } else {
-                $className = substr($constructor->name(), $position + 1);
                 $namespace = substr($constructor->name(), 0, $position);
             }
         }
     } else {
-        $className = $definition->name();
         $namespace = $definition->namespace();
     }
 
     $template = str_replace('{{namespace_name}}', $namespace, $template);
-    $template = str_replace('{{class_name}}', $className, $template);
     $template = str_replace('{{variable_name}}', lcfirst($definition->name()), $template);
 
     switch ($keyword->toString()) {

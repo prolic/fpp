@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace FppTest;
 
-use function Fpp\defaultDerivingMap;
 use PHPUnit\Framework\TestCase;
+use function Fpp\defaultDerivingMap;
 
 class DerivingTest extends TestCase
 {

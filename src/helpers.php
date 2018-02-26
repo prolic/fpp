@@ -31,6 +31,7 @@ function defaultDerivingMap(): array
 function defaultBuilders(): array
 {
     return [
+        'class_name' => Builder\buildClassName,
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,
     ];

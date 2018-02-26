@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace FppTest;
 
-use function Fpp\defaultDerivingMap;
 use Fpp\Deriving;
 use Fpp\ParseError;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
+use function Fpp\defaultDerivingMap;
 use function Fpp\parse;
 
 class ParseTest extends TestCase

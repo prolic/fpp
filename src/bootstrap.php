@@ -13,6 +13,7 @@ $files = [
     'parse.php',
     'replace.php',
     'scan.php',
+    'builder/buildClassName.php',
     'builder/buildEqualsBody.php',
     'builder/buildFromArrayBody.php',
 ];
