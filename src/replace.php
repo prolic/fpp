@@ -66,7 +66,6 @@ function replace(
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{properties}}', buildProperties($constructor), $template);
-                $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                 $template = str_replace("{{accessors}}\n", buildEventAccessors($definition, $collection), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, false), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, false), $template);
@@ -77,7 +76,6 @@ function replace(
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Command', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace("{{properties}}\n", '', $template);
-                $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                 $template = str_replace("{{accessors}}\n", buildPayloadAccessors($definition, $collection), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
@@ -88,7 +86,6 @@ function replace(
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{properties}}', buildProperties($constructor), $template);
-                $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                 $template = str_replace("{{accessors}}\n", buildEventAccessors($definition, $collection), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
@@ -124,7 +121,6 @@ function replace(
                 $template = str_replace("        {{accessors}}\n        {{setters}}\n", '', $template);
                 $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Query', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
-                $template = str_replace('{{message_name}}', buildMessageName($definition), $template);
                 $template = str_replace("{{accessors}}\n", buildPayloadAccessors($definition, $collection), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);

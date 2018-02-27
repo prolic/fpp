@@ -7,9 +7,10 @@ namespace FppTest\Builder;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildMessageName;
+use function Fpp\Builder\buildMessageName;
 
 class BuildMessageNameTest extends TestCase
 {
@@ -21,7 +22,7 @@ class BuildMessageNameTest extends TestCase
         $constructor = new Constructor('Yeah', [new Argument('id', 'string')]);
         $definition = new Definition('Hell', 'Yeah', [$constructor], [new Deriving\Command()], [], 'tadaa');
 
-        $this->assertSame('tadaa', buildMessageName($definition));
+        $this->assertSame('tadaa', buildMessageName($definition, $constructor, new DefinitionCollection()));
     }
 
     /**
@@ -32,6 +33,6 @@ class BuildMessageNameTest extends TestCase
         $constructor = new Constructor('Yeah', [new Argument('id', 'string')]);
         $definition = new Definition('Hell', 'Yeah', [$constructor], [new Deriving\Query()]);
 
-        $this->assertSame('Hell\Yeah', buildMessageName($definition));
+        $this->assertSame('Hell\Yeah', buildMessageName($definition, $constructor, new DefinitionCollection()));
     }
 }

@@ -34,6 +34,7 @@ function defaultBuilders(): array
         'class_name' => Builder\buildClassName,
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,
+        'message_name' => Builder\buildMessageName,
         'variable_name' => Builder\buildVariableName,
     ];
 }
@@ -325,17 +326,6 @@ CODE;
     }
 
     return ltrim(substr($accessors, 0, -1));
-}
-
-function buildMessageName(Definition $definition): string
-{
-    $messageName = $definition->messageName();
-
-    if (null === $messageName) {
-        $messageName = $definition->namespace() . '\\' . $definition->name();
-    }
-
-    return $messageName;
 }
 
 function buildArgumentList(Constructor $constructor, Definition $definition, bool $withTypeHints): string
