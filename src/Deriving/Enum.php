@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Fpp\Deriving;
 
 use Fpp\Definition;
-use Fpp\Deriving as FppDeriving;
+
 use Fpp\InvalidDeriving;
 
-class Enum implements FppDeriving
+class Enum extends AbstractDeriving
 {
-    const VALUE = 'Enum';
+    public const VALUE = 'Enum';
 
     public function checkDefinition(Definition $definition): void
     {
@@ -33,11 +33,6 @@ class Enum implements FppDeriving
                 throw InvalidDeriving::exactlyZeroConstructorArgumentsExpected($definition, self::VALUE);
             }
         }
-    }
-
-    public function __toString(): string
-    {
-        return self::VALUE;
     }
 
     private function forbidsDerivings(): array

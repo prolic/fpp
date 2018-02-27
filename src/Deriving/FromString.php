@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Fpp\Deriving;
 
 use Fpp\Definition;
-use Fpp\Deriving as FppDeriving;
+
 use Fpp\InvalidDeriving;
 
-class FromString implements FppDeriving
+class FromString extends AbstractDeriving
 {
-    const VALUE = 'FromString';
+    public const VALUE = 'FromString';
 
     public function checkDefinition(Definition $definition): void
     {
@@ -33,11 +33,6 @@ class FromString implements FppDeriving
         if (count($constructor->arguments()) !== 1) {
             throw InvalidDeriving::exactlyOneConstructorArgumentExpected($definition, self::VALUE);
         }
-    }
-
-    public function __toString(): string
-    {
-        return self::VALUE;
     }
 
     private function forbidsDerivings(): array

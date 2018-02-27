@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Fpp\Deriving;
 
 use Fpp\Definition;
-use Fpp\Deriving as FppDeriving;
+
 use Fpp\InvalidDeriving;
 
-class Equals implements FppDeriving
+class Equals extends AbstractDeriving
 {
-    const VALUE = 'Equals';
+    public const VALUE = 'Equals';
 
     public function checkDefinition(Definition $definition): void
     {
@@ -19,11 +19,6 @@ class Equals implements FppDeriving
                 throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
             }
         }
-    }
-
-    public function __toString(): string
-    {
-        return self::VALUE;
     }
 
     private function forbidsDerivings(): array

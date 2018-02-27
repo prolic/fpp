@@ -31,6 +31,7 @@ function defaultDerivingMap(): array
 function defaultBuilders(): array
 {
     return [
+        'accessors' => Builder\buildAccessors,
         'class_name' => Builder\buildClassName,
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,
@@ -207,25 +208,6 @@ function buildProperties(Constructor $constructor): string
     return ltrim($properties);
 }
 
-function buildAccessors(Definition $definition, Constructor $constructor, DefinitionCollection $collection): string
-{
-    $accessors = '';
-
-    foreach ($constructor->arguments() as $argument) {
-        $returnType = buildArgumentReturnType($argument, $definition);
-        $accessors .= <<<CODE
-        public function {$argument->name()}()$returnType
-        {
-            return \$this->{$argument->name()};
-        }
-
-
-CODE;
-    }
-
-    return ltrim(substr($accessors, 0, -1));
-}
-
 function buildSetters(Definition $definition, Constructor $constructor, DefinitionCollection $collection): string
 {
     $setters = '';
@@ -268,64 +250,6 @@ function buildSetters(Definition $definition, Constructor $constructor, Definiti
     }
 
     return ltrim(substr($setters, 0, -1));
-}
-
-function buildEventAccessors(Definition $definition, DefinitionCollection $collection): string
-{
-    // domain events only have a single constructor
-    $constructor = $definition->constructors()[0];
-    $accessors = '';
-
-    foreach ($constructor->arguments() as $argument) {
-        $returnType = buildArgumentReturnType($argument, $definition);
-        $argumentConstructor = buildArgumentConstructorFromPayload($argument, $definition, $collection);
-        if ($argument->nullable()) {
-            $check = "if (! isset(\$this->{$argument->name()}) && isset(\$this->payload['{$argument->name()}'])) {";
-        } else {
-            $check = "if (! isset(\$this->{$argument->name()})) {";
-        }
-        $accessors .= <<<CODE
-        public function {$argument->name()}()$returnType
-        {
-            $check
-                \$this->{$argument->name()} = $argumentConstructor;
-            }
-
-            return \$this->{$argument->name()};
-        }
-
-
-CODE;
-    }
-
-    return ltrim(substr($accessors, 0, -1));
-}
-
-function buildPayloadAccessors(Definition $definition, DefinitionCollection $collection): string
-{
-    // domain events only have a single constructor
-    $constructor = $definition->constructors()[0];
-    $accessors = '';
-
-    foreach ($constructor->arguments() as $argument) {
-        $returnType = buildArgumentReturnType($argument, $definition);
-        $argumentConstructor = buildArgumentConstructorFromPayload($argument, $definition, $collection);
-        if ($argument->nullable()) {
-            $return = "isset(\$this->payload['{$argument->name()}']) ? $argumentConstructor : null";
-        } else {
-            $return = "$argumentConstructor";
-        }
-        $accessors .= <<<CODE
-        public function {$argument->name()}()$returnType
-        {
-            return $return;
-        }
-
-
-CODE;
-    }
-
-    return ltrim(substr($accessors, 0, -1));
 }
 
 function buildArgumentList(Constructor $constructor, Definition $definition, bool $withTypeHints): string

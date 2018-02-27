@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Fpp\Deriving;
 
 use Fpp\Definition;
-use Fpp\Deriving as FppDeriving;
+
 use Fpp\InvalidDeriving;
 
-class Query implements FppDeriving
+class Query extends AbstractDeriving
 {
-    const VALUE = 'Query';
+    public const VALUE = 'Query';
 
     public function checkDefinition(Definition $definition): void
     {
@@ -31,11 +31,6 @@ class Query implements FppDeriving
         if (0 === count($definition->constructors()[0]->arguments())) {
             throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
         }
-    }
-
-    public function __toString(): string
-    {
-        return self::VALUE;
     }
 
     private function forbidsDerivings(): array
