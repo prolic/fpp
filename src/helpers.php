@@ -32,6 +32,7 @@ function defaultBuilders(): array
 {
     return [
         'accessors' => Builder\buildAccessors,
+        'class_extends' => Builder\buildClassExtends,
         'class_name' => Builder\buildClassName,
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,

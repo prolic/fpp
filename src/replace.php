@@ -59,19 +59,16 @@ function replace(
     foreach ($definition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\AggregateChanged::VALUE:
-                $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, false), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, false), $template);
                 break;
             case Deriving\Command::VALUE:
-                $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Command', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
             case Deriving\DomainEvent::VALUE:
-                $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\DomainEvent', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
@@ -88,9 +85,6 @@ function replace(
                     $template = str_replace('{{enum_options}}', substr($replace, 12, -1), $template);
                 }
                 break;
-            case Deriving\FromArray::VALUE:
-                $template = str_replace('{{from_array_body}}', buildFromArrayBody($constructor, $definition, $collection), $template);
-                break;
             case Deriving\FromScalar::VALUE:
                 if (isScalarConstructor($constructor)) {
                     $type = strtolower($constructor->name());
@@ -102,7 +96,6 @@ function replace(
                 $template = str_replace('{{type}}', $type, $template);
                 break;
             case Deriving\Query::VALUE:
-                $template = str_replace('{{class_extends}}', ' extends \Prooph\Common\Messaging\Query', $template);
                 $template = str_replace('{{arguments}}', buildArgumentList($constructor, $definition, true), $template);
                 $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
@@ -128,23 +121,6 @@ function replace(
                 break;
         }
     }
-
-    $fullQualifiedDefinitionClassName = $definition->name();
-
-    if ($definition->namespace()) {
-        $fullQualifiedDefinitionClassName = $definition->namespace() . '\\' . $fullQualifiedDefinitionClassName;
-    }
-
-    if ($constructor && ! isScalarConstructor($constructor) && $constructor->name() !== $fullQualifiedDefinitionClassName) {
-        if ($namespace === $definition->namespace()) {
-            $baseClass = $definition->name();
-        } else {
-            $baseClass = '\\' . $fullQualifiedDefinitionClassName;
-        }
-        $template = str_replace('{{class_extends}}', ' extends ' . $baseClass, $template);
-    }
-
-    $template = str_replace('{{class_extends}}', '', $template);
 
     if ($constructor) {
         $constructorString = buildConstructor($constructor, $definition);
