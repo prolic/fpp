@@ -36,6 +36,8 @@ function defaultBuilders(): array
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,
         'message_name' => Builder\buildMessageName,
+        'properties' => Builder\buildProperties,
+        'setters' => Builder\buildSetters,
         'variable_name' => Builder\buildVariableName,
     ];
 }
@@ -197,59 +199,8 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
     throw new \RuntimeException('Cannot build argument constructor');
 }
 
-function buildProperties(Constructor $constructor): string
-{
-    $properties = '';
-
-    foreach ($constructor->arguments() as $argument) {
-        $properties .= '        private $' . $argument->name() . ";\n";
-    }
-
-    return ltrim($properties);
-}
-
 function buildSetters(Definition $definition, Constructor $constructor, DefinitionCollection $collection): string
 {
-    $setters = '';
-
-    $position = strrpos($constructor->name(), '\\');
-
-    if (false === $position) {
-        $className = $constructor->name();
-        $namespace = '';
-    } else {
-        $className = substr($constructor->name(), $position + 1);
-        $namespace = substr($constructor->name(), 0, $position);
-    }
-
-    if ($namespace === $definition->namespace()) {
-        $self = $definition->name();
-    } else {
-        $self = '\\' . $definition->namespace();
-        if ($self !== '\\') {
-            $self .= '\\';
-        }
-        $self .= $definition->name();
-    }
-
-    foreach ($constructor->arguments() as $key => $argument) {
-        $type = buildArgumentType($argument, $definition);
-        $setterName = 'with' . ucfirst($argument->name());
-        $setters .= "        public function $setterName($type \${$argument->name()}): $self\n        {\n";
-        $constructorArguments = '';
-
-        foreach ($constructor->arguments() as $key2 => $argument2) {
-            if ($key !== $key2) {
-                $constructorArguments .= '$this->' . $argument2->name() . ', ';
-            } else {
-                $constructorArguments .= '$' . $argument->name() . ', ';
-            }
-        }
-
-        $setters .= '            return new self(' . substr($constructorArguments, 0, -2) . ");\n        }\n\n";
-    }
-
-    return ltrim(substr($setters, 0, -1));
 }
 
 function buildArgumentList(Constructor $constructor, Definition $definition, bool $withTypeHints): string

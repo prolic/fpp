@@ -18,6 +18,8 @@ $files = [
     'builder/buildEqualsBody.php',
     'builder/buildFromArrayBody.php',
     'builder/buildMessageName.php',
+    'builder/buildProperties.php',
+    'builder/buildSetters.php',
     'builder/buildVariableName.php',
 ];
 

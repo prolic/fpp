@@ -6,8 +6,10 @@ namespace FppTest\Builder;
 
 use Fpp\Argument;
 use Fpp\Constructor;
+use Fpp\Definition;
+use Fpp\DefinitionCollection;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildProperties;
+use function Fpp\Builder\buildProperties;
 
 class BuildPropertiesTest extends TestCase
 {
@@ -22,6 +24,8 @@ class BuildPropertiesTest extends TestCase
 
         $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
 
+        $definition = new Definition('Foo', 'Bar', [$constructor]);
+
         $expected = <<<STRING
 private \$name;
         private \$age;
@@ -29,6 +33,6 @@ private \$name;
 
 STRING;
 
-        $this->assertSame($expected, buildProperties($constructor));
+        $this->assertSame($expected, buildProperties($definition, $constructor, new DefinitionCollection()));
     }
 }
