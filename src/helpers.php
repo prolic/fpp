@@ -41,6 +41,7 @@ function defaultBuilders(): array
         'from_array_body' => Builder\buildFromArrayBody,
         'message_name' => Builder\buildMessageName,
         'properties' => Builder\buildProperties,
+        'scalar_type' => Builder\buildScalarType,
         'setters' => Builder\buildSetters,
         'static_constructor_body' => Builder\buildStaticConstructorBody,
         'variable_name' => Builder\buildVariableName,

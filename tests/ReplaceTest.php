@@ -433,7 +433,7 @@ EXPECTED;
             [new Deriving\FromScalar()]
         );
 
-        $template = '{{type}}';
+        $template = '{{scalar_type}}';
 
         $expected = "int\n";
 
@@ -454,7 +454,7 @@ EXPECTED;
             [new Deriving\FromScalar()]
         );
 
-        $template = '{{type}}';
+        $template = '{{scalar_type}}';
 
         $expected = "int\n";
 
@@ -607,17 +607,17 @@ CODE;
             [new Deriving\ToScalar()]
         );
 
-        $template = "{{type}}\n{{to_scalar_body}}";
+        $template = "{{scalar_type}}\n{{to_scalar_body}}";
         $expected = "string\nreturn \$this->key;\n";
 
         $this->assertSame($expected, replace($definition, $constructor3, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
 
-        $template = "{{type}}\n{{to_scalar_body}}";
+        $template = "{{scalar_type}}\n{{to_scalar_body}}";
         $expected = "string\nreturn \$this->value;\n";
 
         $this->assertSame($expected, replace($email, $constructor2, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
 
-        $template = "{{type}}\n{{to_scalar_body}}";
+        $template = "{{scalar_type}}\n{{to_scalar_body}}";
         $expected = "int\nreturn \$this->value;\n";
 
         $this->assertSame($expected, replace($userId, $constructor1, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));

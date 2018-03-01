@@ -21,6 +21,7 @@ $files = [
     'builder/buildFromArrayBody.php',
     'builder/buildMessageName.php',
     'builder/buildProperties.php',
+    'builder/buildScalarType.php',
     'builder/buildSetters.php',
     'builder/buildStaticConstructorBody.php',
     'builder/buildVariableName.php',

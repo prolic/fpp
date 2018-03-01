@@ -1,4 +1,4 @@
-        public static function fromScalar({{type}} ${{variable_name}}): {{class_name}}
+        public static function fromScalar({{scalar_type}} ${{variable_name}}): {{class_name}}
         {
             return new {{class_name}}(${{variable_name}});
         }
