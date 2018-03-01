@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use function Fpp\Builder\buildArguments;
+
 function isScalarConstructor(Constructor $constructor): bool
 {
     return in_array($constructor->name(), ['String', 'Int', 'Float', 'Bool'], true);
@@ -32,6 +34,7 @@ function defaultBuilders(): array
 {
     return [
         'accessors' => Builder\buildAccessors,
+        'arguments' => Builder\buildArguments,
         'class_extends' => Builder\buildClassExtends,
         'class_name' => Builder\buildClassName,
         'equals_body' => Builder\buildEqualsBody,
@@ -198,61 +201,6 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
     }
 
     throw new \RuntimeException('Cannot build argument constructor');
-}
-
-function buildSetters(Definition $definition, Constructor $constructor, DefinitionCollection $collection): string
-{
-}
-
-function buildArgumentList(Constructor $constructor, Definition $definition, bool $withTypeHints): string
-{
-    $argumentList = '';
-
-    foreach ($constructor->arguments() as $argument) {
-        if (null === $argument->type()) {
-            $argumentList .= '$' . $argument->name() . ', ';
-            continue;
-        }
-
-        if ($withTypeHints && $argument->nullable()) {
-            $argumentList .= '?';
-        }
-
-        if ($argument->isScalartypeHint()) {
-            if ($withTypeHints) {
-                $argumentList .= $argument->type() . ' ';
-            }
-
-            $argumentList .= '$' . $argument->name() . ', ';
-            continue;
-        }
-
-        if ($withTypeHints) {
-            $nsPosition = strrpos($argument->type(), '\\');
-
-            if (false !== $nsPosition) {
-                $namespace = substr($argument->type(), 0, $nsPosition);
-                $name = substr($argument->type(), $nsPosition + 1);
-            } else {
-                $namespace = '';
-                $name = $argument->type();
-            }
-
-            $type = $namespace === $definition->namespace()
-                ? $name
-                : '\\' . $argument->type();
-
-            $argumentList .= $type . ' ';
-        }
-
-        $argumentList .= '$' . $argument->name() . ', ';
-    }
-
-    if ('' === $argumentList) {
-        return '';
-    }
-
-    return substr($argumentList, 0, -2);
 }
 
 function buildStaticConstructorBodyConvertingToPayload(
@@ -596,7 +544,7 @@ function buildToScalarBody(Constructor $constructor, Definition $definition, Def
 
 function buildConstructor(Constructor $constructor, Definition $definition): string
 {
-    $argumentList = buildArgumentList($constructor, $definition, true);
+    $argumentList = buildArguments($definition, $constructor, new DefinitionCollection(), '');
 
     if ('' === $argumentList) {
         return '';

@@ -14,6 +14,7 @@ $files = [
     'replace.php',
     'scan.php',
     'builder/buildAccessors.php',
+    'builder/buildArguments.php',
     'builder/buildClassExtends.php',
     'builder/buildClassName.php',
     'builder/buildEqualsBody.php',

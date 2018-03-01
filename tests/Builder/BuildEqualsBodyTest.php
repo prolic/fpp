@@ -53,6 +53,6 @@ return get_class(\$this) === get_class(\$yeah)
                 );
 STRING;
 
-        $this->assertSame($expected, buildEqualsBody($definition, $constructor, $collection));
+        $this->assertSame($expected, buildEqualsBody($definition, $constructor, $collection, ''));
     }
 }

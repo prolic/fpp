@@ -11,7 +11,7 @@ use function Fpp\isScalarConstructor;
 
 const buildClassName = '\Fpp\Builder\buildClassName';
 
-function buildClassName(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection): string
+function buildClassName(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if ($constructor && ! isScalarConstructor($constructor)) {
         $position = strrpos($constructor->name(), '\\');

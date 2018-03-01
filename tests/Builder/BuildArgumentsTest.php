@@ -7,15 +7,16 @@ namespace FppTest\Builder;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionCollection;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildArgumentList;
+use function Fpp\Builder\buildArguments;
 
-class BuildArgumentListTest extends TestCase
+class BuildArgumentsTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_builds_argument_list(): void
+    public function it_builds_arguments(): void
     {
         $constructor = new Constructor('UserRegistered', [
             new Argument('id', 'My\UserId'),
@@ -30,9 +31,6 @@ class BuildArgumentListTest extends TestCase
         );
 
         $expected = 'UserId $id, ?string $name, \Some\Email $email';
-        $this->assertSame($expected, buildArgumentList($constructor, $definition, true));
-
-        $expected = '$id, $name, $email';
-        $this->assertSame($expected, buildArgumentList($constructor, $definition, false));
+        $this->assertSame($expected, buildArguments($definition, $constructor, new DefinitionCollection(), ''));
     }
 }

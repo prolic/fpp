@@ -10,7 +10,7 @@ use Fpp\DefinitionCollection;
 
 const buildMessageName = '\Fpp\Builder\buildMessageName';
 
-function buildMessageName(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection): string
+function buildMessageName(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     $messageName = $definition->messageName();
 

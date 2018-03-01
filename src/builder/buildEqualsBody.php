@@ -11,10 +11,10 @@ use Fpp\Deriving;
 
 const buildEqualsBody = '\Fpp\Builder\buildEqualsBody';
 
-function buildEqualsBody(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection): string
+function buildEqualsBody(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if (null === $constructor) {
-        return '';
+        return $placeHolder;
     }
 
     $variableName = lcfirst($definition->name());

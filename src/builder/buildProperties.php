@@ -11,17 +11,17 @@ use Fpp\Deriving;
 
 const buildProperties = '\Fpp\Builder\buildProperties';
 
-function buildProperties(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection): string
+function buildProperties(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if (null === $constructor) {
-        return '';
+        return $placeHolder;
     }
 
     foreach ($definition->derivings() as $deriving) {
         if ($deriving->equals(new Deriving\Command())
             || $deriving->equals(new Deriving\Query())
         ) {
-            return '';
+            return $placeHolder;
         }
     }
 

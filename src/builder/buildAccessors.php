@@ -13,12 +13,12 @@ use function Fpp\buildArgumentReturnType;
 
 const buildAccessors = '\Fpp\Builder\buildAccessors';
 
-function buildAccessors(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection): string
+function buildAccessors(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if (null === $constructor
         || 0 === count($constructor->arguments())
     ) {
-        return '';
+        return $placeHolder;
     }
 
     foreach ($definition->derivings() as $deriving) {

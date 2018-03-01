@@ -12,10 +12,10 @@ use function Fpp\isScalarConstructor;
 
 const buildFromArrayBody = '\Fpp\Builder\buildFromArrayBody';
 
-function buildFromArrayBody(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection): string
+function buildFromArrayBody(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if (null === $constructor) {
-        return '';
+        return $placeHolder;
     }
 
     $position = strrpos($constructor->name(), '\\');

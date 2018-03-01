@@ -22,7 +22,7 @@ class BuildMessageNameTest extends TestCase
         $constructor = new Constructor('Yeah', [new Argument('id', 'string')]);
         $definition = new Definition('Hell', 'Yeah', [$constructor], [new Deriving\Command()], [], 'tadaa');
 
-        $this->assertSame('tadaa', buildMessageName($definition, $constructor, new DefinitionCollection()));
+        $this->assertSame('tadaa', buildMessageName($definition, $constructor, new DefinitionCollection(), ''));
     }
 
     /**
@@ -33,6 +33,6 @@ class BuildMessageNameTest extends TestCase
         $constructor = new Constructor('Yeah', [new Argument('id', 'string')]);
         $definition = new Definition('Hell', 'Yeah', [$constructor], [new Deriving\Query()]);
 
-        $this->assertSame('Hell\Yeah', buildMessageName($definition, $constructor, new DefinitionCollection()));
+        $this->assertSame('Hell\Yeah', buildMessageName($definition, $constructor, new DefinitionCollection(), ''));
     }
 }

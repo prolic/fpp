@@ -84,7 +84,7 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
 
 CODE;
 
-        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $userId, $email)));
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $userId, $email), ''));
     }
 
     /**
@@ -143,7 +143,7 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
 
 CODE;
 
-        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $userId, $age)));
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $userId, $age), ''));
     }
 
     /**
@@ -210,6 +210,6 @@ if (! isset(\$data['name']) || ! is_string(\$data['name'])) {
 
 CODE;
 
-        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $name, $age)));
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $name, $age), ''));
     }
 }

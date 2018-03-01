@@ -12,14 +12,14 @@ use function Fpp\buildArgumentType;
 
 const buildSetters = '\Fpp\Builder\buildSetters';
 
-function buildSetters(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection): string
+function buildSetters(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if (null === $constructor) {
-        return '';
+        return $placeHolder;
     }
 
     if (0 === count($constructor->arguments())) {
-        return '';
+        return $placeHolder;
     }
 
     foreach ($definition->derivings() as $deriving) {
@@ -28,7 +28,7 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
             || $deriving->equals(new Deriving\DomainEvent())
             || $deriving->equals(new Deriving\AggregateChanged())
         ) {
-            return '';
+            return $placeHolder;
         }
     }
 
@@ -37,10 +37,8 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
     $position = strrpos($constructor->name(), '\\');
 
     if (false === $position) {
-        $className = $constructor->name();
         $namespace = '';
     } else {
-        $className = substr($constructor->name(), $position + 1);
         $namespace = substr($constructor->name(), 0, $position);
     }
 

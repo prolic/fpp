@@ -33,6 +33,6 @@ private \$name;
 
 STRING;
 
-        $this->assertSame($expected, buildProperties($definition, $constructor, new DefinitionCollection()));
+        $this->assertSame($expected, buildProperties($definition, $constructor, new DefinitionCollection(), ''));
     }
 }

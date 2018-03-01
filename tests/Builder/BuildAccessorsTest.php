@@ -44,7 +44,7 @@ public function name(): string
         }
 STRING;
 
-        $this->assertSame($expected, buildAccessors($definition, $constructor, $collection));
+        $this->assertSame($expected, buildAccessors($definition, $constructor, $collection, ''));
     }
 
     /**
@@ -89,7 +89,7 @@ public function name(): string
         }
 STRING;
 
-        $this->assertSame($expected, buildAccessors($definition, $constructor, $collection));
+        $this->assertSame($expected, buildAccessors($definition, $constructor, $collection, ''));
     }
 
     /**
@@ -122,6 +122,6 @@ public function name(): string
         }
 STRING;
 
-        $this->assertSame($expected, buildAccessors($definition, $constructor, $collection));
+        $this->assertSame($expected, buildAccessors($definition, $constructor, $collection, ''));
     }
 }
