@@ -7,6 +7,7 @@ namespace Fpp\Builder;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\Deriving;
 use function Fpp\isScalarConstructor;
 
 const buildScalarType = '\Fpp\Builder\buildScalarType';
@@ -17,12 +18,23 @@ function buildScalarType(Definition $definition, ?Constructor $constructor, Defi
         return $placeHolder;
     }
 
-    if (isScalarConstructor($constructor)) {
-        return strtolower($constructor->name());
+    $valid = false;
+
+    foreach ($definition->derivings() as $deriving) {
+        if ($deriving->equals(new Deriving\FromScalar())
+            || $deriving->equals(new Deriving\ToScalar())
+        ) {
+            $valid = true;
+            break;
+        }
     }
 
-    if (empty($constructor->arguments())) {
+    if (! $valid) {
         return $placeHolder;
+    }
+
+    if (isScalarConstructor($constructor)) {
+        return strtolower($constructor->name());
     }
 
     $argument = $constructor->arguments()[0];
