@@ -22,6 +22,7 @@ $files = [
     'builder/buildMessageName.php',
     'builder/buildProperties.php',
     'builder/buildSetters.php',
+    'builder/buildStaticConstructorBody.php',
     'builder/buildVariableName.php',
 ];
 

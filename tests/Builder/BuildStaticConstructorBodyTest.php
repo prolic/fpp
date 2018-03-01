@@ -10,9 +10,9 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildStaticConstructorBodyConvertingToPayload;
+use function Fpp\Builder\buildStaticConstructorBody;
 
-class BuildStaticConstructorBodyConvertingToPayloadTest extends TestCase
+class BuildStaticConstructorBodyTest extends TestCase
 {
     /**
      * @test
@@ -52,7 +52,8 @@ class BuildStaticConstructorBodyConvertingToPayloadTest extends TestCase
         $definition = new Definition(
             'My',
             'UserRegistered',
-            [$constructor]
+            [$constructor],
+            [new Deriving\AggregateChanged()]
         );
 
         $collection = new DefinitionCollection($userId, $email, $definition);
@@ -65,7 +66,7 @@ return new self(\$id->toString(), [
             ]);
 CODE;
 
-        $this->assertSame($expected, buildStaticConstructorBodyConvertingToPayload($constructor, $collection, false));
+        $this->assertSame($expected, buildStaticConstructorBody($definition, $constructor, $collection, ''));
     }
 
     /**
@@ -106,7 +107,8 @@ CODE;
         $definition = new Definition(
             'My',
             'UserRegistered',
-            [$constructor]
+            [$constructor],
+            [new Deriving\Command()]
         );
 
         $collection = new DefinitionCollection($userId, $email, $definition);
@@ -120,6 +122,6 @@ return new self([
             ]);
 CODE;
 
-        $this->assertSame($expected, buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true));
+        $this->assertSame($expected, buildStaticConstructorBody($definition, $constructor, $collection, ''));
     }
 }

@@ -59,15 +59,12 @@ function replace(
     foreach ($definition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\AggregateChanged::VALUE:
-                $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, false), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, false), $template);
                 break;
             case Deriving\Command::VALUE:
-                $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
             case Deriving\DomainEvent::VALUE:
-                $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
             case Deriving\Enum::VALUE:
@@ -93,7 +90,6 @@ function replace(
                 $template = str_replace('{{type}}', $type, $template);
                 break;
             case Deriving\Query::VALUE:
-                $template = str_replace('{{static_constructor_body}}', buildStaticConstructorBodyConvertingToPayload($constructor, $collection, true), $template);
                 $template = str_replace('{{payload_validation}}', buildPayloadValidation($constructor, $collection, true), $template);
                 break;
             case Deriving\ToArray::VALUE:
