@@ -70,12 +70,6 @@ function replace(
                     $template = str_replace('{{enum_options}}', substr($replace, 12, -1), $template);
                 }
                 break;
-            case Deriving\ToArray::VALUE:
-                $template = str_replace('{{to_array_body}}', buildToArrayBody($constructor, $definition, $collection), $template);
-                break;
-            case Deriving\ToScalar::VALUE:
-                $template = str_replace('{{to_scalar_body}}', buildToScalarBody($constructor, $definition, $collection), $template);
-                break;
             case Deriving\ToString::VALUE:
                 $template = str_replace('{{to_string_body}}', buildToScalarBody($constructor, $definition, $collection), $template);
                 break;
