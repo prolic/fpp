@@ -24,7 +24,7 @@ class LoadTemplateTest extends TestCase
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
+namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}
@@ -50,7 +50,7 @@ TEMPLATE;
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
+namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}
@@ -87,7 +87,7 @@ TEMPLATE;
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
+namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}
@@ -128,7 +128,7 @@ TEMPLATE;
         $template = loadTemplate($definition, null);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
+namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}
@@ -201,7 +201,7 @@ TEMPLATE;
         $template = loadTemplate($definition, $constructor2);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
+namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}

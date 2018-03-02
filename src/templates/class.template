@@ -1,4 +1,4 @@
-namespace {{namespace_name}} {
+namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}

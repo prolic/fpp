@@ -20,7 +20,7 @@ class ReplaceTest extends TestCase
     public function it_replaces_default_values(): void
     {
         $definition = new Definition('Foo', 'Bar', [new Constructor('Foo\Bar')]);
-        $template = '{{namespace_name}} {{class_name}} ${{variable_name}}';
+        $template = '{{namespace}} {{class_name}} ${{variable_name}}';
 
         $this->assertSame("Foo Bar \$bar\n", replace($definition, null, $template, new DefinitionCollection($definition)));
     }
