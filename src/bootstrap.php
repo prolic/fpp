@@ -18,6 +18,7 @@ $files = [
     'builder/buildClassExtends.php',
     'builder/buildClassKeyword.php',
     'builder/buildClassName.php',
+    'builder/buildConstructor.php',
     'builder/buildEnumOptions.php',
     'builder/buildEnumValue.php',
     'builder/buildEqualsBody.php',

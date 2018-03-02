@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use function Fpp\Builder\buildArguments;
-
 function isScalarConstructor(Constructor $constructor): bool
 {
     return in_array($constructor->name(), ['String', 'Int', 'Float', 'Bool'], true);
@@ -38,6 +36,7 @@ function defaultBuilders(): array
         'class_extends' => Builder\buildClassExtends,
         'class_keyword' => Builder\buildClassKeyword,
         'class_name' => Builder\buildClassName,
+        'constructor' => Builder\buildConstructor,
         'enum_options' => Builder\buildEnumOptions,
         'enum_value' => Builder\buildEnumValue,
         'equals_body' => Builder\buildEqualsBody,
@@ -211,37 +210,4 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
     }
 
     throw new \RuntimeException('Cannot build argument constructor');
-}
-
-function buildConstructor(Constructor $constructor, Definition $definition): string
-{
-    $argumentList = buildArguments($definition, $constructor, new DefinitionCollection(), '');
-
-    if ('' === $argumentList) {
-        return '';
-    }
-
-    $code = "public function __construct($argumentList)\n        {\n";
-
-    foreach ($definition->conditions() as $condition) {
-        if ('_' === $condition->constructor()
-            || false !== strrpos($constructor->name(), $condition->constructor())
-        ) {
-            $code .= <<<CODE
-            if ({$condition->code()}) {
-                throw new \\InvalidArgumentException('{$condition->errorMessage()}');
-            }
-
-
-CODE;
-        }
-    }
-
-    foreach ($constructor->arguments() as $key => $argument) {
-        $code .= "            \$this->{$argument->name()} = \${$argument->name()};\n";
-    }
-
-    $code .= "        }\n";
-
-    return $code;
 }

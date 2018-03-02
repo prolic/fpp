@@ -21,14 +21,6 @@ function replace(
         $template = str_replace('{{' . $placeHolder . '}}', $builder($definition, $constructor, $collection, '{{' . $placeHolder . '}}'), $template);
     }
 
-    if ($constructor) {
-        $constructorString = buildConstructor($constructor, $definition);
-
-        if ('' !== $constructorString) {
-            $template = str_replace('{{constructor}}', $constructorString, $template);
-        }
-    }
-
     foreach ($builders as $placeHolder => $builder) {
         $template = str_replace('{{' . $placeHolder . '}}', '', $template);
     }
