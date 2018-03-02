@@ -17,6 +17,19 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
         return $placeHolder;
     }
 
+    $valid = false;
+
+    foreach ($definition->derivings() as $deriving) {
+        if ($deriving->equals(new Deriving\ToArray())) {
+            $valid = true;
+            break;
+        }
+    }
+
+    if (! $valid) {
+        return $placeHolder;
+    }
+
     $code = "return [\n";
 
     $class = $definition->namespace();

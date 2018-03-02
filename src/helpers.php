@@ -46,6 +46,8 @@ function defaultBuilders(): array
         'setters' => Builder\buildSetters,
         'static_constructor_body' => Builder\buildStaticConstructorBody,
         'to_array_body' => Builder\buildToArrayBody,
+        'to_scalar_body' => Builder\buildToScalarBody,
+        'to_string_body' => Builder\buildToScalarBody,
         'variable_name' => Builder\buildVariableName,
     ];
 }
@@ -205,58 +207,6 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
     }
 
     throw new \RuntimeException('Cannot build argument constructor');
-}
-
-function buildToScalarBody(Constructor $constructor, Definition $definition, DefinitionCollection $collection): string
-{
-    if (isScalarConstructor($constructor)) {
-        return 'return $this->value;';
-    }
-
-    $argument = $constructor->arguments()[0];
-
-    if ($argument->isScalartypeHint()) {
-        return "return \$this->{$argument->name()};";
-    }
-
-    $position = strrpos($argument->type(), '\\');
-
-    if (false !== $position) {
-        $namespace = substr($argument->type(), 0, $position);
-        $name = substr($argument->type(), $position + 1);
-    } else {
-        $namespace = '';
-        $name = $argument->type();
-    }
-
-    $class = $definition->namespace();
-
-    if ('' !== $class) {
-        $class .= '\\';
-    }
-
-    $class .= $definition->name();
-
-    if ($collection->hasDefinition($namespace, $name)) {
-        $argumentDefinition = $collection->definition($namespace, $name);
-    } elseif ($collection->hasConstructorDefinition($argument->type())) {
-        $argumentDefinition = $collection->constructorDefinition($argument->type());
-    } else {
-        throw new \RuntimeException("Cannot build ToScalar for $class, unknown argument {$argument->type()} given");
-    }
-
-    foreach ($argumentDefinition->derivings() as $deriving) {
-        switch ((string) $deriving) {
-            case Deriving\ToScalar::VALUE:
-                return "return \$this->{$argument->name()}->toScalar();";
-            case Deriving\Enum::VALUE:
-            case Deriving\ToString::VALUE:
-            case Deriving\Uuid::VALUE:
-            return "return \$this->{$argument->name()}->toString();";
-        }
-    }
-
-    throw new \RuntimeException("Cannot build ToScalar for $class, no deriving to build scalar for {$argument->type()} given");
 }
 
 function buildConstructor(Constructor $constructor, Definition $definition): string

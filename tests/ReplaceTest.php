@@ -517,6 +517,7 @@ EXPECTED;
 
     /**
      * @test
+     * @group bb
      */
     public function it_replaces_to_array(): void
     {
