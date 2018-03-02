@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Fpp\ClassKeyword\AbstractKeyword;
-use Fpp\ClassKeyword\FinalKeyword;
-use Fpp\ClassKeyword\NoKeyword;
-
 const dump = '\Fpp\dump';
 
 function dump(DefinitionCollection $collection, callable $loadTemplate, callable $replace): string
@@ -28,7 +24,7 @@ CODE;
 
         if (1 === count($constructors)) {
             $constructor = $constructors[0];
-            $code .= $replace($definition, $constructor, $loadTemplate($definition, $constructor), $collection, new FinalKeyword());
+            $code .= $replace($definition, $constructor, $loadTemplate($definition, $constructor), $collection);
         } else {
             $createBaseClass = true;
 
@@ -40,17 +36,14 @@ CODE;
                 }
 
                 if ($definition->name() === $name) {
-                    $keyword = new NoKeyword();
                     $createBaseClass = false;
-                } else {
-                    $keyword = new FinalKeyword();
                 }
 
-                $code .= $replace($definition, $constructor, $loadTemplate($definition, $constructor), $collection, $keyword);
+                $code .= $replace($definition, $constructor, $loadTemplate($definition, $constructor), $collection);
             }
 
             if ($createBaseClass) {
-                $code .= $replace($definition, null, $loadTemplate($definition, null), $collection, new AbstractKeyword());
+                $code .= $replace($definition, null, $loadTemplate($definition, null), $collection);
             }
         }
     }

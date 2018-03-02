@@ -16,6 +16,7 @@ $files = [
     'builder/buildAccessors.php',
     'builder/buildArguments.php',
     'builder/buildClassExtends.php',
+    'builder/buildClassKeyword.php',
     'builder/buildClassName.php',
     'builder/buildEqualsBody.php',
     'builder/buildFromArrayBody.php',

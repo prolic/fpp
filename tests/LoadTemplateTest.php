@@ -25,7 +25,7 @@ class LoadTemplateTest extends TestCase
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}
         {{constructor}}
@@ -51,7 +51,7 @@ TEMPLATE;
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}
         {{constructor}}
@@ -88,7 +88,7 @@ TEMPLATE;
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}
         {{constructor}}
@@ -129,7 +129,7 @@ TEMPLATE;
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}
         {{constructor}}
@@ -202,7 +202,7 @@ TEMPLATE;
 
         $expected = <<<TEMPLATE
 namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{properties}}
         {{constructor}}

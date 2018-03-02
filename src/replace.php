@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Fpp\ClassKeyword\AbstractKeyword;
-use Fpp\ClassKeyword\FinalKeyword;
-use Fpp\ClassKeyword\NoKeyword;
-
 const replace = '\Fpp\replace';
 
 function replace(
@@ -15,7 +11,6 @@ function replace(
     ?Constructor $constructor,
     string $template,
     DefinitionCollection $collection,
-    ClassKeyword $keyword,
     array $builders = null
 ): string {
     if (null === $builders) {
@@ -39,18 +34,6 @@ function replace(
     }
 
     $template = str_replace('{{namespace_name}}', $namespace, $template);
-
-    switch ($keyword->toString()) {
-        case AbstractKeyword::VALUE:
-            $template = str_replace('{{abstract_final}}', 'abstract ', $template);
-            break;
-        case FinalKeyword::VALUE:
-            $template = str_replace('{{abstract_final}}', 'final ', $template);
-            break;
-        case NoKeyword::VALUE:
-            $template = str_replace('{{abstract_final}}', '', $template);
-            break;
-    }
 
     foreach ($builders as $placeHolder => $builder) {
         $template = str_replace('{{' . $placeHolder . '}}', $builder($definition, $constructor, $collection, '{{' . $placeHolder . '}}'), $template);

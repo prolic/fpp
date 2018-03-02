@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace FppTest;
 
 use Fpp\Argument;
-use Fpp\ClassKeyword\AbstractKeyword;
-use Fpp\ClassKeyword\FinalKeyword;
-use Fpp\ClassKeyword\NoKeyword;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
@@ -25,7 +22,7 @@ class ReplaceTest extends TestCase
         $definition = new Definition('Foo', 'Bar', [new Constructor('Foo\Bar')]);
         $template = '{{namespace_name}} {{class_name}} ${{variable_name}}';
 
-        $this->assertSame("Foo Bar \$bar\n", replace($definition, null, $template, new DefinitionCollection($definition), new NoKeyword()));
+        $this->assertSame("Foo Bar \$bar\n", replace($definition, null, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -34,9 +31,9 @@ class ReplaceTest extends TestCase
     public function it_adds_abstract_keyword(): void
     {
         $definition = new Definition('Foo', 'Color', [new Constructor('Foo\Red')]);
-        $template = '{{abstract_final}}class Color';
+        $template = '{{class_keyword}}class Color';
 
-        $this->assertSame("abstract class Color\n", replace($definition, null, $template, new DefinitionCollection($definition), new AbstractKeyword()));
+        $this->assertSame("abstract class Color\n", replace($definition, null, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -45,9 +42,9 @@ class ReplaceTest extends TestCase
     public function it_adds_final_keyword(): void
     {
         $definition = new Definition('Foo', 'Color', [new Constructor('Foo\Red')]);
-        $template = '{{abstract_final}}class Color';
+        $template = '{{class_keyword}}class Color';
 
-        $this->assertSame("final class Color\n", replace($definition, new Constructor('Red'), $template, new DefinitionCollection($definition), new FinalKeyword()));
+        $this->assertSame("final class Color\n", replace($definition, new Constructor('Red'), $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -55,10 +52,11 @@ class ReplaceTest extends TestCase
      */
     public function it_adds_no_keyword(): void
     {
-        $definition = new Definition('Foo', 'Bar', [new Constructor('Foo\Bar')]);
-        $template = '{{abstract_final}}class Bar';
+        $constructor = new Constructor('Foo\Bar');
+        $definition = new Definition('Foo', 'Bar', [$constructor, new Constructor('Foo\Baz')]);
+        $template = '{{class_keyword}}class Bar';
 
-        $this->assertSame("class Bar\n", replace($definition, new Constructor('Foo\Bar'), $template, new DefinitionCollection($definition), new NoKeyword()));
+        $this->assertSame("class Bar\n", replace($definition, $constructor, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -105,7 +103,7 @@ class ReplaceTest extends TestCase
         );
 
         $template = <<<TEMPLATE
-{{abstract_final}}
+{{class_keyword}}
 {{class_extends}}
 {{message_name}}
 {{arguments}}
@@ -169,7 +167,7 @@ public function id(): UserId
 
 EXPECTED;
 
-        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email)));
     }
 
     /**
@@ -203,7 +201,7 @@ EXPECTED;
         );
 
         $template = <<<TEMPLATE
-{{abstract_final}}
+{{class_keyword}}
 {{class_extends}}
 {{message_name}}
 {{arguments}}
@@ -246,7 +244,7 @@ public function id(): UserId
 
 EXPECTED;
 
-        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId)));
     }
 
     /**
@@ -269,7 +267,7 @@ EXPECTED;
         );
 
         $template = <<<TEMPLATE
-{{abstract_final}}
+{{class_keyword}}
 {{class_extends}}
 {{message_name}}
 {{arguments}}
@@ -323,7 +321,7 @@ public function id(): string
 
 EXPECTED;
 
-        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -353,12 +351,12 @@ Red::VALUE => Red::class,
 
 EXPECTED;
 
-        $this->assertSame($expected, replace($definition, null, $template, new DefinitionCollection($definition), new AbstractKeyword()));
+        $this->assertSame($expected, replace($definition, null, $template, new DefinitionCollection($definition)));
 
         $template = '{{enum_value}}';
         $expected = "Red\n";
 
-        $this->assertSame($expected, replace($definition, $constructor1, $template, new DefinitionCollection($definition), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor1, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -388,17 +386,17 @@ Color\Red::VALUE => Color\Red::class,
 
 EXPECTED;
 
-        $this->assertSame($expected, replace($definition, null, $template, new DefinitionCollection($definition), new AbstractKeyword()));
+        $this->assertSame($expected, replace($definition, null, $template, new DefinitionCollection($definition)));
 
         $template = '{{enum_value}}';
         $expected = "Red\n";
 
-        $this->assertSame($expected, replace($definition, $constructor1, $template, new DefinitionCollection($definition), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor1, $template, new DefinitionCollection($definition)));
 
         $template = '{{enum_value}}';
         $expected = "Blue\n";
 
-        $this->assertSame($expected, replace($definition, $constructor2, $template, new DefinitionCollection($definition), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor2, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -418,7 +416,7 @@ EXPECTED;
 
         $expected = "return get_class(\$this) === get_class(\$color)\n                && \$this->name === \$color->name;\n";
 
-        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -437,7 +435,7 @@ EXPECTED;
 
         $expected = "int\n";
 
-        $this->assertSame($expected, replace($definition, new Constructor('Int'), $template, new DefinitionCollection($definition), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, new Constructor('Int'), $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -458,7 +456,7 @@ EXPECTED;
 
         $expected = "int\n";
 
-        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition)));
     }
 
     /**
@@ -480,7 +478,7 @@ EXPECTED;
         );
 
         $template = <<<TEMPLATE
-{{abstract_final}}
+{{class_keyword}}
 {{class_extends}}
 {{message_name}}
 {{arguments}}
@@ -512,12 +510,11 @@ public function id(): string
 
 EXPECTED;
 
-        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition)));
     }
 
     /**
      * @test
-     * @group bb
      */
     public function it_replaces_to_array(): void
     {
@@ -571,7 +568,7 @@ return [
 
 CODE;
 
-        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor, $template, new DefinitionCollection($definition, $userId, $email)));
     }
 
     /**
@@ -611,17 +608,17 @@ CODE;
         $template = "{{scalar_type}}\n{{to_scalar_body}}";
         $expected = "string\nreturn \$this->key;\n";
 
-        $this->assertSame($expected, replace($definition, $constructor3, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor3, $template, new DefinitionCollection($definition, $userId, $email)));
 
         $template = "{{scalar_type}}\n{{to_scalar_body}}";
         $expected = "string\nreturn \$this->value;\n";
 
-        $this->assertSame($expected, replace($email, $constructor2, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
+        $this->assertSame($expected, replace($email, $constructor2, $template, new DefinitionCollection($definition, $userId, $email)));
 
         $template = "{{scalar_type}}\n{{to_scalar_body}}";
         $expected = "int\nreturn \$this->value;\n";
 
-        $this->assertSame($expected, replace($userId, $constructor1, $template, new DefinitionCollection($definition, $userId, $email), new FinalKeyword()));
+        $this->assertSame($expected, replace($userId, $constructor1, $template, new DefinitionCollection($definition, $userId, $email)));
     }
 
     /**
@@ -652,11 +649,11 @@ CODE;
         $template = '{{to_string_body}}';
         $expected = "return \$this->key;\n";
 
-        $this->assertSame($expected, replace($definition, $constructor2, $template, new DefinitionCollection($definition, $email), new FinalKeyword()));
+        $this->assertSame($expected, replace($definition, $constructor2, $template, new DefinitionCollection($definition, $email)));
 
         $template = '{{to_string_body}}';
         $expected = "return \$this->value;\n";
 
-        $this->assertSame($expected, replace($email, $constructor1, $template, new DefinitionCollection($definition, $email), new FinalKeyword()));
+        $this->assertSame($expected, replace($email, $constructor1, $template, new DefinitionCollection($definition, $email)));
     }
 }

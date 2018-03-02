@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace FppTest\Builder;
 
 use Fpp\Argument;
-use Fpp\ClassKeyword\FinalKeyword;
 use Fpp\Condition;
 use Fpp\Constructor;
 use Fpp\Definition;
@@ -72,6 +71,6 @@ public function __construct(Name \$name, Age \$age)
 
 STRING;
 
-        $this->assertSame($expected, replace($person, $constructor, $template, new DefinitionCollection($name, $age, $person), new FinalKeyword()));
+        $this->assertSame($expected, replace($person, $constructor, $template, new DefinitionCollection($name, $age, $person)));
     }
 }

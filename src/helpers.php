@@ -36,6 +36,7 @@ function defaultBuilders(): array
         'accessors' => Builder\buildAccessors,
         'arguments' => Builder\buildArguments,
         'class_extends' => Builder\buildClassExtends,
+        'class_keyword' => Builder\buildClassKeyword,
         'class_name' => Builder\buildClassName,
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,
