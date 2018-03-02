@@ -11,7 +11,7 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildPayloadValidation;
+use function Fpp\Builder\buildPayloadValidation;
 
 class BuildPayloadValidationTest extends TestCase
 {
@@ -53,7 +53,8 @@ class BuildPayloadValidationTest extends TestCase
         $definition = new Definition(
             'My',
             'UserRegistered',
-            [$constructor]
+            [$constructor],
+            [new Deriving\AggregateChanged()]
         );
 
         $collection = new DefinitionCollection($userId, $email, $definition);
@@ -73,7 +74,7 @@ if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
 
 CODE;
 
-        $this->assertSame($expected, buildPayloadValidation($constructor, $collection, false));
+        $this->assertSame($expected, buildPayloadValidation($definition, $constructor, $collection, ''));
     }
 
     /**
@@ -114,7 +115,8 @@ CODE;
         $definition = new Definition(
             'My',
             'UserRegistered',
-            [$constructor]
+            [$constructor],
+            [new Deriving\Command()]
         );
 
         $collection = new DefinitionCollection($userId, $email, $definition);
@@ -138,6 +140,6 @@ if (! isset(\$payload['id']) || ! is_string(\$payload['id'])) {
 
 CODE;
 
-        $this->assertSame($expected, buildPayloadValidation($constructor, $collection, true));
+        $this->assertSame($expected, buildPayloadValidation($definition, $constructor, $collection, ''));
     }
 }

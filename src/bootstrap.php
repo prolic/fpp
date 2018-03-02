@@ -20,6 +20,7 @@ $files = [
     'builder/buildEqualsBody.php',
     'builder/buildFromArrayBody.php',
     'builder/buildMessageName.php',
+    'builder/buildPayloadValidation.php',
     'builder/buildProperties.php',
     'builder/buildScalarType.php',
     'builder/buildSetters.php',
