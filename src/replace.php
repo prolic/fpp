@@ -22,12 +22,12 @@ function replace(
     }
 
     foreach ($builders as $placeHolder => $builder) {
-        $template = str_replace('{{' . $placeHolder . '}}', '', $template);
+        $template = str_replace("\n        {{{$placeHolder}}}\n", "\n", $template);
     }
 
     // clean up
-    $template = str_replace("        \n", "\n", $template);
-    $template = str_replace("    \n", "\n", $template);
+    $template = str_replace("\n\n\n", "\n\n", $template);
+    $template = str_replace("\n        \n", "\n", $template);
     $template = str_replace("\n\n    }\n}", "\n    }\n}", $template);
 
     return $template . "\n";

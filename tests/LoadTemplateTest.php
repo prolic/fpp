@@ -27,6 +27,7 @@ class LoadTemplateTest extends TestCase
 namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}
@@ -53,6 +54,7 @@ TEMPLATE;
 namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}
@@ -90,6 +92,7 @@ TEMPLATE;
 namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}
@@ -131,6 +134,7 @@ TEMPLATE;
 namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}
@@ -204,6 +208,7 @@ TEMPLATE;
 namespace {{namespace}} {
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}

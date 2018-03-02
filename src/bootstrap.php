@@ -32,6 +32,7 @@ $files = [
     'builder/buildStaticConstructorBody.php',
     'builder/buildToArrayBody.php',
     'builder/buildToScalarBody.php',
+    'builder/buildTraits.php',
     'builder/buildVariableName.php',
 ];
 

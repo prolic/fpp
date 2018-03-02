@@ -51,7 +51,7 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
     }
 
     if ('' === $argumentList) {
-        return '';
+        return $placeHolder;
     }
 
     return substr($argumentList, 0, -2);

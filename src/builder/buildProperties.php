@@ -17,18 +17,35 @@ function buildProperties(Definition $definition, ?Constructor $constructor, Defi
         return $placeHolder;
     }
 
+    $properties = '';
+
     foreach ($definition->derivings() as $deriving) {
+        if ($deriving->equals(new Deriving\AggregateChanged())
+            || $deriving->equals(new Deriving\Command())
+            || $deriving->equals(new Deriving\DomainEvent())
+            || $deriving->equals(new Deriving\Query())
+        ) {
+            $properties = "protected \$messageName = '"
+                . buildMessageName($definition, $constructor, $collection, 'message_name') . "';\n\n";
+        }
+
+        if ($deriving->equals(new Deriving\AggregateChanged())) {
+            $properties .= "        protected \$payload = [];\n\n";
+        }
+
         if ($deriving->equals(new Deriving\Command())
             || $deriving->equals(new Deriving\Query())
         ) {
-            return $placeHolder;
+            return $properties;
         }
     }
 
-    $properties = '';
-
     foreach ($constructor->arguments() as $argument) {
-        $properties .= '        private $' . $argument->name() . ";\n";
+        if (! empty($properties)) {
+            $properties .= '        ';
+        }
+
+        $properties .= 'private $' . $argument->name() . ";\n";
     }
 
     return ltrim($properties);

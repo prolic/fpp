@@ -7,6 +7,7 @@ namespace Fpp\Builder;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\Deriving;
 
 const buildConstructor = '\Fpp\Builder\buildConstructor';
 
@@ -14,6 +15,16 @@ function buildConstructor(Definition $definition, ?Constructor $constructor, Def
 {
     if (null === $constructor) {
         return $placeHolder;
+    }
+
+    foreach ($definition->derivings() as $deriving) {
+        if ($deriving->equals(new Deriving\AggregateChanged())
+            || $deriving->equals(new Deriving\Command())
+            || $deriving->equals(new Deriving\DomainEvent())
+            || $deriving->equals(new Deriving\Query())
+        ) {
+            return $placeHolder;
+        }
     }
 
     $argumentList = buildArguments($definition, $constructor, new DefinitionCollection(), '');

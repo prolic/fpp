@@ -51,6 +51,7 @@ function defaultBuilders(): array
         'to_array_body' => Builder\buildToArrayBody,
         'to_scalar_body' => Builder\buildToScalarBody,
         'to_string_body' => Builder\buildToScalarBody,
+        'traits' => Builder\buildTraits,
         'variable_name' => Builder\buildVariableName,
     ];
 }

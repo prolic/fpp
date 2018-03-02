@@ -133,7 +133,11 @@ if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
                 throw new \InvalidArgumentException("Key 'email' is missing in payload or is not a string");
             }
 
-private \$id;
+protected \$messageName = 'My\UserRegistered';
+
+        protected \$payload = [];
+
+        private \$id;
         private \$name;
         private \$email;
 
@@ -231,6 +235,8 @@ if (! isset(\$payload['id']) || ! is_string(\$payload['id'])) {
                 throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
             }
 
+protected \$messageName = 'My\RegisterUser';
+
 public function id(): UserId
         {
             return UserId::fromString(\$this->payload['id']);
@@ -240,6 +246,7 @@ public function id(): UserId
         {
             return isset(\$this->payload['name']) ? \$this->payload['name'] : null;
         }
+
 
 
 EXPECTED;
@@ -297,7 +304,9 @@ if (! isset(\$payload['id']) || ! is_string(\$payload['id'])) {
                 throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
             }
 
-private \$id;
+protected \$messageName = 'My\UserRegistered';
+
+        private \$id;
         private \$name;
 
 public function id(): string
@@ -506,6 +515,7 @@ public function id(): string
         {
             return \$this->payload['id'];
         }
+
 
 
 EXPECTED;

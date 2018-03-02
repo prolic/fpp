@@ -73,7 +73,7 @@ CODE;
 CODE;
             }
 
-            return ltrim(substr($accessors, 0, -2));
+            return ltrim(substr($accessors, 0, -1));
         }
     }
 
@@ -92,5 +92,5 @@ CODE;
 CODE;
     }
 
-    return ltrim(substr($accessors, 0, -2));
+    return ltrim(substr($accessors, 0, -1));
 }

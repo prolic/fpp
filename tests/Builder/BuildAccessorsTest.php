@@ -42,6 +42,7 @@ public function name(): string
         {
             return \$this->payload['whatever'];
         }
+
 STRING;
 
         $this->assertSame($expected, buildAccessors($definition, $constructor, $collection, ''));
@@ -120,6 +121,7 @@ public function name(): string
         {
             return \$this->whatever;
         }
+
 STRING;
 
         $this->assertSame($expected, buildAccessors($definition, $constructor, $collection, ''));

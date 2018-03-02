@@ -1,7 +1,3 @@
-use \Prooph\Common\Messaging\PayloadTrait;
-
-        protected $messageName = '{{message_name}}';
-
         public static function with({{arguments}}): {{class_name}}
         {
             {{static_constructor_body}}
