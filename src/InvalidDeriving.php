@@ -88,6 +88,6 @@ class InvalidDeriving extends \RuntimeException
             return $definition->namespace() . '\\' . $definition->name();
         }
 
-        return$definition->name();
+        return $definition->name();
     }
 }
