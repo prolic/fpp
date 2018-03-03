@@ -17,7 +17,7 @@ class BuildFromArrayBodyTest extends TestCase
     /**
      * @test
      */
-    public function it_replaces_from_array(): void
+    public function it_builds_from_array_body(): void
     {
         $userId = new Definition(
             'My',
@@ -90,7 +90,7 @@ CODE;
     /**
      * @test
      */
-    public function it_replaces_from_array_2(): void
+    public function it_builds_from_array_body_2(): void
     {
         $userId = new Definition(
             'My',
@@ -149,7 +149,7 @@ CODE;
     /**
      * @test
      */
-    public function it_replaces_from_array_3(): void
+    public function it_builds_from_array_body_3(): void
     {
         $name = new Definition(
             'My',

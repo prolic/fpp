@@ -10,7 +10,7 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use PHPUnit\Framework\TestCase;
-use function Fpp\replace;
+use function Fpp\Builder\buildConstructor;
 
 class BuildConstructorTest extends TestCase
 {
@@ -51,9 +51,6 @@ class BuildConstructorTest extends TestCase
         $template = "{{properties}}\n{{constructor}}";
 
         $expected = <<<STRING
-private \$name;
-        private \$age;
-
 public function __construct(Name \$name, Age \$age)
         {
             if (strlen(\$name->value()) === 0) {
@@ -68,9 +65,8 @@ public function __construct(Name \$name, Age \$age)
             \$this->age = \$age;
         }
 
-
 STRING;
 
-        $this->assertSame($expected, replace($person, $constructor, $template, new DefinitionCollection($name, $age, $person)));
+        $this->assertSame($expected, buildConstructor($person, $constructor, new DefinitionCollection($name, $age, $person), ''));
     }
 }

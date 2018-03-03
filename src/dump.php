@@ -24,7 +24,7 @@ CODE;
 
         if (1 === count($constructors)) {
             $constructor = $constructors[0];
-            $code .= $replace($definition, $constructor, $loadTemplate($definition, $constructor), $collection);
+            $code .= $replace($loadTemplate($definition, $constructor), $definition, $constructor, $collection);
         } else {
             $createBaseClass = true;
 
@@ -39,11 +39,11 @@ CODE;
                     $createBaseClass = false;
                 }
 
-                $code .= $replace($definition, $constructor, $loadTemplate($definition, $constructor), $collection);
+                $code .= $replace($loadTemplate($definition, $constructor), $definition, $constructor, $collection);
             }
 
             if ($createBaseClass) {
-                $code .= $replace($definition, null, $loadTemplate($definition, null), $collection);
+                $code .= $replace($loadTemplate($definition, null), $definition, null, $collection);
             }
         }
     }

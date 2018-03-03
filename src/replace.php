@@ -7,9 +7,9 @@ namespace Fpp;
 const replace = '\Fpp\replace';
 
 function replace(
+    string $template,
     Definition $definition,
     ?Constructor $constructor,
-    string $template,
     DefinitionCollection $collection,
     array $builders = null
 ): string {
