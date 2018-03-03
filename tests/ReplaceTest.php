@@ -27,30 +27,42 @@ class ReplaceTest extends TestCase
         ];
 
         $template = <<<TEMPLATE
-class Foo
+namespace Test
 {
-    {{one}}
-    {{one}}
-    {{two}}
-
-
-    public function bar(): void
+    class Foo
     {
-    }
+        {{one}}
+        {{one}}
+        {{two}}
+
+        public function baz(): void
+        {
+        }
+        public function bar(): void
+        {
+        }
         
+    }
 }
 
 TEMPLATE;
 
         $expected = <<<TEMPLATE
-class Foo
+namespace Test
 {
-    private \$one;
-    private \$one;
-    private \$two;
-
-    public function bar(): void
+    class Foo
     {
+        private \$one;
+        private \$one;
+        private \$two;
+
+        public function baz(): void
+        {
+        }
+
+        public function bar(): void
+        {
+        }
     }
 }
 

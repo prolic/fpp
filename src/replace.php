@@ -26,6 +26,7 @@ function replace(
     }
 
     // clean up
+    $template = str_replace("\n        }\n        ", "\n        }\n\n        ", $template);
     $template = str_replace("\n\n\n", "\n\n", $template);
     $template = str_replace("\n        \n", "\n", $template);
     $template = str_replace("\n\n    }\n}", "\n    }\n}", $template);
