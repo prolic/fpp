@@ -83,8 +83,8 @@ function (MyEnum\Color $color): string
 
 Derivings are kind of PHP's extends keyword, the following rules apply:
 
-- Only data types can be derived
 - It's possible to derive multiple times
+- Some derivings are not compatible to each other (f.e. Command and ToArray cannot be mixed)
 
 There are 13 deriving types for now:
 
