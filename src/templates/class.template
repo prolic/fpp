@@ -1,6 +1,7 @@
-namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+namespace {{namespace}} {
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}

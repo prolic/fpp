@@ -1,4 +1,11 @@
 <?php
+/**
+ * This file is part of prolic/fpp.
+ * (c) 2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 declare(strict_types=1);
 
@@ -24,9 +31,10 @@ class LoadTemplateTest extends TestCase
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+namespace {{namespace}} {
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}
@@ -50,9 +58,10 @@ TEMPLATE;
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+namespace {{namespace}} {
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}
@@ -87,9 +96,10 @@ TEMPLATE;
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+namespace {{namespace}} {
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}
@@ -128,9 +138,10 @@ TEMPLATE;
         $template = loadTemplate($definition, null);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+namespace {{namespace}} {
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}
@@ -201,9 +212,10 @@ TEMPLATE;
         $template = loadTemplate($definition, $constructor2);
 
         $expected = <<<TEMPLATE
-namespace {{namespace_name}} {
-    {{abstract_final}}class {{class_name}}{{class_extends}}
+namespace {{namespace}} {
+    {{class_keyword}}class {{class_name}}{{class_extends}}
     {
+        {{traits}}
         {{properties}}
         {{constructor}}
         {{accessors}}

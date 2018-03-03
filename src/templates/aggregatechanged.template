@@ -1,18 +1,8 @@
-        protected $messageName = '{{message_name}}';
-
-        /**
-         * @var array
-         */
-        protected $payload = [];
-
         public static function with({{arguments}}): {{class_name}}
         {
             {{static_constructor_body}}
         }
 
-        /**
-         * @return static
-         */
         public static function occur(string $aggregateId, array $payload = []): {{class_name}}
         {
             return new static($aggregateId, $payload);
@@ -60,7 +50,9 @@
 
         protected function setAggregateId(string $aggregateId): void
         {
-            \Assert\Assertion::notEmpty($aggregateId);
+            if ('' === $aggregateId) {
+                throw new \InvalidArgumentException('Aggregate id cannot be an empty string');
+            }
 
             $this->metadata['_aggregate_id'] = $aggregateId;
         }

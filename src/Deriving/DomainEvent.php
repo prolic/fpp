@@ -1,16 +1,23 @@
 <?php
+/**
+ * This file is part of prolic/fpp.
+ * (c) 2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 declare(strict_types=1);
 
 namespace Fpp\Deriving;
 
 use Fpp\Definition;
-use Fpp\Deriving as FppDeriving;
+
 use Fpp\InvalidDeriving;
 
-class DomainEvent implements FppDeriving
+class DomainEvent extends AbstractDeriving
 {
-    const VALUE = 'DomainEvent';
+    public const VALUE = 'DomainEvent';
 
     public function checkDefinition(Definition $definition): void
     {
@@ -31,11 +38,6 @@ class DomainEvent implements FppDeriving
         if (0 === count($definition->constructors()[0]->arguments())) {
             throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
         }
-    }
-
-    public function __toString(): string
-    {
-        return self::VALUE;
     }
 
     private function forbidsDerivings(): array

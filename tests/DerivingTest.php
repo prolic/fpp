@@ -1,11 +1,18 @@
 <?php
+/**
+ * This file is part of prolic/fpp.
+ * (c) 2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 declare(strict_types=1);
 
 namespace FppTest;
 
-use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
+use function Fpp\defaultDerivingMap;
 
 class DerivingTest extends TestCase
 {
@@ -14,23 +21,9 @@ class DerivingTest extends TestCase
      */
     public function it_delivers_forbidden_derivings_and_to_string(): void
     {
-        $derivingsMap = [
-            'AggregateChanged' => new Deriving\AggregateChanged(),
-            'Command' => new Deriving\Command(),
-            'DomainEvent' => new Deriving\DomainEvent(),
-            'Enum' => new Deriving\Enum(),
-            'Equals' => new Deriving\Equals(),
-            'FromArray' => new Deriving\FromArray(),
-            'FromScalar' => new Deriving\FromScalar(),
-            'FromString' => new Deriving\FromString(),
-            'Query' => new Deriving\Query(),
-            'ToArray' => new Deriving\ToArray(),
-            'ToScalar' => new Deriving\ToScalar(),
-            'ToString' => new Deriving\ToString(),
-            'Uuid' => new Deriving\Uuid(),
-        ];
+        $derivingMap = defaultDerivingMap();
 
-        foreach ($derivingsMap as $name => $deriving) {
+        foreach ($derivingMap as $name => $deriving) {
             $this->assertSame($name, (string) $deriving);
         }
     }

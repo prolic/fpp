@@ -1,12 +1,15 @@
 <?php
+/**
+ * This file is part of prolic/fpp.
+ * (c) 2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 declare(strict_types=1);
 
 namespace Fpp;
-
-use Fpp\ClassKeyword\AbstractKeyword;
-use Fpp\ClassKeyword\FinalKeyword;
-use Fpp\ClassKeyword\NoKeyword;
 
 const dump = '\Fpp\dump';
 
@@ -25,9 +28,10 @@ CODE;
 
     foreach ($collection->definitions() as $definition) {
         $constructors = $definition->constructors();
+
         if (1 === count($constructors)) {
             $constructor = $constructors[0];
-            $code .= $replace($definition, $constructor, $loadTemplate($definition, $constructor), $collection, new FinalKeyword());
+            $code .= $replace($loadTemplate($definition, $constructor), $definition, $constructor, $collection);
         } else {
             $createBaseClass = true;
 
@@ -39,17 +43,14 @@ CODE;
                 }
 
                 if ($definition->name() === $name) {
-                    $keyword = new NoKeyword();
                     $createBaseClass = false;
-                } else {
-                    $keyword = new FinalKeyword();
                 }
 
-                $code .= $replace($definition, $constructor, $loadTemplate($definition, $constructor), $collection, $keyword);
+                $code .= $replace($loadTemplate($definition, $constructor), $definition, $constructor, $collection);
             }
 
             if ($createBaseClass) {
-                $code .= $replace($definition, null, $loadTemplate($definition, null), $collection, new AbstractKeyword());
+                $code .= $replace($loadTemplate($definition, null), $definition, null, $collection);
             }
         }
     }

@@ -1,4 +1,11 @@
 <?php
+/**
+ * This file is part of prolic/fpp.
+ * (c) 2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 declare(strict_types=1);
 
@@ -10,7 +17,7 @@ if (! defined('T_OTHER')) {
 
 const parse = '\Fpp\parse';
 
-function parse(string $filename, array $derivingsMap): DefinitionCollection
+function parse(string $filename, array $derivingMap): DefinitionCollection
 {
     if (! is_file($filename)) {
         throw new \RuntimeException("'$filename' is not a file");
@@ -300,13 +307,13 @@ function parse(string $filename, array $derivingsMap): DefinitionCollection
                         $token = $skipWhitespace($token);
                         $requireString($token);
 
-                        if (! isset($derivingsMap[$token[1]])) {
+                        if (! isset($derivingMap[$token[1]])) {
                             throw ParseError::unknownDeriving($token[2], $filename);
                         }
 
                         $derivingName = $token[1];
 
-                        $derivings[] = $derivingsMap[$token[1]];
+                        $derivings[] = $derivingMap[$token[1]];
                         $token = $nextToken();
                         $token = $skipWhitespace($token);
 

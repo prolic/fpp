@@ -1,16 +1,23 @@
 <?php
+/**
+ * This file is part of prolic/fpp.
+ * (c) 2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 declare(strict_types=1);
 
 namespace Fpp\Deriving;
 
 use Fpp\Definition;
-use Fpp\Deriving as FppDeriving;
+
 use Fpp\InvalidDeriving;
 
-class FromArray implements FppDeriving
+class FromArray extends AbstractDeriving
 {
-    const VALUE = 'FromArray';
+    public const VALUE = 'FromArray';
 
     public function checkDefinition(Definition $definition): void
     {
@@ -27,11 +34,6 @@ class FromArray implements FppDeriving
         if (count($definition->constructors()[0]->arguments()) < 2) {
             throw InvalidDeriving::atLeastTwoConstructorArgumentsExpected($definition, self::VALUE);
         }
-    }
-
-    public function __toString(): string
-    {
-        return self::VALUE;
     }
 
     private function forbidsDerivings(): array
