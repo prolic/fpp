@@ -15,6 +15,7 @@ use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildProperties;
 
@@ -41,5 +42,117 @@ private \$name;
 STRING;
 
         $this->assertSame($expected, buildProperties($definition, $constructor, new DefinitionCollection(), ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_builds_properties_for_command(): void
+    {
+        $argument1 = new Argument('name', 'string');
+        $argument2 = new Argument('age', 'int');
+        $argument3 = new Argument('whatever');
+
+        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+
+        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\Command()]);
+
+        $expected = <<<STRING
+protected \$messageName = 'Foo\Bar';
+
+
+STRING;
+
+        $this->assertSame($expected, buildProperties($definition, $constructor, new DefinitionCollection(), ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_builds_properties_for_command_incl_message_name(): void
+    {
+        $argument1 = new Argument('name', 'string');
+        $argument2 = new Argument('age', 'int');
+        $argument3 = new Argument('whatever');
+
+        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+
+        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\Command()], [], 'foo-bar');
+
+        $expected = <<<STRING
+protected \$messageName = 'foo-bar';
+
+
+STRING;
+
+        $this->assertSame($expected, buildProperties($definition, $constructor, new DefinitionCollection(), ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_builds_properties_for_domain_event(): void
+    {
+        $argument1 = new Argument('name', 'string');
+        $argument2 = new Argument('age', 'int');
+        $argument3 = new Argument('whatever');
+
+        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+
+        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\DomainEvent()]);
+
+        $expected = <<<STRING
+protected \$messageName = 'Foo\Bar';
+
+        private \$name;
+        private \$age;
+        private \$whatever;
+
+STRING;
+
+        $this->assertSame($expected, buildProperties($definition, $constructor, new DefinitionCollection(), ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_builds_properties_for_domain_aggregate_changed(): void
+    {
+        $argument1 = new Argument('name', 'string');
+        $argument2 = new Argument('age', 'int');
+        $argument3 = new Argument('whatever');
+
+        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+
+        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\AggregateChanged()]);
+
+        $expected = <<<STRING
+protected \$messageName = 'Foo\Bar';
+
+        protected \$payload = [];
+
+        private \$name;
+        private \$age;
+        private \$whatever;
+
+STRING;
+
+        $this->assertSame($expected, buildProperties($definition, $constructor, new DefinitionCollection(), ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_placeholder_when_constructor_missing(): void
+    {
+        $argument1 = new Argument('name', 'string');
+        $argument2 = new Argument('age', 'int');
+        $argument3 = new Argument('whatever');
+
+        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+
+        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\AggregateChanged()]);
+
+        $this->assertSame('{{properties}}', buildProperties($definition, null, new DefinitionCollection(), '{{properties}}'));
     }
 }
