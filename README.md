@@ -65,7 +65,7 @@ No problem
 ```console
 namespace MyEnum;
 
-enum Color = Red | Blue | Green | Yellow deriving (Enum);
+data Color = Red | Blue | Green | Yellow deriving (Enum);
 ```
 
 ```php
