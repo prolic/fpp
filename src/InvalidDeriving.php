@@ -19,7 +19,7 @@ class InvalidDeriving extends \RuntimeException
         string $deriving2
     ): InvalidDeriving {
         return new self(sprintf(
-            'Invalid deriving on %s, deriving %s conflicts with deriving $s',
+            'Invalid deriving on %s, deriving %s conflicts with deriving %s',
             self::className($definition),
             $deriving1,
             $deriving2
@@ -29,7 +29,7 @@ class InvalidDeriving extends \RuntimeException
     public static function exactlyOneConstructorExpected(Definition $definition, string $deriving): InvalidDeriving
     {
         return new self(sprintf(
-            'Invalid deriving on $s, deriving %s expects exactly one constructor',
+            'Invalid deriving on %s, deriving %s expects exactly one constructor',
             self::className($definition),
             $deriving
         ));
@@ -38,7 +38,7 @@ class InvalidDeriving extends \RuntimeException
     public static function atLeastTwoConstructorsExpected(Definition $definition, string $deriving): InvalidDeriving
     {
         return new self(sprintf(
-            'Invalid deriving on $s, deriving %s expects at least two constructors',
+            'Invalid deriving on %s, deriving %s expects at least two constructors',
             self::className($definition),
             $deriving
         ));
@@ -47,7 +47,7 @@ class InvalidDeriving extends \RuntimeException
     public static function exactlyZeroConstructorArgumentsExpected(Definition $definition, string $deriving): InvalidDeriving
     {
         return new self(sprintf(
-            'Invalid deriving on $s, deriving %s expects exactly zero constructor arguments',
+            'Invalid deriving on %s, deriving %s expects exactly zero constructor arguments',
             self::className($definition),
             $deriving
         ));
@@ -56,7 +56,7 @@ class InvalidDeriving extends \RuntimeException
     public static function exactlyOneConstructorArgumentExpected(Definition $definition, string $deriving): InvalidDeriving
     {
         return new self(sprintf(
-            'Invalid deriving on $s, deriving %s expects exactly one constructor argument',
+            'Invalid deriving on %s, deriving %s expects exactly one constructor argument',
             self::className($definition),
             $deriving
         ));
@@ -65,7 +65,7 @@ class InvalidDeriving extends \RuntimeException
     public static function atLeastOneConstructorArgumentExpected(Definition $definition, string $deriving): InvalidDeriving
     {
         return new self(sprintf(
-            'Invalid deriving on $s, deriving %s expects at least one constructor argument',
+            'Invalid deriving on %s, deriving %s expects at least one constructor argument',
             self::className($definition),
             $deriving
         ));
@@ -74,7 +74,7 @@ class InvalidDeriving extends \RuntimeException
     public static function atLeastTwoConstructorArgumentsExpected(Definition $definition, string $deriving): InvalidDeriving
     {
         return new self(sprintf(
-            'Invalid deriving on $s, deriving %s expects at least two constructor arguments',
+            'Invalid deriving on %s, deriving %s expects at least two constructor arguments',
             self::className($definition),
             $deriving
         ));
@@ -83,7 +83,7 @@ class InvalidDeriving extends \RuntimeException
     public static function noConditionsExpected(Definition $definition, string $deriving): InvalidDeriving
     {
         return new self(sprintf(
-            'Invalid deriving on $s, deriving %s expects no conditions at all',
+            'Invalid deriving on %s, deriving %s expects no conditions at all',
             self::className($definition),
             $deriving
         ));
