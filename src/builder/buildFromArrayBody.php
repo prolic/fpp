@@ -34,7 +34,10 @@ function buildFromArrayBody(Definition $definition, ?Constructor $constructor, D
     }
 
     $code = '';
+    $arguments = [];
     foreach ($constructor->arguments() as $key => $argument) {
+        $arguments[] = '$' . $argument->name();
+
         if (null === $argument->type()) {
             $code .= <<<CODE
             if (! isset(\$data['{$argument->name()}'])) {
@@ -241,7 +244,8 @@ CODE;
         }
     }
 
-    $code .= "            return new self({{arguments}});\n";
+    $arguments = join(', ', $arguments);
+    $code .= "            return new self($arguments);\n";
 
     return ltrim($code);
 }
