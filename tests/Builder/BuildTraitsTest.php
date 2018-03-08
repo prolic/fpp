@@ -38,7 +38,24 @@ class BuildTraitsTest extends TestCase
             [$deriving]
         );
 
-        $this->assertSame("use \Prooph\Common\Messaging\PayloadTrait;\n", buildTraits($definition, $constructor, new DefinitionCollection($definition), ''));
+        $this->assertSame("use Prooph\Common\Messaging\PayloadTrait;\n", buildTraits($definition, $constructor, new DefinitionCollection($definition), ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_builds_traits_for_uuid(): void
+    {
+        $constructor = new Constructor('My\Email');
+
+        $definition = new Definition(
+            'My',
+            'Email',
+            [$constructor],
+            [new Deriving\Uuid()]
+        );
+
+        $this->assertSame("use Ramsey\Uuid\Uuid;\n        use Ramsey\Uuid\UuidInterface;\n", buildTraits($definition, $constructor, new DefinitionCollection($definition), ''));
     }
 
     /**

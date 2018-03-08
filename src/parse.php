@@ -257,9 +257,8 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                             if (in_array($token[1], [',', '}'], true)) {
                                 $arguments[] = new Argument($argumentName, $type, $nullable);
                                 goto parseArguments;
-                            } else {
-                                throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
                             }
+                            throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
                         } elseif ($token[0] === T_VARIABLE) {
                             $arguments[] = new Argument(substr($token[1], 1), null, false);
                             $token = $nextToken();
@@ -267,9 +266,8 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                             if (in_array($token[1], [',', '}'], true)) {
                                 goto parseArguments;
-                            } else {
-                                throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
                             }
+                            throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
                         }
                     }
 

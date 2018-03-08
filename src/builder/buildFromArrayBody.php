@@ -244,7 +244,7 @@ CODE;
         }
     }
 
-    $arguments = join(', ', $arguments);
+    $arguments = implode(', ', $arguments);
     $code .= "            return new self($arguments);\n";
 
     return ltrim($code);

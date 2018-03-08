@@ -87,7 +87,7 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
 
             \$email = \Some\Email::fromString(\$data['email']);
 
-            return new self({{arguments}});
+            return new self(\$id, \$name, \$email);
 
 CODE;
 
@@ -146,7 +146,7 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
                 \$age = null;
             }
 
-            return new self({{arguments}});
+            return new self(\$id, \$age);
 
 CODE;
 
@@ -213,7 +213,7 @@ if (! isset(\$data['name']) || ! is_string(\$data['name'])) {
                 \$age = null;
             }
 
-            return new self({{arguments}});
+            return new self(\$name, \$age);
 
 CODE;
 
