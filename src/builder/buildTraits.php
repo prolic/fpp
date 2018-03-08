@@ -25,7 +25,11 @@ function buildTraits(Definition $definition, ?Constructor $constructor, Definiti
             || $deriving->equals(new Deriving\DomainEvent())
             || $deriving->equals(new Deriving\Query())
         ) {
-            return "use \Prooph\Common\Messaging\PayloadTrait;\n";
+            return "use Prooph\Common\Messaging\PayloadTrait;\n";
+        }
+
+        if ($deriving->equals(new Deriving\Uuid())) {
+            return "use Ramsey\Uuid\Uuid;\n        use Ramsey\Uuid\UuidInterface;\n";
         }
     }
 
