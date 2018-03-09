@@ -40,6 +40,7 @@ $files = [
     'builder/buildEnumValue.php',
     'builder/buildEqualsBody.php',
     'builder/buildFromArrayBody.php',
+    'builder/buildImports.php',
     'builder/buildMessageName.php',
     'builder/buildNamespace.php',
     'builder/buildPayloadValidation.php',

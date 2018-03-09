@@ -25,15 +25,15 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
         if ($deriving->equals(new Deriving\AggregateChanged())
             || $deriving->equals(new Deriving\DomainEvent())
         ) {
-            return ' extends \Prooph\Common\Messaging\DomainEvent';
+            return ' extends DomainEvent';
         }
 
         if ($deriving->equals(new Deriving\Command())) {
-            return ' extends \Prooph\Common\Messaging\Command';
+            return ' extends Command';
         }
 
         if ($deriving->equals(new Deriving\Query())) {
-            return ' extends \Prooph\Common\Messaging\Query';
+            return ' extends Query';
         }
     }
 

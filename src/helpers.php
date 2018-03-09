@@ -48,6 +48,7 @@ function defaultBuilders(): array
         'enum_value' => Builder\buildEnumValue,
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,
+        'imports' => Builder\buildImports,
         'message_name' => Builder\buildMessageName,
         'namespace' => Builder\buildNamespace,
         'payload_validation' => Builder\buildPayloadValidation,
