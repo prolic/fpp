@@ -53,6 +53,7 @@ class BuildFromArrayBodyTest extends TestCase
             new Argument('id', 'My\UserId'),
             new Argument('name', 'string', true),
             new Argument('email', 'Some\Email'),
+            new Argument('float', 'float'),
         ]);
 
         $definition = new Definition(
@@ -87,7 +88,13 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
 
             \$email = \Some\Email::fromString(\$data['email']);
 
-            return new self(\$id, \$name, \$email);
+            if (! isset(\$data['float']) || ! is_float(\$data['float']) || ! is_int(\$data['float'])) {
+                throw new \InvalidArgumentException("Key 'float' is missing in data array or is not a float");
+            }
+
+            \$float = \$data['float'];
+
+            return new self(\$id, \$name, \$email, \$float);
 
 CODE;
 

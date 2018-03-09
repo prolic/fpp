@@ -54,6 +54,7 @@ class BuildPayloadValidationTest extends TestCase
             new Argument('name', 'string', true),
             new Argument('email', 'Some\Email'),
             new Argument('something', 'Something\Unknown'),
+            new Argument('float', 'float'),
         ]);
 
         $definition = new Definition(
@@ -76,6 +77,10 @@ if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
 
             if (! isset(\$payload['something'])) {
                 throw new \InvalidArgumentException("Key 'something' is missing in payload");
+            }
+
+            if (! isset(\$payload['float']) || ! is_float(\$payload['float']) || ! is_int(\$payload['float'])) {
+                throw new \InvalidArgumentException("Key 'float' is missing in payload or is not a float");
             }
 
 CODE;

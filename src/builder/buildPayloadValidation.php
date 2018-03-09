@@ -55,8 +55,14 @@ CODE;
         }
 
         if ($argument->isScalartypeHint() && ! $argument->nullable()) {
+            $floatCheck = '';
+
+            if ($argument->type() === 'float') {
+                $floatCheck = " || ! is_int(\$payload['{$argument->name()}'])";
+            }
+
             $code .= <<<CODE
-            if (! isset(\$payload['{$argument->name()}']) || ! is_{$argument->type()}(\$payload['{$argument->name()}'])) {
+            if (! isset(\$payload['{$argument->name()}']) || ! is_{$argument->type()}(\$payload['{$argument->name()}'])$floatCheck) {
                 throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a {$argument->type()}");
             }
 
@@ -66,8 +72,14 @@ CODE;
         }
 
         if ($argument->isScalartypeHint() && $argument->nullable()) {
+            $floatCheck = '';
+
+            if ($argument->type() === 'float') {
+                $floatCheck = " && ! is_int(\$payload['{$argument->name()}'])";
+            }
+
             $code .= <<<CODE
-            if (isset(\$payload['{$argument->name()}']) && ! is_{$argument->type()}(\$payload['{$argument->name()}'])) {
+            if (isset(\$payload['{$argument->name()}']) && ! is_{$argument->type()}(\$payload['{$argument->name()}'])$floatCheck) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$argument->type()} in payload");
             }
 

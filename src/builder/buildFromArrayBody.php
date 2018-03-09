@@ -52,8 +52,14 @@ CODE;
         }
 
         if ($argument->isScalartypeHint() && ! $argument->nullable()) {
+            $floatCheck = '';
+
+            if ($argument->type() === 'float') {
+                $floatCheck = " || ! is_int(\$data['{$argument->name()}'])";
+            }
+
             $code .= <<<CODE
-            if (! isset(\$data['{$argument->name()}']) || ! is_{$argument->type()}(\$data['{$argument->name()}'])) {
+            if (! isset(\$data['{$argument->name()}']) || ! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
                 throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a {$argument->type()}");
             }
 
@@ -65,9 +71,15 @@ CODE;
         }
 
         if ($argument->isScalartypeHint() && $argument->nullable()) {
+            $floatCheck = '';
+
+            if ($argument->type() === 'float') {
+                $floatCheck = " && ! is_int(\$data['{$argument->name()}'])";
+            }
+
             $code .= <<<CODE
             if (isset(\$data['{$argument->name()}'])) {
-                if (! is_{$argument->type()}(\$data['{$argument->name()}'])) {
+                if (! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
                     throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$argument->type()} in data array");
                 }
 
