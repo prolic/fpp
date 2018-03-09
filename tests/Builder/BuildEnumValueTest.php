@@ -37,4 +37,22 @@ class BuildEnumValueTest extends TestCase
 
         $this->assertSame('Red', buildEnumValue($definition, $constructor1, new DefinitionCollection($definition), ''));
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_place_holder_when_no_constructor_given(): void
+    {
+        $constructor1 = new Constructor('My\Red');
+        $constructor2 = new Constructor('My\Blue');
+
+        $definition = new Definition(
+            'My',
+            'Color',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum()]
+        );
+
+        $this->assertSame('placeholder', buildEnumValue($definition, null, new DefinitionCollection($definition), 'placeholder'));
+    }
 }
