@@ -72,7 +72,7 @@ STRING;
 public function name(): string
         {
             if (! isset(\$this->name)) {
-                \$this->name = \$this->payload['name'];
+                \$this->name = \$this->aggregateId();
             }
 
             return \$this->name;

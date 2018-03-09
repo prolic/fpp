@@ -232,3 +232,51 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
         $namespace !== '' ? $namespace . '\\' . $name : $name
     ));
 }
+
+function buildArgumentConstructorFromAggregateId(Argument $argument, Definition $definition, DefinitionCollection $collection): string
+{
+    if ($argument->isScalartypeHint() || null === $argument->type()) {
+        return '$this->aggregateId()';
+    }
+
+    $nsPosition = strrpos($argument->type(), '\\');
+
+    if (false !== $nsPosition) {
+        $namespace = substr($argument->type(), 0, $nsPosition);
+        $name = substr($argument->type(), $nsPosition + 1);
+    } else {
+        $namespace = '';
+        $name = $argument->type();
+    }
+
+    if (! $collection->hasDefinition($namespace, $name)) {
+        throw new \RuntimeException(sprintf(
+            'Cannot build argument constructor for %s',
+            $namespace !== '' ? $namespace . '\\' . $name : $name
+        ));
+    }
+
+    $argumentDefinition = $collection->definition($namespace, $name);
+
+    $calledClass = $namespace === $definition->namespace()
+        ? $name
+        : '\\' . $argument->type();
+
+    foreach ($argumentDefinition->derivings() as $deriving) {
+        switch ((string) $deriving) {
+            case Deriving\Enum::VALUE:
+            case Deriving\FromString::VALUE:
+            case Deriving\Uuid::VALUE:
+                return "$calledClass::fromString(\$this->aggregateId())";
+            case Deriving\FromScalar::VALUE:
+                return "$calledClass::fromScalar(\$this->aggregateId())";
+            case Deriving\FromArray::VALUE:
+                return "$calledClass::fromArray(\$this->aggregateId())";
+        }
+    }
+
+    throw new \RuntimeException(sprintf(
+        'Cannot build argument constructor for %s',
+        $namespace !== '' ? $namespace . '\\' . $name : $name
+    ));
+}

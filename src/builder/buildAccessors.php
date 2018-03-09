@@ -15,6 +15,7 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
+use function Fpp\buildArgumentConstructorFromAggregateId;
 use function Fpp\buildArgumentConstructorFromPayload;
 use function Fpp\buildArgumentReturnType;
 
@@ -35,10 +36,16 @@ function buildAccessors(Definition $definition, ?Constructor $constructor, Defin
         ) {
             $accessors = '';
 
-            foreach ($constructor->arguments() as $argument) {
+            foreach ($constructor->arguments() as $index => $argument) {
                 $returnType = buildArgumentReturnType($argument, $definition);
-                $argumentConstructor = buildArgumentConstructorFromPayload($argument, $definition, $collection);
-                if ($argument->nullable()) {
+
+                if (0 === $index) {
+                    $argumentConstructor = buildArgumentConstructorFromAggregateId($argument, $definition, $collection);
+                } else {
+                    $argumentConstructor = buildArgumentConstructorFromPayload($argument, $definition, $collection);
+                }
+
+                if ($argument->nullable() && 0 < $index) {
                     $check = "if (! isset(\$this->{$argument->name()}) && isset(\$this->payload['{$argument->name()}'])) {";
                 } else {
                     $check = "if (! isset(\$this->{$argument->name()})) {";
