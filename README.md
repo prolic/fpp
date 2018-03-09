@@ -86,7 +86,7 @@ Derivings are kind of PHP's extends keyword, the following rules apply:
 - It's possible to derive multiple times
 - Some derivings are not compatible to each other (f.e. Command and ToArray cannot be mixed)
 
-There are 13 deriving types for now:
+There are 14 deriving types for now:
 
 - AggregateChanged
 - Command
@@ -97,6 +97,7 @@ There are 13 deriving types for now:
 - FromScalar
 - FromString
 - Query
+- MicroAggregateChanged (not extending from prooph/eventsourcing, f.e. for prooph/micro)
 - ToArray
 - ToScalar
 - ToString
