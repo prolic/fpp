@@ -29,6 +29,7 @@ function buildConstructor(Definition $definition, ?Constructor $constructor, Def
             || $deriving->equals(new Deriving\Command())
             || $deriving->equals(new Deriving\DomainEvent())
             || $deriving->equals(new Deriving\Query())
+            || $deriving->equals(new Deriving\MicroAggregateChanged())
         ) {
             return $placeHolder;
         }

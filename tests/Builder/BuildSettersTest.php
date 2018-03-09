@@ -218,6 +218,9 @@ CODE;
             [
                 new Deriving\Query(),
             ],
+            [
+                new Deriving\MicroAggregateChanged(),
+            ],
         ];
     }
 }

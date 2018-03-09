@@ -21,7 +21,9 @@ const buildStaticConstructorBody = '\Fpp\Builder\buildStaticConstructorBody';
 function buildStaticConstructorBody(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     foreach ($definition->derivings() as $deriving) {
-        if ($deriving->equals(new Deriving\AggregateChanged())) {
+        if ($deriving->equals(new Deriving\AggregateChanged())
+            || $deriving->equals(new Deriving\MicroAggregateChanged())
+        ) {
             $inclFirstArgument = false;
         }
 

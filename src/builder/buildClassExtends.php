@@ -22,9 +22,11 @@ const buildClassExtends = '\Fpp\Builder\buildClassExtends';
 function buildClassExtends(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     foreach ($definition->derivings() as $deriving) {
-        if ($deriving->equals(new Deriving\AggregateChanged())
-            || $deriving->equals(new Deriving\DomainEvent())
-        ) {
+        if ($deriving->equals(new Deriving\AggregateChanged())) {
+            return ' extends \Prooph\EventSourcing\AggregateChanged';
+        }
+
+        if ($deriving->equals(new Deriving\DomainEvent())) {
             return ' extends \Prooph\Common\Messaging\DomainEvent';
         }
 
@@ -34,6 +36,10 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
 
         if ($deriving->equals(new Deriving\Query())) {
             return ' extends \Prooph\Common\Messaging\Query';
+        }
+
+        if ($deriving->equals(new Deriving\MicroAggregateChanged())) {
+            return ' extends \Prooph\Common\Messaging\DomainEvent';
         }
     }
 

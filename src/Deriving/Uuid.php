@@ -54,6 +54,7 @@ class Uuid extends AbstractDeriving
             FromScalar::VALUE,
             FromString::VALUE,
             Query::VALUE,
+            MicroAggregateChanged::VALUE,
             ToArray::VALUE,
             ToScalar::VALUE,
             ToString::VALUE,

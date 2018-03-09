@@ -28,6 +28,7 @@ function defaultDerivingMap(): array
         'FromScalar' => new Deriving\FromScalar(),
         'FromString' => new Deriving\FromString(),
         'Query' => new Deriving\Query(),
+        'MicroAggregateChanged' => new Deriving\MicroAggregateChanged(),
         'ToArray' => new Deriving\ToArray(),
         'ToScalar' => new Deriving\ToScalar(),
         'ToString' => new Deriving\ToString(),
@@ -148,7 +149,10 @@ function buildArgumentConstructor(Argument $argument, Definition $definition, De
     }
 
     if (! $collection->hasDefinition($namespace, $name)) {
-        throw new \RuntimeException('Cannot build argument constructor');
+        throw new \RuntimeException(sprintf(
+            'Cannot build argument constructor for %s',
+            $namespace !== '' ? $namespace . '\\' . $name : $name
+        ));
     }
 
     $argumentDefinition = $collection->definition($namespace, $name);
@@ -170,7 +174,10 @@ function buildArgumentConstructor(Argument $argument, Definition $definition, De
         }
     }
 
-    throw new \RuntimeException('Cannot build argument constructor');
+    throw new \RuntimeException(sprintf(
+        'Cannot build argument constructor for %s',
+        $namespace !== '' ? $namespace . '\\' . $name : $name
+    ));
 }
 
 function buildScalarConstructorFromPayload(Definition $definition): string
@@ -195,7 +202,10 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
     }
 
     if (! $collection->hasDefinition($namespace, $name)) {
-        throw new \RuntimeException('Cannot build argument constructor');
+        throw new \RuntimeException(sprintf(
+            'Cannot build argument constructor for %s',
+            $namespace !== '' ? $namespace . '\\' . $name : $name
+        ));
     }
 
     $argumentDefinition = $collection->definition($namespace, $name);
@@ -217,5 +227,8 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
         }
     }
 
-    throw new \RuntimeException('Cannot build argument constructor');
+    throw new \RuntimeException(sprintf(
+        'Cannot build argument constructor for %s',
+        $namespace !== '' ? $namespace . '\\' . $name : $name
+    ));
 }

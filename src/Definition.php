@@ -106,6 +106,7 @@ class Definition
                 Deriving\Command::VALUE,
                 Deriving\DomainEvent::VALUE,
                 Deriving\Query::VALUE,
+                Deriving\MicroAggregateChanged::VALUE,
             ], true)) {
                 $allowMessageName = true;
             }

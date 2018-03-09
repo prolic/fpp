@@ -49,6 +49,7 @@ class Enum extends AbstractDeriving
             Command::VALUE,
             DomainEvent::VALUE,
             Query::VALUE,
+            MicroAggregateChanged::VALUE,
             ToArray::VALUE,
             ToScalar::VALUE,
             ToString::VALUE,

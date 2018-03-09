@@ -151,7 +151,7 @@ STRING;
 
         $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
 
-        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\AggregateChanged()]);
+        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\MicroAggregateChanged()]);
 
         $this->assertSame('{{properties}}', buildProperties($definition, null, new DefinitionCollection(), '{{properties}}'));
     }

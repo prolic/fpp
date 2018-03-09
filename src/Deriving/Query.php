@@ -51,6 +51,7 @@ class Query extends AbstractDeriving
             FromArray::VALUE,
             FromScalar::VALUE,
             FromString::VALUE,
+            MicroAggregateChanged::VALUE,
             ToArray::VALUE,
             ToScalar::VALUE,
             ToString::VALUE,

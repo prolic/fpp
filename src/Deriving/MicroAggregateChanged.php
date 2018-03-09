@@ -12,33 +12,30 @@ declare(strict_types=1);
 namespace Fpp\Deriving;
 
 use Fpp\Definition;
-
 use Fpp\InvalidDeriving;
 
-class FromString extends AbstractDeriving
+class MicroAggregateChanged extends AbstractDeriving
 {
-    public const VALUE = 'FromString';
+    public const VALUE = 'MicroAggregateChanged';
 
     public function checkDefinition(Definition $definition): void
     {
+        if (0 !== count($definition->conditions())) {
+            throw InvalidDeriving::noConditionsExpected($definition, self::VALUE);
+        }
+
         foreach ($definition->derivings() as $deriving) {
             if (in_array((string) $deriving, $this->forbidsDerivings(), true)) {
                 throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
             }
         }
 
-        if (count($definition->constructors()) > 1) {
+        if (count($definition->constructors()) !== 1) {
             throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
         }
 
-        $constructor = $definition->constructors()[0];
-
-        if ('String' === $constructor->name()) {
-            return;
-        }
-
-        if (count($constructor->arguments()) !== 1) {
-            throw InvalidDeriving::exactlyOneConstructorArgumentExpected($definition, self::VALUE);
+        if (0 === count($definition->constructors()[0]->arguments())) {
+            throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
         }
     }
 
@@ -49,8 +46,14 @@ class FromString extends AbstractDeriving
             Command::VALUE,
             DomainEvent::VALUE,
             Enum::VALUE,
+            Equals::VALUE,
+            FromArray::VALUE,
+            FromScalar::VALUE,
+            FromString::VALUE,
             Query::VALUE,
-            MicroAggregateChanged::VALUE,
+            ToArray::VALUE,
+            ToScalar::VALUE,
+            ToString::VALUE,
             Uuid::VALUE,
         ];
     }

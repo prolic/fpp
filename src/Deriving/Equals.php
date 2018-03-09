@@ -36,6 +36,7 @@ class Equals extends AbstractDeriving
             DomainEvent::VALUE,
             Enum::VALUE,
             Query::VALUE,
+            MicroAggregateChanged::VALUE,
             Uuid::VALUE,
         ];
     }

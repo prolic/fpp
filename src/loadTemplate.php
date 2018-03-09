@@ -19,6 +19,7 @@ use Fpp\Deriving\Equals;
 use Fpp\Deriving\FromArray;
 use Fpp\Deriving\FromScalar;
 use Fpp\Deriving\FromString;
+use Fpp\Deriving\MicroAggregateChanged;
 use Fpp\Deriving\Query;
 use Fpp\Deriving\ToArray;
 use Fpp\Deriving\ToScalar;
@@ -58,6 +59,7 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
             case Command::VALUE:
             case DomainEvent::VALUE:
             case Query::VALUE:
+            case MicroAggregateChanged::VALUE:
             case Uuid::VALUE:
             case Equals::VALUE:
             case FromArray::VALUE:

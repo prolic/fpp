@@ -31,12 +31,15 @@ function buildProperties(Definition $definition, ?Constructor $constructor, Defi
             || $deriving->equals(new Deriving\Command())
             || $deriving->equals(new Deriving\DomainEvent())
             || $deriving->equals(new Deriving\Query())
+            || $deriving->equals(new Deriving\MicroAggregateChanged())
         ) {
             $properties = "protected \$messageName = '"
                 . buildMessageName($definition, $constructor, $collection, 'message_name') . "';\n\n";
         }
 
-        if ($deriving->equals(new Deriving\AggregateChanged())) {
+        if ($deriving->equals(new Deriving\AggregateChanged())
+            || $deriving->equals(new Deriving\MicroAggregateChanged())
+        ) {
             $properties .= "        protected \$payload = [];\n\n";
         }
 

@@ -31,6 +31,7 @@ function buildAccessors(Definition $definition, ?Constructor $constructor, Defin
     foreach ($definition->derivings() as $deriving) {
         if ($deriving->equals(new Deriving\AggregateChanged())
             || $deriving->equals(new Deriving\DomainEvent())
+            || $deriving->equals(new Deriving\MicroAggregateChanged())
         ) {
             $accessors = '';
 
