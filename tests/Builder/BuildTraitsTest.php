@@ -38,7 +38,7 @@ class BuildTraitsTest extends TestCase
             [$deriving]
         );
 
-        $this->assertSame("use PayloadTrait;\n", buildTraits($definition, $constructor, new DefinitionCollection($definition), ''));
+        $this->assertSame("use \Prooph\Common\Messaging\PayloadTrait;\n", buildTraits($definition, $constructor, new DefinitionCollection($definition), ''));
     }
 
     /**

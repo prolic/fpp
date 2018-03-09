@@ -1,5 +1,4 @@
 namespace {{namespace}} {
-    {{imports}}
     {{class_keyword}}class {{class_name}}{{class_extends}}
     {
         {{traits}}

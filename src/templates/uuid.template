@@ -2,15 +2,15 @@
 
         public static function generate(): {{class_name}}
         {
-            return new self(Uuid::uuid4());
+            return new self(\Ramsey\Uuid\Uuid::uuid4());
         }
 
         public static function fromString(string ${{variable_name}}): {{class_name}}
         {
-            return new self(Uuid::fromString(${{variable_name}}));
+            return new self(\Ramsey\Uuid\Uuid::fromString(${{variable_name}}));
         }
 
-        private function __construct(UuidInterface ${{variable_name}})
+        private function __construct(\Ramsey\Uuid\UuidInterface ${{variable_name}})
         {
             $this->uuid = ${{variable_name}};
         }
