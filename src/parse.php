@@ -39,6 +39,8 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
     $namespace = '';
 
     $nextToken = function () use ($tokens, &$position, &$tokenCount, &$line, $filename): array {
+        nextToken:
+
         if ($position === $tokenCount - 1) {
             throw ParseError::unexpectedEndOfFile($filename);
         }
@@ -56,11 +58,15 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
             $line = $token[2];
         }
 
+        if ($token[0] === T_COMMENT) {
+            goto nextToken;
+        }
+
         return $token;
     };
 
     $skipWhitespace = function (array $token) use ($tokens, &$position, $nextToken): array {
-        if ($token[0] === T_WHITESPACE) {
+        while ($token[0] === T_WHITESPACE) {
             $token = $nextToken();
         }
 
@@ -82,16 +88,6 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
     $requireVariable = function (array $token) use ($filename): void {
         if ($token[0] !== T_VARIABLE) {
             throw ParseError::unexpectedTokenFound('T_VARIABLE', $token, $filename);
-        }
-    };
-
-    $requireUcFirstString = function (array $token) use ($filename): void {
-        if ($token[0] !== T_STRING) {
-            throw ParseError::unexpectedTokenFound('T_STRING', $token, $filename);
-        }
-
-        if ($token[1][0] === strtolower($token[1][0])) {
-            throw ParseError::lowerCaseDefinitionName($token, $filename);
         }
     };
 
@@ -148,7 +144,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $token = $nextToken();
                 $requireWhitespace($token);
                 $token = $nextToken();
-                $requireUcFirstString($token);
+                $requireString($token);
                 $name = $token[1];
                 $token = $nextToken();
                 $token = $skipWhitespace($token);
@@ -174,14 +170,14 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     $token = $nextToken();
                 }
 
-                $requireUcFirstString($token);
+                $requireString($token);
                 $constructorName .= $token[1];
                 $token = $nextToken();
 
                 while ($token[0] === T_NS_SEPARATOR) {
                     $constructorName .= $token[1];
                     $token = $nextToken();
-                    $requireUcFirstString($token);
+                    $requireString($token);
                     $constructorName .= $token[1];
                     $token = $nextToken();
                 }
@@ -223,7 +219,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                             $type .= $token[1];
 
                             if (! in_array($type, ['string', 'int', 'bool', 'float'], true)) {
-                                $requireUcFirstString($token);
+                                $requireString($token);
                             }
 
                             $token = $nextToken();
@@ -235,7 +231,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                                 $type .= '\\';
                                 $token = $nextToken();
-                                $requireUcFirstString($token);
+                                $requireString($token);
                                 $type .= $token[1];
                                 $token = $nextToken();
                             }

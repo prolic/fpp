@@ -376,19 +376,6 @@ CODE;
     /**
      * @test
      */
-    public function it_detects_lower_case_definitions(): void
-    {
-        $this->expectException(ParseError::class);
-        $contents = <<<CODE
-namespace Something;
-data Name = string;
-CODE;
-        parse($this->createDefaultFile($contents), $this->derivingMap);
-    }
-
-    /**
-     * @test
-     */
     public function it_reads_constructor_arguments(): void
     {
         $contents = <<<CODE
@@ -410,6 +397,32 @@ CODE;
         $this->assertSame('int', $argument2->type());
         $this->assertSame('age', $argument2->name());
         $this->assertTrue($argument2->nullable());
+    }
+
+    /**
+     * @test
+     */
+    public function it_reads_constructor_arguments_without_type_hints(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, \$age } ;
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Something', 'Person');
+        $constructor = $definition->constructors()[0];
+        $this->assertCount(2, $constructor->arguments());
+
+        $argument1 = $constructor->arguments()[0];
+        $this->assertSame('string', $argument1->type());
+        $this->assertSame('name', $argument1->name());
+        $this->assertFalse($argument1->nullable());
+
+        $argument2 = $constructor->arguments()[1];
+        $this->assertSame(null, $argument2->type());
+        $this->assertSame('age', $argument2->name());
+        $this->assertFalse($argument2->nullable());
     }
 
     /**
@@ -502,6 +515,21 @@ CODE;
     /**
      * @test
      */
+    public function it_detects_wrong_type_declaration_on_constructor_arguments(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { Data?Name \$name }; 
+CODE;
+
+        parse($this->createDefaultFile($contents), $this->derivingMap);
+    }
+
+    /**
+     * @test
+     */
     public function it_parses_constructor_arguments_with_root_namespace(): void
     {
         $contents = <<<CODE
@@ -564,6 +592,31 @@ CODE;
         $this->assertSame('Other\Email', $arguments[0]->type());
         $this->assertSame('My\Name', $arguments[1]->type());
         $this->assertSame('My\Age', $arguments[2]->type());
+    }
+
+    /**
+     * @test
+     */
+    public function it_allows_lower_case_namespace_data_types_constructors_and_type_hints(): void
+    {
+        $contents = <<<CODE
+namespace my {
+    data person = person { \\other\\email \$email, name \$name, age \$age} deriving (ToArray, Equals);
+}
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('my', 'person');
+
+        $this->assertCount(1, $definition->constructors());
+        $this->assertSame('my\person', $definition->constructors()[0]->name());
+
+        $this->assertCount(3, $definition->constructors()[0]->arguments());
+        $arguments = $definition->constructors()[0]->arguments();
+
+        $this->assertSame('other\email', $arguments[0]->type());
+        $this->assertSame('my\name', $arguments[1]->type());
+        $this->assertSame('my\age', $arguments[2]->type());
     }
 
     /**
@@ -910,5 +963,76 @@ CODE;
         $this->assertSame('_', $condition2->constructor());
         $this->assertSame('isset($age) && $age < 22', $condition2->code());
         $this->assertSame('Too young', $condition2->errorMessage());
+    }
+
+    /**
+     * @test
+     */
+    public function it_allows_comments(): void
+    {
+        $contents = <<<CODE
+namespace Something;
+// just a comment
+data Person = Person { string \$name, /* yet another comment */ ?int \$age } deriving (FromArray, ToArray) where
+    _:
+        /*
+        another multi line comment
+        */
+        | strlen(\$name) < 2 => 'Name too short'
+        // one last comment
+        | isset(\$age) && \$age < 22 => 'Too young';
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Something', 'Person');
+
+        $derivings = $definition->derivings();
+        $this->assertCount(2, $derivings);
+
+        $this->assertSame('FromArray', $derivings[0]::VALUE);
+        $this->assertSame('ToArray', $derivings[1]::VALUE);
+
+        $conditions = $definition->conditions();
+        $this->assertCount(2, $conditions);
+
+        $condition1 = $conditions[0];
+        $this->assertSame('_', $condition1->constructor());
+        $this->assertSame('strlen($name) < 2', $condition1->code());
+        $this->assertSame('Name too short', $condition1->errorMessage());
+
+        $condition2 = $conditions[1];
+        $this->assertSame('_', $condition2->constructor());
+        $this->assertSame('isset($age) && $age < 22', $condition2->code());
+        $this->assertSame('Too young', $condition2->errorMessage());
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_comma_missing_in_argument_list(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name int \$age };
+CODE;
+
+        parse($this->createDefaultFile($contents), $this->derivingMap);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_comma_missing_in_argument_list_without_type_hints(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { \$name \$age };
+CODE;
+
+        parse($this->createDefaultFile($contents), $this->derivingMap);
     }
 }
