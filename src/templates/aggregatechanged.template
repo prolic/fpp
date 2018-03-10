@@ -3,11 +3,6 @@
             {{static_constructor_body}}
         }
 
-        public static function occur(string $aggregateId, array $payload = []): {{class_name}}
-        {
-            return new static($aggregateId, $payload);
-        }
-
         protected function setPayload(array $payload): void
         {
             {{payload_validation}}
