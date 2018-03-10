@@ -6,5 +6,5 @@
         protected function setPayload(array $payload): void
         {
             {{payload_validation}}
-            parent::setPayload($payload);
+            $this->payload = $payload;
         }
