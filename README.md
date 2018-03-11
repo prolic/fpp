@@ -23,37 +23,36 @@ data Person = Person { string $name, ?int $age };
 This will generate the following php code:
 
 ```php
-namespace Model\Foo {
-    final class Person
+namespace Model\Foo;
+final class Person
+{
+    private $name;
+    private $age;
+
+    public function __construct(string $name, ?int $age)
     {
-        private $name;
-        private $age;
+        $this->name = $name;
+        $this->age = $age;
+    }
 
-        public function __construct(string $name, ?int $age)
-        {
-            $this->name = $name;
-            $this->age = $age;
-        }
+    public function name(): string
+    {
+        return $this->name;
+    }
 
-        public function name(): string
-        {
-            return $this->name;
-        }
+    public function age(): ?int
+    {
+        return $this->age;
+    }
 
-        public function age(): ?int
-        {
-            return $this->age;
-        }
+    public function withName(string $name): Person
+    {
+        return new self($name, $this->age);
+    }
 
-        public function withName(string $name): Person
-        {
-            return new self($name, $this->age);
-        }
-
-        public function withAge(?int $age): Person
-        {
-            return new self($this->name, $age);
-        }
+    public function withAge(?int $age): Person
+    {
+        return new self($this->name, $age);
     }
 }
 ```
@@ -121,7 +120,10 @@ $p->equals($p) // true
 
 ### Usage
 
-`php bin/fpp.php <source dir or file> <target file>`
+`php bin/fpp.php <source dir or file>`
+
+It will try to find your composer autoload and fetch psr-4 and psr-0 prefixes from it.
+You'll get an exception, if you want to dump a class, where you have no composer autoload definition.
 
 ### Wiki
 
@@ -140,3 +142,4 @@ $p->equals($p) // true
 - [x] Allow composite prooph objects
 - [x] Constructor validation
 - [x] Allow creating of custom constructors
+- [x] Dump files according to psr-4 and psr-0 autoloading rules
