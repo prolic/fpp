@@ -36,8 +36,8 @@ class BuildPropertiesTest extends TestCase
 
         $expected = <<<STRING
 private \$name;
-        private \$age;
-        private \$whatever;
+    private \$age;
+    private \$whatever;
 
 STRING;
 
@@ -104,9 +104,9 @@ STRING;
         $expected = <<<STRING
 protected \$messageName = 'Foo\Bar';
 
-        private \$name;
-        private \$age;
-        private \$whatever;
+    private \$name;
+    private \$age;
+    private \$whatever;
 
 STRING;
 
@@ -129,11 +129,11 @@ STRING;
         $expected = <<<STRING
 protected \$messageName = 'Foo\Bar';
 
-        protected \$payload = [];
+    protected \$payload = [];
 
-        private \$name;
-        private \$age;
-        private \$whatever;
+    private \$name;
+    private \$age;
+    private \$whatever;
 
 STRING;
 

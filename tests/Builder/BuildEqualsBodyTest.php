@@ -51,13 +51,13 @@ class BuildEqualsBodyTest extends TestCase
 
         $expected = <<<STRING
 return get_class(\$this) === get_class(\$yeah)
-                && \$this->name === \$yeah->name
-                && \$this->whatever === \$yeah->whatever
-                && \$this->value === \$yeah->value
-                && \$this->no->toString() === \$yeah->no->toString()
-                && ((null === \$this->what && null === \$yeah->what)
-                    || (null !== \$this->what && null !== \$yeah->what && \$this->what->equals(\$yeah->what))
-                );
+            && \$this->name === \$yeah->name
+            && \$this->whatever === \$yeah->whatever
+            && \$this->value === \$yeah->value
+            && \$this->no->toString() === \$yeah->no->toString()
+            && ((null === \$this->what && null === \$yeah->what)
+                || (null !== \$this->what && null !== \$yeah->what && \$this->what->equals(\$yeah->what))
+            );
 STRING;
 
         $this->assertSame($expected, buildEqualsBody($definition, $constructor, $collection, ''));

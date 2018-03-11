@@ -67,10 +67,10 @@ class BuildStaticConstructorBodyTest extends TestCase
 
         $expected = <<<CODE
 return new self(\$id->toString(), [
-                'name' => \$name,
-                'email' => \$email->toString(),
-                'something' => \$something,
-            ]);
+            'name' => \$name,
+            'email' => \$email->toString(),
+            'something' => \$something,
+        ]);
 CODE;
 
         $this->assertSame($expected, buildStaticConstructorBody($definition, $constructor, $collection, ''));
@@ -122,11 +122,11 @@ CODE;
 
         $expected = <<<CODE
 return new self([
-                'id' => \$id->toString(),
-                'name' => \$name,
-                'email' => \$email->toString(),
-                'something' => \$something,
-            ]);
+            'id' => \$id->toString(),
+            'name' => \$name,
+            'email' => \$email->toString(),
+            'something' => \$something,
+        ]);
 CODE;
 
         $this->assertSame($expected, buildStaticConstructorBody($definition, $constructor, $collection, ''));

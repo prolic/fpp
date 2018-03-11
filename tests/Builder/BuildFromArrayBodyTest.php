@@ -67,34 +67,34 @@ class BuildFromArrayBodyTest extends TestCase
 
         $expected = <<<CODE
 if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
-                throw new \InvalidArgumentException("Key 'id' is missing in data array or is not a string");
+            throw new \InvalidArgumentException("Key 'id' is missing in data array or is not a string");
+        }
+
+        \$id = UserId::fromString(\$data['id']);
+
+        if (isset(\$data['name'])) {
+            if (! is_string(\$data['name'])) {
+                throw new \InvalidArgumentException("Value for 'name' is not a string in data array");
             }
 
-            \$id = UserId::fromString(\$data['id']);
+            \$name = \$data['name'];
+        } else {
+            \$name = null;
+        }
 
-            if (isset(\$data['name'])) {
-                if (! is_string(\$data['name'])) {
-                    throw new \InvalidArgumentException("Value for 'name' is not a string in data array");
-                }
+        if (! isset(\$data['email']) || ! is_string(\$data['email'])) {
+            throw new \InvalidArgumentException("Key 'email' is missing in data array or is not a string");
+        }
 
-                \$name = \$data['name'];
-            } else {
-                \$name = null;
-            }
+        \$email = \Some\Email::fromString(\$data['email']);
 
-            if (! isset(\$data['email']) || ! is_string(\$data['email'])) {
-                throw new \InvalidArgumentException("Key 'email' is missing in data array or is not a string");
-            }
+        if (! isset(\$data['float']) || ! is_float(\$data['float']) || ! is_int(\$data['float'])) {
+            throw new \InvalidArgumentException("Key 'float' is missing in data array or is not a float");
+        }
 
-            \$email = \Some\Email::fromString(\$data['email']);
+        \$float = \$data['float'];
 
-            if (! isset(\$data['float']) || ! is_float(\$data['float']) || ! is_int(\$data['float'])) {
-                throw new \InvalidArgumentException("Key 'float' is missing in data array or is not a float");
-            }
-
-            \$float = \$data['float'];
-
-            return new self(\$id, \$name, \$email, \$float);
+        return new self(\$id, \$name, \$email, \$float);
 
 CODE;
 
@@ -138,22 +138,22 @@ CODE;
 
         $expected = <<<CODE
 if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
-                throw new \InvalidArgumentException("Key 'id' is missing in data array or is not a string");
+            throw new \InvalidArgumentException("Key 'id' is missing in data array or is not a string");
+        }
+
+        \$id = new UserId(\$data['id']);
+
+        if (isset(\$data['age'])) {
+            if (! is_int(\$data['age'])) {
+                throw new \InvalidArgumentException("Value for 'age' is not a int in data array");
             }
 
-            \$id = new UserId(\$data['id']);
+            \$age = new \Some\Age(\$data['age']);
+        } else {
+            \$age = null;
+        }
 
-            if (isset(\$data['age'])) {
-                if (! is_int(\$data['age'])) {
-                    throw new \InvalidArgumentException("Value for 'age' is not a int in data array");
-                }
-
-                \$age = new \Some\Age(\$data['age']);
-            } else {
-                \$age = null;
-            }
-
-            return new self(\$id, \$age);
+        return new self(\$id, \$age);
 
 CODE;
 
@@ -205,22 +205,22 @@ CODE;
 
         $expected = <<<CODE
 if (! isset(\$data['name']) || ! is_string(\$data['name'])) {
-                throw new \InvalidArgumentException("Key 'name' is missing in data array or is not a string");
+            throw new \InvalidArgumentException("Key 'name' is missing in data array or is not a string");
+        }
+
+        \$name = Name::fromString(\$data['name']);
+
+        if (isset(\$data['age'])) {
+            if (! is_int(\$data['age'])) {
+                throw new \InvalidArgumentException("Value for 'age' is not a int in data array");
             }
 
-            \$name = Name::fromString(\$data['name']);
+            \$age = \Some\Age::fromScalar(\$data['age']);
+        } else {
+            \$age = null;
+        }
 
-            if (isset(\$data['age'])) {
-                if (! is_int(\$data['age'])) {
-                    throw new \InvalidArgumentException("Value for 'age' is not a int in data array");
-                }
-
-                \$age = \Some\Age::fromScalar(\$data['age']);
-            } else {
-                \$age = null;
-            }
-
-            return new self(\$name, \$age);
+        return new self(\$name, \$age);
 
 CODE;
 

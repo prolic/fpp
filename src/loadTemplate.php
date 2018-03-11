@@ -94,6 +94,5 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
         $bodyTemplate = substr($bodyTemplate, 0, -1);
     }
 
-    echo str_replace("    {{body}}\n", $bodyTemplate, $classTemplate);
     return str_replace("    {{body}}\n", $bodyTemplate, $classTemplate);
 }

@@ -37,7 +37,7 @@ class BuildEnumOptionsTest extends TestCase
 
         $expected = <<<EXPECTED
 Red::VALUE => Red::class,
-            Blue::VALUE => Blue::class,
+        Blue::VALUE => Blue::class,
 EXPECTED;
 
         $this->assertSame($expected, buildEnumOptions($definition, null, new DefinitionCollection($definition), ''));
@@ -60,7 +60,7 @@ EXPECTED;
 
         $expected = <<<EXPECTED
 Color\Red::VALUE => Color\Red::class,
-            \What\Color\Blue::VALUE => \What\Color\Blue::class,
+        \What\Color\Blue::VALUE => \What\Color\Blue::class,
 EXPECTED;
 
         $this->assertSame($expected, buildEnumOptions($definition, null, new DefinitionCollection($definition), ''));

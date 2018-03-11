@@ -36,19 +36,19 @@ class BuildAccessorsTest extends TestCase
 
         $expected = <<<STRING
 public function name(): string
-        {
-            return \$this->payload['name'];
-        }
+    {
+        return \$this->payload['name'];
+    }
 
-        public function age(): ?int
-        {
-            return isset(\$this->payload['age']) ? \$this->payload['age'] : null;
-        }
+    public function age(): ?int
+    {
+        return isset(\$this->payload['age']) ? \$this->payload['age'] : null;
+    }
 
-        public function whatever()
-        {
-            return \$this->payload['whatever'];
-        }
+    public function whatever()
+    {
+        return \$this->payload['whatever'];
+    }
 
 STRING;
 
@@ -70,31 +70,31 @@ STRING;
 
         $expected = <<<STRING
 public function name(): string
-        {
-            if (! isset(\$this->name)) {
-                \$this->name = \$this->aggregateId();
-            }
-
-            return \$this->name;
+    {
+        if (! isset(\$this->name)) {
+            \$this->name = \$this->aggregateId();
         }
 
-        public function age(): ?int
-        {
-            if (! isset(\$this->age) && isset(\$this->payload['age'])) {
-                \$this->age = \$this->payload['age'];
-            }
+        return \$this->name;
+    }
 
-            return \$this->age;
+    public function age(): ?int
+    {
+        if (! isset(\$this->age) && isset(\$this->payload['age'])) {
+            \$this->age = \$this->payload['age'];
         }
 
-        public function whatever()
-        {
-            if (! isset(\$this->whatever)) {
-                \$this->whatever = \$this->payload['whatever'];
-            }
+        return \$this->age;
+    }
 
-            return \$this->whatever;
+    public function whatever()
+    {
+        if (! isset(\$this->whatever)) {
+            \$this->whatever = \$this->payload['whatever'];
         }
+
+        return \$this->whatever;
+    }
 STRING;
 
         $this->assertSame($expected, buildAccessors($definition, $constructor, $collection, ''));
@@ -115,19 +115,19 @@ STRING;
 
         $expected = <<<STRING
 public function name(): string
-        {
-            return \$this->name;
-        }
+    {
+        return \$this->name;
+    }
 
-        public function age(): ?int
-        {
-            return \$this->age;
-        }
+    public function age(): ?int
+    {
+        return \$this->age;
+    }
 
-        public function whatever()
-        {
-            return \$this->whatever;
-        }
+    public function whatever()
+    {
+        return \$this->whatever;
+    }
 
 STRING;
 

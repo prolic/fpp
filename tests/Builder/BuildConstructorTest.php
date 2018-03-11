@@ -59,18 +59,18 @@ class BuildConstructorTest extends TestCase
 
         $expected = <<<STRING
 public function __construct(Name \$name, Age \$age)
-        {
-            if (strlen(\$name->value()) === 0) {
-                throw new \InvalidArgumentException('Name too short');
-            }
-
-            if (\$age->value() < 18) {
-                throw new \InvalidArgumentException('Too young');
-            }
-
-            \$this->name = \$name;
-            \$this->age = \$age;
+    {
+        if (strlen(\$name->value()) === 0) {
+            throw new \InvalidArgumentException('Name too short');
         }
+
+        if (\$age->value() < 18) {
+            throw new \InvalidArgumentException('Too young');
+        }
+
+        \$this->name = \$name;
+        \$this->age = \$age;
+    }
 
 STRING;
 

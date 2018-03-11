@@ -39,6 +39,7 @@ function replace(
     $template = str_replace("\n    \n", "\n", $template);
     $template = str_replace("\n\n}\n}", "\n}\n}", $template);
     $template = str_replace("\n\n    }\n", "\n    }\n", $template);
+    $template = str_replace("    }\n\n}\n", "    }\n}\n", $template);
 
     return $template . "\n";
 }

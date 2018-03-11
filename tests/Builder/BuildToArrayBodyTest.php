@@ -66,10 +66,10 @@ class BuildToArrayBodyTest extends TestCase
 
         $expected = <<<CODE
 return [
-                'id' => \$this->id->toString(),
-                'name' => null === \$this->name ? null : \$this->name,
-                'email' => \$this->email->toString(),
-            ];
+            'id' => \$this->id->toString(),
+            'name' => null === \$this->name ? null : \$this->name,
+            'email' => \$this->email->toString(),
+        ];
 
 CODE;
 

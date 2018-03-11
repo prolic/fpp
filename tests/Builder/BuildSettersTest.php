@@ -39,14 +39,14 @@ class BuildSettersTest extends TestCase
 
         $expected = <<<CODE
 public function withName(string \$name): Person
-        {
-            return new self(\$name, \$this->age);
-        }
+    {
+        return new self(\$name, \$this->age);
+    }
 
-        public function withAge(int \$age): Person
-        {
-            return new self(\$this->name, \$age);
-        }
+    public function withAge(int \$age): Person
+    {
+        return new self(\$this->name, \$age);
+    }
 
 CODE;
 
@@ -71,14 +71,14 @@ CODE;
 
         $expected = <<<CODE
 public function withName(string \$name): Person
-        {
-            return new self(\$name, \$this->age);
-        }
+    {
+        return new self(\$name, \$this->age);
+    }
 
-        public function withAge(int \$age): Person
-        {
-            return new self(\$this->name, \$age);
-        }
+    public function withAge(int \$age): Person
+    {
+        return new self(\$this->name, \$age);
+    }
 
 CODE;
 
@@ -103,14 +103,14 @@ CODE;
 
         $expected = <<<CODE
 public function withName(string \$name): \My\Person
-        {
-            return new self(\$name, \$this->age);
-        }
+    {
+        return new self(\$name, \$this->age);
+    }
 
-        public function withAge(int \$age): \My\Person
-        {
-            return new self(\$this->name, \$age);
-        }
+    public function withAge(int \$age): \My\Person
+    {
+        return new self(\$this->name, \$age);
+    }
 
 CODE;
 
