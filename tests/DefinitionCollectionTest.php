@@ -25,7 +25,7 @@ class DefinitionCollectionTest extends TestCase
      */
     public function it_adds_definitions(): void
     {
-        $constructor = new Constructor('Person', [
+        $constructor = new Constructor('Foo\Person', [
             new Argument('name', 'string', false),
             new Argument('age', 'int', false),
         ]);
@@ -47,7 +47,7 @@ class DefinitionCollectionTest extends TestCase
      */
     public function it_adds_definitions_on_constructor(): void
     {
-        $constructor = new Constructor('Person', [
+        $constructor = new Constructor('Foo\Person', [
             new Argument('name', 'string', false),
             new Argument('age', 'int', false),
         ]);
@@ -87,7 +87,7 @@ class DefinitionCollectionTest extends TestCase
      */
     public function it_merges_definitions(): void
     {
-        $constructor = new Constructor('Person', [
+        $constructor = new Constructor('Foo\Person', [
             new Argument('name', 'string', false),
             new Argument('age', 'int', false),
         ]);

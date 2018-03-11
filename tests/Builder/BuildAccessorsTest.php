@@ -30,7 +30,7 @@ class BuildAccessorsTest extends TestCase
         $argument2 = new Argument('age', 'int', true);
         $argument3 = new Argument('whatever');
 
-        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+        $constructor = new Constructor('Hell\Yeah', [$argument1, $argument2, $argument3]);
         $definition = new Definition('Hell', 'Yeah', [$constructor], [new Deriving\Command()]);
         $collection = new DefinitionCollection($definition);
 
@@ -64,7 +64,7 @@ STRING;
         $argument2 = new Argument('age', 'int', true);
         $argument3 = new Argument('whatever');
 
-        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+        $constructor = new Constructor('Hell\Yeah', [$argument1, $argument2, $argument3]);
         $definition = new Definition('Hell', 'Yeah', [$constructor], [new Deriving\DomainEvent()]);
         $collection = new DefinitionCollection($definition);
 
@@ -109,7 +109,7 @@ STRING;
         $argument2 = new Argument('age', 'int', true);
         $argument3 = new Argument('whatever');
 
-        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+        $constructor = new Constructor('Hell\Yeah', [$argument1, $argument2, $argument3]);
         $definition = new Definition('Hell', 'Yeah', [$constructor]);
         $collection = new DefinitionCollection($definition);
 

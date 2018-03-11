@@ -56,8 +56,8 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $argumentConstructor1 = new Constructor('Yes');
-        $argumentConstructor2 = new Constructor('No');
+        $argumentConstructor1 = new Constructor('Baz\Yes');
+        $argumentConstructor2 = new Constructor('Baz\No');
         $argumentDefinition = new Definition('Baz', 'Something', [$argumentConstructor1, $argumentConstructor2], [new Deriving\Enum()]);
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
@@ -74,7 +74,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $argumentConstructor = new Constructor('Something', [new Argument('name', 'string')]);
+        $argumentConstructor = new Constructor('Baz\Something', [new Argument('name', 'string')]);
         $argumentDefinition = new Definition('Baz', 'Something', [$argumentConstructor], [new Deriving\FromString()]);
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
@@ -125,7 +125,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $argumentConstructor = new Constructor('Something', [new Argument('age', 'int'), new Argument('name', 'string')]);
+        $argumentConstructor = new Constructor('Of\Something', [new Argument('age', 'int'), new Argument('name', 'string')]);
         $argumentDefinition = new Definition('Of', 'Something', [$argumentConstructor], [new Deriving\FromArray()]);
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
@@ -160,7 +160,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $argumentConstructor = new Constructor('Something', [new Argument('name', 'string')]);
+        $argumentConstructor = new Constructor('Baz\Something', [new Argument('name', 'string')]);
         $argumentDefinition = new Definition('Baz', 'Something', [$argumentConstructor]);
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);

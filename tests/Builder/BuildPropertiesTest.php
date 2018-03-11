@@ -30,7 +30,7 @@ class BuildPropertiesTest extends TestCase
         $argument2 = new Argument('age', 'int');
         $argument3 = new Argument('whatever');
 
-        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+        $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
@@ -53,7 +53,7 @@ STRING;
         $argument2 = new Argument('age', 'int');
         $argument3 = new Argument('whatever');
 
-        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+        $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
         $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\Command()]);
 
@@ -75,7 +75,7 @@ STRING;
         $argument2 = new Argument('age', 'int');
         $argument3 = new Argument('whatever');
 
-        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+        $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
         $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\Command()], [], 'foo-bar');
 
@@ -97,7 +97,7 @@ STRING;
         $argument2 = new Argument('age', 'int');
         $argument3 = new Argument('whatever');
 
-        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+        $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
         $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\DomainEvent()]);
 
@@ -122,7 +122,7 @@ STRING;
         $argument2 = new Argument('age', 'int');
         $argument3 = new Argument('whatever');
 
-        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+        $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
         $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\AggregateChanged()]);
 
@@ -149,7 +149,7 @@ STRING;
         $argument2 = new Argument('age', 'int');
         $argument3 = new Argument('whatever');
 
-        $constructor = new Constructor('Yeah', [$argument1, $argument2, $argument3]);
+        $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
         $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\MicroAggregateChanged()]);
 

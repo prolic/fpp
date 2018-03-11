@@ -30,7 +30,7 @@ class BuildPayloadValidationTest extends TestCase
             'My',
             'UserId',
             [
-                new Constructor('UserId'),
+                new Constructor('My\UserId'),
             ],
             [
                 new Deriving\Uuid(),
@@ -49,7 +49,7 @@ class BuildPayloadValidationTest extends TestCase
             ]
         );
 
-        $constructor = new Constructor('UserRegistered', [
+        $constructor = new Constructor('My\UserRegistered', [
             new Argument('id', 'My\UserId'),
             new Argument('name', 'string', true),
             new Argument('email', 'Some\Email'),
@@ -97,7 +97,7 @@ CODE;
             'My',
             'UserId',
             [
-                new Constructor('UserId'),
+                new Constructor('My\UserId'),
             ],
             [
                 new Deriving\Uuid(),
@@ -116,7 +116,7 @@ CODE;
             ]
         );
 
-        $constructor = new Constructor('UserRegistered', [
+        $constructor = new Constructor('My\UserRegistered', [
             new Argument('id', 'My\UserId'),
             new Argument('name', 'string', true),
             new Argument('email', 'Some\Email'),

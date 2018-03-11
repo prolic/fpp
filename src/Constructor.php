@@ -25,6 +25,12 @@ class Constructor
 
     public function __construct(string $name, array $arguments = [])
     {
+        if (! in_array($name, ['String', 'Bool', 'Float', 'Int'], true)
+            && false === strpos($name, '\\')
+        ) {
+            throw new \InvalidArgumentException('No namespace given for ' . $name);
+        }
+
         $this->name = $name;
         $this->arguments = $arguments;
     }

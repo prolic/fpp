@@ -93,7 +93,7 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_data_defintion_with_derivings(): void
     {
-        $constructor = new Constructor('Person', [new Argument('name', 'string', false)]);
+        $constructor = new Constructor('Foo\Person', [new Argument('name', 'string', false)]);
 
         $definition = new Definition(
             'Foo',
