@@ -147,7 +147,7 @@ namespace {{namespace}};
     {{constructor}}
     {{accessors}}
     {{setters}}
-    const OPTIONS = [
+    public const OPTIONS = [
         {{enum_options}}
     ];
 
@@ -221,7 +221,7 @@ namespace {{namespace}};
     {{constructor}}
     {{accessors}}
     {{setters}}
-    const VALUE = '{{enum_value}}';
+    public const VALUE = '{{enum_value}}';
 }
 
 TEMPLATE;

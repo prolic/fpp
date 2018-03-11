@@ -1,1 +1,1 @@
-    const VALUE = '{{enum_value}}';
+    public const VALUE = '{{enum_value}}';
