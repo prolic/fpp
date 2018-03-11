@@ -27,6 +27,7 @@ function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, Definition $def
     foreach ($prefixesPsr4 as $prefix => $dirs) {
         if (0 === strpos($class, $prefix)) {
             $dir = $dirs[0];
+
             return $dir . DIRECTORY_SEPARATOR . substr($logicalPathPsr4, strlen($prefix)) . '.php';
         }
     }
@@ -39,6 +40,7 @@ function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, Definition $def
     foreach ($prefixesPsr0 as $prefix => $dirs) {
         if (0 === strpos($class, $prefix)) {
             $dir = $dirs[0];
+
             return $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0 . '.php';
         }
     }

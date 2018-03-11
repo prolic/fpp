@@ -14,12 +14,12 @@ namespace FppTest;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
-use function Fpp\locatePsrPath;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use const Fpp\loadTemplate;
 use const Fpp\replace;
 use function Fpp\dump;
+use function Fpp\locatePsrPath;
 
 class DumpTest extends TestCase
 {

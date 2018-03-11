@@ -13,8 +13,8 @@ namespace FppTest;
 
 use Fpp\Constructor;
 use Fpp\Definition;
-use function Fpp\locatePsrPath;
 use PHPUnit\Framework\TestCase;
+use function Fpp\locatePsrPath;
 
 class LocatePsrPathTest extends TestCase
 {
