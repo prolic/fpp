@@ -41,16 +41,16 @@ function buildConstructor(Definition $definition, ?Constructor $constructor, Def
         return $placeHolder;
     }
 
-    $code = "public function __construct($argumentList)\n        {\n";
+    $code = "public function __construct($argumentList)\n    {\n";
 
     foreach ($definition->conditions() as $condition) {
         if ('_' === $condition->constructor()
             || false !== strrpos($constructor->name(), $condition->constructor())
         ) {
             $code .= <<<CODE
-            if ({$condition->code()}) {
-                throw new \\InvalidArgumentException('{$condition->errorMessage()}');
-            }
+        if ({$condition->code()}) {
+            throw new \\InvalidArgumentException('{$condition->errorMessage()}');
+        }
 
 
 CODE;
@@ -58,10 +58,10 @@ CODE;
     }
 
     foreach ($constructor->arguments() as $key => $argument) {
-        $code .= "            \$this->{$argument->name()} = \${$argument->name()};\n";
+        $code .= "        \$this->{$argument->name()} = \${$argument->name()};\n";
     }
 
-    $code .= "        }\n";
+    $code .= "    }\n";
 
     return $code;
 }

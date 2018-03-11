@@ -1,46 +1,46 @@
-        const OPTIONS = [
-            {{enum_options}}
-        ];
+    const OPTIONS = [
+        {{enum_options}}
+    ];
 
-        final public function __construct()
-        {
-            $valid = false;
+    final public function __construct()
+    {
+        $valid = false;
 
-            foreach (self::OPTIONS as $value) {
-                if ($this instanceof $value) {
-                    $valid = true;
-                    break;
-                }
-            }
-
-            if (! $valid) {
-                $self = get_class($this);
-                throw new \LogicException("Invalid {{class_name}} '$self' given");
+        foreach (self::OPTIONS as $value) {
+            if ($this instanceof $value) {
+                $valid = true;
+                break;
             }
         }
 
-        public static function fromString(string $value): self
-        {
-            if (! isset(self::OPTIONS[$value])) {
-                throw new \InvalidArgumentException('Unknown enum value given');
-            }
+        if (! $valid) {
+            $self = get_class($this);
+            throw new \LogicException("Invalid {{class_name}} '$self' given");
+        }
+    }
 
-            $class = self::OPTIONS[$value];
-
-            return new $class();
+    public static function fromString(string $value): self
+    {
+        if (! isset(self::OPTIONS[$value])) {
+            throw new \InvalidArgumentException('Unknown enum value given');
         }
 
-        public function equals({{class_name}} $other): bool
-        {
-            return get_class($this) === get_class($other);
-        }
+        $class = self::OPTIONS[$value];
 
-        public function toString(): string
-        {
-            return static::VALUE;
-        }
+        return new $class();
+    }
 
-        public function __toString(): string
-        {
-            return static::VALUE;
-        }
+    public function equals({{class_name}} $other): bool
+    {
+        return get_class($this) === get_class($other);
+    }
+
+    public function toString(): string
+    {
+        return static::VALUE;
+    }
+
+    public function __toString(): string
+    {
+        return static::VALUE;
+    }

@@ -51,14 +51,14 @@ function buildAccessors(Definition $definition, ?Constructor $constructor, Defin
                     $check = "if (! isset(\$this->{$argument->name()})) {";
                 }
                 $accessors .= <<<CODE
-        public function {$argument->name()}()$returnType
-        {
-            $check
-                \$this->{$argument->name()} = $argumentConstructor;
-            }
-
-            return \$this->{$argument->name()};
+    public function {$argument->name()}()$returnType
+    {
+        $check
+            \$this->{$argument->name()} = $argumentConstructor;
         }
+
+        return \$this->{$argument->name()};
+    }
 
 
 CODE;
@@ -79,10 +79,10 @@ CODE;
                     $return = "$argumentConstructor";
                 }
                 $accessors .= <<<CODE
-        public function {$argument->name()}()$returnType
-        {
-            return $return;
-        }
+    public function {$argument->name()}()$returnType
+    {
+        return $return;
+    }
 
 
 CODE;
@@ -98,10 +98,10 @@ CODE;
     foreach ($constructor->arguments() as $argument) {
         $returnType = buildArgumentReturnType($argument, $definition);
         $accessors .= <<<CODE
-        public function {$argument->name()}()$returnType
-        {
-            return \$this->{$argument->name()};
-        }
+    public function {$argument->name()}()$returnType
+    {
+        return \$this->{$argument->name()};
+    }
 
 
 CODE;

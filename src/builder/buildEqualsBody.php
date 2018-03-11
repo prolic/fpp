@@ -28,27 +28,27 @@ function buildEqualsBody(Definition $definition, ?Constructor $constructor, Defi
     $code = "get_class(\$this) === get_class(\$$variableName)\n";
 
     if (0 === count($constructor->arguments())) {
-        $code .= "                && \$this->value === \${$variableName}->value;";
+        $code .= "            && \$this->value === \${$variableName}->value;";
 
         return $code;
     }
 
     $nullCheck = function (bool $nullable, $argumentName, string $code) use ($variableName): string {
         if (! $nullable) {
-            return "                $code\n";
+            return "            $code\n";
         }
 
         return <<<CODE
-                && ((null === \$this->$argumentName && null === \${$variableName}->$argumentName)
-                    || (null !== \$this->$argumentName && null !== \${$variableName}->$argumentName $code)
-                )
+            && ((null === \$this->$argumentName && null === \${$variableName}->$argumentName)
+                || (null !== \$this->$argumentName && null !== \${$variableName}->$argumentName $code)
+            )
 
 CODE;
     };
 
     foreach ($constructor->arguments() as $argument) {
         if (null === $argument->type() || $argument->isScalartypeHint()) {
-            $code .= "                && \$this->{$argument->name()} === \$$variableName->{$argument->name()}\n";
+            $code .= "            && \$this->{$argument->name()} === \$$variableName->{$argument->name()}\n";
             continue;
         }
 
@@ -62,7 +62,7 @@ CODE;
         } elseif ($collection->hasConstructorDefinition($argument->type())) {
             $definition = $collection->constructorDefinition($argument->type());
         } else {
-            $code .= "                && \$this->value === \${$variableName}->value\n";
+            $code .= "            && \$this->value === \${$variableName}->value\n";
             continue;
         }
 

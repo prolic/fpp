@@ -18,7 +18,7 @@ $autoloadFiles = [
 
 foreach ($autoloadFiles as $autoloadFile) {
     if (file_exists($autoloadFile)) {
-        require_once $autoloadFile;
+        $autoloader = require_once $autoloadFile;
         break;
     }
 }
@@ -27,6 +27,7 @@ $files = [
     'dump.php',
     'helpers.php',
     'loadTemplate.php',
+    'locatePsrPath.php',
     'parse.php',
     'replace.php',
     'scan.php',
@@ -56,3 +57,5 @@ $files = [
 foreach ($files as $file) {
     require_once __DIR__ . '/' . $file;
 }
+
+return $autoloader;

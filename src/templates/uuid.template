@@ -1,31 +1,31 @@
-        private $uuid;
+    private $uuid;
 
-        public static function generate(): {{class_name}}
-        {
-            return new self(\Ramsey\Uuid\Uuid::uuid4());
-        }
+    public static function generate(): {{class_name}}
+    {
+        return new self(\Ramsey\Uuid\Uuid::uuid4());
+    }
 
-        public static function fromString(string ${{variable_name}}): {{class_name}}
-        {
-            return new self(\Ramsey\Uuid\Uuid::fromString(${{variable_name}}));
-        }
+    public static function fromString(string ${{variable_name}}): {{class_name}}
+    {
+        return new self(\Ramsey\Uuid\Uuid::fromString(${{variable_name}}));
+    }
 
-        private function __construct(\Ramsey\Uuid\UuidInterface ${{variable_name}})
-        {
-            $this->uuid = ${{variable_name}};
-        }
+    private function __construct(\Ramsey\Uuid\UuidInterface ${{variable_name}})
+    {
+        $this->uuid = ${{variable_name}};
+    }
 
-        public function toString(): string
-        {
-            return $this->uuid->toString();
-        }
+    public function toString(): string
+    {
+        return $this->uuid->toString();
+    }
 
-        public function __toString(): string
-        {
-            return $this->uuid->toString();
-        }
+    public function __toString(): string
+    {
+        return $this->uuid->toString();
+    }
 
-        public function equals({{class_name}} $other): bool
-        {
-            return $this->uuid->equals($other->uuid);
-        }
+    public function equals({{class_name}} $other): bool
+    {
+        return $this->uuid->equals($other->uuid);
+    }

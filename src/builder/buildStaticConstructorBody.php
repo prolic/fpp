@@ -41,7 +41,7 @@ function buildStaticConstructorBody(Definition $definition, ?Constructor $constr
 
     $start = 'return new self(';
     if ($inclFirstArgument) {
-        $start .= "[\n                ";
+        $start .= "[\n            ";
     }
     $code = '';
 
@@ -50,7 +50,7 @@ function buildStaticConstructorBody(Definition $definition, ?Constructor $constr
             return "$value, [\n";
         }
 
-        return "                '{$name}' => {$value},\n";
+        return "            '{$name}' => {$value},\n";
     };
 
     foreach ($constructor->arguments() as $key => $argument) {
@@ -101,5 +101,5 @@ function buildStaticConstructorBody(Definition $definition, ?Constructor $constr
         $code .= $addArgument($key, $argument->name(), "\${$argument->name()}");
     }
 
-    return $start . ltrim($code) . '            ]);';
+    return $start . ltrim($code) . '        ]);';
 }

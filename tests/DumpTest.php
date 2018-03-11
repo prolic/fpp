@@ -29,7 +29,7 @@ class DumpTest extends TestCase
     protected function setUp(): void
     {
         $this->dump = function (DefinitionCollection $collection): string {
-            return dump($collection, loadTemplate, replace);
+            return dump($collection, function (): string { return ''; }, loadTemplate, replace);
         };
     }
 

@@ -40,11 +40,11 @@ function buildFromArrayBody(Definition $definition, ?Constructor $constructor, D
 
         if (null === $argument->type()) {
             $code .= <<<CODE
-            if (! isset(\$data['{$argument->name()}'])) {
-                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array");
-            }
+        if (! isset(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array");
+        }
 
-            \${$argument->name()} = \$data['{$argument->name()}'];
+        \${$argument->name()} = \$data['{$argument->name()}'];
 
 
 CODE;
@@ -59,11 +59,11 @@ CODE;
             }
 
             $code .= <<<CODE
-            if (! isset(\$data['{$argument->name()}']) || ! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
-                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a {$argument->type()}");
-            }
+        if (! isset(\$data['{$argument->name()}']) || ! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a {$argument->type()}");
+        }
 
-            \${$argument->name()} = \$data['{$argument->name()}'];
+        \${$argument->name()} = \$data['{$argument->name()}'];
 
 
 CODE;
@@ -78,15 +78,15 @@ CODE;
             }
 
             $code .= <<<CODE
-            if (isset(\$data['{$argument->name()}'])) {
-                if (! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
-                    throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$argument->type()} in data array");
-                }
-
-                \${$argument->name()} = \$data['{$argument->name()}'];
-            } else {
-                \${$argument->name()} = null;
+        if (isset(\$data['{$argument->name()}'])) {
+            if (! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$argument->type()} in data array");
             }
+
+            \${$argument->name()} = \$data['{$argument->name()}'];
+        } else {
+            \${$argument->name()} = null;
+        }
 
 
 CODE;
@@ -127,25 +127,25 @@ CODE;
                 case Deriving\FromArray::VALUE:
                     if ($argument->nullable()) {
                         $code .= <<<CODE
-            if (isset(\$data['{$argument->name()}'])) {
-                if (! is_array(\$data['{$argument->name()}'])) {
-                    throw new \InvalidArgumentException("Value for '{$argument->name()}' is not an array in data array");
-                }
-
-                \${$argument->name()} = $argumentClass::fromArray(\$data['{$argument->name()}']);
-            } else {
-                \${$argument->name()} = null;
+        if (isset(\$data['{$argument->name()}'])) {
+            if (! is_array(\$data['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not an array in data array");
             }
+
+            \${$argument->name()} = $argumentClass::fromArray(\$data['{$argument->name()}']);
+        } else {
+            \${$argument->name()} = null;
+        }
 
 
 CODE;
                     } else {
                         $code .= <<<CODE
-            if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
-                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
-            }
+        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
+        }
 
-            \${$argument->name()} = $argumentClass::fromArray(\$data['{$argument->name()}']);
+        \${$argument->name()} = $argumentClass::fromArray(\$data['{$argument->name()}']);
 CODE;
                     }
                     continue 3;
@@ -160,25 +160,25 @@ CODE;
 
                     if ($argument->nullable()) {
                         $code .= <<<CODE
-            if (isset(\$data['{$argument->name()}'])) {
-                if (! is_{$argumentType}(\$data['{$argument->name()}'])) {
-                    throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a $argumentType in data array");
-                }
-
-                \${$argument->name()} = $argumentClass::fromScalar(\$data['{$argument->name()}']);
-            } else {
-                \${$argument->name()} = null;
+        if (isset(\$data['{$argument->name()}'])) {
+            if (! is_{$argumentType}(\$data['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a $argumentType in data array");
             }
+
+            \${$argument->name()} = $argumentClass::fromScalar(\$data['{$argument->name()}']);
+        } else {
+            \${$argument->name()} = null;
+        }
 
 
 CODE;
                     } else {
                         $code .= <<<CODE
-            if (! isset(\$data['{$argument->name()}']) || ! is_$argumentType(\$data['{$argument->name()}'])) {
-                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
-            }
+        if (! isset(\$data['{$argument->name()}']) || ! is_$argumentType(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
+        }
 
-            \${$argument->name()} = $argumentClass::fromScalar(\$data['{$argument->name()}']);
+        \${$argument->name()} = $argumentClass::fromScalar(\$data['{$argument->name()}']);
 
 
 CODE;
@@ -189,25 +189,25 @@ CODE;
                 case Deriving\Uuid::VALUE:
                     if ($argument->nullable()) {
                         $code .= <<<CODE
-            if (isset(\$data['{$argument->name()}'])) {
-                if (! is_string(\$data['{$argument->name()}'])) {
-                    throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a string in data array");
-                }
-
-                \${$argument->name()} = $argumentClass::fromString(\$data['{$argument->name()}']);
-            } else {
-                \${$argument->name()} = null;
+        if (isset(\$data['{$argument->name()}'])) {
+            if (! is_string(\$data['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a string in data array");
             }
+
+            \${$argument->name()} = $argumentClass::fromString(\$data['{$argument->name()}']);
+        } else {
+            \${$argument->name()} = null;
+        }
 
 
 CODE;
                     } else {
                         $code .= <<<CODE
-            if (! isset(\$data['{$argument->name()}']) || ! is_string(\$data['{$argument->name()}'])) {
-                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a string");
-            }
+        if (! isset(\$data['{$argument->name()}']) || ! is_string(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a string");
+        }
 
-            \${$argument->name()} = $argumentClass::fromString(\$data['{$argument->name()}']);
+        \${$argument->name()} = $argumentClass::fromString(\$data['{$argument->name()}']);
 
 
 CODE;
@@ -226,25 +226,25 @@ CODE;
 
         if ($argument->nullable()) {
             $code .= <<<CODE
-            if (isset(\$data['{$argument->name()}'])) {
-                if (! is_{$argumentType}(\$data['{$argument->name()}'])) {
-                    throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a $argumentType in data array");
-                }
-
-                \${$argument->name()} = new $argumentClass(\$data['{$argument->name()}']);
-            } else {
-                \${$argument->name()} = null;
+        if (isset(\$data['{$argument->name()}'])) {
+            if (! is_{$argumentType}(\$data['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a $argumentType in data array");
             }
+
+            \${$argument->name()} = new $argumentClass(\$data['{$argument->name()}']);
+        } else {
+            \${$argument->name()} = null;
+        }
 
 
 CODE;
         } else {
             $code .= <<<CODE
-            if (! isset(\$data['{$argument->name()}']) || ! is_{$argumentType}(\$data['{$argument->name()}'])) {
-                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
-            }
+        if (! isset(\$data['{$argument->name()}']) || ! is_{$argumentType}(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
+        }
 
-            \${$argument->name()} = new $argumentClass(\$data['{$argument->name()}']);
+        \${$argument->name()} = new $argumentClass(\$data['{$argument->name()}']);
 
 
 CODE;
@@ -252,7 +252,7 @@ CODE;
     }
 
     $arguments = implode(', ', $arguments);
-    $code .= "            return new self($arguments);\n";
+    $code .= "        return new self($arguments);\n";
 
     return ltrim($code);
 }

@@ -40,7 +40,7 @@ function buildProperties(Definition $definition, ?Constructor $constructor, Defi
         if ($deriving->equals(new Deriving\AggregateChanged())
             || $deriving->equals(new Deriving\MicroAggregateChanged())
         ) {
-            $properties .= "        protected \$payload = [];\n\n";
+            $properties .= "    protected \$payload = [];\n\n";
         }
 
         if ($deriving->equals(new Deriving\Command())
@@ -52,7 +52,7 @@ function buildProperties(Definition $definition, ?Constructor $constructor, Defi
 
     foreach ($constructor->arguments() as $argument) {
         if (! empty($properties)) {
-            $properties .= '        ';
+            $properties .= '    ';
         }
 
         $properties .= 'private $' . $argument->name() . ";\n";

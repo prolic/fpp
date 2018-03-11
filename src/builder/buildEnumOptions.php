@@ -29,8 +29,8 @@ function buildEnumOptions(Definition $definition, ?Constructor $constructor, Def
     $replace = '';
     foreach ($definition->constructors() as $definitionConstructor) {
         $class = buildReferencedClass($namespace, $definitionConstructor->name());
-        $replace .= "            $class::VALUE => $class::class,\n";
+        $replace .= "        $class::VALUE => $class::class,\n";
     }
 
-    return substr($replace, 12, -1);
+    return substr($replace, 8, -1);
 }

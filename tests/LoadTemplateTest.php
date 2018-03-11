@@ -31,15 +31,15 @@ class LoadTemplateTest extends TestCase
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
-namespace {{namespace}} {
-    {{class_keyword}}class {{class_name}}{{class_extends}}
-    {
-        {{traits}}
-        {{properties}}
-        {{constructor}}
-        {{accessors}}
-        {{setters}}
-    }
+namespace {{namespace}};
+
+{{class_keyword}}class {{class_name}}{{class_extends}}
+{
+    {{traits}}
+    {{properties}}
+    {{constructor}}
+    {{accessors}}
+    {{setters}}
 }
 
 TEMPLATE;
@@ -58,25 +58,25 @@ TEMPLATE;
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
-namespace {{namespace}} {
-    {{class_keyword}}class {{class_name}}{{class_extends}}
+namespace {{namespace}};
+
+{{class_keyword}}class {{class_name}}{{class_extends}}
+{
+    {{traits}}
+    {{properties}}
+    {{constructor}}
+    {{accessors}}
+    {{setters}}
+    private \$value;
+
+    public function __construct(string \$value)
     {
-        {{traits}}
-        {{properties}}
-        {{constructor}}
-        {{accessors}}
-        {{setters}}
-        private \$value;
+        \$this->value = \$value;
+    }
 
-        public function __construct(string \$value)
-        {
-            \$this->value = \$value;
-        }
-
-        public function value(): string
-        {
-            return \$this->value;
-        }
+    public function value(): string
+    {
+        return \$this->value;
     }
 }
 
@@ -96,28 +96,28 @@ TEMPLATE;
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
-namespace {{namespace}} {
-    {{class_keyword}}class {{class_name}}{{class_extends}}
+namespace {{namespace}};
+
+{{class_keyword}}class {{class_name}}{{class_extends}}
+{
+    {{traits}}
+    {{properties}}
+    {{constructor}}
+    {{accessors}}
+    {{setters}}
+    public function toString(): string
     {
-        {{traits}}
-        {{properties}}
-        {{constructor}}
-        {{accessors}}
-        {{setters}}
-        public function toString(): string
-        {
-            {{to_string_body}}
-        }
+        {{to_string_body}}
+    }
 
-        public function __toString(): string
-        {
-            {{to_string_body}}
-        }
+    public function __toString(): string
+    {
+        {{to_string_body}}
+    }
 
-        public static function fromString(string \${{variable_name}}): {{class_name}}
-        {
-            return new {{class_name}}(\${{variable_name}});
-        }
+    public static function fromString(string \${{variable_name}}): {{class_name}}
+    {
+        return new {{class_name}}(\${{variable_name}});
     }
 }
 
@@ -138,60 +138,60 @@ TEMPLATE;
         $template = loadTemplate($definition, null);
 
         $expected = <<<TEMPLATE
-namespace {{namespace}} {
-    {{class_keyword}}class {{class_name}}{{class_extends}}
+namespace {{namespace}};
+
+{{class_keyword}}class {{class_name}}{{class_extends}}
+{
+    {{traits}}
+    {{properties}}
+    {{constructor}}
+    {{accessors}}
+    {{setters}}
+    const OPTIONS = [
+        {{enum_options}}
+    ];
+
+    final public function __construct()
     {
-        {{traits}}
-        {{properties}}
-        {{constructor}}
-        {{accessors}}
-        {{setters}}
-        const OPTIONS = [
-            {{enum_options}}
-        ];
+        \$valid = false;
 
-        final public function __construct()
-        {
-            \$valid = false;
-
-            foreach (self::OPTIONS as \$value) {
-                if (\$this instanceof \$value) {
-                    \$valid = true;
-                    break;
-                }
-            }
-
-            if (! \$valid) {
-                \$self = get_class(\$this);
-                throw new \LogicException("Invalid {{class_name}} '\$self' given");
+        foreach (self::OPTIONS as \$value) {
+            if (\$this instanceof \$value) {
+                \$valid = true;
+                break;
             }
         }
 
-        public static function fromString(string \$value): self
-        {
-            if (! isset(self::OPTIONS[\$value])) {
-                throw new \InvalidArgumentException('Unknown enum value given');
-            }
+        if (! \$valid) {
+            \$self = get_class(\$this);
+            throw new \LogicException("Invalid {{class_name}} '\$self' given");
+        }
+    }
 
-            \$class = self::OPTIONS[\$value];
-
-            return new \$class();
+    public static function fromString(string \$value): self
+    {
+        if (! isset(self::OPTIONS[\$value])) {
+            throw new \InvalidArgumentException('Unknown enum value given');
         }
 
-        public function equals({{class_name}} \$other): bool
-        {
-            return get_class(\$this) === get_class(\$other);
-        }
+        \$class = self::OPTIONS[\$value];
 
-        public function toString(): string
-        {
-            return static::VALUE;
-        }
+        return new \$class();
+    }
 
-        public function __toString(): string
-        {
-            return static::VALUE;
-        }
+    public function equals({{class_name}} \$other): bool
+    {
+        return get_class(\$this) === get_class(\$other);
+    }
+
+    public function toString(): string
+    {
+        return static::VALUE;
+    }
+
+    public function __toString(): string
+    {
+        return static::VALUE;
     }
 }
 
@@ -212,16 +212,16 @@ TEMPLATE;
         $template = loadTemplate($definition, $constructor2);
 
         $expected = <<<TEMPLATE
-namespace {{namespace}} {
-    {{class_keyword}}class {{class_name}}{{class_extends}}
-    {
-        {{traits}}
-        {{properties}}
-        {{constructor}}
-        {{accessors}}
-        {{setters}}
-        const VALUE = '{{enum_value}}';
-    }
+namespace {{namespace}};
+
+{{class_keyword}}class {{class_name}}{{class_extends}}
+{
+    {{traits}}
+    {{properties}}
+    {{constructor}}
+    {{accessors}}
+    {{setters}}
+    const VALUE = '{{enum_value}}';
 }
 
 TEMPLATE;

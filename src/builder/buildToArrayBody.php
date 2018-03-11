@@ -48,7 +48,7 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
     $class .= $definition->name();
 
     foreach ($constructor->arguments() as $key => $argument) {
-        $code .= "                '{$argument->name()}' => ";
+        $code .= "            '{$argument->name()}' => ";
 
         if ($argument->nullable()) {
             $code .= "null === \$this->{$argument->name()} ? null : ";
@@ -91,7 +91,7 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
         throw new \RuntimeException("Cannot build ToArray for $class, no deriving to build array or scalar for {$argument->type()} given");
     }
 
-    $code .= "            ];\n";
+    $code .= "        ];\n";
 
     return $code;
 }

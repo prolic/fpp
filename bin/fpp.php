@@ -16,15 +16,16 @@ if (! isset($argv[1])) {
     exit(1);
 }
 
-if (! isset($argv[2])) {
-    echo 'Missing output file argument';
-    exit(1);
-}
-
 $path = $argv[1];
-$output = $argv[2];
 
-require __DIR__ . '/../src/bootstrap.php';
+$autoloader = require __DIR__ . '/../src/bootstrap.php';
+
+$prefixesPsr4 = $autoloader->getPrefixesPsr4();
+$prefixesPsr0 = $autoloader->getPrefixes();
+
+$locatePsrPath = function (Definition $definition, ?Constructor $constructor) use ($prefixesPsr4, $prefixesPsr0): string {
+    return locatePsrPath($prefixesPsr4, $prefixesPsr0, $definition, $constructor);
+};
 
 $derivingMap = defaultDerivingMap();
 
@@ -40,11 +41,11 @@ try {
 }
 
 try {
-    file_put_contents($output, dump($collection, loadTemplate, replace));
-} catch (\RuntimeException $e) {
-    echo 'RuntimeException: ' . $e->getMessage();
+    dump($collection, $locatePsrPath, loadTemplate, replace);
+} catch (\Exception $e) {
+    echo 'Exception: ' . $e->getMessage();
     exit(1);
 }
 
-echo "Successfully generated to and written to '$output'\n";
+echo "Successfully generated and written to disk\n";
 exit(0);

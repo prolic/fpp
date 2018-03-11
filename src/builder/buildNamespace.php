@@ -26,10 +26,6 @@ function buildNamespace(Definition $definition, ?Constructor $constructor, Defin
         }
         $position = strrpos($constructor->name(), '\\');
 
-        if (false === $position) {
-            return '';
-        }
-
         return substr($constructor->name(), 0, $position);
     }
 
