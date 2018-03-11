@@ -103,13 +103,8 @@ CODE;
 
         $position = strrpos($argument->type(), '\\');
 
-        if (false !== $position) {
-            $namespace = substr($argument->type(), 0, $position);
-            $name = substr($argument->type(), $position + 1);
-        } else {
-            $namespace = '';
-            $name = $argument->type();
-        }
+        $namespace = substr($argument->type(), 0, $position);
+        $name = substr($argument->type(), $position + 1);
 
         if ($collection->hasDefinition($namespace, $name)) {
             $argumentDefinition = $collection->definition($namespace, $name);
@@ -124,7 +119,7 @@ CODE;
         if ($constructorNamespace === $namespace) {
             $argumentClass = $name;
         } else {
-            $argumentClass = ('' === $namespace) ? '\\' . $name : '\\' . $namespace . '\\' . $name;
+            $argumentClass = '\\' . $namespace . '\\' . $name;
         }
 
         foreach ($argumentDefinition->derivings() as $deriving) {

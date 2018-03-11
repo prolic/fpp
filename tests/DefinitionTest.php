@@ -25,9 +25,9 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_simple_data_defintion(): void
     {
-        $definition = new Definition('', 'Person', [new Constructor('Person')]);
+        $definition = new Definition('Foo', 'Person', [new Constructor('Person')]);
 
-        $this->assertSame('', $definition->namespace());
+        $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
         $this->assertNull($definition->messageName());
     }

@@ -158,19 +158,15 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_string_wrapped_object_without_namespace(): void
+    public function it_throws_when_no_namespace_given(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Namespace cannot be empty string');
+
         $contents = <<<CODE
 data Name = String;
 CODE;
-        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
-
-        $this->assertTrue($collection->hasDefinition('', 'Name'));
-        $definition = $collection->definition('', 'Name');
-        $this->assertCount(1, $definition->constructors());
-        $constructor = $definition->constructors()[0];
-        $this->assertSame('String', $constructor->name());
-        $this->assertEmpty($constructor->arguments());
+        parse($this->createDefaultFile($contents), $this->derivingMap);
     }
 
     /**

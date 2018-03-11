@@ -92,13 +92,8 @@ CODE;
 
         $position = strrpos($argument->type(), '\\');
 
-        if (false !== $position) {
-            $namespace = substr($argument->type(), 0, $position);
-            $name = substr($argument->type(), $position + 1);
-        } else {
-            $namespace = '';
-            $name = $argument->type();
-        }
+        $namespace = substr($argument->type(), 0, $position);
+        $name = substr($argument->type(), $position + 1);
 
         if ($collection->hasDefinition($namespace, $name)) {
             $definition = $collection->definition($namespace, $name);

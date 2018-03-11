@@ -52,17 +52,17 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
      */
     public function it_returns_from_string_constructor_deriving_enum(): void
     {
-        $argument = new Argument('name', 'Something');
+        $argument = new Argument('name', 'Baz\Something');
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
         $argumentConstructor1 = new Constructor('Yes');
         $argumentConstructor2 = new Constructor('No');
-        $argumentDefinition = new Definition('', 'Something', [$argumentConstructor1, $argumentConstructor2], [new Deriving\Enum()]);
+        $argumentDefinition = new Definition('Baz', 'Something', [$argumentConstructor1, $argumentConstructor2], [new Deriving\Enum()]);
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('\Baz\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -70,16 +70,16 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
      */
     public function it_returns_from_string_constructor_deriving_from_string(): void
     {
-        $argument = new Argument('name', 'Something');
+        $argument = new Argument('name', 'Baz\Something');
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
         $argumentConstructor = new Constructor('Something', [new Argument('name', 'string')]);
-        $argumentDefinition = new Definition('', 'Something', [$argumentConstructor], [new Deriving\FromString()]);
+        $argumentDefinition = new Definition('Baz', 'Something', [$argumentConstructor], [new Deriving\FromString()]);
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('\Baz\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -87,16 +87,16 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
      */
     public function it_returns_from_string_constructor_deriving_uuid(): void
     {
-        $argument = new Argument('name', 'Something');
+        $argument = new Argument('name', 'Baz\Something');
         $constructor = new Constructor('Foo\Bar', [$argument]);
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
-        $argumentConstructor = new Constructor('Something');
-        $argumentDefinition = new Definition('', 'Something', [$argumentConstructor], [new Deriving\Uuid()]);
+        $argumentConstructor = new Constructor('Baz\Something');
+        $argumentDefinition = new Definition('Baz', 'Something', [$argumentConstructor], [new Deriving\Uuid()]);
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('\Baz\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
     }
 
     /**
@@ -161,7 +161,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
         $definition = new Definition('Foo', 'Bar', [$constructor]);
 
         $argumentConstructor = new Constructor('Something', [new Argument('name', 'string')]);
-        $argumentDefinition = new Definition('', 'Something', [$argumentConstructor]);
+        $argumentDefinition = new Definition('Baz', 'Something', [$argumentConstructor]);
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 

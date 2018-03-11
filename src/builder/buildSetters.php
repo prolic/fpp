@@ -43,12 +43,7 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
     $setters = '';
 
     $position = strrpos($constructor->name(), '\\');
-
-    if (false === $position) {
-        $namespace = '';
-    } else {
-        $namespace = substr($constructor->name(), 0, $position);
-    }
+    $namespace = substr($constructor->name(), 0, $position);
 
     if ($namespace === $definition->namespace()) {
         $self = $definition->name();

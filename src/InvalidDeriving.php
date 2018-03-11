@@ -91,10 +91,6 @@ class InvalidDeriving extends \RuntimeException
 
     private static function className(Definition $definition): string
     {
-        if ($definition->namespace() !== '') {
-            return $definition->namespace() . '\\' . $definition->name();
-        }
-
-        return $definition->name();
+        return $definition->namespace() . '\\' . $definition->name();
     }
 }

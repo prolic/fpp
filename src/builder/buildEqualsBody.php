@@ -54,13 +54,8 @@ CODE;
 
         $nsPosition = strrpos($argument->type(), '\\');
 
-        if (false !== $nsPosition) {
-            $namespace = substr($argument->type(), 0, $nsPosition);
-            $name = substr($argument->type(), $nsPosition + 1);
-        } else {
-            $namespace = '';
-            $name = $argument->type();
-        }
+        $namespace = substr($argument->type(), 0, $nsPosition);
+        $name = substr($argument->type(), $nsPosition + 1);
 
         if ($collection->hasDefinition($namespace, $name)) {
             $definition = $collection->definition($namespace, $name);

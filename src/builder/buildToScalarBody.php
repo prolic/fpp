@@ -52,13 +52,8 @@ function buildToScalarBody(Definition $definition, ?Constructor $constructor, De
 
     $position = strrpos($argument->type(), '\\');
 
-    if (false !== $position) {
-        $namespace = substr($argument->type(), 0, $position);
-        $name = substr($argument->type(), $position + 1);
-    } else {
-        $namespace = '';
-        $name = $argument->type();
-    }
+    $namespace = substr($argument->type(), 0, $position);
+    $name = substr($argument->type(), $position + 1);
 
     $class = $definition->namespace();
 

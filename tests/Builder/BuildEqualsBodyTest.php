@@ -28,7 +28,7 @@ class BuildEqualsBodyTest extends TestCase
     {
         $argument1 = new Argument('name', 'string');
         $argument2 = new Argument('whatever');
-        $argument3 = new Argument('age', 'Unknown');
+        $argument3 = new Argument('age', 'Some\Unknown');
         $argument4 = new Argument('no', 'Hell\No');
         $argument5 = new Argument('what', 'Hell\What', true);
 

@@ -119,38 +119,6 @@ CODE;
 
     /**
      * @test
-     */
-    public function it_builds_setters_without_namespace(): void
-    {
-        $constructor = new Constructor('Boss', [
-            new Argument('name', 'string'),
-            new Argument('age', 'int'),
-        ]);
-
-        $definition = new Definition(
-            '',
-            'Person',
-            [$constructor]
-        );
-
-        $expected = <<<CODE
-public function withName(string \$name): Person
-        {
-            return new self(\$name, \$this->age);
-        }
-
-        public function withAge(int \$age): Person
-        {
-            return new self(\$this->name, \$age);
-        }
-
-CODE;
-
-        $this->assertSame($expected, buildSetters($definition, $constructor, new DefinitionCollection($definition), ''));
-    }
-
-    /**
-     * @test
      * @dataProvider derivings
      */
     public function it_returns_placeholder_for(Deriving $deriving): void

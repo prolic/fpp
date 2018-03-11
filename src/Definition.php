@@ -64,6 +64,10 @@ class Definition
 
         $allowMessageName = false;
 
+        if (empty($namespace)) {
+            throw new \InvalidArgumentException('Namespace cannot be empty string');
+        }
+
         if (empty($name)) {
             throw new \InvalidArgumentException('Name cannot be empty string');
         }
@@ -175,31 +179,11 @@ class Definition
         return $this->messageName;
     }
 
-    private function unfulfilledConstructorRequirements(): \InvalidArgumentException
-    {
-        return $this->invalid('Does not fulfill constructor requirements');
-    }
-
-    private function checkForbiddenDerivings(Deriving $deriving, array $givenDerivings): void
-    {
-        foreach ($givenDerivings as $givenDeriving) {
-            if (in_array((string) $givenDeriving, $deriving->forbidsDerivings(), true)) {
-                throw $this->invalid('Has additional forbidden derivings');
-            }
-        }
-    }
-
     private function invalid(string $message): \InvalidArgumentException
     {
-        $namespace = '';
-
-        if ('' !== $this->namespace) {
-            $namespace = "$this->namespace\\";
-        }
-
         return new \InvalidArgumentException(sprintf(
             'Error on %s%s: %s',
-            $namespace,
+            $this->namespace . '\\',
             $this->name,
             $message
         ));

@@ -29,11 +29,7 @@ function buildClassKeyword(Definition $definition, ?Constructor $constructor, De
         return 'final ';
     }
 
-    if ($definition->namespace()) {
-        $name = str_replace($definition->namespace() . '\\', '', $constructor->name());
-    } else {
-        $name = $constructor->name();
-    }
+    $name = str_replace($definition->namespace() . '\\', '', $constructor->name());
 
     if ($definition->name() === $name) {
         return '';
