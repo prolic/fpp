@@ -1031,4 +1031,24 @@ CODE;
 
         parse($this->createDefaultFile($contents), $this->derivingMap);
     }
+
+    /**
+     * @test
+     */
+    public function it_parses_optional_parameters_from_root_namespace(): void
+    {
+        $contents = <<<CODE
+namespace Something {
+    data Foo = Foo;
+}
+namespace Other {
+    data Person = Person { ?\Something\Foo \$foo };
+}
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Other', 'Person');
+
+        $this->assertTrue($definition->constructors()[0]->arguments()[0]->nullable());
+    }
 }

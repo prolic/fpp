@@ -207,7 +207,10 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         if ($token[1] === '?') {
                             $nullable = true;
                             $token = $nextToken();
-                            $requireString($token);
+                            $token = $skipWhitespace($token);
+                            if ($token[0] !== T_STRING && $token[0] !== T_NS_SEPARATOR) {
+                                throw ParseError::unexpectedTokenFound('T_STRING or T_NS_SEPARATOR', $token, $filename);
+                            }
                         }
 
                         if ($token[0] === T_NS_SEPARATOR) {

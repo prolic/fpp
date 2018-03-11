@@ -84,7 +84,6 @@ class BuildArgumentConstructorTest extends TestCase
 
     /**
      * @test
-     * @group by
      */
     public function it_returns_from_string_constructor_deriving_uuid(): void
     {
