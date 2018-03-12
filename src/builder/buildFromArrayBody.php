@@ -158,10 +158,16 @@ CODE;
                         throw new \RuntimeException("Cannot build fromArray for $class , unknown argument {$argument->type()} given");
                     }
 
+                    $floatCheck = '';
+
+                    if ($argumentType === 'float') {
+                        $floatCheck = " && ! is_int(\$data['{$argument->name()}'])";
+                    }
+
                     if ($argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
-            if (! is_{$argumentType}(\$data['{$argument->name()}'])) {
+            if (! is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a $argumentType in data array");
             }
 
@@ -174,7 +180,7 @@ CODE;
 CODE;
                     } else {
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_$argumentType(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! is_$argumentType(\$data['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
         }
 
@@ -224,10 +230,16 @@ CODE;
             throw new \RuntimeException("Cannot build fromArray for $class , unknown argument {$argument->type()} given");
         }
 
+        $floatCheck = '';
+
+        if ($argumentType === 'float') {
+            $floatCheck = " && ! is_int(\$data['{$argument->name()}'])";
+        }
+
         if ($argument->nullable()) {
             $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
-            if (! is_{$argumentType}(\$data['{$argument->name()}'])) {
+            if (! is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a $argumentType in data array");
             }
 
@@ -240,7 +252,7 @@ CODE;
 CODE;
         } else {
             $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_{$argumentType}(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
         }
 

@@ -226,4 +226,102 @@ CODE;
 
         $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $name, $age), ''));
     }
+
+    /**
+     * @test
+     */
+    public function it_builds_from_array_body_4(): void
+    {
+        $float1 = new Definition(
+            'My',
+            'Float1',
+            [
+                new Constructor('Float'),
+            ],
+            [
+                new Deriving\FromScalar(),
+                new Deriving\ToScalar(),
+            ]
+        );
+
+        $float2 = new Definition(
+            'My',
+            'Float2',
+            [
+                new Constructor('Float'),
+            ],
+            [
+                new Deriving\FromScalar(),
+                new Deriving\ToScalar(),
+            ]
+        );
+
+        $constructor = new Constructor('My\Person', [
+            new Argument('float1', 'My\Float1'),
+            new Argument('float2', 'My\Float2', true),
+            new Argument('float3', 'float'),
+            new Argument('float4', 'float', true),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'Person',
+            [$constructor],
+            [
+                new Deriving\FromArray(),
+            ]
+        );
+
+        $expected = <<<CODE
+if (! isset(\$data['float1']) || ! is_float(\$data['float1']) && ! is_int(\$data['float1'])) {
+            throw new \InvalidArgumentException("Key 'float1' is missing in data array or is not a float");
+        }
+
+        \$float1 = Float1::fromScalar(\$data['float1']);
+
+        if (isset(\$data['float2'])) {
+            if (! is_float(\$data['float2']) && ! is_int(\$data['float2'])) {
+                throw new \InvalidArgumentException("Value for 'float2' is not a float in data array");
+            }
+
+            \$float2 = Float2::fromScalar(\$data['float2']);
+        } else {
+            \$float2 = null;
+        }
+
+        if (! isset(\$data['float3']) || ! is_float(\$data['float3']) || ! is_int(\$data['float3'])) {
+            throw new \InvalidArgumentException("Key 'float3' is missing in data array or is not a float");
+        }
+
+        \$float3 = \$data['float3'];
+
+        if (isset(\$data['float4'])) {
+            if (! is_float(\$data['float4']) && ! is_int(\$data['float4'])) {
+                throw new \InvalidArgumentException("Value for 'float4' is not a float in data array");
+            }
+
+            \$float4 = \$data['float4'];
+        } else {
+            \$float4 = null;
+        }
+
+        return new self(\$float1, \$float2, \$float3, \$float4);
+
+CODE;
+
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $float1, $float2), ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_place_holder_when_no_constructor_given(): void
+    {
+        $this->assertSame('placeholder', buildFromArrayBody(
+            $this->prophesize(Definition::class)->reveal(),
+            null,
+            $this->prophesize(DefinitionCollection::class)->reveal(),
+            'placeholder'
+        ));
+    }
 }
