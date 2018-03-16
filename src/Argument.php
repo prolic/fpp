@@ -13,26 +13,24 @@ namespace Fpp;
 
 class Argument
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $type;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $nullable;
 
-    public function __construct(string $name, string $type = null, bool $nullable = false)
+    /** @var bool */
+    private $isList;
+
+    public function __construct(string $name, string $type = null, bool $nullable = false, bool $isList = false)
     {
         $this->name = $name;
         $this->type = $type;
         $this->nullable = $nullable;
+        $this->isList = $isList;
     }
 
     public function name(): string
@@ -48,6 +46,11 @@ class Argument
     public function nullable(): bool
     {
         return $this->nullable;
+    }
+
+    public function isList(): bool
+    {
+        return $this->isList;
     }
 
     public function isScalartypeHint(): bool

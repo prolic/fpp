@@ -1,0 +1,19 @@
+    private $values = [];
+
+    public function __construct(array $values)
+    {
+        foreach ($values as $value) {
+            if (! is_float($value) && ! is_int($value)) {
+                throw new \InvalidArgumentException('Expected an array of float');
+            }
+            $this->values[] = $value;
+        }
+    }
+
+    /**
+     * @return float[]
+     */
+    public function values(): array
+    {
+        return $this->values;
+    }

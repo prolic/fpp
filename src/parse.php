@@ -182,9 +182,22 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     $token = $nextToken();
                 }
 
+                if (in_array($constructorName, ['Bool', 'Float', 'Int', 'String'], true)
+                    && $token[1] === '['
+                ) {
+                    $token = $nextToken();
+
+                    if ($token[1] !== ']') {
+                        throw ParseError::unexpectedTokenFound(']', $token, $filename);
+                    }
+
+                    $token = $nextToken();
+                    $constructorName.= '[]';
+                }
+
                 if ($namespace
                     && substr($constructorName, 0, 1) !== '\\'
-                    && ! in_array($constructorName, ['String', 'Int', 'Float', 'Bool'], true)
+                    && ! in_array($constructorName, ['Bool', 'Bool[]', 'Float', 'Float[]', 'Int', 'Int[]', 'String', 'String[]'], true)
                 ) {
                     $constructorName = $namespace . '\\' . $constructorName;
                 } elseif (substr($constructorName, 0, 1) === '\\') {

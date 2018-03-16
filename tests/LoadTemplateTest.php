@@ -228,4 +228,50 @@ TEMPLATE;
 
         $this->assertSame($expected, $template);
     }
+
+    /**
+     * @test
+     */
+    public function it_loads_body_template_for_scalar_list_constructors(): void
+    {
+        $constructor = new Constructor('Float[]');
+        $definition = new Definition('Foo', 'Color', [$constructor]);
+
+        $template = loadTemplate($definition, $constructor);
+
+        $expected = <<<TEMPLATE
+namespace {{namespace}};
+
+{{class_keyword}}class {{class_name}}{{class_extends}}
+{
+    {{traits}}
+    {{properties}}
+    {{constructor}}
+    {{accessors}}
+    {{setters}}
+    private \$values = [];
+
+    public function __construct(array \$values)
+    {
+        foreach (\$values as \$value) {
+            if (! is_float(\$value) && ! is_int(\$value)) {
+                throw new \InvalidArgumentException('Expected an array of float');
+            }
+            \$this->values[] = \$value;
+        }
+    }
+
+    /**
+     * @return float[]
+     */
+    public function values(): array
+    {
+        return \$this->values;
+    }
+}
+
+TEMPLATE;
+
+        $this->assertSame($expected, $template);
+    }
 }

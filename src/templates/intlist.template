@@ -1,0 +1,19 @@
+    private $values = [];
+
+    public function __construct(array $values)
+    {
+        foreach ($values as $value) {
+            if (! is_int($value)) {
+                throw new \InvalidArgumentException('Expected an array of int');
+            }
+            $this->values[] = $value;
+        }
+    }
+
+    /**
+     * @return int[]
+     */
+    public function values(): array
+    {
+        return $this->values;
+    }

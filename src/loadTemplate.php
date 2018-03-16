@@ -38,11 +38,17 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
 
     if (null !== $constructor) {
         switch ($constructor->name()) {
-            case 'String':
-            case 'Int':
             case 'Bool':
             case 'Float':
+            case 'Int':
+            case 'String':
                 $bodyTemplatesFiles[] = $prefix . strtolower($constructor->name()) . '.template';
+                break;
+            case 'Bool[]':
+            case 'Float[]':
+            case 'Int[]':
+            case 'String[]':
+                $bodyTemplatesFiles[] = $prefix . strtolower(substr($constructor->name(), 0, -2)) . 'list.template';
                 break;
         }
     }

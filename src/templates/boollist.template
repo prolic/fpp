@@ -1,0 +1,19 @@
+    private $values = [];
+
+    public function __construct(array $values)
+    {
+        foreach ($values as $value) {
+            if (! is_bool($value)) {
+                throw new \InvalidArgumentException('Expected an array of bool');
+            }
+            $this->values[] = $value;
+        }
+    }
+
+    /**
+     * @return bool[]
+     */
+    public function values(): array
+    {
+        return $this->values;
+    }

@@ -25,7 +25,7 @@ class Constructor
 
     public function __construct(string $name, array $arguments = [])
     {
-        if (! in_array($name, ['String', 'Bool', 'Float', 'Int'], true)
+        if (! in_array($name, ['Bool', 'Bool[]', 'Float', 'Float[]', 'Int', 'Int[]', 'String', 'String[]'], true)
             && false === strpos($name, '\\')
         ) {
             throw new \InvalidArgumentException('No namespace given for ' . $name);

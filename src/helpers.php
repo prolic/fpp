@@ -13,7 +13,7 @@ namespace Fpp;
 
 function isScalarConstructor(Constructor $constructor): bool
 {
-    return in_array($constructor->name(), ['String', 'Int', 'Float', 'Bool'], true);
+    return in_array($constructor->name(), ['Bool', 'Bool[]', 'Float', 'Float[]', 'Int', 'Int[]', 'String', 'String[]'], true);
 }
 
 function defaultDerivingMap(): array

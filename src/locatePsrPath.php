@@ -15,7 +15,11 @@ const locatePsrPath = '\Fpp\locatePsrPath';
 
 function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, Definition $definition, ?Constructor $constructor): string
 {
-    if ($constructor && ! in_array($constructor->name(), ['String', 'Float', 'Bool', 'Int'], true)) {
+    if ($constructor && ! in_array(
+            $constructor->name(),
+            ['Bool', 'Bool[]', 'Float', 'Float[]', 'Int', 'Int[]', 'String', 'String[]'],
+            true
+    )) {
         $class = $constructor->name();
     } else {
         $class = $definition->namespace() . '\\' . $definition->name();
