@@ -41,6 +41,8 @@ class BuildConstructorTest extends TestCase
         $constructor = new Constructor('Foo\Bar\Person', [
             new Argument('name', 'Foo\Bar\Name'),
             new Argument('age', 'Foo\Bar\Age'),
+            new Argument('strings', 'string', false, true),
+            new Argument('floats', 'float', false, true),
         ]);
 
         $person = new Definition(
@@ -55,10 +57,8 @@ class BuildConstructorTest extends TestCase
             ]
         );
 
-        $template = "{{properties}}\n{{constructor}}";
-
         $expected = <<<STRING
-public function __construct(Name \$name, Age \$age)
+public function __construct(Name \$name, Age \$age, array \$strings, array \$floats)
     {
         if (strlen(\$name->value()) === 0) {
             throw new \InvalidArgumentException('Name too short');
@@ -70,6 +70,20 @@ public function __construct(Name \$name, Age \$age)
 
         \$this->name = \$name;
         \$this->age = \$age;
+        foreach (\$strings as \$__value) {
+            if (! is_string(\$__value)) {
+                throw new \InvalidArgumentException('strings expected an array of string');
+            }
+            \$this->strings[] = \$__value;
+        }
+
+        foreach (\$floats as \$__value) {
+            if (! is_float(\$__value) && ! is_int(\$__value)) {
+                throw new \InvalidArgumentException('floats expected an array of float');
+            }
+            \$this->floats[] = \$__value;
+        }
+
     }
 
 STRING;

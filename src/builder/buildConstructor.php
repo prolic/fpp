@@ -58,7 +58,24 @@ CODE;
     }
 
     foreach ($constructor->arguments() as $key => $argument) {
-        $code .= "        \$this->{$argument->name()} = \${$argument->name()};\n";
+        if ($argument->isList()) {
+            $code .= "        foreach (\${$argument->name()} as \$__value) {\n";
+            $code .= '            if (! ';
+
+            if ($argument->isScalartypeHint()) {
+                $floatCheck = '';
+                if ($argument->type() === 'float') {
+                    $floatCheck = ' && ! is_int($__value)';
+                }
+                $code .= "is_{$argument->type()}(\$__value)$floatCheck) {\n";
+                $code .= "                throw new \InvalidArgumentException('{$argument->name()} expected an array of {$argument->type()}');\n";
+                $code .= "            }\n";
+                $code .= "            \$this->{$argument->name()}[] = \$__value;\n";
+                $code .= "        }\n\n";
+            }
+        } else {
+            $code .= "        \$this->{$argument->name()} = \${$argument->name()};\n";
+        }
     }
 
     $code .= "    }\n";

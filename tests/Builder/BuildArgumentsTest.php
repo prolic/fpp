@@ -29,6 +29,7 @@ class BuildArgumentsTest extends TestCase
             new Argument('id', 'My\UserId'),
             new Argument('name', 'string', true),
             new Argument('email', 'Some\Email'),
+            new Argument('string', 'string', false, true),
         ]);
 
         $definition = new Definition(
@@ -37,7 +38,7 @@ class BuildArgumentsTest extends TestCase
             [$constructor]
         );
 
-        $expected = 'UserId $id, ?string $name, \Some\Email $email';
+        $expected = 'UserId $id, ?string $name, \Some\Email $email, array $string';
         $this->assertSame($expected, buildArguments($definition, $constructor, new DefinitionCollection(), ''));
     }
 }

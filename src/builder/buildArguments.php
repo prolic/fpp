@@ -36,7 +36,8 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
         }
 
         if ($argument->isScalartypeHint()) {
-            $argumentList .= $argument->type() . ' $' . $argument->name() . ', ';
+            $argumentType = $argument->isList() ? 'array' : $argument->type();
+            $argumentList .= $argumentType . ' $' . $argument->name() . ', ';
             continue;
         }
 
@@ -45,9 +46,13 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
         $namespace = substr($argument->type(), 0, $nsPosition);
         $name = substr($argument->type(), $nsPosition + 1);
 
-        $type = $namespace === $definition->namespace()
-            ? $name
-            : '\\' . $argument->type();
+        if ($argument->isList()) {
+            $type = 'array';
+        } else {
+            $type = $namespace === $definition->namespace()
+                ? $name
+                : '\\' . $argument->type();
+        }
 
         $argumentList .= $type . ' $' . $argument->name() . ', ';
     }

@@ -27,6 +27,10 @@ class Argument
 
     public function __construct(string $name, string $type = null, bool $nullable = false, bool $isList = false)
     {
+        if ($nullable & $isList) {
+            throw new \InvalidArgumentException('An argument cannot be a list and nullable at the same time, hint: ' . $name);
+        }
+
         $this->name = $name;
         $this->type = $type;
         $this->nullable = $nullable;

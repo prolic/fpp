@@ -79,12 +79,16 @@ function buildReferencedClass(string $namespace, string $fqcn): string
     return '\\' . $fqcn;
 }
 
-function buildArgumentType(Argument $argument, Definition $definition): string
+function buildArgumentType(Argument $argument, Definition $definition, bool $withList = true): string
 {
     $code = '';
 
     if (null === $argument->type()) {
         return $code;
+    }
+
+    if ($withList && $argument->isList()) {
+        return 'array';
     }
 
     if ($argument->isScalartypeHint()) {

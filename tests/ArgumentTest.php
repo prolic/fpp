@@ -26,6 +26,16 @@ class ArgumentTest extends TestCase
         $this->assertSame($dataProvider[1], $argument->isScalartypeHint());
     }
 
+    /**
+     * @test
+     */
+    public function it_doesnt_allow_nullable_and_list_at_the_same_time(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new Argument('name', 'string', true, true);
+    }
+
     public function dataProvider()
     {
         return [

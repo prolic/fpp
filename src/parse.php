@@ -240,6 +240,19 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                             $token = $nextToken();
 
+                            $isList = false;
+
+                            if ($token[1] === '[') {
+                                $token = $nextToken();
+
+                                if ($token[1] !== ']') {
+                                    throw ParseError::unexpectedTokenFound(']', $token, $filename);
+                                }
+                                $token = $nextToken();
+                                $requireWhitespace($token);
+                                $isList = true;
+                            }
+
                             while ($token[0] !== T_WHITESPACE) {
                                 if ($token[0] !== T_NS_SEPARATOR) {
                                     throw ParseError::unexpectedTokenFound('T_WHITESPACE or T_NS_SEPARATOR', $token, $filename);
@@ -250,6 +263,17 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                                 $requireString($token);
                                 $type .= $token[1];
                                 $token = $nextToken();
+
+                                if ($token[1] === '[') {
+                                    $token = $nextToken();
+
+                                    if ($token[1] !== ']') {
+                                        throw ParseError::unexpectedTokenFound(']', $token, $filename);
+                                    }
+                                    $token = $nextToken();
+                                    $requireWhitespace($token);
+                                    $isList = true;
+                                }
                             }
 
                             if (substr($type, 0, 1) === '\\') {
@@ -267,12 +291,12 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                             $token = $skipWhitespace($token);
 
                             if (in_array($token[1], [',', '}'], true)) {
-                                $arguments[] = new Argument($argumentName, $type, $nullable);
+                                $arguments[] = new Argument($argumentName, $type, $nullable, $isList);
                                 goto parseArguments;
                             }
                             throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
                         } elseif ($token[0] === T_VARIABLE) {
-                            $arguments[] = new Argument(substr($token[1], 1), null, false);
+                            $arguments[] = new Argument(substr($token[1], 1));
                             $token = $nextToken();
                             $token = $skipWhitespace($token);
 
