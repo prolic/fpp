@@ -1051,4 +1051,32 @@ CODE;
 
         $this->assertTrue($definition->constructors()[0]->arguments()[0]->nullable());
     }
+
+    /**
+     * @test
+     * @dataProvider scalarListTypes
+     */
+    public function it_parses_scalar_list_constructors(string $scalarListType): void
+    {
+        $contents = <<<CODE
+namespace Something {
+    data Foo = $scalarListType;
+}
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Something', 'Foo');
+
+        $this->assertSame($scalarListType, $definition->constructors()[0]->name());
+    }
+
+    public function scalarListTypes(): array
+    {
+        return [
+            ['Bool[]'],
+            ['Float[]'],
+            ['Int[]'],
+            ['String[]'],
+        ];
+    }
 }

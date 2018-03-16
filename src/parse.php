@@ -192,7 +192,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     }
 
                     $token = $nextToken();
-                    $constructorName.= '[]';
+                    $constructorName .= '[]';
                 }
 
                 if ($namespace
