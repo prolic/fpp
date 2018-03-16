@@ -315,6 +315,45 @@ CODE;
     /**
      * @test
      */
+    public function it_builds_from_array_body_5(): void
+    {
+        $constructor = new Constructor('My\Person', [
+            new Argument('floats', 'float', false, true),
+            new Argument('strings', 'string', false, true),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'Person',
+            [$constructor],
+            [
+                new Deriving\FromArray(),
+            ]
+        );
+
+        $expected = <<<CODE
+if (! isset(\$data['floats']) || ! is_array(\$data['floats'])) {
+            throw new \InvalidArgumentException("Key 'floats' is missing in data array or is not a array");
+        }
+
+        \$floats = \$data['floats'];
+
+        if (! isset(\$data['strings']) || ! is_array(\$data['strings'])) {
+            throw new \InvalidArgumentException("Key 'strings' is missing in data array or is not a array");
+        }
+
+        \$strings = \$data['strings'];
+
+        return new self(\$floats, \$strings);
+
+CODE;
+
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition), ''));
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_place_holder_when_no_constructor_given(): void
     {
         $this->assertSame('placeholder', buildFromArrayBody(

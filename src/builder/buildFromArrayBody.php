@@ -51,7 +51,7 @@ CODE;
             continue;
         }
 
-        if ($argument->isScalartypeHint() && ! $argument->nullable()) {
+        if ($argument->isScalartypeHint() && ! $argument->nullable() && ! $argument->isList()) {
             $floatCheck = '';
 
             if ($argument->type() === 'float') {
@@ -61,6 +61,19 @@ CODE;
             $code .= <<<CODE
         if (! isset(\$data['{$argument->name()}']) || ! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a {$argument->type()}");
+        }
+
+        \${$argument->name()} = \$data['{$argument->name()}'];
+
+
+CODE;
+            continue;
+        }
+
+        if ($argument->isScalartypeHint() && $argument->isList()) {
+            $code .= <<<CODE
+        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a array");
         }
 
         \${$argument->name()} = \$data['{$argument->name()}'];
@@ -247,6 +260,16 @@ CODE;
         } else {
             \${$argument->name()} = null;
         }
+
+
+CODE;
+        } elseif ($argument->isList()) {
+            $code .= <<<CODE
+        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a array");
+        }
+
+        \${$argument->name()} = \$data['{$argument->name()}'];
 
 
 CODE;
