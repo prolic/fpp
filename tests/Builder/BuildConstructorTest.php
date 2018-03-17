@@ -38,11 +38,18 @@ class BuildConstructorTest extends TestCase
             [new Constructor('Int')]
         );
 
+        $email = new Definition(
+            'Foo\Bar',
+            'Email',
+            [new Constructor('String')]
+        );
+
         $constructor = new Constructor('Foo\Bar\Person', [
             new Argument('name', 'Foo\Bar\Name'),
             new Argument('age', 'Foo\Bar\Age'),
             new Argument('strings', 'string', false, true),
             new Argument('floats', 'float', false, true),
+            new Argument('emails', 'Foo\Bar\Email', false, true),
         ]);
 
         $person = new Definition(
@@ -58,7 +65,7 @@ class BuildConstructorTest extends TestCase
         );
 
         $expected = <<<STRING
-public function __construct(Name \$name, Age \$age, array \$strings, array \$floats)
+public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails)
     {
         if (strlen(\$name->value()) === 0) {
             throw new \InvalidArgumentException('Name too short');
@@ -84,10 +91,17 @@ public function __construct(Name \$name, Age \$age, array \$strings, array \$flo
             \$this->floats[] = \$__value;
         }
 
+        foreach (\$emails as \$__value) {
+            if (! \$__value instanceof \Foo\Bar\Email) {
+                throw new \InvalidArgumentException('emails expected an array of Foo\Bar\Email');
+            }
+            \$this->emails[] = \$__value;
+        }
+
     }
 
 STRING;
 
-        $this->assertSame($expected, buildConstructor($person, $constructor, new DefinitionCollection($name, $age, $person), ''));
+        $this->assertSame($expected, buildConstructor($person, $constructor, new DefinitionCollection($name, $age, $person, $email), ''));
     }
 }

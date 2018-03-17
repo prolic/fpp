@@ -68,11 +68,16 @@ CODE;
                     $floatCheck = ' && ! is_int($__value)';
                 }
                 $code .= "is_{$argument->type()}(\$__value)$floatCheck) {\n";
-                $code .= "                throw new \InvalidArgumentException('{$argument->name()} expected an array of {$argument->type()}');\n";
-                $code .= "            }\n";
-                $code .= "            \$this->{$argument->name()}[] = \$__value;\n";
-                $code .= "        }\n\n";
+
+            } else {
+                $type = '\\' . $argument->type();
+                $code .= "\$__value instanceof $type) {\n";
             }
+
+            $code .= "                throw new \InvalidArgumentException('{$argument->name()} expected an array of {$argument->type()}');\n";
+            $code .= "            }\n";
+            $code .= "            \$this->{$argument->name()}[] = \$__value;\n";
+            $code .= "        }\n\n";
         } else {
             $code .= "        \$this->{$argument->name()} = \${$argument->name()};\n";
         }
