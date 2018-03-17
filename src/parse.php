@@ -59,6 +59,10 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
         }
 
         if ($token[0] === T_COMMENT) {
+            if ($position === $tokenCount - 1) {
+                ++$position;
+                return $token;
+            }
             goto nextToken;
         }
 
