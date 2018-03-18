@@ -53,6 +53,8 @@ class BuildToArrayBodyTest extends TestCase
             new Argument('id', 'My\UserId'),
             new Argument('name', 'string', true),
             new Argument('email', 'Some\Email'),
+            new Argument('secondaryEmails', 'Some\Email', false, true),
+            new Argument('nickNames', 'string', false, true),
         ]);
 
         $definition = new Definition(
@@ -65,10 +67,18 @@ class BuildToArrayBodyTest extends TestCase
         );
 
         $expected = <<<CODE
-return [
+\$secondaryEmails = [];
+
+        foreach (\$this->secondaryEmails as \$__value) {
+            \$secondaryEmails[] = \$__value->toString();
+        }
+
+        return [
             'id' => \$this->id->toString(),
             'name' => null === \$this->name ? null : \$this->name,
             'email' => \$this->email->toString(),
+            'secondaryEmails' => \$secondaryEmails,
+            'nickNames' => \$this->nickNames,
         ];
 
 CODE;

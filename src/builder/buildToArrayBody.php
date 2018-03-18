@@ -15,6 +15,7 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
+use function Fpp\isScalarConstructor;
 
 const buildToArrayBody = '\Fpp\Builder\buildToArrayBody';
 
@@ -37,6 +38,8 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
         return $placeHolder;
     }
 
+    $prefixCode = '';
+
     $code = "return [\n";
 
     $class = $definition->namespace();
@@ -48,16 +51,75 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
     $class .= $definition->name();
 
     foreach ($constructor->arguments() as $key => $argument) {
-        $code .= "            '{$argument->name()}' => ";
-
-        if ($argument->nullable()) {
-            $code .= "null === \$this->{$argument->name()} ? null : ";
+        if ($argument->nullable() && $argument->isScalartypeHint()) {
+            $code .= "            '{$argument->name()}' => ";
+            $code .= "null === \$this->{$argument->name()} ? null : \$this->{$argument->name()},\n";
+            continue;
         }
 
-        if ($argument->isScalartypeHint()) {
+        if ($argument->isScalartypeHint() && ! $argument->isList()) {
+            $code .= "            '{$argument->name()}' => ";
             $code .= "\$this->{$argument->name()},\n";
             continue;
         }
+
+        if ($argument->isList()) {
+            $argumentName = $argument->name();
+            if (null !== $argument->type() && ! $argument->isScalartypeHint()) {
+                $position = strrpos($argument->type(), '\\');
+
+                $namespace = substr($argument->type(), 0, $position);
+                $name = substr($argument->type(), $position + 1);
+
+                if ($collection->hasDefinition($namespace, $name)) {
+                    $argumentDefinition = $collection->definition($namespace, $name);
+                } elseif ($collection->hasConstructorDefinition($argument->type())) {
+                    $argumentDefinition = $collection->constructorDefinition($argument->type());
+                } else {
+                    throw new \RuntimeException("Cannot build ToArray for $class, no argument type hint for {$argument->type()} given");
+                }
+
+                $prefixCode .= "        \${$argumentName} = [];\n\n";
+
+                $prefixCode .= "        foreach (\$this->$argumentName as \$__value) {\n";
+                foreach ($argumentDefinition->derivings() as $deriving) {
+                    $match = false;
+                    switch ((string) $deriving) {
+                        case Deriving\ToArray::VALUE:
+                            $prefixCode .= "            \${$argumentName}[] = \$__value->toArray();\n";
+                            $match = true;
+                            break;
+                        case Deriving\ToScalar::VALUE:
+                            $prefixCode .= "            \${$argumentName}[] = \$__value->toScalar();\n";
+                            $match = true;
+                            break;
+                        case Deriving\Enum::VALUE:
+                        case Deriving\ToString::VALUE:
+                        case Deriving\Uuid::VALUE:
+                            $prefixCode .= "            \${$argumentName}[] = \$__value->toString();\n";
+                            $match = true;
+                            break;
+                    }
+                }
+
+                if (! $match) {
+                    throw new \RuntimeException(sprintf(
+                        'No toArray, ToScalar, ToString, Enum or Uuid deriving given for argument $%s on definition %s',
+                        $argumentName,
+                        $namespace . '\\' . $name
+                    ));
+                }
+
+                $prefixCode .= "        }\n\n";
+                $code .= "            '{$argumentName}' => \${$argumentName},\n";
+            } else {
+                $code .= "            '{$argumentName}' => \$this->{$argumentName},\n";
+            }
+
+            continue;
+        }
+
+        $code .= "            '{$argument->name()}' => ";
 
         $position = strrpos($argument->type(), '\\');
 
@@ -73,6 +135,10 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
         }
 
         foreach ($argumentDefinition->derivings() as $deriving) {
+            if ($argument->nullable()) {
+                $code .= "null === \$this->{$argument->name()} ? null : ";
+            }
+
             switch ((string) $deriving) {
                 case Deriving\Enum::VALUE:
                 case Deriving\ToString::VALUE:
@@ -93,5 +159,9 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
 
     $code .= "        ];\n";
 
-    return $code;
+    if (! empty($prefixCode)) {
+        $prefixCode = substr($prefixCode, 8) . '        ';
+    }
+
+    return $prefixCode . $code;
 }
