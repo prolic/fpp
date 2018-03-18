@@ -143,3 +143,4 @@ You'll get an exception, if you want to dump a class, where you have no composer
 - [x] Constructor validation
 - [x] Allow creating of custom constructors
 - [x] Dump files according to psr-4 and psr-0 autoloading rules
+- [x] Array notation for objects and scalar types
