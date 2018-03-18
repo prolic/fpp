@@ -74,7 +74,7 @@ CODE;
             $floatCheck = '';
 
             if ($argument->type() === 'float') {
-                $floatCheck = " && ! is_int(\$__value)";
+                $floatCheck = ' && ! is_int($__value)';
             }
 
             $code .= <<<CODE
@@ -221,9 +221,9 @@ CODE;
 
 
 CODE;
-                    }  elseif ($argument->isList()) {
+                    } elseif ($argument->isList()) {
                         if ($argumentType === 'float') {
-                            $floatCheck = " && ! is_int(\$__value)";
+                            $floatCheck = ' && ! is_int($__value)';
                         }
                         $code .= <<<CODE
         if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
@@ -334,7 +334,7 @@ CODE;
 CODE;
         } elseif ($argument->isList()) {
             if ($argumentType === 'float') {
-                $floatCheck = " && ! is_int(\$__value)";
+                $floatCheck = ' && ! is_int($__value)';
             }
 
             $code .= <<<CODE

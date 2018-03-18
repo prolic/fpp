@@ -71,7 +71,6 @@ CODE;
                     $floatCheck = ' && ! is_int($__value)';
                 }
                 $code .= "is_{$argument->type()}(\$__value)$floatCheck) {\n";
-
             } else {
                 $type = '\\' . $argument->type();
                 $code .= "\$__value instanceof $type) {\n";

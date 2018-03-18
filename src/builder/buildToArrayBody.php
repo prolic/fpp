@@ -15,7 +15,6 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
-use function Fpp\isScalarConstructor;
 
 const buildToArrayBody = '\Fpp\Builder\buildToArrayBody';
 
