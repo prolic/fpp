@@ -71,12 +71,24 @@ CODE;
         }
 
         if ($argument->isScalartypeHint() && $argument->isList()) {
+            $floatCheck = '';
+
+            if ($argument->type() === 'float') {
+                $floatCheck = " && ! is_int(\$__value)";
+            }
+
             $code .= <<<CODE
         if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a array");
         }
 
-        \${$argument->name()} = \$data['{$argument->name()}'];
+        foreach (\$data['{$argument->name()}'] as \$__value) {
+            if (! is_{$argument->type()}(\$__value)$floatCheck) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of {$argument->type()}");
+            }
+
+            \${$argument->name()}[] = \$__value;
+        }
 
 
 CODE;
@@ -152,6 +164,24 @@ CODE;
 
 
 CODE;
+                    } elseif ($argument->isList()) {
+                        $code .= <<<CODE
+        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
+        }
+
+        \${$argument->name()} = [];
+
+        foreach (\$data['{$argument->name()}'] as \$__value) {
+            if (! is_array(\$data['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' in data array or is not an array of arrays");
+            }
+
+            \${$argument->name()}[] = $argumentClass::fromArray(\$__value);
+        }
+
+
+CODE;
                     } else {
                         $code .= <<<CODE
         if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
@@ -191,6 +221,27 @@ CODE;
 
 
 CODE;
+                    }  elseif ($argument->isList()) {
+                        if ($argumentType === 'float') {
+                            $floatCheck = " && ! is_int(\$__value)";
+                        }
+                        $code .= <<<CODE
+        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
+        }
+
+        \${$argument->name()} = [];
+
+        foreach (\$data['{$argument->name()}'] as \$__value) {
+            if (! is_$argumentType(\$data['{$argument->name()}'])$floatCheck) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of {$argument->type()}");
+            }
+
+            \${$argument->name()}[] = $argumentClass::fromScalar(\$__value);
+        }
+
+
+CODE;
                     } else {
                         $code .= <<<CODE
         if (! isset(\$data['{$argument->name()}']) || ! is_$argumentType(\$data['{$argument->name()}'])$floatCheck) {
@@ -216,6 +267,24 @@ CODE;
             \${$argument->name()} = $argumentClass::fromString(\$data['{$argument->name()}']);
         } else {
             \${$argument->name()} = null;
+        }
+
+
+CODE;
+                    } elseif ($argument->isList()) {
+                        $code .= <<<CODE
+        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
+        }
+
+        \${$argument->name()} = [];
+
+        foreach (\$data['{$argument->name()}'] as \$__value) {
+            if (! is_string(\$__value)) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of string");
+            }
+
+            \${$argument->name()}[] = $argumentClass::fromString(\$__value);
         }
 
 
@@ -264,12 +333,22 @@ CODE;
 
 CODE;
         } elseif ($argument->isList()) {
+            if ($argumentType === 'float') {
+                $floatCheck = " && ! is_int(\$__value)";
+            }
+
             $code .= <<<CODE
         if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
-            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a array");
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
 
-        \${$argument->name()} = \$data['{$argument->name()}'];
+        foreach (\$data['{$argument->name()}'] as \$__value) {
+            if (! is_{$argument->type()}(\$__value)$floatCheck) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' in data array or is not an array of {$argument->type()}");
+            }
+
+            \${$argument->name()}[] = \$__value;
+        }
 
 
 CODE;
@@ -286,7 +365,12 @@ CODE;
         }
     }
 
-    $arguments = implode(', ', $arguments);
+    if (count($arguments) > 2) {
+        $arguments = "\n            " . implode(",\n            ", $arguments) . "\n        ";
+    } else {
+        $arguments = implode(', ', $arguments);
+    }
+
     $code .= "        return new self($arguments);\n";
 
     return ltrim($code);

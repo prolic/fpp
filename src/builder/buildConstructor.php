@@ -59,6 +59,9 @@ CODE;
 
     foreach ($constructor->arguments() as $key => $argument) {
         if ($argument->isList()) {
+            if (substr($code, -2) !== "\n\n") {
+                $code .= "\n";
+            }
             $code .= "        foreach (\${$argument->name()} as \$__value) {\n";
             $code .= '            if (! ';
 

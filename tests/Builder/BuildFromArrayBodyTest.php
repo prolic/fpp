@@ -94,7 +94,12 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
 
         \$float = \$data['float'];
 
-        return new self(\$id, \$name, \$email, \$float);
+        return new self(
+            \$id,
+            \$name,
+            \$email,
+            \$float
+        );
 
 CODE;
 
@@ -305,7 +310,12 @@ if (! isset(\$data['float1']) || ! is_float(\$data['float1']) && ! is_int(\$data
             \$float4 = null;
         }
 
-        return new self(\$float1, \$float2, \$float3, \$float4);
+        return new self(
+            \$float1,
+            \$float2,
+            \$float3,
+            \$float4
+        );
 
 CODE;
 
@@ -336,19 +346,108 @@ if (! isset(\$data['floats']) || ! is_array(\$data['floats'])) {
             throw new \InvalidArgumentException("Key 'floats' is missing in data array or is not a array");
         }
 
-        \$floats = \$data['floats'];
+        foreach (\$data['floats'] as \$__value) {
+            if (! is_float(\$__value) && ! is_int(\$__value)) {
+                throw new \InvalidArgumentException("Value for 'floats' in data array is not an array of float");
+            }
+
+            \$floats[] = \$__value;
+        }
 
         if (! isset(\$data['strings']) || ! is_array(\$data['strings'])) {
             throw new \InvalidArgumentException("Key 'strings' is missing in data array or is not a array");
         }
 
-        \$strings = \$data['strings'];
+        foreach (\$data['strings'] as \$__value) {
+            if (! is_string(\$__value)) {
+                throw new \InvalidArgumentException("Value for 'strings' in data array is not an array of string");
+            }
+
+            \$strings[] = \$__value;
+        }
 
         return new self(\$floats, \$strings);
 
 CODE;
 
         $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition), ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_builds_from_array_body_6(): void
+    {
+        $nickname = new Definition(
+            'My',
+            'Nickname',
+            [new Constructor('My\Nickname', [new Argument('nickname', 'string', false, true)])],
+            [new Deriving\FromString()]
+        );
+
+        $constructor = new Constructor('My\Person', [
+            new Argument('floats', 'float', false, true),
+            new Argument('strings', 'string', false, true),
+            new Argument('nicknames', 'My\Nickname', false, true),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'Person',
+            [$constructor],
+            [
+                new Deriving\FromArray(),
+            ]
+        );
+
+        $expected = <<<CODE
+if (! isset(\$data['floats']) || ! is_array(\$data['floats'])) {
+            throw new \InvalidArgumentException("Key 'floats' is missing in data array or is not a array");
+        }
+
+        foreach (\$data['floats'] as \$__value) {
+            if (! is_float(\$__value) && ! is_int(\$__value)) {
+                throw new \InvalidArgumentException("Value for 'floats' in data array is not an array of float");
+            }
+
+            \$floats[] = \$__value;
+        }
+
+        if (! isset(\$data['strings']) || ! is_array(\$data['strings'])) {
+            throw new \InvalidArgumentException("Key 'strings' is missing in data array or is not a array");
+        }
+
+        foreach (\$data['strings'] as \$__value) {
+            if (! is_string(\$__value)) {
+                throw new \InvalidArgumentException("Value for 'strings' in data array is not an array of string");
+            }
+
+            \$strings[] = \$__value;
+        }
+
+        if (! isset(\$data['nicknames']) || ! is_array(\$data['nicknames'])) {
+            throw new \InvalidArgumentException("Key 'nicknames' is missing in data array or is not an array");
+        }
+
+        \$nicknames = [];
+
+        foreach (\$data['nicknames'] as \$__value) {
+            if (! is_string(\$__value)) {
+                throw new \InvalidArgumentException("Value for 'nicknames' in data array is not an array of string");
+            }
+
+            \$nicknames[] = Nickname::fromString(\$__value);
+        }
+
+        return new self(
+            \$floats,
+            \$strings,
+            \$nicknames
+        );
+
+CODE;
+
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $nickname), ''));
     }
 
     /**

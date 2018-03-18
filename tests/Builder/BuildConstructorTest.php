@@ -77,6 +77,7 @@ public function __construct(Name \$name, Age \$age, array \$strings, array \$flo
 
         \$this->name = \$name;
         \$this->age = \$age;
+
         foreach (\$strings as \$__value) {
             if (! is_string(\$__value)) {
                 throw new \InvalidArgumentException('strings expected an array of string');
