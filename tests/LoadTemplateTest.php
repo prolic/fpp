@@ -184,15 +184,9 @@ namespace {{namespace}};
         return get_class(\$this) === get_class(\$other);
     }
 
-    public function toString(): string
-    {
-        return static::VALUE;
-    }
+    abstract public function toString(): string;
 
-    public function __toString(): string
-    {
-        return static::VALUE;
-    }
+    abstract public function __toString(): string;
 }
 
 TEMPLATE;
@@ -222,6 +216,16 @@ namespace {{namespace}};
     {{accessors}}
     {{setters}}
     public const VALUE = '{{enum_value}}';
+
+    public function toString(): string
+    {
+        return self::VALUE;
+    }
+
+    public function __toString(): string
+    {
+        return self::VALUE;
+    }
 }
 
 TEMPLATE;
