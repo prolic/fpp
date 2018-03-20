@@ -151,80 +151,57 @@ namespace {{namespace}};
         {{enum_options}}
     ];
 
-    final public function __construct()
-    {
-        \$valid = false;
+    {{enum_consts}}
 
-        foreach (self::OPTIONS as \$value) {
-            if (\$this instanceof \$value) {
-                \$valid = true;
-                break;
+    private \$name;
+    private \$value;
+
+    private function __construct(string \$name)
+    {
+        \$this->name = \$name;
+        \$this->value = self::OPTIONS[\$name];
+    }
+
+    {{enum_constructors}}
+
+    public static function byName(string \$value): self
+    {
+        if (! isset(self::OPTIONS[\$value])) {
+            throw new \InvalidArgumentException('Unknown enum name given');
+        }
+
+        return self::{\$value}();
+    }
+
+    public static function byValue(\$value): self
+    {
+        foreach (self::OPTIONS as \$name => \$v) {
+            if (\$v === \$value) {
+                return self::{\$name}();
             }
         }
 
-        if (! \$valid) {
-            \$self = get_class(\$this);
-            throw new \LogicException("Invalid {{class_name}} '\$self' given");
-        }
-    }
-
-    public static function fromString(string \$value): self
-    {
-        if (! isset(self::OPTIONS[\$value])) {
-            throw new \InvalidArgumentException('Unknown enum value given');
-        }
-
-        \$class = self::OPTIONS[\$value];
-
-        return new \$class();
+        throw new \InvalidArgumentException('Unknown enum value given');
     }
 
     public function equals({{class_name}} \$other): bool
     {
-        return get_class(\$this) === get_class(\$other);
+        return get_class(\$this) === get_class(\$other) && \$this->value === \$other->value;
     }
 
-    abstract public function toString(): string;
-
-    abstract public function __toString(): string;
-}
-
-TEMPLATE;
-
-        $this->assertSame($expected, $template);
+    public function name(): string
+    {
+        return \$this->name;
     }
 
-    /**
-     * @test
-     */
-    public function it_loads_body_template_for_enum_instance_class(): void
+    public function value()
     {
-        $constructor1 = new Constructor('Foo\Blue');
-        $constructor2 = new Constructor('Foo\Red');
-        $definition = new Definition('Foo', 'Color', [$constructor1, $constructor2], [new Deriving\Enum()]);
-
-        $template = loadTemplate($definition, $constructor2);
-
-        $expected = <<<TEMPLATE
-namespace {{namespace}};
-
-{{class_keyword}}class {{class_name}}{{class_extends}}
-{
-    {{traits}}
-    {{properties}}
-    {{constructor}}
-    {{accessors}}
-    {{setters}}
-    public const VALUE = '{{enum_value}}';
-
-    public function toString(): string
-    {
-        return self::VALUE;
+        return \$this->value;
     }
 
     public function __toString(): string
     {
-        return self::VALUE;
+        return \$this->name;
     }
 }
 

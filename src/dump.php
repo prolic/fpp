@@ -31,10 +31,24 @@ CODE;
     foreach ($collection->definitions() as $definition) {
         $constructors = $definition->constructors();
 
+        $isEnum = false;
+        $enum = new Deriving\Enum();
+
+        foreach ($definition->derivings() as $deriving) {
+            if ($deriving->equals($enum)) {
+                $isEnum = true;
+                break;
+            }
+        }
+
         if (1 === count($constructors)) {
             $constructor = $constructors[0];
             $file = $locatePsrPath($definition, $constructor);
             $code = $codePrefix . $replace($loadTemplate($definition, $constructor), $definition, $constructor, $collection);
+            $data[$file] = substr($code, 0, -1);
+        } elseif ($isEnum) {
+            $file = $locatePsrPath($definition, null);
+            $code = $codePrefix . $replace($loadTemplate($definition, null), $definition, null, $collection);
             $data[$file] = substr($code, 0, -1);
         } else {
             $createBaseClass = true;

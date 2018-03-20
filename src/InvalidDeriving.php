@@ -53,6 +53,15 @@ class InvalidDeriving extends \RuntimeException
         ));
     }
 
+    public static function noConstructorNamespacesAllowed(Definition $definition, string $deriving): InvalidDeriving
+    {
+        return new self(sprintf(
+            'Invalid deriving on %s, deriving %s expects constructor without any namespace',
+            self::className($definition),
+            $deriving
+        ));
+    }
+
     public static function exactlyOneConstructorArgumentExpected(Definition $definition, string $deriving): InvalidDeriving
     {
         return new self(sprintf(

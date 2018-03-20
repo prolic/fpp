@@ -79,8 +79,6 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
             case Enum::VALUE:
                 if (null === $constructor) {
                     $bodyTemplatesFiles[] = $prefix . 'enum.template';
-                } else {
-                    $bodyTemplatesFiles[] = $prefix . 'enum.instance.template';
                 }
                 break;
         }

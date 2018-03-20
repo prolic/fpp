@@ -35,9 +35,20 @@ class Enum extends AbstractDeriving
             throw InvalidDeriving::atLeastTwoConstructorsExpected($definition, self::VALUE);
         }
 
+        $definitionNamespace = $definition->namespace();
+        $definitionNamespaceLength = strlen($definitionNamespace);
+
         foreach ($definition->constructors() as $constructor) {
             if (count($constructor->arguments()) > 0) {
                 throw InvalidDeriving::exactlyZeroConstructorArgumentsExpected($definition, self::VALUE);
+            }
+
+            $constructorName = $constructor->name();
+            if (substr($constructorName, 0, $definitionNamespaceLength) === $definitionNamespace) {
+                $constructorName = substr($constructorName, $definitionNamespaceLength + 1);
+            }
+            if (strpos($constructorName, '\\') !== false) {
+                throw InvalidDeriving::noConstructorNamespacesAllowed($definition, self::VALUE);
             }
         }
     }

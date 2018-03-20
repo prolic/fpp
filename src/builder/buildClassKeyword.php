@@ -14,11 +14,20 @@ namespace Fpp\Builder;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\Deriving;
 
 const buildClassKeyword = '\Fpp\Builder\buildClassKeyword';
 
 function buildClassKeyword(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
+    $enum = new Deriving\Enum();
+
+    foreach ($definition->derivings() as $deriving) {
+        if ($deriving->equals($enum)) {
+            return 'final ';
+        }
+    }
+
     if (null === $constructor) {
         return 'abstract ';
     }

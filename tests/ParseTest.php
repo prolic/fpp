@@ -552,7 +552,7 @@ CODE;
     {
         $contents = <<<CODE
 namespace My {
-    data Color = Color\Blue | \What\Color\Red deriving (Enum);
+    data Color = Color\Blue | \What\Color\Red;
 }
 CODE;
 
