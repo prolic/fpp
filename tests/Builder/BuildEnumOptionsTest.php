@@ -37,8 +37,8 @@ class BuildEnumOptionsTest extends TestCase
         );
 
         $expected = <<<EXPECTED
-'Red' => 'Red',
-        'Blue' => 'Blue',
+'Red' => 0,
+        'Blue' => 1,
 EXPECTED;
 
         $this->assertSame($expected, buildEnumOptions($definition, null, new DefinitionCollection($definition), ''));
