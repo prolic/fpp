@@ -62,7 +62,7 @@ function var_export54($var, $indent = '')
                     . var_export54($value, "$indent    ");
             }
 
-            return "[\n" . implode(",\n", $r) . "\n" . $indent . ']';
+            return "[\n" . implode(",\n", $r) . ",\n" . $indent . ']';
         case 'boolean':
             return $var ? 'true' : 'false';
         default:

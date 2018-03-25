@@ -47,6 +47,36 @@ EXPECTED;
     /**
      * @test
      */
+    public function it_builds_enum_options_with_value_mapping(): void
+    {
+        $constructor1 = new Constructor('My\Red');
+        $constructor2 = new Constructor('My\Blue');
+
+        $definition = new Definition(
+            'My',
+            'Color',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum([
+                'Red' => 'someThing',
+                'Blue' => [
+                    'foo' => 'bar',
+                ]
+            ])]
+        );
+
+        $expected = <<<EXPECTED
+'Red' => 'someThing',
+        'Blue' => [
+            'foo' => 'bar',
+        ],
+EXPECTED;
+
+        $this->assertSame($expected, buildEnumOptions($definition, null, new DefinitionCollection($definition), ''));
+    }
+
+    /**
+     * @test
+     */
     public function it_does_not_allow_enum_options_with_namespaces(): void
     {
         $this->expectException(InvalidDeriving::class);
