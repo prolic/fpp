@@ -68,15 +68,26 @@ data Color = Red | Blue | Green | Yellow deriving (Enum);
 ```
 
 ```php
-$blue = new MyEnum\Blue();
-var_dump($blue->equals(new MyEnum\Blue())); // true
-var_dump($blue->equals(new MyEnum\Red())); // false
+$blue = Color::blue();
+var_dump($blue->equals(Color::blue())); // true
+var_dump($blue->equals(Color::red())); // false
 
 function (MyEnum\Color $color): string
 {
-    return $color::VALUE;
+    return $color->value();
 }
 ```
+
+Enums with value mappings
+
+```console
+namespace MyEnum;
+
+data Color = Red | Blue deriving (Enum) with (Red:'someThing', Blue: 13);
+```
+
+var_dump(Color::red()->value()); // 'someThing'
+var_dump(Color::blue()->value()); // 13
 
 ### Derivings
 
@@ -144,3 +155,4 @@ You'll get an exception, if you want to dump a class, where you have no composer
 - [x] Allow creating of custom constructors
 - [x] Dump files according to psr-4 and psr-0 autoloading rules
 - [x] Array notation for objects and scalar types
+- [x] Enum value mappings
