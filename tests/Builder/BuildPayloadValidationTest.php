@@ -49,12 +49,25 @@ class BuildPayloadValidationTest extends TestCase
             ]
         );
 
+        $floatObject = new Definition(
+            'My',
+            'FloatObject',
+            [
+                new Constructor('Float'),
+            ],
+            [
+                new Deriving\FromScalar(),
+                new Deriving\ToScalar(),
+            ]
+        );
+
         $constructor = new Constructor('My\UserRegistered', [
             new Argument('id', 'My\UserId'),
             new Argument('name', 'string', true),
             new Argument('email', 'Some\Email'),
             new Argument('something', 'Something\Unknown'),
             new Argument('float', 'float'),
+            new Argument('floatObject', 'My\FloatObject'),
         ]);
 
         $definition = new Definition(
@@ -64,7 +77,7 @@ class BuildPayloadValidationTest extends TestCase
             [new Deriving\AggregateChanged()]
         );
 
-        $collection = new DefinitionCollection($userId, $email, $definition);
+        $collection = new DefinitionCollection($userId, $email, $definition, $floatObject);
 
         $expected = <<<CODE
 if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
@@ -81,6 +94,10 @@ if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
 
         if (! isset(\$payload['float']) || ! is_float(\$payload['float']) || ! is_int(\$payload['float'])) {
             throw new \InvalidArgumentException("Key 'float' is missing in payload or is not a float");
+        }
+
+        if (! isset(\$payload['floatObject']) || ! is_float(\$payload['floatObject']) || ! is_int(\$payload['floatObject'])) {
+            throw new \InvalidArgumentException("Key 'floatObject' is missing in payload or is not a float");
         }
 
 CODE;

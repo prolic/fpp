@@ -133,17 +133,28 @@ CODE;
                     continue 3;
                 case Deriving\ToScalar::VALUE:
                     $type = strtolower($definition->constructors()[0]->name());
+
+                    $floatCheck = '';
+
+                    if ($type === 'float') {
+                        $floatCheck = " && ! is_int(\$payload['{$argument->name()}'])";
+                    }
+
                     if ($argument->nullable()) {
                         $code .= <<<CODE
-        if (isset(\$payload['{$argument->name()}']) && ! is_{$type}(\$payload['{$argument->name()}'])) {
+        if (isset(\$payload['{$argument->name()}']) && ! is_{$type}(\$payload['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$type} in payload");
         }
 
 
 CODE;
                     } else {
+                        if ($type === 'float') {
+                            $floatCheck = " || ! is_int(\$payload['{$argument->name()}'])";
+                        }
+
                         $code .= <<<CODE
-        if (! isset(\$payload['{$argument->name()}']) || ! is_{$type}(\$payload['{$argument->name()}'])) {
+        if (! isset(\$payload['{$argument->name()}']) || ! is_{$type}(\$payload['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a $type");
         }
 
