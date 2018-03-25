@@ -60,7 +60,7 @@ EXPECTED;
                 'Red' => 'someThing',
                 'Blue' => [
                     'foo' => 'bar',
-                ]
+                ],
             ])]
         );
 
