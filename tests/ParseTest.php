@@ -1070,6 +1070,27 @@ CODE;
         $this->assertSame($scalarListType, $definition->constructors()[0]->name());
     }
 
+    /**
+     * @test
+     */
+    public function it_parses_enums_with_value_mapping(): void
+    {
+        $contents = <<<CODE
+namespace Foo;
+data Color = Blue | Red | Green | Yellow deriving (Enum) with (Blue:[1,2], Red:'r', Green:0, Yellow:['foo' => 'bar', 'baz', 1, true, 'bam' => 123]);
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'Color');
+        /* @var Deriving\Enum $deriving */
+        $deriving = $definition->derivings()[0];
+
+        $this->assertSame([1, 2], $deriving->valueMapping()['Blue']);
+        $this->assertSame('r', $deriving->valueMapping()['Red']);
+        $this->assertSame(0, $deriving->valueMapping()['Green']);
+        $this->assertSame(['foo' => 'bar', 'baz', 1, true, 'bam' => 123], $deriving->valueMapping()['Yellow']);
+    }
+
     public function scalarListTypes(): array
     {
         return [

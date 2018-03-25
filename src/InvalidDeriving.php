@@ -98,6 +98,14 @@ class InvalidDeriving extends \RuntimeException
         ));
     }
 
+    public static function enumValueMappingDoesNotMatchConstructors(Definition $definition): InvalidDeriving
+    {
+        return new self(sprintf(
+            'Invalid deriving on %s, enum value mapping does not match constructors',
+            self::className($definition)
+        ));
+    }
+
     private static function className(Definition $definition): string
     {
         return $definition->namespace() . '\\' . $definition->name();

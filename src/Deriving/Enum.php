@@ -19,6 +19,18 @@ class Enum extends AbstractDeriving
 {
     public const VALUE = 'Enum';
 
+    private $valueMapping = [];
+
+    public function __construct(array $valueMapping = [])
+    {
+        $this->valueMapping = $valueMapping;
+    }
+
+    public function valueMapping(): array
+    {
+        return $this->valueMapping;
+    }
+
     public function checkDefinition(Definition $definition): void
     {
         if (0 !== count($definition->conditions())) {
@@ -35,6 +47,12 @@ class Enum extends AbstractDeriving
             throw InvalidDeriving::atLeastTwoConstructorsExpected($definition, self::VALUE);
         }
 
+        $checkValueMapping = count($this->valueMapping) > 0;
+
+        if ($checkValueMapping && count($this->valueMapping) !== count($definition->constructors())) {
+            throw InvalidDeriving::enumValueMappingDoesNotMatchConstructors($definition);
+        }
+
         $definitionNamespace = $definition->namespace();
         $definitionNamespaceLength = strlen($definitionNamespace);
 
@@ -44,9 +62,15 @@ class Enum extends AbstractDeriving
             }
 
             $constructorName = $constructor->name();
+
             if (substr($constructorName, 0, $definitionNamespaceLength) === $definitionNamespace) {
                 $constructorName = substr($constructorName, $definitionNamespaceLength + 1);
             }
+
+            if ($checkValueMapping && ! array_key_exists($constructorName, $this->valueMapping)) {
+                throw InvalidDeriving::enumValueMappingDoesNotMatchConstructors($definition);
+            }
+
             if (strpos($constructorName, '\\') !== false) {
                 throw InvalidDeriving::noConstructorNamespacesAllowed($definition, self::VALUE);
             }

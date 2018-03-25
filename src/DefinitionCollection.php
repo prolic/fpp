@@ -35,7 +35,7 @@ class DefinitionCollection
         }
     }
 
-    public function addDefinition(Definition $definition)
+    public function addDefinition(Definition $definition): void
     {
         if (isset($this->registry[$definition->namespace()][$definition->name()])) {
             throw new \InvalidArgumentException(sprintf(
@@ -48,6 +48,18 @@ class DefinitionCollection
         $this->registry[$definition->namespace()][$definition->name()] = true;
 
         $this->definitions[] = $definition;
+
+        $hasEnumDeriving = false;
+        foreach ($definition->derivings() as $deriving) {
+            if ($deriving->equals(new Deriving\Enum())) {
+                $hasEnumDeriving = true;
+                break;
+            }
+        }
+
+        if ($hasEnumDeriving) {
+            return;
+        }
 
         foreach ($definition->constructors() as $key => $constructor) {
             $this->constructorDefinitions[$constructor->name()] = $definition;

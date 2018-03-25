@@ -275,6 +275,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                                     if ($token[1] !== ']') {
                                         throw ParseError::unexpectedTokenFound(']', $token, $filename);
                                     }
+
                                     $token = $nextToken();
                                     $requireWhitespace($token);
                                     $isList = true;
@@ -387,6 +388,87 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     if (';' === $token[1]) {
                         goto buildDefinition;
                     }
+                }
+
+                if ('with' === $token[1]) {
+                    $enumDerivingFound = false;
+
+                    foreach ($derivings as $key => $deriving) {
+                        if ($deriving->equals(new Deriving\Enum())) {
+                            $enumDerivingFound = true;
+                            break;
+                        }
+                    }
+
+                    if (! $enumDerivingFound) {
+                        throw ParseError::unexpectedTokenFound('\'where\' or \';\'', $token, $filename);
+                    }
+
+                    $valueMapping = [];
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
+
+                    if ($token[1] !== '(') {
+                        throw ParseError::unexpectedTokenFound('(', $token, $filename);
+                    }
+
+                    $token = $nextToken();
+
+                    while ($token[1] !== ')') {
+                        $token = $skipWhitespace($token);
+                        $requireString($token);
+                        $enumConstructor = $token[1];
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+
+                        if ($token[1] !== ':') {
+                            throw ParseError::unexpectedTokenFound(':', $token, $filename);
+                        }
+
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+
+                        $bracesOpened = 0;
+                        $code = '';
+
+                        while (true) {
+                            if ($token[1] === '[') {
+                                ++$bracesOpened;
+                            }
+
+                            if ($token[1] === ']') {
+                                --$bracesOpened;
+                            }
+
+                            $code .= $token[1];
+                            $token = $nextToken();
+
+                            if (0 === $bracesOpened) {
+                                break;
+                            }
+                        }
+
+                        if (! in_array($token[1], [',', ')'], true)) {
+                            throw ParseError::unexpectedTokenFound(',', $token, $filename);
+                        }
+
+                        if ($token[1] !== ')') {
+                            $token = $nextToken();
+                        }
+
+                        if (in_array(substr($code, 0, 1), ['\'', '"'], true)) {
+                            $code = substr($code, 1, -1);
+                        } else {
+                            eval('$code = ' . $code . ';');
+                        }
+
+                        $valueMapping[$enumConstructor] = $code;
+                    }
+
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
+                    unset($derivings[$key]);
+                    $derivings[] = new Deriving\Enum($valueMapping);
                 }
 
                 if ('where' === $token[1]) {
