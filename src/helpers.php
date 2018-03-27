@@ -67,10 +67,6 @@ function defaultBuilders(): array
 
 function buildReferencedClass(string $namespace, string $fqcn): string
 {
-    if ('' === $namespace) {
-        return '\\' . $fqcn;
-    }
-
     $position = strpos($fqcn, $namespace . '\\');
 
     if (false !== $position) {
@@ -284,4 +280,27 @@ function buildArgumentConstructorFromAggregateId(Argument $argument, Definition 
         'Cannot build argument constructor for %s',
         $namespace !== '' ? $namespace . '\\' . $name : $name
     ));
+}
+
+// found on https://stackoverflow.com/questions/24316347/how-to-format-var-export-to-php5-4-array-syntax
+function var_export($var, $indent = '')
+{
+    switch (gettype($var)) {
+        case 'string':
+            return '\'' . addcslashes($var, "\\\$\"\r\n\t\v\f") . '\'';
+        case 'array':
+            $indexed = array_keys($var) === range(0, count($var) - 1);
+            $r = [];
+            foreach ($var as $key => $value) {
+                $r[] = "$indent    "
+                    . ($indexed ? '' : var_export($key) . ' => ')
+                    . var_export($value, "$indent    ");
+            }
+
+            return "[\n" . implode(",\n", $r) . ",\n" . $indent . ']';
+        case 'boolean':
+            return $var ? 'true' : 'false';
+        default:
+            return \var_export($var, true);
+    }
 }
