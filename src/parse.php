@@ -442,6 +442,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                             $code .= $token[1];
                             $token = $nextToken();
+                            $token = $skipWhitespace($token);
 
                             if (0 === $bracesOpened) {
                                 break;
@@ -454,6 +455,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                         if ($token[1] !== ')') {
                             $token = $nextToken();
+                            $token = $skipWhitespace($token);
                         }
 
                         if (in_array(substr($code, 0, 1), ['\'', '"'], true)) {
