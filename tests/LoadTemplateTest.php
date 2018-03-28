@@ -164,7 +164,7 @@ namespace {{namespace}};
 
     {{enum_constructors}}
 
-    public static function byName(string \$value): self
+    public static function fromName(string \$value): self
     {
         if (! isset(self::OPTIONS[\$value])) {
             throw new \InvalidArgumentException('Unknown enum name given');
@@ -173,7 +173,7 @@ namespace {{namespace}};
         return self::{\$value}();
     }
 
-    public static function byValue(\$value): self
+    public static function fromValue(\$value): self
     {
         foreach (self::OPTIONS as \$name => \$v) {
             if (\$v === \$value) {

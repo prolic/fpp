@@ -62,7 +62,7 @@ class BuildArgumentConstructorTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Baz\Something::fromString($name)', buildArgumentConstructor($argument, $definition, $collection));
+        $this->assertSame('\Baz\Something::fromName($name)', buildArgumentConstructor($argument, $definition, $collection));
     }
 
     /**
