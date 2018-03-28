@@ -76,6 +76,7 @@ function buildToScalarBody(Definition $definition, ?Constructor $constructor, De
             case Deriving\ToScalar::VALUE:
                 return "return \$this->{$argument->name()}->toScalar();";
             case Deriving\Enum::VALUE:
+                return "return \$this->{$argument->name()}->name();";
             case Deriving\ToString::VALUE:
             case Deriving\Uuid::VALUE:
                 return "return \$this->{$argument->name()}->toString();";

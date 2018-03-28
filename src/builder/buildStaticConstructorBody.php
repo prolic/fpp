@@ -88,6 +88,11 @@ function buildStaticConstructorBody(Definition $definition, ?Constructor $constr
                     $code .= $addArgument($key, $argument->name(), $value);
                     continue 3;
                 case Deriving\Enum::VALUE:
+                    $value = $argument->nullable()
+                        ? "null === \${$argument->name()} ? null : \${$argument->name()}->name()"
+                        : "\${$argument->name()}->name()";
+                    $code .= $addArgument($key, $argument->name(), $value);
+                    continue 3;
                 case Deriving\ToString::VALUE:
                 case Deriving\Uuid::VALUE:
                     $value = $argument->nullable()

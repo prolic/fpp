@@ -255,6 +255,50 @@ CODE;
                     }
                     continue 3;
                 case Deriving\Enum::VALUE:
+                    if ($argument->nullable()) {
+                        $code .= <<<CODE
+        if (isset(\$data['{$argument->name()}'])) {
+            if (! is_string(\$data['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a string in data array");
+            }
+
+            \${$argument->name()} = $argumentClass::byName(\$data['{$argument->name()}']);
+        } else {
+            \${$argument->name()} = null;
+        }
+
+
+CODE;
+                    } elseif ($argument->isList()) {
+                        $code .= <<<CODE
+        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
+        }
+
+        \${$argument->name()} = [];
+
+        foreach (\$data['{$argument->name()}'] as \$__value) {
+            if (! is_string(\$__value)) {
+                throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of string");
+            }
+
+            \${$argument->name()}[] = $argumentClass::byName(\$__value);
+        }
+
+
+CODE;
+                    } else {
+                        $code .= <<<CODE
+        if (! isset(\$data['{$argument->name()}']) || ! is_string(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a string");
+        }
+
+        \${$argument->name()} = $argumentClass::byName(\$data['{$argument->name()}']);
+
+
+CODE;
+                    }
+                    continue 3;
                 case Deriving\FromString::VALUE:
                 case Deriving\Uuid::VALUE:
                     if ($argument->nullable()) {
