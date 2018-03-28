@@ -219,6 +219,7 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
     foreach ($argumentDefinition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\Enum::VALUE:
+                return "$calledClass::fromName(\$this->payload['{$argument->name()}'])";
             case Deriving\FromString::VALUE:
             case Deriving\Uuid::VALUE:
                 return "$calledClass::fromString(\$this->payload['{$argument->name()}'])";
@@ -267,6 +268,7 @@ function buildArgumentConstructorFromAggregateId(Argument $argument, Definition 
     foreach ($argumentDefinition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\Enum::VALUE:
+                return "$calledClass::fromName(\$this->aggregateId())";
             case Deriving\FromString::VALUE:
             case Deriving\Uuid::VALUE:
                 return "$calledClass::fromString(\$this->aggregateId())";
