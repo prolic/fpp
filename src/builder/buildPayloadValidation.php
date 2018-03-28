@@ -60,11 +60,11 @@ CODE;
             $floatCheck = '';
 
             if ($argument->type() === 'float') {
-                $floatCheck = " || ! is_int(\$payload['{$argument->name()}'])";
+                $floatCheck = " && ! is_int(\$payload['{$argument->name()}'])";
             }
 
             $code .= <<<CODE
-        if (! isset(\$payload['{$argument->name()}']) || ! is_{$argument->type()}(\$payload['{$argument->name()}'])$floatCheck) {
+        if (! isset(\$payload['{$argument->name()}']) && ! is_{$argument->type()}(\$payload['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a {$argument->type()}");
         }
 
@@ -123,7 +123,7 @@ CODE;
 CODE;
                     } else {
                         $code .= <<<CODE
-        if (! isset(\$payload['{$argument->name()}']) || ! is_array(\$payload['{$argument->name()}'])) {
+        if (! isset(\$payload['{$argument->name()}']) && ! is_array(\$payload['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not an array");
         }
 
@@ -150,11 +150,11 @@ CODE;
 CODE;
                     } else {
                         if ($type === 'float') {
-                            $floatCheck = " || ! is_int(\$payload['{$argument->name()}'])";
+                            $floatCheck = " && ! is_int(\$payload['{$argument->name()}'])";
                         }
 
                         $code .= <<<CODE
-        if (! isset(\$payload['{$argument->name()}']) || ! is_{$type}(\$payload['{$argument->name()}'])$floatCheck) {
+        if (! isset(\$payload['{$argument->name()}']) && ! is_{$type}(\$payload['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a $type");
         }
 
@@ -175,7 +175,7 @@ CODE;
 CODE;
                     } else {
                         $code .= <<<CODE
-        if (! isset(\$payload['{$argument->name()}']) || ! is_string(\$payload['{$argument->name()}'])) {
+        if (! isset(\$payload['{$argument->name()}']) && ! is_string(\$payload['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a string");
         }
 
