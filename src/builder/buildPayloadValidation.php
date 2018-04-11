@@ -200,5 +200,9 @@ CODE;
 CODE;
     }
 
+    if (empty($code)) {
+        return $placeHolder;
+    }
+
     return substr($code, 8, -1);
 }

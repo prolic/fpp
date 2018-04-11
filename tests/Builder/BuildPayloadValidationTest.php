@@ -142,7 +142,7 @@ CODE;
 
         $definition = new Definition(
             'My',
-            'UserRegistered',
+            'RegisterUser',
             [$constructor],
             [new Deriving\Command()]
         );
@@ -169,5 +169,37 @@ if (! isset(\$payload['id']) || ! is_string(\$payload['id'])) {
 CODE;
 
         $this->assertSame($expected, buildPayloadValidation($definition, $constructor, $collection, ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_builds_payload_validation_with_only_one_argument(): void
+    {
+        $userId = new Definition(
+            'My',
+            'UserId',
+            [
+                new Constructor('My\UserId'),
+            ],
+            [
+                new Deriving\Uuid(),
+            ]
+        );
+
+        $constructor = new Constructor('My\UserRegistered', [
+            new Argument('id', 'My\UserId'),
+        ]);
+
+        $definition = new Definition(
+            'My',
+            'UserRegistered',
+            [$constructor],
+            [new Deriving\AggregateChanged()]
+        );
+
+        $collection = new DefinitionCollection($userId);
+
+        $this->assertSame('payload_validation', buildPayloadValidation($definition, $constructor, $collection, 'payload_validation'));
     }
 }
