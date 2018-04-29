@@ -1,6 +1,7 @@
 {
   "name": "prolic/fpp",
   "description": "Functional PHP Preprocessor",
+  "license": "BSD-3-Clause",
   "authors": [
     {
       "name": "Sascha-Oliver Prolic",
