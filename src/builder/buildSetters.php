@@ -69,6 +69,10 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
             }
         }
 
+        if (1 === count($constructor->arguments())) {
+            $constructorArguments = '...' . $constructorArguments;
+        }
+
         $setters .= '        return new self(' . substr($constructorArguments, 0, -2) . ");\n    }\n\n";
     }
 

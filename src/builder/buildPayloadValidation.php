@@ -56,6 +56,31 @@ CODE;
             continue;
         }
 
+        if ($argument->isList() && $argument->isScalartypeHint() && ! $argument->nullable()) {
+            $floatCheck = '';
+            $startFloatCheck = '';
+
+            if ($argument->type() === 'float') {
+                $floatCheck = " && ! is_int(\$payload['{$argument->name()}']))";
+                $startFloatCheck = '(';
+            }
+
+            $code .= <<<CODE
+        if (! isset(\$payload['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload");
+        }
+
+        foreach (\$payload['{$argument->name()}'] as \$__value) {
+             if ($startFloatCheck! is_{$argument->type()}(\$__value)$floatCheck) {
+                throw new \InvalidArgumentException("'{$argument->name()}' is not an array of {$argument->type()}");
+             }
+        }
+
+
+CODE;
+            continue;
+        }
+
         if ($argument->isScalartypeHint() && ! $argument->nullable()) {
             $floatCheck = '';
             $startFloatCheck = '';
@@ -68,6 +93,27 @@ CODE;
             $code .= <<<CODE
         if (! isset(\$payload['{$argument->name()}']) || $startFloatCheck! is_{$argument->type()}(\$payload['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not a {$argument->type()}");
+        }
+
+
+CODE;
+            continue;
+        }
+
+        if ($argument->isList() && $argument->isScalartypeHint() && $argument->nullable()) {
+            $floatCheck = '';
+
+            if ($argument->type() === 'float') {
+                $floatCheck = " && ! is_int(\$payload['{$argument->name()}'])";
+            }
+
+            $code .= <<<CODE
+        if (isset(\$payload['{$argument->name()}'])) {
+            foreach (\$payload['{$argument->name()}'] as \$__value) {
+                if (! is_{$argument->type()}(\$__value)$floatCheck) {
+                    throw new \InvalidArgumentException("Value for '{$argument->name()}' is not an array of {$argument->type()} in payload");
+                }
+            }
         }
 
 
@@ -115,10 +161,37 @@ CODE;
         foreach ($definition->derivings() as $deriving) {
             switch ((string) $deriving) {
                 case Deriving\ToArray::VALUE:
-                    if ($argument->nullable()) {
+                    if ($argument->isList() && $argument->nullable()) {
+                        $code .= <<<CODE
+        if (isset(\$payload['{$argument->name()}'])) {
+            foreach (\$payload['{$argument->name()}'] as \$__value) {
+                if (! is_array(\$__value)) {
+                    throw new \InvalidArgumentException("Value for '{$argument->name()}' is not an array of arrays in payload");
+                }
+            }
+        }
+
+
+CODE;
+                    } elseif (! $argument->isList() && $argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$payload['{$argument->name()}']) && ! is_array(\$payload['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Value for '{$argument->name()}' is not an array in payload");
+        }
+
+
+CODE;
+                    } elseif ($argument->isList() && ! $argument->nullable()) {
+                        $code .= <<<CODE
+        if (! isset(\$payload['{$argument->name()}']) || ! is_array(\$payload['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not an array of arrays");
+        }
+
+        foreach (\$payload['{$argument->name()}'] as \$__value) {
+                if (! is_array(\$__value)) {
+                    throw new \InvalidArgumentException("Key '{$argument->name()}' is not an array of arrays in payload");
+                }
+            }
         }
 
 
@@ -138,14 +211,49 @@ CODE;
 
                     $floatCheck = '';
 
-                    if ($type === 'float') {
+                    if ($argument->isList() && $type === 'float') {
+                        $floatCheck = ' && ! is_int($__value)';
+                    } elseif ($type === 'float') {
                         $floatCheck = " && ! is_int(\$payload['{$argument->name()}'])";
                     }
 
-                    if ($argument->nullable()) {
+                    if ($argument->isList() && $argument->nullable()) {
+                        $code .= <<<CODE
+        if (isset(\$payload['{$argument->name()}'])) {
+            foreach (\$payload['{$argument->name()}'] as \$__value) {
+                if (! is_{$type}(\$__value)$floatCheck) {
+                    throw new \InvalidArgumentException("Value for '{$argument->name()}' is not an array of {$type} in payload");
+                }
+            }
+        }
+
+
+CODE;
+                    } elseif (! $argument->isList() && $argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$payload['{$argument->name()}']) && ! is_{$type}(\$payload['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$type} in payload");
+        }
+
+
+CODE;
+                    } elseif ($argument->isList() && ! $argument->nullable()) {
+                        $startFloatCheck = '';
+
+                        if ($type === 'float') {
+                            $floatCheck = ' && ! is_int($__value))';
+                            $startFloatCheck = '(';
+                        }
+
+                        $code .= <<<CODE
+        if (! isset(\$payload['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload");
+        }
+
+        foreach (\$payload['{$argument->name()}'] as \$__value) {
+             if ($startFloatCheck! is_{$type}(\$__value)$floatCheck) {
+                 throw new \InvalidArgumentException("Key '{$argument->name()}' is is not an array of $type");
+             }
         }
 
 
@@ -170,10 +278,36 @@ CODE;
                 case Deriving\Enum::VALUE:
                 case Deriving\ToString::VALUE:
                 case Deriving\Uuid::VALUE:
-                    if ($argument->nullable()) {
+                    if ($argument->isList() && $argument->nullable()) {
+                        $code .= <<<CODE
+        if (isset(\$payload['{$argument->name()}'])) {
+            foreach (\$payload['{$argument->name()}'] as \$__value) {
+                if (! is_string(\$__value)) {
+                    throw new \InvalidArgumentException("Value for '{$argument->name()}' is not an array of string in payload");
+                }
+            }
+        }
+
+
+CODE;
+                    } elseif (! $argument->isList() && $argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$payload['{$argument->name()}']) && ! is_string(\$payload['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a string in payload");
+        }
+
+
+CODE;
+                    } elseif ($argument->isList() && ! $argument->nullable()) {
+                        $code .= <<<CODE
+        if (! isset(\$payload['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload");
+        }
+
+        foreach (\$payload['{$argument->name()}'] as \$__value) {
+             if (! is_string(\$__value)) {
+                 throw new \InvalidArgumentException("Key '{$argument->name()}' is not an array of string in payload");
+             }
         }
 
 

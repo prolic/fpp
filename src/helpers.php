@@ -187,10 +187,38 @@ function buildScalarConstructorFromPayload(Definition $definition): string
     return "new {$definition->name()}(\$this->payload['value'])";
 }
 
-function buildArgumentConstructorFromPayload(Argument $argument, Definition $definition, DefinitionCollection $collection): string
+function buildMethodBodyFromPayload(Argument $argument, Definition $definition, DefinitionCollection $collection, bool $withCache): string
 {
+    $argumentName = $argument->name();
+
+    if ($withCache && $argument->nullable()) {
+        $check = "if (! isset(\$this->$argumentName) && isset(\$this->payload['$argumentName'])) {";
+    } elseif ($withCache && ! $argument->nullable()) {
+        $check = "if (! isset(\$this->$argumentName)) {";
+    }
+
     if ($argument->isScalartypeHint() || null === $argument->type()) {
-        return "\$this->payload['{$argument->name()}']";
+        if ($withCache && $argument->nullable()) {
+            return <<<CODE
+$check
+            \$this->$argumentName = \$this->payload['$argumentName'];
+        }
+
+        return \$this->$argumentName;
+CODE;
+        } elseif (! $withCache && $argument->nullable()) {
+            return "return \$this->payload['$argumentName']) ?? null;";
+        } elseif ($withCache && ! $argument->nullable()) {
+            return <<<CODE
+$check
+            \$this->$argumentName = \$this->payload['$argumentName'];
+        }
+
+        return \$this->$argumentName;
+CODE;
+        }
+
+        return "return \$this->payload['$argumentName'];";
     }
 
     $nsPosition = strrpos($argument->type(), '\\');
@@ -205,7 +233,7 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
 
     if (! $collection->hasDefinition($namespace, $name)) {
         throw new \RuntimeException(sprintf(
-            'Cannot build argument constructor for %s',
+            'Cannot build argument constructor for %s, no definition found',
             $namespace !== '' ? $namespace . '\\' . $name : $name
         ));
     }
@@ -216,30 +244,81 @@ function buildArgumentConstructorFromPayload(Argument $argument, Definition $def
         ? $name
         : '\\' . $argument->type();
 
+    $method = '';
     foreach ($argumentDefinition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\Enum::VALUE:
-                return "$calledClass::fromName(\$this->payload['{$argument->name()}'])";
+                $method = 'fromName';
+                break;
+            case Deriving\FromScalar::VALUE:
+                $method = 'fromScalar';
+                break;
             case Deriving\FromString::VALUE:
             case Deriving\Uuid::VALUE:
-                return "$calledClass::fromString(\$this->payload['{$argument->name()}'])";
-            case Deriving\FromScalar::VALUE:
-                return "$calledClass::fromScalar(\$this->payload['{$argument->name()}'])";
+                $method = 'fromString';
+                break;
             case Deriving\FromArray::VALUE:
-                return "$calledClass::fromArray(\$this->payload['{$argument->name()}'])";
+                $method = 'fromArray';
+                break;
         }
-    }
 
-    throw new \RuntimeException(sprintf(
-        'Cannot build argument constructor for %s',
-        $namespace !== '' ? $namespace . '\\' . $name : $name
-    ));
+        if (empty($method)) {
+            throw new \RuntimeException(sprintf(
+                'Cannot build argument constructor for %s, give a scalar type or a deriving like Enum, FromString, Uuid, FromScalar, FromArray',
+                $namespace !== '' ? $namespace . '\\' . $name : $name
+            ));
+        }
+
+        if ($withCache && $argument->isList()) {
+            return <<<CODE
+\$__returnValue = [];
+
+        foreach (\$this->payload['$argumentName'] as \$__value) {
+            \$__returnValue = $calledClass::$method(\$__value);
+        }
+
+        return \$__returnValue;
+CODE;
+        } elseif ($withCache && ! $argument->isList()) {
+            return <<<CODE
+$check
+            \$this->$argumentName = $calledClass::$method(\$this->payload['$argumentName']);
+        }
+
+        return \$this->$argumentName;
+CODE;
+        } elseif (! $withCache && $argument->isList()) {
+            return <<<CODE
+\$__returnValue = [];
+
+        foreach (\$this->payload['$argumentName'] as \$__value) {
+            \$__returnValue[] = $calledClass::$method(\$__value);
+        }
+
+        return \$__returnValue;
+CODE;
+        }
+
+        return "return $calledClass::$method(\$this->payload['$argumentName']);";
+    }
 }
 
-function buildArgumentConstructorFromAggregateId(Argument $argument, Definition $definition, DefinitionCollection $collection): string
+function buildMethodBodyFromAggregateId(Argument $argument, Definition $definition, DefinitionCollection $collection, bool $withCache): string
 {
+    $argumentName = $argument->name();
+
     if ($argument->isScalartypeHint() || null === $argument->type()) {
-        return '$this->aggregateId()';
+        if ($withCache) {
+            return <<<CODE
+if (! isset(\$this->$argumentName)) {
+            \$this->$argumentName = \$this->aggregateId();
+        }
+
+        return \$this->$argumentName;
+CODE;
+        }
+
+        return 'return $this->aggregateId();';
     }
 
     $nsPosition = strrpos($argument->type(), '\\');
@@ -268,19 +347,63 @@ function buildArgumentConstructorFromAggregateId(Argument $argument, Definition 
     foreach ($argumentDefinition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\Enum::VALUE:
-                return "$calledClass::fromName(\$this->aggregateId())";
+                if ($withCache) {
+                    return <<<CODE
+if (! isset(\$this->$argumentName)) {
+            \$this->$argumentName = $calledClass::fromName(\$this->aggregateId());
+        }
+
+        return \$this->$argumentName;
+CODE;
+                }
+
+                    return "return $calledClass::fromName(\$this->aggregateId());";
+
             case Deriving\FromString::VALUE:
             case Deriving\Uuid::VALUE:
-                return "$calledClass::fromString(\$this->aggregateId())";
+                if ($withCache) {
+                    return <<<CODE
+if (! isset(\$this->$argumentName)) {
+            \$this->$argumentName = $calledClass::fromString(\$this->aggregateId());
+        }
+
+        return \$this->$argumentName;
+CODE;
+                }
+
+                    return "return $calledClass::fromString(\$this->aggregateId());";
+
             case Deriving\FromScalar::VALUE:
-                return "$calledClass::fromScalar(\$this->aggregateId())";
+                if ($withCache) {
+                    return <<<CODE
+if (! isset(\$this->$argumentName)) {
+            \$this->$argumentName = $calledClass::fromScalar(\$this->aggregateId());
+        }
+
+        return \$this->$argumentName;
+CODE;
+                }
+
+                    return "return $calledClass::fromScalar(\$this->aggregateId());";
+
             case Deriving\FromArray::VALUE:
-                return "$calledClass::fromArray(\$this->aggregateId())";
+                if ($withCache) {
+                    return <<<CODE
+if (! isset(\$this->$argumentName)) {
+            \$this->$argumentName = $calledClass::fromArray(\$this->aggregateId());
+        }
+
+        return \$this->$argumentName;
+CODE;
+                }
+
+                    return "return $calledClass::fromArray(\$this->aggregateId());";
+
         }
     }
 
     throw new \RuntimeException(sprintf(
-        'Cannot build argument constructor for %s',
+        'Cannot build argument constructor for %s, give a scalar type hint or a deriving like Enum, FromString, Uuid, FromScalar, FromArray',
         $namespace !== '' ? $namespace . '\\' . $name : $name
     ));
 }
