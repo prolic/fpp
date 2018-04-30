@@ -36,7 +36,7 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
         }
 
         if (1 === count($constructor->arguments()) && $argument->isScalartypeHint()) {
-            $argumentType = $argument->isList() ? $argument->type() . ' ...' : $argument->type();
+            $argumentType = $argument->isList() ? $argument->type() . ' ...' : $argument->type() . ' ';
             $argumentList .= $argumentType . '$' . $argument->name() . ', ';
             continue;
         } elseif ($argument->isScalartypeHint()) {

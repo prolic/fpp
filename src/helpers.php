@@ -39,6 +39,7 @@ function defaultDerivingMap(): array
 function defaultBuilders(): array
 {
     return [
+        'static_constructor' => Builder\buildStaticConstructor,
         'accessors' => Builder\buildAccessors,
         'arguments' => Builder\buildArguments,
         'class_extends' => Builder\buildClassExtends,

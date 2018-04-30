@@ -48,6 +48,7 @@ $files = [
     'builder/buildProperties.php',
     'builder/buildScalarType.php',
     'builder/buildSetters.php',
+    'builder/buildStaticConstructor.php',
     'builder/buildStaticConstructorBody.php',
     'builder/buildToArrayBody.php',
     'builder/buildToScalarBody.php',

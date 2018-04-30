@@ -1,7 +1,4 @@
-    public static function with({{arguments}}): {{class_name}}
-    {
-        {{static_constructor_body}}
-    }
+    {{static_constructor}}
 
     protected function setPayload(array $payload): void
     {
