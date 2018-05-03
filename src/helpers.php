@@ -248,7 +248,7 @@ CODE;
     $method = '';
     foreach ($argumentDefinition->derivings() as $deriving) {
         var_dump($name, $deriving);
-        switch ((string)$deriving) {
+        switch ((string) $deriving) {
             case Deriving\Enum::VALUE:
                 $method = 'fromName';
                 break;
