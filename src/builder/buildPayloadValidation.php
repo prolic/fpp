@@ -66,12 +66,8 @@ CODE;
             }
 
             $code .= <<<CODE
-        if (! isset(\$payload['{$argument->name()}'])) {
-            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload");
-        }
-
-        if (! is_array(\$payload['{$argument->name()}'])) {
-            throw new \InvalidArgumentException("Value for '{$argument->name()}' must be an array in payload");
+        if (! isset(\$payload['{$argument->name()}']) || ! is_array(\$payload['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not an array");
         }
 
         foreach (\$payload['{$argument->name()}'] as \$__value) {
@@ -199,10 +195,6 @@ CODE;
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not an array of arrays");
         }
 
-        if (! is_array(\$payload['{$argument->name()}'])) {
-            throw new \InvalidArgumentException("Value for '{$argument->name()}' must be an array in payload");
-        }
-
         foreach (\$payload['{$argument->name()}'] as \$__value) {
                 if (! is_array(\$__value)) {
                     throw new \InvalidArgumentException("Key '{$argument->name()}' is not an array of arrays in payload");
@@ -266,12 +258,8 @@ CODE;
                         }
 
                         $code .= <<<CODE
-        if (! isset(\$payload['{$argument->name()}'])) {
-            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload");
-        }
-
-        if (! is_array(\$payload['{$argument->name()}'])) {
-            throw new \InvalidArgumentException("Value for '{$argument->name()}' must be an array in payload");
+        if (! isset(\$payload['{$argument->name()}']) || ! is_array(\$payload['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not an array");
         }
 
         foreach (\$payload['{$argument->name()}'] as \$__value) {
@@ -328,12 +316,8 @@ CODE;
 CODE;
                     } elseif ($argument->isList() && ! $argument->nullable()) {
                         $code .= <<<CODE
-        if (! isset(\$payload['{$argument->name()}'])) {
-            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload");
-        }
-
-        if (! is_array(\$payload['{$argument->name()}'])) {
-            throw new \InvalidArgumentException("Value for '{$argument->name()}' must be an array in payload");
+        if (! isset(\$payload['{$argument->name()}']) || ! is_array(\$payload['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in payload or is not an array");
         }
 
         foreach (\$payload['{$argument->name()}'] as \$__value) {

@@ -247,7 +247,8 @@ CODE;
 
     $method = '';
     foreach ($argumentDefinition->derivings() as $deriving) {
-        switch ((string) $deriving) {
+        var_dump($name, $deriving);
+        switch ((string)$deriving) {
             case Deriving\Enum::VALUE:
                 $method = 'fromName';
                 break;
@@ -262,16 +263,17 @@ CODE;
                 $method = 'fromArray';
                 break;
         }
+    }
 
-        if (empty($method)) {
-            throw new \RuntimeException(sprintf(
-                'Cannot build argument constructor for %s, give a scalar type or a deriving like Enum, FromString, Uuid, FromScalar, FromArray',
-                $namespace !== '' ? $namespace . '\\' . $name : $name
-            ));
-        }
+    if (empty($method)) {
+        throw new \RuntimeException(sprintf(
+            'Cannot build argument constructor for %s, give a scalar type or a deriving like Enum, FromString, Uuid, FromScalar, FromArray',
+            $namespace !== '' ? $namespace . '\\' . $name : $name
+        ));
+    }
 
-        if ($withCache && $argument->isList()) {
-            return <<<CODE
+    if ($withCache && $argument->isList()) {
+        return <<<CODE
 \$__returnValue = [];
 
         foreach (\$this->payload['$argumentName'] as \$__value) {
@@ -280,16 +282,16 @@ CODE;
 
         return \$__returnValue;
 CODE;
-        } elseif ($withCache && ! $argument->isList()) {
-            return <<<CODE
+    } elseif ($withCache && ! $argument->isList()) {
+        return <<<CODE
 $check
             \$this->$argumentName = $calledClass::$method(\$this->payload['$argumentName']);
         }
 
         return \$this->$argumentName;
 CODE;
-        } elseif (! $withCache && $argument->isList()) {
-            return <<<CODE
+    } elseif (! $withCache && $argument->isList()) {
+        return <<<CODE
 \$__returnValue = [];
 
         foreach (\$this->payload['$argumentName'] as \$__value) {
@@ -298,10 +300,9 @@ CODE;
 
         return \$__returnValue;
 CODE;
-        }
-
-        return "return $calledClass::$method(\$this->payload['$argumentName']);";
     }
+
+    return "return $calledClass::$method(\$this->payload['$argumentName']);";
 }
 
 function buildMethodBodyFromAggregateId(Argument $argument, Definition $definition, DefinitionCollection $collection, bool $withCache): string
