@@ -152,7 +152,7 @@ function buildArgumentConstructor(Argument $argument, Definition $definition, De
 
     if (! $collection->hasDefinition($namespace, $name)) {
         throw new \RuntimeException(sprintf(
-            'Cannot build argument constructor for %s',
+            'Cannot build argument constructor for %s, no definition found',
             $namespace !== '' ? $namespace . '\\' . $name : $name
         ));
     }
@@ -178,7 +178,7 @@ function buildArgumentConstructor(Argument $argument, Definition $definition, De
     }
 
     throw new \RuntimeException(sprintf(
-        'Cannot build argument constructor for %s',
+        'Cannot build argument constructor for %s, give a scalar type or a deriving like Enum, FromString, Uuid, FromScalar, FromArray',
         $namespace !== '' ? $namespace . '\\' . $name : $name
     ));
 }
@@ -334,7 +334,7 @@ CODE;
 
     if (! $collection->hasDefinition($namespace, $name)) {
         throw new \RuntimeException(sprintf(
-            'Cannot build argument constructor for %s',
+            'Cannot build argument constructor for %s, no definition found',
             $namespace !== '' ? $namespace . '\\' . $name : $name
         ));
     }
