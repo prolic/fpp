@@ -343,7 +343,7 @@ CODE;
 
         $expected = <<<CODE
 if (! isset(\$data['floats']) || ! is_array(\$data['floats'])) {
-            throw new \InvalidArgumentException("Key 'floats' is missing in data array or is not a array");
+            throw new \InvalidArgumentException("Key 'floats' is missing in data array or is not an array");
         }
 
         foreach (\$data['floats'] as \$__value) {
@@ -355,7 +355,7 @@ if (! isset(\$data['floats']) || ! is_array(\$data['floats'])) {
         }
 
         if (! isset(\$data['strings']) || ! is_array(\$data['strings'])) {
-            throw new \InvalidArgumentException("Key 'strings' is missing in data array or is not a array");
+            throw new \InvalidArgumentException("Key 'strings' is missing in data array or is not an array");
         }
 
         foreach (\$data['strings'] as \$__value) {
@@ -402,7 +402,7 @@ CODE;
 
         $expected = <<<CODE
 if (! isset(\$data['floats']) || ! is_array(\$data['floats'])) {
-            throw new \InvalidArgumentException("Key 'floats' is missing in data array or is not a array");
+            throw new \InvalidArgumentException("Key 'floats' is missing in data array or is not an array");
         }
 
         foreach (\$data['floats'] as \$__value) {
@@ -414,7 +414,7 @@ if (! isset(\$data['floats']) || ! is_array(\$data['floats'])) {
         }
 
         if (! isset(\$data['strings']) || ! is_array(\$data['strings'])) {
-            throw new \InvalidArgumentException("Key 'strings' is missing in data array or is not a array");
+            throw new \InvalidArgumentException("Key 'strings' is missing in data array or is not an array");
         }
 
         foreach (\$data['strings'] as \$__value) {

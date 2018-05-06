@@ -80,15 +80,6 @@ class InvalidDeriving extends \RuntimeException
         ));
     }
 
-    public static function atLeastTwoConstructorArgumentsExpected(Definition $definition, string $deriving): InvalidDeriving
-    {
-        return new self(sprintf(
-            'Invalid deriving on %s, deriving %s expects at least two constructor arguments',
-            self::className($definition),
-            $deriving
-        ));
-    }
-
     public static function noConditionsExpected(Definition $definition, string $deriving): InvalidDeriving
     {
         return new self(sprintf(

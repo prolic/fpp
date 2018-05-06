@@ -42,11 +42,13 @@ function buildConstructor(Definition $definition, ?Constructor $constructor, Def
     }
 
     $code = "public function __construct($argumentList)\n    {\n";
+    $printed = false;
 
     foreach ($definition->conditions() as $condition) {
         if ('_' === $condition->constructor()
             || false !== strrpos($constructor->name(), $condition->constructor())
         ) {
+            $printed = true;
             $code .= <<<CODE
         if ({$condition->code()}) {
             throw new \\InvalidArgumentException('{$condition->errorMessage()}');
@@ -58,10 +60,13 @@ CODE;
     }
 
     foreach ($constructor->arguments() as $key => $argument) {
-        if ($argument->isList()) {
-            if (substr($code, -2) !== "\n\n") {
+        if (1 !== count($constructor->arguments()) && $argument->isList()) {
+            if ($printed && substr($code, -2) !== "\n\n") {
                 $code .= "\n";
             }
+
+            $printed = true;
+
             $code .= "        foreach (\${$argument->name()} as \$__value) {\n";
             $code .= '            if (! ';
 

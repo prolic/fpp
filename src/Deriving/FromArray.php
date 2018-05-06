@@ -31,8 +31,8 @@ class FromArray extends AbstractDeriving
             throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
         }
 
-        if (count($definition->constructors()[0]->arguments()) < 2) {
-            throw InvalidDeriving::atLeastTwoConstructorArgumentsExpected($definition, self::VALUE);
+        if (count($definition->constructors()[0]->arguments()) < 1) {
+            throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
         }
     }
 

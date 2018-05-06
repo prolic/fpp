@@ -34,10 +34,6 @@ class Query extends AbstractDeriving
         if (count($definition->constructors()) !== 1) {
             throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
         }
-
-        if (0 === count($definition->constructors()[0]->arguments())) {
-            throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
-        }
     }
 
     private function forbidsDerivings(): array

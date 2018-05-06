@@ -35,7 +35,11 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
             $argumentList .= '?';
         }
 
-        if ($argument->isScalartypeHint()) {
+        if (1 === count($constructor->arguments()) && $argument->isScalartypeHint()) {
+            $argumentType = $argument->isList() ? $argument->type() . ' ...' : $argument->type() . ' ';
+            $argumentList .= $argumentType . '$' . $argument->name() . ', ';
+            continue;
+        } elseif ($argument->isScalartypeHint()) {
             $argumentType = $argument->isList() ? 'array' : $argument->type();
             $argumentList .= $argumentType . ' $' . $argument->name() . ', ';
             continue;
@@ -46,15 +50,17 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
         $namespace = substr($argument->type(), 0, $nsPosition);
         $name = substr($argument->type(), $nsPosition + 1);
 
-        if ($argument->isList()) {
-            $type = 'array';
-        } else {
-            $type = $namespace === $definition->namespace()
-                ? $name
-                : '\\' . $argument->type();
-        }
+        $type = $namespace === $definition->namespace()
+            ? $name
+            : '\\' . $argument->type();
 
-        $argumentList .= $type . ' $' . $argument->name() . ', ';
+        if (1 === count($constructor->arguments()) && $argument->isList()) {
+            $argumentList .= $type . ' ...$' . $argument->name() . ', ';
+        } elseif ($argument->isList()) {
+            $argumentList .= 'array $' . $argument->name() . ', ';
+        } else {
+            $argumentList .= $type . ' $' . $argument->name() . ', ';
+        }
     }
 
     if ('' === $argumentList) {

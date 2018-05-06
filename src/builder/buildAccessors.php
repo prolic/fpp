@@ -15,9 +15,9 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
-use function Fpp\buildArgumentConstructorFromAggregateId;
-use function Fpp\buildArgumentConstructorFromPayload;
 use function Fpp\buildArgumentReturnType;
+use function Fpp\buildMethodBodyFromAggregateId;
+use function Fpp\buildMethodBodyFromPayload;
 
 const buildAccessors = '\Fpp\Builder\buildAccessors';
 
@@ -40,24 +40,15 @@ function buildAccessors(Definition $definition, ?Constructor $constructor, Defin
                 $returnType = buildArgumentReturnType($argument, $definition);
 
                 if (0 === $index) {
-                    $argumentConstructor = buildArgumentConstructorFromAggregateId($argument, $definition, $collection);
+                    $methodBody = buildMethodBodyFromAggregateId($argument, $definition, $collection, true);
                 } else {
-                    $argumentConstructor = buildArgumentConstructorFromPayload($argument, $definition, $collection);
+                    $methodBody = buildMethodBodyFromPayload($argument, $definition, $collection, true);
                 }
 
-                if ($argument->nullable() && 0 < $index) {
-                    $check = "if (! isset(\$this->{$argument->name()}) && isset(\$this->payload['{$argument->name()}'])) {";
-                } else {
-                    $check = "if (! isset(\$this->{$argument->name()})) {";
-                }
                 $accessors .= <<<CODE
     public function {$argument->name()}()$returnType
     {
-        $check
-            \$this->{$argument->name()} = $argumentConstructor;
-        }
-
-        return \$this->{$argument->name()};
+        $methodBody
     }
 
 
@@ -72,16 +63,11 @@ CODE;
 
             foreach ($constructor->arguments() as $argument) {
                 $returnType = buildArgumentReturnType($argument, $definition);
-                $argumentConstructor = buildArgumentConstructorFromPayload($argument, $definition, $collection);
-                if ($argument->nullable()) {
-                    $return = "isset(\$this->payload['{$argument->name()}']) ? $argumentConstructor : null";
-                } else {
-                    $return = "$argumentConstructor";
-                }
+                $methodBody = buildMethodBodyFromPayload($argument, $definition, $collection, false);
                 $accessors .= <<<CODE
     public function {$argument->name()}()$returnType
     {
-        return $return;
+        $methodBody
     }
 
 

@@ -42,7 +42,7 @@ public function name(): string
 
     public function age(): ?int
     {
-        return isset(\$this->payload['age']) ? \$this->payload['age'] : null;
+        return \$this->payload['age']) ?? null;
     }
 
     public function whatever()

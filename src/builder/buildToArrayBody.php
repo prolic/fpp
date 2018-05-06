@@ -79,10 +79,11 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
                 }
 
                 $prefixCode .= "        \${$argumentName} = [];\n\n";
-
                 $prefixCode .= "        foreach (\$this->$argumentName as \$__value) {\n";
+
+                $match = false;
+
                 foreach ($argumentDefinition->derivings() as $deriving) {
-                    $match = false;
                     switch ((string) $deriving) {
                         case Deriving\ToArray::VALUE:
                             $prefixCode .= "            \${$argumentName}[] = \$__value->toArray();\n";

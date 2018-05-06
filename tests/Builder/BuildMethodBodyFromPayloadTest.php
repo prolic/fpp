@@ -17,9 +17,9 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildArgumentConstructorFromPayload;
+use function Fpp\buildMethodBodyFromPayload;
 
-class BuildArgumentConstructorFromPayloadTest extends TestCase
+class BuildMethodBodyFromPayloadTest extends TestCase
 {
     /**
      * @test
@@ -31,7 +31,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
         $definition = new Definition('Foo', 'Bar', [$constructor]);
         $collection = new DefinitionCollection($definition);
 
-        $this->assertSame('$this->payload[\'name\']', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('return $this->payload[\'name\'];', buildMethodBodyFromPayload($argument, $definition, $collection, false));
     }
 
     /**
@@ -44,7 +44,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
         $definition = new Definition('Foo', 'Bar', [$constructor]);
         $collection = new DefinitionCollection($definition);
 
-        $this->assertSame('$this->payload[\'name\']', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('return $this->payload[\'name\'];', buildMethodBodyFromPayload($argument, $definition, $collection, false));
     }
 
     /**
@@ -62,7 +62,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Baz\Something::fromName($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('return \Baz\Something::fromName($this->payload[\'name\']);', buildMethodBodyFromPayload($argument, $definition, $collection, false));
     }
 
     /**
@@ -79,7 +79,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Baz\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('return \Baz\Something::fromString($this->payload[\'name\']);', buildMethodBodyFromPayload($argument, $definition, $collection, false));
     }
 
     /**
@@ -96,7 +96,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Baz\Something::fromString($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('return \Baz\Something::fromString($this->payload[\'name\']);', buildMethodBodyFromPayload($argument, $definition, $collection, false));
     }
 
     /**
@@ -113,7 +113,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('Something::fromScalar($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('return Something::fromScalar($this->payload[\'name\']);', buildMethodBodyFromPayload($argument, $definition, $collection, false));
     }
 
     /**
@@ -130,7 +130,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        $this->assertSame('\Of\Something::fromArray($this->payload[\'name\'])', buildArgumentConstructorFromPayload($argument, $definition, $collection));
+        $this->assertSame('return \Of\Something::fromArray($this->payload[\'name\']);', buildMethodBodyFromPayload($argument, $definition, $collection, false));
     }
 
     /**
@@ -146,7 +146,7 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
 
         $collection = new DefinitionCollection($definition);
 
-        buildArgumentConstructorFromPayload($argument, $definition, $collection);
+        buildMethodBodyFromPayload($argument, $definition, $collection, false);
     }
 
     /**
@@ -165,6 +165,6 @@ class BuildArgumentConstructorFromPayloadTest extends TestCase
 
         $collection = new DefinitionCollection($definition, $argumentDefinition);
 
-        buildArgumentConstructorFromPayload($argument, $definition, $collection);
+        buildMethodBodyFromPayload($argument, $definition, $collection, false);
     }
 }

@@ -20,6 +20,10 @@ const buildStaticConstructorBody = '\Fpp\Builder\buildStaticConstructorBody';
 
 function buildStaticConstructorBody(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
+    if (null === $constructor) {
+        return $placeHolder;
+    }
+
     foreach ($definition->derivings() as $deriving) {
         if ($deriving->equals(new Deriving\AggregateChanged())
             || $deriving->equals(new Deriving\MicroAggregateChanged())
@@ -39,10 +43,9 @@ function buildStaticConstructorBody(Definition $definition, ?Constructor $constr
         return $placeHolder;
     }
 
-    $start = 'return new self(';
-    if ($inclFirstArgument) {
-        $start .= "[\n            ";
-    }
+    $foundList = false;
+
+    $start = '';
     $code = '';
 
     $addArgument = function (int $key, string $name, string $value) use ($inclFirstArgument): string {
@@ -76,34 +79,125 @@ function buildStaticConstructorBody(Definition $definition, ?Constructor $constr
         foreach ($definition->derivings() as $deriving) {
             switch ((string) $deriving) {
                 case Deriving\ToArray::VALUE:
-                    $value = $argument->nullable()
-                        ? "null === \${$argument->name()} ? null : \${$argument->name()}->toArray()"
-                        : "\${$argument->name()}->toArray()";
-                    $code .= $addArgument($key, $argument->name(), $value);
+                    if ($argument->isList()) {
+                        $foundList = true;
+
+                        if (empty($start)) {
+                            $start = "\$__array_{$argument->name()} = [];\n\n";
+                        } else {
+                            $start .= "        \$__array_{$argument->name()} = [];\n\n";
+                        }
+
+                        $start .= <<<CODE
+        foreach (\${$argument->name()} as \$__value) {
+            \$__array_{$argument->name()}[] = \$__value->toArray();
+        }
+
+
+CODE;
+                        $code .= $addArgument($key, $argument->name(), "\$__array_{$argument->name()}");
+                    } else {
+                        $value = $argument->nullable()
+                            ? "null === \${$argument->name()} ? null : "
+                            : "\${$argument->name()}->toArray()";
+
+                        $code .= $addArgument($key, $argument->name(), $value);
+                    }
+
                     continue 3;
                 case Deriving\ToScalar::VALUE:
-                    $value = $argument->nullable()
-                        ? "null === \${$argument->name()} ? null : \${$argument->name()}->toScalar()"
-                        : "\${$argument->name()}->toScalar()";
-                    $code .= $addArgument($key, $argument->name(), $value);
+                    if ($argument->isList()) {
+                        $foundList = true;
+
+                        if (empty($start)) {
+                            $start = "\$__array_{$argument->name()} = [];\n\n";
+                        } else {
+                            $start .= "        \$__array_{$argument->name()} = [];\n\n";
+                        }
+
+                        $start .= <<<CODE
+        foreach (\${$argument->name()} as \$__value) {
+            \$__array_{$argument->name()}[] = \$__value->toScalar();
+        }
+
+
+CODE;
+                        $code .= $addArgument($key, $argument->name(), "\$__array_{$argument->name()}");
+                    } else {
+                        $value = $argument->nullable()
+                            ? "null === \${$argument->name()} ? null : \${$argument->name()}->toScalar()"
+                            : "\${$argument->name()}->toScalar()";
+                        $code .= $addArgument($key, $argument->name(), $value);
+                    }
+
                     continue 3;
                 case Deriving\Enum::VALUE:
-                    $value = $argument->nullable()
-                        ? "null === \${$argument->name()} ? null : \${$argument->name()}->name()"
-                        : "\${$argument->name()}->name()";
-                    $code .= $addArgument($key, $argument->name(), $value);
+                    if ($argument->isList()) {
+                        $foundList = true;
+
+                        if (empty($start)) {
+                            $start = "\$__array_{$argument->name()} = [];\n\n";
+                        } else {
+                            $start .= "        \$__array_{$argument->name()} = [];\n\n";
+                        }
+
+                        $start .= <<<CODE
+        foreach (\${$argument->name()} as \$__value) {
+            \$__array_{$argument->name()}[] = \$__value->name();
+        }
+
+
+CODE;
+                        $code .= $addArgument($key, $argument->name(), "\$__array_{$argument->name()}");
+                    } else {
+                        $value = $argument->nullable()
+                            ? "null === \${$argument->name()} ? null : \${$argument->name()}->name()"
+                            : "\${$argument->name()}->name()";
+                        $code .= $addArgument($key, $argument->name(), $value);
+                    }
+
                     continue 3;
                 case Deriving\ToString::VALUE:
                 case Deriving\Uuid::VALUE:
-                    $value = $argument->nullable()
-                        ? "null === \${$argument->name()} ? null : \${$argument->name()}->toString()"
-                        : "\${$argument->name()}->toString()";
-                    $code .= $addArgument($key, $argument->name(), $value);
+                    if ($argument->isList()) {
+                        $foundList = true;
+
+                        if (empty($start)) {
+                            $start = "\$__array_{$argument->name()} = [];\n\n";
+                        } else {
+                            $start .= "        \$__array_{$argument->name()} = [];\n\n";
+                        }
+
+                        $start .= <<<CODE
+        foreach (\${$argument->name()} as \$__value) {
+            \$__array_{$argument->name()}[] = \$__value->toString();
+        }
+
+
+CODE;
+                        $code .= $addArgument($key, $argument->name(), "\$__array_{$argument->name()}");
+                    } else {
+                        $value = $argument->nullable()
+                            ? "null === \${$argument->name()} ? null : \${$argument->name()}->toString()"
+                            : "\${$argument->name()}->toString()";
+                        $code .= $addArgument($key, $argument->name(), $value);
+                    }
+
                     continue 3;
             }
         }
 
         $code .= $addArgument($key, $argument->name(), "\${$argument->name()}");
+    }
+
+    if (! $foundList) {
+        $start = 'return new self(';
+    } else {
+        $start .= '        return new self(';
+    }
+
+    if ($inclFirstArgument) {
+        $start .= "[\n            ";
     }
 
     return $start . ltrim($code) . '        ]);';
