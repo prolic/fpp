@@ -88,7 +88,7 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
 
         \$email = \Some\Email::fromString(\$data['email']);
 
-        if (! isset(\$data['float']) || ! is_float(\$data['float']) || ! is_int(\$data['float'])) {
+        if (! isset(\$data['float']) || (! is_float(\$data['float']) && ! is_int(\$data['float']))) {
             throw new \InvalidArgumentException("Key 'float' is missing in data array or is not a float");
         }
 
@@ -278,7 +278,7 @@ CODE;
         );
 
         $expected = <<<CODE
-if (! isset(\$data['float1']) || ! is_float(\$data['float1']) && ! is_int(\$data['float1'])) {
+if (! isset(\$data['float1']) || (! is_float(\$data['float1']) && ! is_int(\$data['float1']))) {
             throw new \InvalidArgumentException("Key 'float1' is missing in data array or is not a float");
         }
 
@@ -294,7 +294,7 @@ if (! isset(\$data['float1']) || ! is_float(\$data['float1']) && ! is_int(\$data
             \$float2 = null;
         }
 
-        if (! isset(\$data['float3']) || ! is_float(\$data['float3']) || ! is_int(\$data['float3'])) {
+        if (! isset(\$data['float3']) || (! is_float(\$data['float3']) && ! is_int(\$data['float3']))) {
             throw new \InvalidArgumentException("Key 'float3' is missing in data array or is not a float");
         }
 

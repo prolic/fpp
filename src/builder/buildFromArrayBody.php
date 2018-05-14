@@ -52,14 +52,16 @@ CODE;
         }
 
         if ($argument->isScalartypeHint() && ! $argument->nullable() && ! $argument->isList()) {
+            $floatCheckStart = '';
             $floatCheck = '';
 
             if ($argument->type() === 'float') {
-                $floatCheck = " || ! is_int(\$data['{$argument->name()}'])";
+                $floatCheckStart = '(';
+                $floatCheck = " && ! is_int(\$data['{$argument->name()}']))";
             }
 
             $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
+        if (! isset(\$data['{$argument->name()}']) || {$floatCheckStart}! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a {$argument->type()}");
         }
 
@@ -243,8 +245,14 @@ CODE;
 
 CODE;
                     } else {
+                        if (empty($floatCheck)) {
+                            $floatCheckStart = '';
+                        } else {
+                            $floatCheckStart = '(';
+                            $floatCheck .= ')';
+                        }
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_$argumentType(\$data['{$argument->name()}'])$floatCheck) {
+        if (! isset(\$data['{$argument->name()}']) || {$floatCheckStart}! is_$argumentType(\$data['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
         }
 
@@ -356,13 +364,13 @@ CODE;
             throw new \RuntimeException("Cannot build fromArray for $class , unknown argument {$argument->type()} given");
         }
 
-        $floatCheck = '';
-
-        if ($argumentType === 'float') {
-            $floatCheck = " && ! is_int(\$data['{$argument->name()}'])";
-        }
-
         if ($argument->nullable()) {
+            $floatCheck = '';
+
+            if ($argumentType === 'float') {
+                $floatCheck = " && ! is_int(\$data['{$argument->name()}'])";
+            }
+
             $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
             if (! is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
@@ -377,6 +385,8 @@ CODE;
 
 CODE;
         } elseif ($argument->isList()) {
+            $floatCheck = '';
+
             if ($argumentType === 'float') {
                 $floatCheck = ' && ! is_int($__value)';
             }
@@ -397,8 +407,16 @@ CODE;
 
 CODE;
         } else {
+            $floatCheckStart = '';
+            $floatCheck = '';
+
+            if ($argumentType === 'float') {
+                $floatCheckStart = '(';
+                $floatCheck = ' && ! is_int($__value))';
+            }
+
             $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
+        if (! isset(\$data['{$argument->name()}']) || {$floatCheckStart}! is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
         }
 
