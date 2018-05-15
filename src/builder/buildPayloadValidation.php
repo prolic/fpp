@@ -71,9 +71,9 @@ CODE;
         }
 
         foreach (\$payload['{$argument->name()}'] as \$__value) {
-             if ($startFloatCheck! is_{$argument->type()}(\$__value)$floatCheck) {
-                throw new \InvalidArgumentException("'{$argument->name()}' is not an array of {$argument->type()}");
-             }
+            if ($startFloatCheck! is_{$argument->type()}(\$__value)$floatCheck) {
+               throw new \InvalidArgumentException("'{$argument->name()}' is not an array of {$argument->type()}");
+            }
         }
 
 
@@ -262,9 +262,9 @@ CODE;
         }
 
         foreach (\$payload['{$argument->name()}'] as \$__value) {
-             if ($startFloatCheck! is_{$type}(\$__value)$floatCheck) {
-                 throw new \InvalidArgumentException("Key '{$argument->name()}' is is not an array of $type");
-             }
+            if ($startFloatCheck! is_{$type}(\$__value)$floatCheck) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is is not an array of $type");
+            }
         }
 
 
@@ -320,9 +320,9 @@ CODE;
         }
 
         foreach (\$payload['{$argument->name()}'] as \$__value) {
-             if (! is_string(\$__value)) {
-                 throw new \InvalidArgumentException("Key '{$argument->name()}' is not an array of string in payload");
-             }
+            if (! is_string(\$__value)) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is not an array of string in payload");
+            }
         }
 
 

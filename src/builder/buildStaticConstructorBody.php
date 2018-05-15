@@ -75,6 +75,7 @@ $intend        foreach (\${$argument->name()} as \$__value) {
 $intend            \$__array_{$argument->name()}[] = \$__value->toArray();
 $intend        }
 
+
 CODE;
         if ($argument->nullable()) {
             $start .= <<<CODE
