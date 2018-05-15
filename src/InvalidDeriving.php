@@ -97,6 +97,15 @@ class InvalidDeriving extends \RuntimeException
         ));
     }
 
+    public static function invalidFirstArgumentForDeriving(Definition $definition, string $deriving): InvalidDeriving
+    {
+        return new self(sprintf(
+            'Invalid first argument for %s, %s deriving needs first argument to be no nullable and no list',
+            self::className($definition),
+            $deriving
+        ));
+    }
+
     private static function className(Definition $definition): string
     {
         return $definition->namespace() . '\\' . $definition->name();

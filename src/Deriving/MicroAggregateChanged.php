@@ -37,6 +37,11 @@ class MicroAggregateChanged extends AbstractDeriving
         if (0 === count($definition->constructors()[0]->arguments())) {
             throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
         }
+
+        $firstArgument = $definition->constructors()[0]->arguments()[0];
+        if ($firstArgument->nullable() || $firstArgument->isList()) {
+            throw InvalidDeriving::invalidFirstArgumentForDeriving($definition, self::VALUE);
+        }
     }
 
     private function forbidsDerivings(): array
