@@ -85,8 +85,12 @@ function buildArgumentType(Argument $argument, Definition $definition, bool $wit
         return $code;
     }
 
-    if ($withList && $argument->isList()) {
+    if ($withList && $argument->isList() && ! $argument->nullable()) {
         return 'array';
+    }
+
+    if ($withList && $argument->isList() && $argument->nullable()) {
+        return '?array';
     }
 
     if ($argument->isScalartypeHint()) {
@@ -271,7 +275,7 @@ CODE;
         ));
     }
 
-    if ($withCache && $argument->isList()) {
+    if ($withCache && $argument->isList() && ! $argument->nullable()) {
         return <<<CODE
 \$__returnValue = [];
 
@@ -281,7 +285,21 @@ CODE;
 
         return \$__returnValue;
 CODE;
-    } elseif ($withCache && ! $argument->isList()) {
+    } elseif ($withCache && $argument->isList() && $argument->nullable()) {
+        return <<<CODE
+if (! isset(\$this->payload['$argumentName'])) {
+            return null;
+        }
+
+        \$__returnValue = [];
+
+        foreach (\$this->payload['$argumentName'] as \$__value) {
+            \$__returnValue = $calledClass::$method(\$__value);
+        }
+
+        return \$__returnValue;
+CODE;
+    } elseif ($withCache && ! $argument->isList() && ! $argument->nullable()) {
         return <<<CODE
 $check
             \$this->$argumentName = $calledClass::$method(\$this->payload['$argumentName']);
@@ -289,7 +307,15 @@ $check
 
         return \$this->$argumentName;
 CODE;
-    } elseif (! $withCache && $argument->isList()) {
+    } elseif ($withCache && ! $argument->isList() && $argument->nullable()) {
+        return <<<CODE
+$check
+            \$this->$argumentName = isset(\$this->payload['$argumentName']) ? $calledClass::$method(\$this->payload['$argumentName']) : null;
+        }
+
+        return \$this->$argumentName;
+CODE;
+    } elseif (! $withCache && $argument->isList() && ! $argument->nullable()) {
         return <<<CODE
 \$__returnValue = [];
 
@@ -299,6 +325,22 @@ CODE;
 
         return \$__returnValue;
 CODE;
+    } elseif (! $withCache && $argument->isList() && $argument->nullable()) {
+        return <<<CODE
+if (! isset(\$this->payload['$argumentName'])) {
+            return null;
+        }
+
+        \$__returnValue = [];
+
+        foreach (\$this->payload['$argumentName'] as \$__value) {
+            \$__returnValue[] = $calledClass::$method(\$__value);
+        }
+
+        return \$__returnValue;
+CODE;
+    } elseif ($argument->nullable()) {
+        return "return isset(\$this->payload['$argumentName']) ? $calledClass::$method(\$this->payload['$argumentName']) : null;";
     }
 
     return "return $calledClass::$method(\$this->payload['$argumentName']);";

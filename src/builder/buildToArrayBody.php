@@ -64,6 +64,13 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
 
         if ($argument->isList()) {
             $argumentName = $argument->name();
+
+            if ($argument->nullable()) {
+                $prefixCode .= "        if (null === \$this->$argumentName) {\n";
+                $prefixCode .= "            return null;\n";
+                $prefixCode .= "        }\n\n";
+            }
+
             if (null !== $argument->type() && ! $argument->isScalartypeHint()) {
                 $position = strrpos($argument->type(), '\\');
 
