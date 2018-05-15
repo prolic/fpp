@@ -212,7 +212,7 @@ $check
         return \$this->$argumentName;
 CODE;
         } elseif (! $withCache && $argument->nullable()) {
-            return "return \$this->payload['$argumentName']) ?? null;";
+            return "return \$this->payload['$argumentName'] ?? null;";
         } elseif ($withCache && ! $argument->nullable()) {
             return <<<CODE
 $check
@@ -277,27 +277,31 @@ CODE;
 
     if ($withCache && $argument->isList() && ! $argument->nullable()) {
         return <<<CODE
-\$__returnValue = [];
+$check
+            \$__returnValue = [];
 
-        foreach (\$this->payload['$argumentName'] as \$__value) {
-            \$__returnValue[] = $calledClass::$method(\$__value);
+            foreach (\$this->payload['$argumentName'] as \$__value) {
+                \$__returnValue[] = $calledClass::$method(\$__value);
+            }
+
+            \$this->$argumentName = \$__returnValue;
         }
 
-        return \$__returnValue;
+        return \$this->$argumentName;
 CODE;
     } elseif ($withCache && $argument->isList() && $argument->nullable()) {
         return <<<CODE
-if (! isset(\$this->payload['$argumentName'])) {
-            return null;
+$check
+            \$__returnValue = [];
+
+            foreach (\$this->payload['$argumentName'] as \$__value) {
+                \$__returnValue = $calledClass::$method(\$__value);
+            }
+
+            \$this->$argumentName = \$__returnValue;
         }
 
-        \$__returnValue = [];
-
-        foreach (\$this->payload['$argumentName'] as \$__value) {
-            \$__returnValue = $calledClass::$method(\$__value);
-        }
-
-        return \$__returnValue;
+        return \$this->$argumentName;
 CODE;
     } elseif ($withCache && ! $argument->isList() && ! $argument->nullable()) {
         return <<<CODE
