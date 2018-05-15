@@ -280,7 +280,7 @@ CODE;
 \$__returnValue = [];
 
         foreach (\$this->payload['$argumentName'] as \$__value) {
-            \$__returnValue = $calledClass::$method(\$__value);
+            \$__returnValue[] = $calledClass::$method(\$__value);
         }
 
         return \$__returnValue;
