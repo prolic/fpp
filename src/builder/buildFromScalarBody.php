@@ -15,6 +15,7 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
+use function Fpp\isScalarConstructor;
 
 const buildFromScalarBody = '\Fpp\Builder\buildFromScalarBody';
 
@@ -22,6 +23,12 @@ function buildFromScalarBody(Definition $definition, ?Constructor $constructor, 
 {
     if (null === $constructor) {
         return $placeHolder;
+    }
+
+    if (isScalarConstructor($constructor)) {
+        $name = lcfirst($definition->name());
+
+        return "return new self(\${$name});\n";
     }
 
     if (0 === count($constructor->arguments())) {

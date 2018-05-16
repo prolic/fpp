@@ -14,14 +14,21 @@ namespace Fpp\Builder;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use function Fpp\isScalarConstructor;
 
 const buildArgumentName = '\Fpp\Builder\buildArgumentName';
 
 function buildArgumentName(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
-    if (null === $constructor
-        || 1 !== count($constructor->arguments())
-    ) {
+    if (null === $constructor) {
+        return $placeHolder;
+    }
+
+    if (isScalarConstructor($constructor)) {
+        return lcfirst($definition->name());
+    }
+
+    if (1 !== count($constructor->arguments())) {
         return $placeHolder;
     }
 

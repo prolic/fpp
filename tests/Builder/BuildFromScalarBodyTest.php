@@ -50,6 +50,30 @@ CODE;
     /**
      * @test
      */
+    public function it_builds_from_scalar_body_from_scalar_constructor(): void
+    {
+        $userId = new Definition(
+            'My',
+            'UserId',
+            [
+                $constructor = new Constructor('Int'),
+            ],
+            [
+                new Deriving\FromScalar(),
+            ]
+        );
+
+        $expected = <<<CODE
+return new self(\$userId);
+
+CODE;
+
+        $this->assertSame($expected, buildFromScalarBody($userId, $constructor, new DefinitionCollection($userId), ''));
+    }
+
+    /**
+     * @test
+     */
     public function it_builds_from_string_body_from_object_of_object(): void
     {
         $userId = new Definition(
