@@ -41,6 +41,7 @@ function defaultBuilders(): array
     return [
         'static_constructor' => Builder\buildStaticConstructor,
         'accessors' => Builder\buildAccessors,
+        'argument_name' => Builder\buildArgumentName,
         'arguments' => Builder\buildArguments,
         'class_extends' => Builder\buildClassExtends,
         'class_keyword' => Builder\buildClassKeyword,
@@ -51,6 +52,7 @@ function defaultBuilders(): array
         'enum_options' => Builder\buildEnumOptions,
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,
+        'from_string_body' => Builder\buildFromStringBody,
         'message_name' => Builder\buildMessageName,
         'namespace' => Builder\buildNamespace,
         'payload_validation' => Builder\buildPayloadValidation,

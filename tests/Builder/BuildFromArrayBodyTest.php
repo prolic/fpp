@@ -381,7 +381,7 @@ CODE;
         $nickname = new Definition(
             'My',
             'Nickname',
-            [new Constructor('My\Nickname', [new Argument('nickname', 'string', false, true)])],
+            [new Constructor('My\Nickname', [new Argument('nickname', 'string', false, false)])],
             [new Deriving\FromString()]
         );
 

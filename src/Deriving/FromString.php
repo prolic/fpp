@@ -40,6 +40,12 @@ class FromString extends AbstractDeriving
         if (count($constructor->arguments()) !== 1) {
             throw InvalidDeriving::exactlyOneConstructorArgumentExpected($definition, self::VALUE);
         }
+
+        $argument = $constructor->arguments()[0];
+
+        if ($argument->isList() || $argument->nullable()) {
+            throw InvalidDeriving::invalidFirstArgumentForDeriving($definition, self::VALUE);
+        }
     }
 
     private function forbidsDerivings(): array
