@@ -167,4 +167,308 @@ class BuildMethodBodyFromPayloadTest extends TestCase
 
         buildMethodBodyFromPayload($argument, $definition, $collection, false);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_build_with_cache_nullable_list(): void
+    {
+        $argument = new Argument('name', 'Foo\Arg', true, true);
+
+        $constructor = new Constructor('Foo\Bar', [$argument]);
+
+        $definition1 = new Definition('Foo', 'Bar', [$constructor]);
+        $definition2 = new Definition(
+            'Foo',
+            'Arg',
+            [
+                new Constructor('Foo\Arg', [
+                    new Argument('name', 'string'),
+                ]),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $collection = new DefinitionCollection($definition1, $definition2);
+
+        $expected = <<<CODE
+if (! isset(\$this->name) && isset(\$this->payload['name'])) {
+            \$__returnValue = [];
+
+            foreach (\$this->payload['name'] as \$__value) {
+                \$__returnValue[] = Arg::fromString(\$__value);
+            }
+
+            \$this->name = \$__returnValue;
+        }
+
+        return \$this->name;
+CODE;
+
+        $this->assertSame($expected, buildMethodBodyFromPayload($argument, $definition1, $collection, true));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_build_without_cache_nullable_list(): void
+    {
+        $argument = new Argument('name', 'Foo\Arg', true, true);
+
+        $constructor = new Constructor('Foo\Bar', [$argument]);
+
+        $definition1 = new Definition('Foo', 'Bar', [$constructor]);
+        $definition2 = new Definition(
+            'Foo',
+            'Arg',
+            [
+                new Constructor('Foo\Arg', [
+                    new Argument('name', 'string'),
+                ]),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $collection = new DefinitionCollection($definition1, $definition2);
+
+        $expected = <<<CODE
+if (! isset(\$this->payload['name'])) {
+            return null;
+        }
+
+        \$__returnValue = [];
+
+        foreach (\$this->payload['name'] as \$__value) {
+            \$__returnValue[] = Arg::fromString(\$__value);
+        }
+
+        return \$__returnValue;
+CODE;
+
+        $this->assertSame($expected, buildMethodBodyFromPayload($argument, $definition1, $collection, false));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_build_with_cache_not_nullable_list(): void
+    {
+        $argument = new Argument('name', 'Foo\Arg', false, true);
+
+        $constructor = new Constructor('Foo\Bar', [$argument]);
+
+        $definition1 = new Definition('Foo', 'Bar', [$constructor]);
+        $definition2 = new Definition(
+            'Foo',
+            'Arg',
+            [
+                new Constructor('Foo\Arg', [
+                    new Argument('name', 'string'),
+                ]),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $collection = new DefinitionCollection($definition1, $definition2);
+
+        $expected = <<<CODE
+if (! isset(\$this->name)) {
+            \$__returnValue = [];
+
+            foreach (\$this->payload['name'] as \$__value) {
+                \$__returnValue[] = Arg::fromString(\$__value);
+            }
+
+            \$this->name = \$__returnValue;
+        }
+
+        return \$this->name;
+CODE;
+
+        $this->assertSame($expected, buildMethodBodyFromPayload($argument, $definition1, $collection, true));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_build_without_cache_not_nullable_list(): void
+    {
+        $argument = new Argument('name', 'Foo\Arg', false, true);
+
+        $constructor = new Constructor('Foo\Bar', [$argument]);
+
+        $definition1 = new Definition('Foo', 'Bar', [$constructor]);
+        $definition2 = new Definition(
+            'Foo',
+            'Arg',
+            [
+                new Constructor('Foo\Arg', [
+                    new Argument('name', 'string'),
+                ]),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $collection = new DefinitionCollection($definition1, $definition2);
+
+        $expected = <<<CODE
+\$__returnValue = [];
+
+        foreach (\$this->payload['name'] as \$__value) {
+            \$__returnValue[] = Arg::fromString(\$__value);
+        }
+
+        return \$__returnValue;
+CODE;
+
+        $this->assertSame($expected, buildMethodBodyFromPayload($argument, $definition1, $collection, false));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_build_with_cache_nullable_no_list(): void
+    {
+        $argument = new Argument('name', 'Foo\Arg', true, false);
+
+        $constructor = new Constructor('Foo\Bar', [$argument]);
+
+        $definition1 = new Definition('Foo', 'Bar', [$constructor]);
+        $definition2 = new Definition(
+            'Foo',
+            'Arg',
+            [
+                new Constructor('Foo\Arg', [
+                    new Argument('name', 'string'),
+                ]),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $collection = new DefinitionCollection($definition1, $definition2);
+
+        $expected = <<<CODE
+if (! isset(\$this->name) && isset(\$this->payload['name'])) {
+            \$this->name = isset(\$this->payload['name']) ? Arg::fromString(\$this->payload['name']) : null;
+        }
+
+        return \$this->name;
+CODE;
+
+        $this->assertSame($expected, buildMethodBodyFromPayload($argument, $definition1, $collection, true));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_build_without_cache_nullable_no_list(): void
+    {
+        $argument = new Argument('name', 'Foo\Arg', true, false);
+
+        $constructor = new Constructor('Foo\Bar', [$argument]);
+
+        $definition1 = new Definition('Foo', 'Bar', [$constructor]);
+        $definition2 = new Definition(
+            'Foo',
+            'Arg',
+            [
+                new Constructor('Foo\Arg', [
+                    new Argument('name', 'string'),
+                ]),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $collection = new DefinitionCollection($definition1, $definition2);
+
+        $expected = 'return isset($this->payload[\'name\']) ? Arg::fromString($this->payload[\'name\']) : null;';
+
+        $this->assertSame($expected, buildMethodBodyFromPayload($argument, $definition1, $collection, false));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_build_with_cache_no_nullable_no_list(): void
+    {
+        $argument = new Argument('name', 'Foo\Arg', false, false);
+
+        $constructor = new Constructor('Foo\Bar', [$argument]);
+
+        $definition1 = new Definition('Foo', 'Bar', [$constructor]);
+        $definition2 = new Definition(
+            'Foo',
+            'Arg',
+            [
+                new Constructor('Foo\Arg', [
+                    new Argument('name', 'string'),
+                ]),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $collection = new DefinitionCollection($definition1, $definition2);
+
+        $expected = <<<CODE
+if (! isset(\$this->name)) {
+            \$this->name = Arg::fromString(\$this->payload['name']);
+        }
+
+        return \$this->name;
+CODE;
+
+        $this->assertSame($expected, buildMethodBodyFromPayload($argument, $definition1, $collection, true));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_build_without_cache_no_nullable_no_list(): void
+    {
+        $argument = new Argument('name', 'Foo\Arg', false, false);
+
+        $constructor = new Constructor('Foo\Bar', [$argument]);
+
+        $definition1 = new Definition('Foo', 'Bar', [$constructor]);
+        $definition2 = new Definition(
+            'Foo',
+            'Arg',
+            [
+                new Constructor('Foo\Arg', [
+                    new Argument('name', 'string'),
+                ]),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
+        $collection = new DefinitionCollection($definition1, $definition2);
+
+        $expected = 'return Arg::fromString($this->payload[\'name\']);';
+
+        $this->assertSame($expected, buildMethodBodyFromPayload($argument, $definition1, $collection, false));
+    }
 }

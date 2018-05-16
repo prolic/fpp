@@ -298,7 +298,7 @@ $check
             \$__returnValue = [];
 
             foreach (\$this->payload['$argumentName'] as \$__value) {
-                \$__returnValue = $calledClass::$method(\$__value);
+                \$__returnValue[] = $calledClass::$method(\$__value);
             }
 
             \$this->$argumentName = \$__returnValue;
@@ -396,19 +396,6 @@ CODE;
 
     foreach ($argumentDefinition->derivings() as $deriving) {
         switch ((string) $deriving) {
-            case Deriving\Enum::VALUE:
-                if ($withCache) {
-                    return <<<CODE
-if (! isset(\$this->$argumentName)) {
-            \$this->$argumentName = $calledClass::fromName(\$this->aggregateId());
-        }
-
-        return \$this->$argumentName;
-CODE;
-                }
-
-                    return "return $calledClass::fromName(\$this->aggregateId());";
-
             case Deriving\FromString::VALUE:
             case Deriving\Uuid::VALUE:
                 if ($withCache) {
@@ -421,8 +408,7 @@ if (! isset(\$this->$argumentName)) {
 CODE;
                 }
 
-                    return "return $calledClass::fromString(\$this->aggregateId());";
-
+                return "return $calledClass::fromString(\$this->aggregateId());";
             case Deriving\FromScalar::VALUE:
                 if ($withCache) {
                     return <<<CODE
@@ -434,21 +420,7 @@ if (! isset(\$this->$argumentName)) {
 CODE;
                 }
 
-                    return "return $calledClass::fromScalar(\$this->aggregateId());";
-
-            case Deriving\FromArray::VALUE:
-                if ($withCache) {
-                    return <<<CODE
-if (! isset(\$this->$argumentName)) {
-            \$this->$argumentName = $calledClass::fromArray(\$this->aggregateId());
-        }
-
-        return \$this->$argumentName;
-CODE;
-                }
-
-                    return "return $calledClass::fromArray(\$this->aggregateId());";
-
+                return "return $calledClass::fromScalar(\$this->aggregateId());";
         }
     }
 
