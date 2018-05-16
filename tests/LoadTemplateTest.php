@@ -115,9 +115,9 @@ namespace {{namespace}};
         {{to_string_body}}
     }
 
-    public static function fromString(string \${{variable_name}}): {{class_name}}
+    public static function fromString(string \${{argument_name}}): {{class_name}}
     {
-        return new {{class_name}}(\${{variable_name}});
+        {{from_string_body}}
     }
 }
 
