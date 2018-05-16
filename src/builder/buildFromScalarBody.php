@@ -60,7 +60,7 @@ function buildFromScalarBody(Definition $definition, ?Constructor $constructor, 
     } elseif ($collection->hasConstructorDefinition($argument->type())) {
         $argumentDefinition = $collection->constructorDefinition($argument->type());
     } else {
-        throw new \RuntimeException("Cannot build fromArray for $class , unknown argument {$argument->type()} given");
+        throw new \RuntimeException("Cannot build fromScalar for $class, unknown argument {$argument->type()} given");
     }
 
     if ($constructorNamespace === $namespace) {
@@ -72,9 +72,12 @@ function buildFromScalarBody(Definition $definition, ?Constructor $constructor, 
     foreach ($argumentDefinition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\FromScalar::VALUE:
+            case Deriving\Enum::VALUE:
+            case Deriving\FromString::VALUE:
+            case Deriving\Uuid::VALUE:
                 return "return new self({$argumentClass}::fromScalar(\${$argument->name()}));\n";
         }
     }
 
-    throw new \RuntimeException("Cannot build fromScalar for $class , no needed deriving for {$argument->type()} given");
+    throw new \RuntimeException("Cannot build fromScalar for $class, no needed deriving for {$argument->type()} given");
 }

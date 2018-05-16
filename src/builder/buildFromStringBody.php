@@ -60,7 +60,7 @@ function buildFromStringBody(Definition $definition, ?Constructor $constructor, 
     } elseif ($collection->hasConstructorDefinition($argument->type())) {
         $argumentDefinition = $collection->constructorDefinition($argument->type());
     } else {
-        throw new \RuntimeException("Cannot build fromArray for $class , unknown argument {$argument->type()} given");
+        throw new \RuntimeException("Cannot build fromString for $class, unknown argument {$argument->type()} given");
     }
 
     if ($constructorNamespace === $namespace) {
@@ -80,5 +80,5 @@ function buildFromStringBody(Definition $definition, ?Constructor $constructor, 
         }
     }
 
-    throw new \RuntimeException("Cannot build fromString for $class , no needed deriving for {$argument->type()} given");
+    throw new \RuntimeException("Cannot build fromString for $class, no needed deriving for {$argument->type()} given");
 }
