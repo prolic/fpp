@@ -16,9 +16,9 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 
-const buildFromStringBody = '\Fpp\Builder\buildFromStringBody';
+const buildFromScalarBody = '\Fpp\Builder\buildFromScalarBody';
 
-function buildFromStringBody(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
+function buildFromScalarBody(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if (null === $constructor) {
         return $placeHolder;
@@ -73,12 +73,8 @@ function buildFromStringBody(Definition $definition, ?Constructor $constructor, 
         switch ((string) $deriving) {
             case Deriving\FromScalar::VALUE:
                 return "return new self({$argumentClass}::fromScalar(\${$argument->name()}));\n";
-            case Deriving\Enum::VALUE:
-            case Deriving\FromString::VALUE:
-            case Deriving\Uuid::VALUE:
-                return "return new self({$argumentClass}::fromString(\${$argument->name()}));\n";
         }
     }
 
-    throw new \RuntimeException("Cannot build fromString for $class , no needed deriving for {$argument->type()} given");
+    throw new \RuntimeException("Cannot build fromScalar for $class , no needed deriving for {$argument->type()} given");
 }

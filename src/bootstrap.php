@@ -43,6 +43,7 @@ $files = [
     'builder/buildEnumOptions.php',
     'builder/buildEqualsBody.php',
     'builder/buildFromArrayBody.php',
+    'builder/buildFromScalarBody.php',
     'builder/buildFromStringBody.php',
     'builder/buildMessageName.php',
     'builder/buildNamespace.php',

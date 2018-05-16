@@ -52,6 +52,7 @@ function defaultBuilders(): array
         'enum_options' => Builder\buildEnumOptions,
         'equals_body' => Builder\buildEqualsBody,
         'from_array_body' => Builder\buildFromArrayBody,
+        'from_scalar_body' => Builder\buildFromScalarBody,
         'from_string_body' => Builder\buildFromStringBody,
         'message_name' => Builder\buildMessageName,
         'namespace' => Builder\buildNamespace,
