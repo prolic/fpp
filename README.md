@@ -10,6 +10,10 @@ This library can generate immutable data types based on fpp definitions, the syn
 
 [![YouTube Video Tutorial](https://i.ytimg.com/vi/MYh1_sydQ5U/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLCtO68XORuK-gEGeTJSXdSHqY3PBQ)](https://youtu.be/MYh1_sydQ5U)
 
+### Wiki
+
+[See the wiki here](https://github.com/prolic/fpp/wiki)
+
 ### So what really is it?
 
 Create a file and put this in it:
@@ -129,16 +133,31 @@ var_dump($p->toArray()); // ['name' => 'sasa', 'age' => 36]
 $p->equals($p) // true
 ```
 
+### Conditions
+
+You can add additional conditions to your code:
+
+```
+namespace Foo;
+data FirstName = String deriving (FromString, ToString);
+data LastName = String  deriving (FromString, ToString);
+data Age = Int deriving (FromScalar, ToScalar);
+data Person = Person { FirstName $firstName, LastName $lastName, Age $age } | Boss { FirstName $firstName, LastName $lastName } where
+    Person:
+        | strlen($lastName->toString()) === 0 => 'last name too short'
+        | $age->toScalar() < 18 => "you\'re too young, sorry"
+    Boss:
+        | strlen($lastName->toString()) < 5 => 'last name too short'
+    _:
+        | strlen($firstName->toString()) === 0 => 'first name too short';
+```
+
 ### Usage
 
 `php bin/fpp.php <source dir or file>`
 
 It will try to find your composer autoload and fetch psr-4 and psr-0 prefixes from it.
 You'll get an exception, if you want to dump a class, where you have no composer autoload definition.
-
-### Wiki
-
-[See the wiki here](https://github.com/prolic/fpp/wiki)
 
 ### Features
 
@@ -156,3 +175,4 @@ You'll get an exception, if you want to dump a class, where you have no composer
 - [x] Dump files according to psr-4 and psr-0 autoloading rules
 - [x] Array notation for objects and scalar types
 - [x] Enum value mappings
+- [x] Support for conditions
