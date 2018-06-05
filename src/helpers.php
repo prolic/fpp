@@ -200,9 +200,9 @@ function buildMethodBodyFromPayload(Argument $argument, Definition $definition, 
     $argumentName = $argument->name();
 
     if ($withCache && $argument->nullable()) {
-        $check = "if (! isset(\$this->$argumentName) && isset(\$this->payload['$argumentName'])) {";
+        $check = "if (null === \$this->$argumentName && isset(\$this->payload['$argumentName'])) {";
     } elseif ($withCache && ! $argument->nullable()) {
-        $check = "if (! isset(\$this->$argumentName)) {";
+        $check = "if (null === \$this->$argumentName) {";
     }
 
     if ($argument->isScalartypeHint() || null === $argument->type()) {
@@ -360,7 +360,7 @@ function buildMethodBodyFromAggregateId(Argument $argument, Definition $definiti
     if ($argument->isScalartypeHint() || null === $argument->type()) {
         if ($withCache) {
             return <<<CODE
-if (! isset(\$this->$argumentName)) {
+if (null === \$this->$argumentName) {
             \$this->$argumentName = \$this->aggregateId();
         }
 
@@ -400,7 +400,7 @@ CODE;
             case Deriving\Uuid::VALUE:
                 if ($withCache) {
                     return <<<CODE
-if (! isset(\$this->$argumentName)) {
+if (null === \$this->$argumentName) {
             \$this->$argumentName = $calledClass::fromString(\$this->aggregateId());
         }
 
@@ -412,7 +412,7 @@ CODE;
             case Deriving\FromScalar::VALUE:
                 if ($withCache) {
                     return <<<CODE
-if (! isset(\$this->$argumentName)) {
+if (null === \$this->$argumentName) {
             \$this->$argumentName = $calledClass::fromScalar(\$this->aggregateId());
         }
 

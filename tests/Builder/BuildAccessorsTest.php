@@ -71,7 +71,7 @@ STRING;
         $expected = <<<STRING
 public function name(): string
     {
-        if (! isset(\$this->name)) {
+        if (null === \$this->name) {
             \$this->name = \$this->aggregateId();
         }
 
@@ -80,7 +80,7 @@ public function name(): string
 
     public function age(): ?int
     {
-        if (! isset(\$this->age) && isset(\$this->payload['age'])) {
+        if (null === \$this->age && isset(\$this->payload['age'])) {
             \$this->age = \$this->payload['age'];
         }
 
@@ -89,7 +89,7 @@ public function name(): string
 
     public function whatever()
     {
-        if (! isset(\$this->whatever)) {
+        if (null === \$this->whatever) {
             \$this->whatever = \$this->payload['whatever'];
         }
 

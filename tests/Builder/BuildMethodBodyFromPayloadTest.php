@@ -195,7 +195,7 @@ class BuildMethodBodyFromPayloadTest extends TestCase
         $collection = new DefinitionCollection($definition1, $definition2);
 
         $expected = <<<CODE
-if (! isset(\$this->name) && isset(\$this->payload['name'])) {
+if (null === \$this->name && isset(\$this->payload['name'])) {
             \$__returnValue = [];
 
             foreach (\$this->payload['name'] as \$__value) {
@@ -281,7 +281,7 @@ CODE;
         $collection = new DefinitionCollection($definition1, $definition2);
 
         $expected = <<<CODE
-if (! isset(\$this->name)) {
+if (null === \$this->name) {
             \$__returnValue = [];
 
             foreach (\$this->payload['name'] as \$__value) {
@@ -363,7 +363,7 @@ CODE;
         $collection = new DefinitionCollection($definition1, $definition2);
 
         $expected = <<<CODE
-if (! isset(\$this->name) && isset(\$this->payload['name'])) {
+if (null === \$this->name && isset(\$this->payload['name'])) {
             \$this->name = isset(\$this->payload['name']) ? Arg::fromString(\$this->payload['name']) : null;
         }
 
@@ -431,7 +431,7 @@ CODE;
         $collection = new DefinitionCollection($definition1, $definition2);
 
         $expected = <<<CODE
-if (! isset(\$this->name)) {
+if (null === \$this->name) {
             \$this->name = Arg::fromString(\$this->payload['name']);
         }
 

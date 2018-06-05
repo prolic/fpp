@@ -143,7 +143,7 @@ class BuildMethodBodyFromAggregateIdTest extends TestCase
         $collection = new DefinitionCollection($definition1, $definition2);
 
         $expected = <<<CODE
-if (! isset(\$this->name)) {
+if (null === \$this->name) {
             \$this->name = Arg::fromString(\$this->aggregateId());
         }
 
