@@ -58,6 +58,7 @@ function defaultBuilders(): array
         'namespace' => Builder\buildNamespace,
         'payload_validation' => Builder\buildPayloadValidation,
         'properties' => Builder\buildProperties,
+        'scalar_constructor_conditions' => Builder\buildScalarConstructorConditions,
         'scalar_type' => Builder\buildScalarType,
         'setters' => Builder\buildSetters,
         'static_constructor_body' => Builder\buildStaticConstructorBody,

@@ -49,6 +49,7 @@ $files = [
     'builder/buildNamespace.php',
     'builder/buildPayloadValidation.php',
     'builder/buildProperties.php',
+    'builder/buildScalarConstructorConditions.php',
     'builder/buildScalarType.php',
     'builder/buildSetters.php',
     'builder/buildStaticConstructor.php',

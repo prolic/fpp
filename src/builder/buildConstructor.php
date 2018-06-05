@@ -46,7 +46,7 @@ function buildConstructor(Definition $definition, ?Constructor $constructor, Def
 
     foreach ($definition->conditions() as $condition) {
         if ('_' === $condition->constructor()
-            || false !== strrpos($constructor->name(), $condition->constructor())
+            || false !== \strrpos($constructor->name(), $condition->constructor())
         ) {
             $printed = true;
             $code .= <<<CODE
@@ -61,7 +61,7 @@ CODE;
 
     foreach ($constructor->arguments() as $key => $argument) {
         if (1 !== count($constructor->arguments()) && $argument->isList()) {
-            if ($printed && substr($code, -2) !== "\n\n") {
+            if ($printed && \substr($code, -2) !== "\n\n") {
                 $code .= "\n";
             }
 

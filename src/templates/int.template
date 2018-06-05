@@ -2,6 +2,7 @@
 
     public function __construct(int $value)
     {
+        {{scalar_constructor_conditions}}
         $this->value = $value;
     }
 
