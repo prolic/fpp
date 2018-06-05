@@ -1091,6 +1091,44 @@ CODE;
         $this->assertSame(['foo' => 'bar', 'baz', 1, true, 'bam' => 123], $deriving->valueMapping()['Yellow']);
     }
 
+    /**
+     * @test
+     */
+    public function it_parses_exception_using_base_exception_class()
+    {
+        $contents = <<<CODE
+namespace Something {
+    exception DomainException;
+}
+CODE;
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+
+        $definition = $collection->definition('Something', 'DomainException');
+
+        $this->assertSame('Something\\DomainException', $definition->constructors()[0]->name());
+        $this->assertInstanceOf(Deriving\Exception::class, $definition->derivings()[0]);
+        $this->assertSame('\\Exception', $definition->derivings()[0]->parentClass());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_exception_using_provided_exception_class()
+    {
+        $contents = <<<CODE
+namespace Something {
+    exception DomainException = \InvalidArgumentException;
+}
+CODE;
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+
+        $definition = $collection->definition('Something', 'DomainException');
+
+        $this->assertSame('Something\\DomainException', $definition->constructors()[0]->name());
+        $this->assertInstanceOf(Deriving\Exception::class, $definition->derivings()[0]);
+        $this->assertSame('\\InvalidArgumentException', $definition->derivings()[0]->parentClass());
+    }
+
     public function scalarListTypes(): array
     {
         return [

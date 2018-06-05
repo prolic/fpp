@@ -141,10 +141,45 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
                 break;
             case T_STRING:
-                if ($token[1] !== 'data') {
-                    throw ParseError::unknownDefinition($token, $filename);
+                switch ($token[1]) {
+                    case 'data':
+                        goto parseData;
+
+                    case 'exception':
+                        goto parseException;
+
+                    default:
+                        throw ParseError::unknownDefinition($token, $filename);
                 }
 
+                parseException:
+                $token = $nextToken();
+                $requireWhitespace($token);
+                $token = $nextToken();
+                $requireString($token);
+                $name = $token[1];
+                $token = $nextToken();
+                $token = $skipWhitespace($token);
+                $parentClass = '\\Exception';
+                if ($token[1] === '=') {
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
+                    $parentClass = '';
+                    while ($token[0] === T_NS_SEPARATOR) {
+                        $parentClass .= $token[1];
+                        $token = $nextToken();
+                        $requireString($token);
+                        $parentClass .= $token[1];
+                        $token = $nextToken();
+                    }
+                }
+                $constructors = [new Constructor($namespace.'\\'.$name)];
+                $derivings = [new Deriving\Exception($parentClass)];
+                $conditions = [];
+                $messageName = null;
+                goto buildDefinition;
+
+                parseData:
                 // parse name (incl. message name for prooph messages)
                 $token = $nextToken();
                 $requireWhitespace($token);
