@@ -20,12 +20,12 @@ class AggregateChanged extends AbstractDeriving
 
     public function checkDefinition(Definition $definition): void
     {
-        if (0 !== count($definition->conditions())) {
+        if (0 !== \count($definition->conditions())) {
             throw InvalidDeriving::noConditionsExpected($definition, self::VALUE);
         }
 
         foreach ($definition->derivings() as $deriving) {
-            if (in_array((string) $deriving, $this->forbidsDerivings(), true)) {
+            if (\in_array((string) $deriving, $this->forbidsDerivings(), true)) {
                 throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
             }
         }
@@ -34,7 +34,7 @@ class AggregateChanged extends AbstractDeriving
             throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
         }
 
-        if (0 === count($definition->constructors()[0]->arguments())) {
+        if (0 === \count($definition->constructors()[0]->arguments())) {
             throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
         }
 

@@ -22,6 +22,6 @@ abstract class AbstractDeriving implements FppDeriving
 
     public function equals(FppDeriving $deriving): bool
     {
-        return get_class($this) === get_class($deriving);
+        return \get_class($this) === \get_class($deriving);
     }
 }

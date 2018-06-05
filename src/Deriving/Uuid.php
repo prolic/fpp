@@ -21,12 +21,12 @@ class Uuid extends AbstractDeriving
 
     public function checkDefinition(Definition $definition): void
     {
-        if (0 !== count($definition->conditions())) {
+        if (0 !== \count($definition->conditions())) {
             throw InvalidDeriving::noConditionsExpected($definition, self::VALUE);
         }
 
         foreach ($definition->derivings() as $deriving) {
-            if (in_array((string) $deriving, $this->forbidsDerivings(), true)) {
+            if (\in_array((string) $deriving, $this->forbidsDerivings(), true)) {
                 throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
             }
         }

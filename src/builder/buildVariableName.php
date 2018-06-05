@@ -19,5 +19,5 @@ const buildVariableName = '\Fpp\Builder\buildVariableName';
 
 function buildVariableName(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
-    return lcfirst($definition->name());
+    return \lcfirst($definition->name());
 }

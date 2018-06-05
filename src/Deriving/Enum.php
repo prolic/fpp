@@ -33,12 +33,12 @@ class Enum extends AbstractDeriving
 
     public function checkDefinition(Definition $definition): void
     {
-        if (0 !== count($definition->conditions())) {
+        if (0 !== \count($definition->conditions())) {
             throw InvalidDeriving::noConditionsExpected($definition, self::VALUE);
         }
 
         foreach ($definition->derivings() as $deriving) {
-            if (in_array((string) $deriving, $this->forbidsDerivings(), true)) {
+            if (\in_array((string) $deriving, $this->forbidsDerivings(), true)) {
                 throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
             }
         }
@@ -47,9 +47,9 @@ class Enum extends AbstractDeriving
             throw InvalidDeriving::atLeastTwoConstructorsExpected($definition, self::VALUE);
         }
 
-        $checkValueMapping = count($this->valueMapping) > 0;
+        $checkValueMapping = \count($this->valueMapping) > 0;
 
-        if ($checkValueMapping && count($this->valueMapping) !== count($definition->constructors())) {
+        if ($checkValueMapping && \count($this->valueMapping) !== \count($definition->constructors())) {
             throw InvalidDeriving::enumValueMappingDoesNotMatchConstructors($definition);
         }
 
@@ -63,8 +63,8 @@ class Enum extends AbstractDeriving
 
             $constructorName = $constructor->name();
 
-            if (substr($constructorName, 0, $definitionNamespaceLength) === $definitionNamespace) {
-                $constructorName = substr($constructorName, $definitionNamespaceLength + 1);
+            if (\substr($constructorName, 0, $definitionNamespaceLength) === $definitionNamespace) {
+                $constructorName = \substr($constructorName, $definitionNamespaceLength + 1);
             }
 
             if ($checkValueMapping && ! array_key_exists($constructorName, $this->valueMapping)) {

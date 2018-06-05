@@ -95,10 +95,10 @@ CODE;
             continue;
         }
 
-        $position = strrpos($argument->type(), '\\');
+        $position = \strrpos($argument->type(), '\\');
 
-        $namespace = substr($argument->type(), 0, $position);
-        $name = substr($argument->type(), $position + 1);
+        $namespace = \substr($argument->type(), 0, $position);
+        $name = \substr($argument->type(), $position + 1);
 
         if ($collection->hasDefinition($namespace, $name)) {
             $definition = $collection->definition($namespace, $name);
@@ -181,5 +181,5 @@ CODE;
         $start .= "[\n            ";
     }
 
-    return $start . ltrim($code) . '        ]);';
+    return $start . \ltrim($code) . '        ]);';
 }

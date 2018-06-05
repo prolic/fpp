@@ -38,14 +38,14 @@ function buildEqualsBody(Definition $definition, ?Constructor $constructor, Defi
         return $placeHolder;
     }
 
-    $variableName = lcfirst($definition->name());
+    $variableName = \lcfirst($definition->name());
     $code = "if (\get_class(\$this) !== \get_class(\$$variableName)) {\n";
     $code .= "            return false;\n";
     $code .= "        }\n\n";
 
     $addCode = '        return ';
 
-    if (0 === count($constructor->arguments())) {
+    if (0 === \count($constructor->arguments())) {
         $code .= "        return \$this->value === \${$variableName}->value;";
 
         return $code;
@@ -72,10 +72,10 @@ CODE;
         }
 
         if (! $nullableOrScalarType) {
-            $nsPosition = strrpos($argument->type(), '\\');
+            $nsPosition = \strrpos($argument->type(), '\\');
 
-            $namespace = substr($argument->type(), 0, $nsPosition);
-            $name = substr($argument->type(), $nsPosition + 1);
+            $namespace = \substr($argument->type(), 0, $nsPosition);
+            $name = \substr($argument->type(), $nsPosition + 1);
 
             if ($collection->hasDefinition($namespace, $name)) {
                 $definition = $collection->definition($namespace, $name);
@@ -150,8 +150,8 @@ CODE;
     }
 
     if ($addCode !== '        return ') {
-        $addCode = str_replace('        return             &&', '        return', $addCode);
-        $addCode = substr($addCode, 0, strlen($addCode) - 1) . ';';
+        $addCode = \str_replace('        return             &&', '        return', $addCode);
+        $addCode = \substr($addCode, 0, \strlen($addCode) - 1) . ';';
         $code .= $addCode;
     }
 

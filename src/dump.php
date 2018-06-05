@@ -41,20 +41,20 @@ CODE;
             }
         }
 
-        if (1 === count($constructors)) {
+        if (1 === \count($constructors)) {
             $constructor = $constructors[0];
             $file = $locatePsrPath($definition, $constructor);
             $code = $codePrefix . $replace($loadTemplate($definition, $constructor), $definition, $constructor, $collection);
-            $data[$file] = substr($code, 0, -1);
+            $data[$file] = \substr($code, 0, -1);
         } elseif ($isEnum) {
             $file = $locatePsrPath($definition, null);
             $code = $codePrefix . $replace($loadTemplate($definition, null), $definition, null, $collection);
-            $data[$file] = substr($code, 0, -1);
+            $data[$file] = \substr($code, 0, -1);
         } else {
             $createBaseClass = true;
 
             foreach ($constructors as $constructor) {
-                $name = str_replace($definition->namespace() . '\\', '', $constructor->name());
+                $name = \str_replace($definition->namespace() . '\\', '', $constructor->name());
 
                 if ($definition->name() === $name) {
                     $createBaseClass = false;
@@ -62,24 +62,24 @@ CODE;
 
                 $file = $locatePsrPath($definition, $constructor);
                 $code = $codePrefix . $replace($loadTemplate($definition, $constructor), $definition, $constructor, $collection);
-                $data[$file] = substr($code, 0, -1);
+                $data[$file] = \substr($code, 0, -1);
             }
 
             if ($createBaseClass) {
                 $file = $locatePsrPath($definition, null);
                 $code = $codePrefix . $replace($loadTemplate($definition, null), $definition, null, $collection);
-                $data[$file] = substr($code, 0, -1);
+                $data[$file] = \substr($code, 0, -1);
             }
         }
     }
 
     foreach ($data as $file => $code) {
-        $dir = dirname($file);
+        $dir = \dirname($file);
 
-        if (! is_dir($dir)) {
-            mkdir($dir, 0777, true);
+        if (! \is_dir($dir)) {
+            \mkdir($dir, 0777, true);
         }
 
-        file_put_contents($file, $code);
+        \file_put_contents($file, $code);
     }
 }

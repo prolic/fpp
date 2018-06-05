@@ -29,7 +29,7 @@ function scan(string $directoryOrFile): array
         throw new RuntimeException("'$directoryOrFile' is not readable");
     }
 
-    if (is_file($directoryOrFile)) {
+    if (\is_file($directoryOrFile)) {
         return [$directoryOrFile];
     }
 

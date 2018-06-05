@@ -53,8 +53,8 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
         if (isScalarConstructor($constructor)) {
             $namespace = $definition->namespace();
         } else {
-            $position = strrpos($constructor->name(), '\\');
-            $namespace = substr($constructor->name(), 0, $position);
+            $position = \strrpos($constructor->name(), '\\');
+            $namespace = \substr($constructor->name(), 0, $position);
         }
     } else {
         $namespace = $definition->namespace();

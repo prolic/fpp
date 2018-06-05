@@ -50,10 +50,10 @@ function buildToScalarBody(Definition $definition, ?Constructor $constructor, De
         return "return \$this->{$argument->name()};";
     }
 
-    $position = strrpos($argument->type(), '\\');
+    $position = \strrpos($argument->type(), '\\');
 
-    $namespace = substr($argument->type(), 0, $position);
-    $name = substr($argument->type(), $position + 1);
+    $namespace = \substr($argument->type(), 0, $position);
+    $name = \substr($argument->type(), $position + 1);
 
     $class = $definition->namespace();
 

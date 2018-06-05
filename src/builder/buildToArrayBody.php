@@ -66,10 +66,10 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
             }
 
             if (null !== $argument->type() && ! $argument->isScalartypeHint()) {
-                $position = strrpos($argument->type(), '\\');
+                $position = \strrpos($argument->type(), '\\');
 
-                $namespace = substr($argument->type(), 0, $position);
-                $name = substr($argument->type(), $position + 1);
+                $namespace = \substr($argument->type(), 0, $position);
+                $name = \substr($argument->type(), $position + 1);
 
                 if ($collection->hasDefinition($namespace, $name)) {
                     $argumentDefinition = $collection->definition($namespace, $name);
@@ -125,10 +125,10 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
 
         $code .= "            '{$argument->name()}' => ";
 
-        $position = strrpos($argument->type(), '\\');
+        $position = \strrpos($argument->type(), '\\');
 
-        $namespace = substr($argument->type(), 0, $position);
-        $name = substr($argument->type(), $position + 1);
+        $namespace = \substr($argument->type(), 0, $position);
+        $name = \substr($argument->type(), $position + 1);
 
         if ($collection->hasDefinition($namespace, $name)) {
             $argumentDefinition = $collection->definition($namespace, $name);
@@ -166,7 +166,7 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
     $code .= "        ];\n";
 
     if (! empty($prefixCode)) {
-        $prefixCode = substr($prefixCode, 8) . '        ';
+        $prefixCode = \substr($prefixCode, 8) . '        ';
     }
 
     return $prefixCode . $code;

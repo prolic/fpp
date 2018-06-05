@@ -24,7 +24,7 @@ const buildAccessors = '\Fpp\Builder\buildAccessors';
 function buildAccessors(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if (null === $constructor
-        || 0 === count($constructor->arguments())
+        || 0 === \count($constructor->arguments())
     ) {
         return $placeHolder;
     }
@@ -55,7 +55,7 @@ function buildAccessors(Definition $definition, ?Constructor $constructor, Defin
 CODE;
             }
 
-            return ltrim(substr($accessors, 0, -2));
+            return \ltrim(\substr($accessors, 0, -2));
         } elseif ($deriving->equals(new Deriving\Command())
             || $deriving->equals(new Deriving\Query())
         ) {
@@ -74,7 +74,7 @@ CODE;
 CODE;
             }
 
-            return ltrim(substr($accessors, 0, -1));
+            return \ltrim(\substr($accessors, 0, -1));
         }
     }
 
@@ -93,5 +93,5 @@ CODE;
 CODE;
     }
 
-    return ltrim(substr($accessors, 0, -1));
+    return \ltrim(\substr($accessors, 0, -1));
 }

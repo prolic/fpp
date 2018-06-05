@@ -40,5 +40,5 @@ CODE;
         }
     }
 
-    return empty($code) ? $placeHolder : substr($code, 8);
+    return empty($code) ? $placeHolder : \substr($code, 8);
 }

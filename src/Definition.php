@@ -105,7 +105,7 @@ class Definition
             $derivingNames[(string) $deriving] = true;
             $this->derivings[] = $deriving;
 
-            if (in_array((string) $deriving, [
+            if (\in_array((string) $deriving, [
                 Deriving\AggregateChanged::VALUE,
                 Deriving\Command::VALUE,
                 Deriving\DomainEvent::VALUE,

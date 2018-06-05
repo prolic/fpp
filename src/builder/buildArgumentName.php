@@ -25,14 +25,14 @@ function buildArgumentName(Definition $definition, ?Constructor $constructor, De
     }
 
     if (isScalarConstructor($constructor)) {
-        return lcfirst($definition->name());
+        return \lcfirst($definition->name());
     }
 
-    if (1 !== count($constructor->arguments())) {
+    if (1 !== \count($constructor->arguments())) {
         return $placeHolder;
     }
 
     $argument = $constructor->arguments()[0];
 
-    return lcfirst($argument->name());
+    return \lcfirst($argument->name());
 }

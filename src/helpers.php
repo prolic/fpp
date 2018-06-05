@@ -13,7 +13,7 @@ namespace Fpp;
 
 function isScalarConstructor(Constructor $constructor): bool
 {
-    return in_array($constructor->name(), ['Bool', 'Bool[]', 'Float', 'Float[]', 'Int', 'Int[]', 'String', 'String[]'], true);
+    return \in_array($constructor->name(), ['Bool', 'Bool[]', 'Float', 'Float[]', 'Int', 'Int[]', 'String', 'String[]'], true);
 }
 
 function defaultDerivingMap(): array
@@ -75,7 +75,7 @@ function buildReferencedClass(string $namespace, string $fqcn): string
     $position = strpos($fqcn, $namespace . '\\');
 
     if (false !== $position) {
-        return substr($fqcn, strlen($namespace) + 1);
+        return \substr($fqcn, strlen($namespace) + 1);
     }
 
     return '\\' . $fqcn;
@@ -106,11 +106,11 @@ function buildArgumentType(Argument $argument, Definition $definition, bool $wit
         return $code;
     }
 
-    $nsPosition = strrpos($argument->type(), '\\');
+    $nsPosition = \strrpos($argument->type(), '\\');
 
     if (false !== $nsPosition) {
-        $namespace = substr($argument->type(), 0, $nsPosition);
-        $name = substr($argument->type(), $nsPosition + 1);
+        $namespace = \substr($argument->type(), 0, $nsPosition);
+        $name = \substr($argument->type(), $nsPosition + 1);
     } else {
         $namespace = '';
         $name = $argument->type();
@@ -148,11 +148,11 @@ function buildArgumentConstructor(Argument $argument, Definition $definition, De
         return "\${$argument->name()}";
     }
 
-    $nsPosition = strrpos($argument->type(), '\\');
+    $nsPosition = \strrpos($argument->type(), '\\');
 
     if (false !== $nsPosition) {
-        $namespace = substr($argument->type(), 0, $nsPosition);
-        $name = substr($argument->type(), $nsPosition + 1);
+        $namespace = \substr($argument->type(), 0, $nsPosition);
+        $name = \substr($argument->type(), $nsPosition + 1);
     } else {
         $namespace = '';
         $name = $argument->type();
@@ -230,11 +230,11 @@ CODE;
         return "return \$this->payload['$argumentName'];";
     }
 
-    $nsPosition = strrpos($argument->type(), '\\');
+    $nsPosition = \strrpos($argument->type(), '\\');
 
     if (false !== $nsPosition) {
-        $namespace = substr($argument->type(), 0, $nsPosition);
-        $name = substr($argument->type(), $nsPosition + 1);
+        $namespace = \substr($argument->type(), 0, $nsPosition);
+        $name = \substr($argument->type(), $nsPosition + 1);
     } else {
         $namespace = '';
         $name = $argument->type();
@@ -372,11 +372,11 @@ CODE;
         return 'return $this->aggregateId();';
     }
 
-    $nsPosition = strrpos($argument->type(), '\\');
+    $nsPosition = \strrpos($argument->type(), '\\');
 
     if (false !== $nsPosition) {
-        $namespace = substr($argument->type(), 0, $nsPosition);
-        $name = substr($argument->type(), $nsPosition + 1);
+        $namespace = \substr($argument->type(), 0, $nsPosition);
+        $name = \substr($argument->type(), $nsPosition + 1);
     } else {
         $namespace = '';
         $name = $argument->type();
@@ -438,12 +438,12 @@ function var_export($var, $indent = '')
         case 'string':
             return '\'' . addcslashes($var, "\\\$\"\r\n\t\v\f") . '\'';
         case 'array':
-            $indexed = array_keys($var) === range(0, count($var) - 1);
+            $indexed = array_keys($var) === range(0, \count($var) - 1);
             $r = [];
             foreach ($var as $key => $value) {
                 $r[] = "$indent    "
-                    . ($indexed ? '' : var_export($key) . ' => ')
-                    . var_export($value, "$indent    ");
+                    . ($indexed ? '' : \var_export($key) . ' => ')
+                    . \var_export($value, "$indent    ");
             }
 
             return "[\n" . implode(",\n", $r) . ",\n" . $indent . ']';

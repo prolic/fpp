@@ -58,5 +58,5 @@ function buildProperties(Definition $definition, ?Constructor $constructor, Defi
         $properties .= 'private $' . $argument->name() . ";\n";
     }
 
-    return ltrim($properties);
+    return \ltrim($properties);
 }

@@ -22,7 +22,7 @@ class ToArray extends AbstractDeriving
     public function checkDefinition(Definition $definition): void
     {
         foreach ($definition->derivings() as $deriving) {
-            if (in_array((string) $deriving, $this->forbidsDerivings(), true)) {
+            if (\in_array((string) $deriving, $this->forbidsDerivings(), true)) {
                 throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
             }
         }

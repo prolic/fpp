@@ -15,7 +15,7 @@ const locatePsrPath = '\Fpp\locatePsrPath';
 
 function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, Definition $definition, ?Constructor $constructor): string
 {
-    if ($constructor && ! in_array(
+    if ($constructor && ! \in_array(
             $constructor->name(),
             ['Bool', 'Bool[]', 'Float', 'Float[]', 'Int', 'Int[]', 'String', 'String[]'],
             true
@@ -32,14 +32,14 @@ function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, Definition $def
         if (0 === strpos($class, $prefix)) {
             $dir = $dirs[0];
 
-            return $dir . DIRECTORY_SEPARATOR . substr($logicalPathPsr4, strlen($prefix)) . '.php';
+            return $dir . DIRECTORY_SEPARATOR . \substr($logicalPathPsr4, strlen($prefix)) . '.php';
         }
     }
 
     // PSR-0 lookup
-    $pos = strrpos($class, '\\');
-    $logicalPathPsr0 = substr($logicalPathPsr4, 0, $pos + 1)
-        . strtr(substr($logicalPathPsr4, $pos + 1), '_', DIRECTORY_SEPARATOR);
+    $pos = \strrpos($class, '\\');
+    $logicalPathPsr0 = \substr($logicalPathPsr4, 0, $pos + 1)
+        . strtr(\substr($logicalPathPsr4, $pos + 1), '_', DIRECTORY_SEPARATOR);
 
     foreach ($prefixesPsr0 as $prefix => $dirs) {
         if (0 === strpos($class, $prefix)) {

@@ -55,6 +55,6 @@ class Argument
 
     public function isScalartypeHint(): bool
     {
-        return in_array($this->type, ['string', 'int', 'bool', 'float'], true);
+        return \in_array($this->type, ['string', 'int', 'bool', 'float'], true);
     }
 }

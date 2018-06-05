@@ -35,7 +35,7 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
             $argumentList .= '?';
         }
 
-        if (1 === count($constructor->arguments()) && $argument->isScalartypeHint()) {
+        if (1 === \count($constructor->arguments()) && $argument->isScalartypeHint()) {
             $argumentType = $argument->isList() ? $argument->type() . ' ...' : $argument->type() . ' ';
             $argumentList .= $argumentType . '$' . $argument->name() . ', ';
             continue;
@@ -45,16 +45,16 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
             continue;
         }
 
-        $nsPosition = strrpos($argument->type(), '\\');
+        $nsPosition = \strrpos($argument->type(), '\\');
 
-        $namespace = substr($argument->type(), 0, $nsPosition);
-        $name = substr($argument->type(), $nsPosition + 1);
+        $namespace = \substr($argument->type(), 0, $nsPosition);
+        $name = \substr($argument->type(), $nsPosition + 1);
 
         $type = $namespace === $definition->namespace()
             ? $name
             : '\\' . $argument->type();
 
-        if (1 === count($constructor->arguments()) && $argument->isList()) {
+        if (1 === \count($constructor->arguments()) && $argument->isList()) {
             $argumentList .= $type . ' ...$' . $argument->name() . ', ';
         } elseif ($argument->isList()) {
             $argumentList .= 'array $' . $argument->name() . ', ';
@@ -67,5 +67,5 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
         return $placeHolder;
     }
 
-    return substr($argumentList, 0, -2);
+    return \substr($argumentList, 0, -2);
 }

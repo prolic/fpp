@@ -24,9 +24,9 @@ function buildNamespace(Definition $definition, ?Constructor $constructor, Defin
         if (isScalarConstructor($constructor)) {
             return $definition->namespace();
         }
-        $position = strrpos($constructor->name(), '\\');
+        $position = \strrpos($constructor->name(), '\\');
 
-        return substr($constructor->name(), 0, $position);
+        return \substr($constructor->name(), 0, $position);
     }
 
     return $definition->namespace();

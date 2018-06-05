@@ -142,10 +142,10 @@ CODE;
             continue;
         }
 
-        $position = strrpos($argument->type(), '\\');
+        $position = \strrpos($argument->type(), '\\');
 
-        $namespace = substr($argument->type(), 0, $position);
-        $name = substr($argument->type(), $position + 1);
+        $namespace = \substr($argument->type(), 0, $position);
+        $name = \substr($argument->type(), $position + 1);
 
         if ($collection->hasDefinition($namespace, $name)) {
             $definition = $collection->definition($namespace, $name);
@@ -214,7 +214,7 @@ CODE;
                     }
                     continue 3;
                 case Deriving\ToScalar::VALUE:
-                    $type = strtolower($definition->constructors()[0]->name());
+                    $type = \strtolower($definition->constructors()[0]->name());
 
                     $floatCheck = '';
 
@@ -353,5 +353,5 @@ CODE;
         return $placeHolder;
     }
 
-    return substr($code, 8, -1);
+    return \substr($code, 8, -1);
 }

@@ -25,10 +25,10 @@ function buildFromArrayBody(Definition $definition, ?Constructor $constructor, D
         return $placeHolder;
     }
 
-    $position = strrpos($constructor->name(), '\\');
+    $position = \strrpos($constructor->name(), '\\');
 
     if (false !== $position) {
-        $constructorNamespace = substr($constructor->name(), 0, $position);
+        $constructorNamespace = \substr($constructor->name(), 0, $position);
     } else {
         $constructorNamespace = '';
     }
@@ -128,10 +128,10 @@ CODE;
 
         $class .= $definition->name();
 
-        $position = strrpos($argument->type(), '\\');
+        $position = \strrpos($argument->type(), '\\');
 
-        $namespace = substr($argument->type(), 0, $position);
-        $name = substr($argument->type(), $position + 1);
+        $namespace = \substr($argument->type(), 0, $position);
+        $name = \substr($argument->type(), $position + 1);
 
         if ($collection->hasDefinition($namespace, $name)) {
             $argumentDefinition = $collection->definition($namespace, $name);
@@ -196,7 +196,7 @@ CODE;
                     continue 3;
                 case Deriving\FromScalar::VALUE:
                     if (isScalarConstructor($argumentConstructor)) {
-                        $argumentType = strtolower($argumentConstructor->name());
+                        $argumentType = \strtolower($argumentConstructor->name());
                     } elseif (isset($argumentConstructor->arguments()[0])) {
                         $argumentType = $argumentConstructor->arguments()[0]->type();
                     } else {
@@ -357,7 +357,7 @@ CODE;
         }
 
         if (isScalarConstructor($argumentConstructor)) {
-            $argumentType = strtolower($argumentConstructor->name());
+            $argumentType = \strtolower($argumentConstructor->name());
         } elseif (isset($argumentConstructor->arguments()[0])) {
             $argumentType = $argumentConstructor->arguments()[0]->type();
         } else {
@@ -435,5 +435,5 @@ CODE;
 
     $code .= "        return new self($arguments);\n";
 
-    return ltrim($code);
+    return \ltrim($code);
 }

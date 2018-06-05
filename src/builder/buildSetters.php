@@ -25,7 +25,7 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
         return $placeHolder;
     }
 
-    if (0 === count($constructor->arguments())) {
+    if (0 === \count($constructor->arguments())) {
         return $placeHolder;
     }
 
@@ -42,8 +42,8 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
 
     $setters = '';
 
-    $position = strrpos($constructor->name(), '\\');
-    $namespace = substr($constructor->name(), 0, $position);
+    $position = \strrpos($constructor->name(), '\\');
+    $namespace = \substr($constructor->name(), 0, $position);
 
     if ($namespace === $definition->namespace()) {
         $self = $definition->name();
@@ -57,7 +57,7 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
 
     foreach ($constructor->arguments() as $key => $argument) {
         $type = buildArgumentType($argument, $definition);
-        $setterName = 'with' . ucfirst($argument->name());
+        $setterName = 'with' . \ucfirst($argument->name());
         $setters .= "    public function $setterName($type \${$argument->name()}): $self\n    {\n";
         $constructorArguments = '';
 
@@ -69,12 +69,12 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
             }
         }
 
-        if (1 === count($constructor->arguments()) && $argument->isList()) {
+        if (1 === \count($constructor->arguments()) && $argument->isList()) {
             $constructorArguments = '...' . $constructorArguments;
         }
 
-        $setters .= '        return new self(' . substr($constructorArguments, 0, -2) . ");\n    }\n\n";
+        $setters .= '        return new self(' . \substr($constructorArguments, 0, -2) . ");\n    }\n\n";
     }
 
-    return ltrim(substr($setters, 0, -1));
+    return \ltrim(\substr($setters, 0, -1));
 }

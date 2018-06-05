@@ -26,12 +26,12 @@ function buildFromStringBody(Definition $definition, ?Constructor $constructor, 
     }
 
     if (isScalarConstructor($constructor)) {
-        $name = lcfirst($definition->name());
+        $name = \lcfirst($definition->name());
 
         return "return new self(\${$name});\n";
     }
 
-    if (0 === count($constructor->arguments())) {
+    if (0 === \count($constructor->arguments())) {
         return $placeHolder;
     }
 
@@ -41,10 +41,10 @@ function buildFromStringBody(Definition $definition, ?Constructor $constructor, 
         return "return new self(\${$argument->name()});\n";
     }
 
-    $position = strrpos($constructor->name(), '\\');
+    $position = \strrpos($constructor->name(), '\\');
 
     if (false !== $position) {
-        $constructorNamespace = substr($constructor->name(), 0, $position);
+        $constructorNamespace = \substr($constructor->name(), 0, $position);
     } else {
         $constructorNamespace = '';
     }
@@ -57,10 +57,10 @@ function buildFromStringBody(Definition $definition, ?Constructor $constructor, 
 
     $class .= $definition->name();
 
-    $position = strrpos($argument->type(), '\\');
+    $position = \strrpos($argument->type(), '\\');
 
-    $namespace = substr($argument->type(), 0, $position);
-    $name = substr($argument->type(), $position + 1);
+    $namespace = \substr($argument->type(), 0, $position);
+    $name = \substr($argument->type(), $position + 1);
 
     if ($collection->hasDefinition($namespace, $name)) {
         $argumentDefinition = $collection->definition($namespace, $name);

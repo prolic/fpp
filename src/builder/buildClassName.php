@@ -21,13 +21,13 @@ const buildClassName = '\Fpp\Builder\buildClassName';
 function buildClassName(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if ($constructor && ! isScalarConstructor($constructor)) {
-        $position = strrpos($constructor->name(), '\\');
+        $position = \strrpos($constructor->name(), '\\');
 
         if (false === $position) {
             return $constructor->name();
         }
 
-        return substr($constructor->name(), $position + 1);
+        return \substr($constructor->name(), $position + 1);
     }
 
     return $definition->name();

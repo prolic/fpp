@@ -42,13 +42,13 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
             case 'Float':
             case 'Int':
             case 'String':
-                $bodyTemplatesFiles[] = $prefix . strtolower($constructor->name()) . '.template';
+                $bodyTemplatesFiles[] = $prefix . \strtolower($constructor->name()) . '.template';
                 break;
             case 'Bool[]':
             case 'Float[]':
             case 'Int[]':
             case 'String[]':
-                $bodyTemplatesFiles[] = $prefix . strtolower(substr($constructor->name(), 0, -2)) . 'list.template';
+                $bodyTemplatesFiles[] = $prefix . \strtolower(\substr($constructor->name(), 0, -2)) . 'list.template';
                 break;
         }
     }
@@ -74,7 +74,7 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
             case ToArray::VALUE:
             case ToScalar::VALUE:
             case ToString::VALUE:
-                $bodyTemplatesFiles[] = $prefix . strtolower((string) $deriving) . '.template';
+                $bodyTemplatesFiles[] = $prefix . \strtolower((string) $deriving) . '.template';
                 break;
             case Enum::VALUE:
                 if (null === $constructor) {
@@ -95,8 +95,8 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
     }
 
     if (! empty($bodyTemplate)) {
-        $bodyTemplate = substr($bodyTemplate, 0, -1);
+        $bodyTemplate = \substr($bodyTemplate, 0, -1);
     }
 
-    return str_replace("    {{body}}\n", $bodyTemplate, $classTemplate);
+    return \str_replace("    {{body}}\n", $bodyTemplate, $classTemplate);
 }

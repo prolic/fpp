@@ -19,7 +19,7 @@ const buildStaticConstructor = '\Fpp\Builder\buildStaticConstructor';
 
 function buildStaticConstructor(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
-    if (null === $constructor || count($constructor->arguments()) === 0) {
+    if (null === $constructor || \count($constructor->arguments()) === 0) {
         return $placeHolder;
     }
 

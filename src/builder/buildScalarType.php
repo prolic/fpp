@@ -41,10 +41,10 @@ function buildScalarType(Definition $definition, ?Constructor $constructor, Defi
     }
 
     if (isScalarConstructor($constructor)) {
-        return strtolower($constructor->name());
+        return \strtolower($constructor->name());
     }
 
     $argument = $constructor->arguments()[0];
 
-    return strtolower($argument->type());
+    return \strtolower($argument->type());
 }

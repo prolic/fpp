@@ -34,11 +34,11 @@ function buildClassKeyword(Definition $definition, ?Constructor $constructor, De
 
     $constructors = $definition->constructors();
 
-    if (1 === count($constructors)) {
+    if (1 === \count($constructors)) {
         return 'final ';
     }
 
-    $name = str_replace($definition->namespace() . '\\', '', $constructor->name());
+    $name = \str_replace($definition->namespace() . '\\', '', $constructor->name());
 
     if ($definition->name() === $name) {
         return '';
