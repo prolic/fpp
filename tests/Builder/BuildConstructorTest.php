@@ -79,14 +79,14 @@ public function __construct(Name \$name, Age \$age, array \$strings, array \$flo
         \$this->age = \$age;
 
         foreach (\$strings as \$__value) {
-            if (! is_string(\$__value)) {
+            if (! \is_string(\$__value)) {
                 throw new \InvalidArgumentException('strings expected an array of string');
             }
             \$this->strings[] = \$__value;
         }
 
         foreach (\$floats as \$__value) {
-            if (! is_float(\$__value) && ! is_int(\$__value)) {
+            if (! \is_float(\$__value) && ! \is_int(\$__value)) {
                 throw new \InvalidArgumentException('floats expected an array of float');
             }
             \$this->floats[] = \$__value;

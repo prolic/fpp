@@ -39,7 +39,7 @@ function buildEqualsBody(Definition $definition, ?Constructor $constructor, Defi
     }
 
     $variableName = lcfirst($definition->name());
-    $code = "if (get_class(\$this) !== get_class(\$$variableName)) {\n";
+    $code = "if (\get_class(\$this) !== \get_class(\$$variableName)) {\n";
     $code .= "            return false;\n";
     $code .= "        }\n\n";
 
@@ -86,7 +86,7 @@ CODE;
 
         if ($argument->isList()) {
             $argumentName = $argument->name();
-            $code .= "        if (count(\$this->$argumentName) !== count(\${$variableName}->{$argumentName})) {\n";
+            $code .= "        if (\count(\$this->$argumentName) !== \count(\${$variableName}->{$argumentName})) {\n";
             $code .= "            return false;\n";
             $code .= "        }\n\n";
             $code .= "        foreach (\$this->$argumentName as \$__i => \$__value) {\n";
