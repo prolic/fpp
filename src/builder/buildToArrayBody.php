@@ -50,12 +50,6 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
     $class .= $definition->name();
 
     foreach ($constructor->arguments() as $key => $argument) {
-        if ($argument->nullable() && $argument->isScalartypeHint()) {
-            $code .= "            '{$argument->name()}' => ";
-            $code .= "null === \$this->{$argument->name()} ? null : \$this->{$argument->name()},\n";
-            continue;
-        }
-
         if ($argument->isScalartypeHint() && ! $argument->isList()) {
             $code .= "            '{$argument->name()}' => ";
             $code .= "\$this->{$argument->name()},\n";

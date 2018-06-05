@@ -75,7 +75,7 @@ class BuildToArrayBodyTest extends TestCase
 
         return [
             'id' => \$this->id->toString(),
-            'name' => null === \$this->name ? null : \$this->name,
+            'name' => \$this->name,
             'email' => \$this->email->toString(),
             'secondaryEmails' => \$secondaryEmails,
             'nickNames' => \$this->nickNames,
