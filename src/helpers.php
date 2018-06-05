@@ -442,8 +442,8 @@ function var_export($var, $indent = '')
             $r = [];
             foreach ($var as $key => $value) {
                 $r[] = "$indent    "
-                    . ($indexed ? '' : \var_export($key) . ' => ')
-                    . \var_export($value, "$indent    ");
+                    . ($indexed ? '' : var_export($key) . ' => ')
+                    . var_export($value, "$indent    ");
             }
 
             return "[\n" . implode(",\n", $r) . ",\n" . $indent . ']';

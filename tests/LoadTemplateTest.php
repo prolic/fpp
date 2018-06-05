@@ -71,6 +71,7 @@ namespace {{namespace}};
 
     public function __construct(string \$value)
     {
+        {{scalar_constructor_conditions}}
         \$this->value = \$value;
     }
 
@@ -234,6 +235,7 @@ namespace {{namespace}};
 
     public function __construct(array \$values)
     {
+        {{scalar_constructor_conditions}}
         foreach (\$values as \$value) {
             if (! \is_float(\$value) && ! \is_int(\$value)) {
                 throw new \InvalidArgumentException('Expected an array of float');
