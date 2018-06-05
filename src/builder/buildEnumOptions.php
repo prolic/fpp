@@ -41,7 +41,7 @@ function buildEnumOptions(Definition $definition, ?Constructor $constructor, Def
     foreach ($definition->constructors() as $key => $definitionConstructor) {
         $class = buildReferencedClass($namespace, $definitionConstructor->name());
         $value = empty($valueMapping) ? $key : $valueMapping[$class];
-        $value = \var_export($value, '        ');
+        $value = var_export($value, '        ');
         $replace .= "        '$class' => $value,\n";
     }
 
