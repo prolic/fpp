@@ -59,11 +59,11 @@ class BuildEqualsBodyTest extends TestCase
         $collection = new DefinitionCollection($definition, $definition2, $definition3, $definition4);
 
         $expected = <<<STRING
-if (get_class(\$this) !== get_class(\$yeah)) {
+if (\get_class(\$this) !== \get_class(\$yeah)) {
             return false;
         }
 
-        if (count(\$this->emails) !== count(\$yeah->emails)) {
+        if (\count(\$this->emails) !== \count(\$yeah->emails)) {
             return false;
         }
 
@@ -73,7 +73,7 @@ if (get_class(\$this) !== get_class(\$yeah)) {
             }
         }
 
-        if (count(\$this->stats) !== count(\$yeah->stats)) {
+        if (\count(\$this->stats) !== \count(\$yeah->stats)) {
             return false;
         }
 

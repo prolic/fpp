@@ -3,7 +3,7 @@
     public function __construct(array $values)
     {
         foreach ($values as $value) {
-            if (! is_string($value)) {
+            if (! \is_string($value)) {
                 throw new \InvalidArgumentException('Expected an array of string');
             }
             $this->values[] = $value;

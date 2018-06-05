@@ -186,7 +186,7 @@ namespace {{namespace}};
 
     public function equals({{class_name}} \$other): bool
     {
-        return get_class(\$this) === get_class(\$other) && \$this->name === \$other->name;
+        return \get_class(\$this) === \get_class(\$other) && \$this->name === \$other->name;
     }
 
     public function name(): string
@@ -235,7 +235,7 @@ namespace {{namespace}};
     public function __construct(array \$values)
     {
         foreach (\$values as \$value) {
-            if (! is_float(\$value) && ! is_int(\$value)) {
+            if (! \is_float(\$value) && ! \is_int(\$value)) {
                 throw new \InvalidArgumentException('Expected an array of float');
             }
             \$this->values[] = \$value;

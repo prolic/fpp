@@ -66,14 +66,14 @@ class BuildFromArrayBodyTest extends TestCase
         );
 
         $expected = <<<CODE
-if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
+if (! isset(\$data['id']) || ! \is_string(\$data['id'])) {
             throw new \InvalidArgumentException("Key 'id' is missing in data array or is not a string");
         }
 
         \$id = UserId::fromString(\$data['id']);
 
         if (isset(\$data['name'])) {
-            if (! is_string(\$data['name'])) {
+            if (! \is_string(\$data['name'])) {
                 throw new \InvalidArgumentException("Value for 'name' is not a string in data array");
             }
 
@@ -82,13 +82,13 @@ if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
             \$name = null;
         }
 
-        if (! isset(\$data['email']) || ! is_string(\$data['email'])) {
+        if (! isset(\$data['email']) || ! \is_string(\$data['email'])) {
             throw new \InvalidArgumentException("Key 'email' is missing in data array or is not a string");
         }
 
         \$email = \Some\Email::fromString(\$data['email']);
 
-        if (! isset(\$data['float']) || (! is_float(\$data['float']) && ! is_int(\$data['float']))) {
+        if (! isset(\$data['float']) || (! \is_float(\$data['float']) && ! \is_int(\$data['float']))) {
             throw new \InvalidArgumentException("Key 'float' is missing in data array or is not a float");
         }
 
@@ -142,14 +142,14 @@ CODE;
         );
 
         $expected = <<<CODE
-if (! isset(\$data['id']) || ! is_string(\$data['id'])) {
+if (! isset(\$data['id']) || ! \is_string(\$data['id'])) {
             throw new \InvalidArgumentException("Key 'id' is missing in data array or is not a string");
         }
 
         \$id = new UserId(\$data['id']);
 
         if (isset(\$data['age'])) {
-            if (! is_int(\$data['age'])) {
+            if (! \is_int(\$data['age'])) {
                 throw new \InvalidArgumentException("Value for 'age' is not a int in data array");
             }
 
@@ -209,14 +209,14 @@ CODE;
         );
 
         $expected = <<<CODE
-if (! isset(\$data['name']) || ! is_string(\$data['name'])) {
+if (! isset(\$data['name']) || ! \is_string(\$data['name'])) {
             throw new \InvalidArgumentException("Key 'name' is missing in data array or is not a string");
         }
 
         \$name = Name::fromString(\$data['name']);
 
         if (isset(\$data['age'])) {
-            if (! is_int(\$data['age'])) {
+            if (! \is_int(\$data['age'])) {
                 throw new \InvalidArgumentException("Value for 'age' is not a int in data array");
             }
 
@@ -278,14 +278,14 @@ CODE;
         );
 
         $expected = <<<CODE
-if (! isset(\$data['float1']) || (! is_float(\$data['float1']) && ! is_int(\$data['float1']))) {
+if (! isset(\$data['float1']) || (! \is_float(\$data['float1']) && ! \is_int(\$data['float1']))) {
             throw new \InvalidArgumentException("Key 'float1' is missing in data array or is not a float");
         }
 
         \$float1 = Float1::fromScalar(\$data['float1']);
 
         if (isset(\$data['float2'])) {
-            if (! is_float(\$data['float2']) && ! is_int(\$data['float2'])) {
+            if (! \is_float(\$data['float2']) && ! \is_int(\$data['float2'])) {
                 throw new \InvalidArgumentException("Value for 'float2' is not a float in data array");
             }
 
@@ -294,14 +294,14 @@ if (! isset(\$data['float1']) || (! is_float(\$data['float1']) && ! is_int(\$dat
             \$float2 = null;
         }
 
-        if (! isset(\$data['float3']) || (! is_float(\$data['float3']) && ! is_int(\$data['float3']))) {
+        if (! isset(\$data['float3']) || (! \is_float(\$data['float3']) && ! \is_int(\$data['float3']))) {
             throw new \InvalidArgumentException("Key 'float3' is missing in data array or is not a float");
         }
 
         \$float3 = \$data['float3'];
 
         if (isset(\$data['float4'])) {
-            if (! is_float(\$data['float4']) && ! is_int(\$data['float4'])) {
+            if (! \is_float(\$data['float4']) && ! \is_int(\$data['float4'])) {
                 throw new \InvalidArgumentException("Value for 'float4' is not a float in data array");
             }
 
@@ -342,24 +342,24 @@ CODE;
         );
 
         $expected = <<<CODE
-if (! isset(\$data['floats']) || ! is_array(\$data['floats'])) {
+if (! isset(\$data['floats']) || ! \is_array(\$data['floats'])) {
             throw new \InvalidArgumentException("Key 'floats' is missing in data array or is not an array");
         }
 
         foreach (\$data['floats'] as \$__value) {
-            if (! is_float(\$__value) && ! is_int(\$__value)) {
+            if (! \is_float(\$__value) && ! \is_int(\$__value)) {
                 throw new \InvalidArgumentException("Value for 'floats' in data array is not an array of float");
             }
 
             \$floats[] = \$__value;
         }
 
-        if (! isset(\$data['strings']) || ! is_array(\$data['strings'])) {
+        if (! isset(\$data['strings']) || ! \is_array(\$data['strings'])) {
             throw new \InvalidArgumentException("Key 'strings' is missing in data array or is not an array");
         }
 
         foreach (\$data['strings'] as \$__value) {
-            if (! is_string(\$__value)) {
+            if (! \is_string(\$__value)) {
                 throw new \InvalidArgumentException("Value for 'strings' in data array is not an array of string");
             }
 
@@ -401,38 +401,38 @@ CODE;
         );
 
         $expected = <<<CODE
-if (! isset(\$data['floats']) || ! is_array(\$data['floats'])) {
+if (! isset(\$data['floats']) || ! \is_array(\$data['floats'])) {
             throw new \InvalidArgumentException("Key 'floats' is missing in data array or is not an array");
         }
 
         foreach (\$data['floats'] as \$__value) {
-            if (! is_float(\$__value) && ! is_int(\$__value)) {
+            if (! \is_float(\$__value) && ! \is_int(\$__value)) {
                 throw new \InvalidArgumentException("Value for 'floats' in data array is not an array of float");
             }
 
             \$floats[] = \$__value;
         }
 
-        if (! isset(\$data['strings']) || ! is_array(\$data['strings'])) {
+        if (! isset(\$data['strings']) || ! \is_array(\$data['strings'])) {
             throw new \InvalidArgumentException("Key 'strings' is missing in data array or is not an array");
         }
 
         foreach (\$data['strings'] as \$__value) {
-            if (! is_string(\$__value)) {
+            if (! \is_string(\$__value)) {
                 throw new \InvalidArgumentException("Value for 'strings' in data array is not an array of string");
             }
 
             \$strings[] = \$__value;
         }
 
-        if (! isset(\$data['nicknames']) || ! is_array(\$data['nicknames'])) {
+        if (! isset(\$data['nicknames']) || ! \is_array(\$data['nicknames'])) {
             throw new \InvalidArgumentException("Key 'nicknames' is missing in data array or is not an array");
         }
 
         \$nicknames = [];
 
         foreach (\$data['nicknames'] as \$__value) {
-            if (! is_string(\$__value)) {
+            if (! \is_string(\$__value)) {
                 throw new \InvalidArgumentException("Value for 'nicknames' in data array is not an array of string");
             }
 

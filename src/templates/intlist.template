@@ -3,7 +3,7 @@
     public function __construct(array $values)
     {
         foreach ($values as $value) {
-            if (! is_int($value)) {
+            if (! \is_int($value)) {
                 throw new \InvalidArgumentException('Expected an array of int');
             }
             $this->values[] = $value;

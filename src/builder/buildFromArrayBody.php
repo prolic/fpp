@@ -57,11 +57,11 @@ CODE;
 
             if ($argument->type() === 'float') {
                 $floatCheckStart = '(';
-                $floatCheck = " && ! is_int(\$data['{$argument->name()}']))";
+                $floatCheck = " && ! \is_int(\$data['{$argument->name()}']))";
             }
 
             $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || {$floatCheckStart}! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
+        if (! isset(\$data['{$argument->name()}']) || {$floatCheckStart}! \is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a {$argument->type()}");
         }
 
@@ -76,16 +76,16 @@ CODE;
             $floatCheck = '';
 
             if ($argument->type() === 'float') {
-                $floatCheck = ' && ! is_int($__value)';
+                $floatCheck = ' && ! \is_int($__value)';
             }
 
             $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
-            if (! is_{$argument->type()}(\$__value)$floatCheck) {
+            if (! \is_{$argument->type()}(\$__value)$floatCheck) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of {$argument->type()}");
             }
 
@@ -101,12 +101,12 @@ CODE;
             $floatCheck = '';
 
             if ($argument->type() === 'float') {
-                $floatCheck = " && ! is_int(\$data['{$argument->name()}'])";
+                $floatCheck = " && ! \is_int(\$data['{$argument->name()}'])";
             }
 
             $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
-            if (! is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
+            if (! \is_{$argument->type()}(\$data['{$argument->name()}'])$floatCheck) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a {$argument->type()} in data array");
             }
 
@@ -155,7 +155,7 @@ CODE;
                     if ($argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
-            if (! is_array(\$data['{$argument->name()}'])) {
+            if (! \is_array(\$data['{$argument->name()}'])) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not an array in data array");
             }
 
@@ -168,14 +168,14 @@ CODE;
 CODE;
                     } elseif ($argument->isList()) {
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
 
         \${$argument->name()} = [];
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
-            if (! is_array(\$data['{$argument->name()}'])) {
+            if (! \is_array(\$data['{$argument->name()}'])) {
                 throw new \InvalidArgumentException("Key '{$argument->name()}' in data array or is not an array of arrays");
             }
 
@@ -186,7 +186,7 @@ CODE;
 CODE;
                     } else {
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
 
@@ -206,13 +206,13 @@ CODE;
                     $floatCheck = '';
 
                     if ($argumentType === 'float') {
-                        $floatCheck = " && ! is_int(\$data['{$argument->name()}'])";
+                        $floatCheck = " && ! \is_int(\$data['{$argument->name()}'])";
                     }
 
                     if ($argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
-            if (! is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
+            if (! \is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a $argumentType in data array");
             }
 
@@ -225,17 +225,17 @@ CODE;
 CODE;
                     } elseif ($argument->isList()) {
                         if ($argumentType === 'float') {
-                            $floatCheck = ' && ! is_int($__value)';
+                            $floatCheck = ' && ! \is_int($__value)';
                         }
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
 
         \${$argument->name()} = [];
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
-            if (! is_$argumentType(\$data['{$argument->name()}'])$floatCheck) {
+            if (! \is_$argumentType(\$data['{$argument->name()}'])$floatCheck) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of {$argument->type()}");
             }
 
@@ -252,7 +252,7 @@ CODE;
                             $floatCheck .= ')';
                         }
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || {$floatCheckStart}! is_$argumentType(\$data['{$argument->name()}'])$floatCheck) {
+        if (! isset(\$data['{$argument->name()}']) || {$floatCheckStart}! \is_$argumentType(\$data['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
         }
 
@@ -266,7 +266,7 @@ CODE;
                     if ($argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
-            if (! is_string(\$data['{$argument->name()}'])) {
+            if (! \is_string(\$data['{$argument->name()}'])) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a string in data array");
             }
 
@@ -279,14 +279,14 @@ CODE;
 CODE;
                     } elseif ($argument->isList()) {
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
 
         \${$argument->name()} = [];
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
-            if (! is_string(\$__value)) {
+            if (! \is_string(\$__value)) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of string");
             }
 
@@ -297,7 +297,7 @@ CODE;
 CODE;
                     } else {
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_string(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! \is_string(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a string");
         }
 
@@ -312,7 +312,7 @@ CODE;
                     if ($argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
-            if (! is_string(\$data['{$argument->name()}'])) {
+            if (! \is_string(\$data['{$argument->name()}'])) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a string in data array");
             }
 
@@ -325,14 +325,14 @@ CODE;
 CODE;
                     } elseif ($argument->isList()) {
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
 
         \${$argument->name()} = [];
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
-            if (! is_string(\$__value)) {
+            if (! \is_string(\$__value)) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of string");
             }
 
@@ -343,7 +343,7 @@ CODE;
 CODE;
                     } else {
                         $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_string(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! \is_string(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a string");
         }
 
@@ -368,12 +368,12 @@ CODE;
             $floatCheck = '';
 
             if ($argumentType === 'float') {
-                $floatCheck = " && ! is_int(\$data['{$argument->name()}'])";
+                $floatCheck = " && ! \is_int(\$data['{$argument->name()}'])";
             }
 
             $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
-            if (! is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
+            if (! \is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
                 throw new \InvalidArgumentException("Value for '{$argument->name()}' is not a $argumentType in data array");
             }
 
@@ -388,16 +388,16 @@ CODE;
             $floatCheck = '';
 
             if ($argumentType === 'float') {
-                $floatCheck = ' && ! is_int($__value)';
+                $floatCheck = ' && ! \is_int($__value)';
             }
 
             $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || ! is_array(\$data['{$argument->name()}'])) {
+        if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
-            if (! is_{$argument->type()}(\$__value)$floatCheck) {
+            if (! \is_{$argument->type()}(\$__value)$floatCheck) {
                 throw new \InvalidArgumentException("Key '{$argument->name()}' in data array or is not an array of {$argument->type()}");
             }
 
@@ -412,11 +412,11 @@ CODE;
 
             if ($argumentType === 'float') {
                 $floatCheckStart = '(';
-                $floatCheck = ' && ! is_int($__value))';
+                $floatCheck = ' && ! \is_int($__value))';
             }
 
             $code .= <<<CODE
-        if (! isset(\$data['{$argument->name()}']) || {$floatCheckStart}! is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
+        if (! isset(\$data['{$argument->name()}']) || {$floatCheckStart}! \is_{$argumentType}(\$data['{$argument->name()}'])$floatCheck) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a $argumentType");
         }
 

@@ -80,11 +80,11 @@ class BuildPayloadValidationTest extends TestCase
         $collection = new DefinitionCollection($userId, $email, $definition, $floatObject);
 
         $expected = <<<CODE
-if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
+if (isset(\$payload['name']) && ! \is_string(\$payload['name'])) {
             throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
         }
 
-        if (! isset(\$payload['email']) || ! is_string(\$payload['email'])) {
+        if (! isset(\$payload['email']) || ! \is_string(\$payload['email'])) {
             throw new \InvalidArgumentException("Key 'email' is missing in payload or is not a string");
         }
 
@@ -92,11 +92,11 @@ if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
             throw new \InvalidArgumentException("Key 'something' is missing in payload");
         }
 
-        if (! isset(\$payload['float']) || (! is_float(\$payload['float']) && ! is_int(\$payload['float']))) {
+        if (! isset(\$payload['float']) || (! \is_float(\$payload['float']) && ! \is_int(\$payload['float']))) {
             throw new \InvalidArgumentException("Key 'float' is missing in payload or is not a float");
         }
 
-        if (! isset(\$payload['floatObject']) || (! is_float(\$payload['floatObject']) && ! is_int(\$payload['floatObject']))) {
+        if (! isset(\$payload['floatObject']) || (! \is_float(\$payload['floatObject']) && ! \is_int(\$payload['floatObject']))) {
             throw new \InvalidArgumentException("Key 'floatObject' is missing in payload or is not a float");
         }
 
@@ -150,15 +150,15 @@ CODE;
         $collection = new DefinitionCollection($userId, $email, $definition);
 
         $expected = <<<CODE
-if (! isset(\$payload['id']) || ! is_string(\$payload['id'])) {
+if (! isset(\$payload['id']) || ! \is_string(\$payload['id'])) {
             throw new \InvalidArgumentException("Key 'id' is missing in payload or is not a string");
         }
 
-        if (isset(\$payload['name']) && ! is_string(\$payload['name'])) {
+        if (isset(\$payload['name']) && ! \is_string(\$payload['name'])) {
             throw new \InvalidArgumentException("Value for 'name' is not a string in payload");
         }
 
-        if (! isset(\$payload['email']) || ! is_string(\$payload['email'])) {
+        if (! isset(\$payload['email']) || ! \is_string(\$payload['email'])) {
             throw new \InvalidArgumentException("Key 'email' is missing in payload or is not a string");
         }
 
