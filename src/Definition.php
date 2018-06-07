@@ -91,7 +91,7 @@ class Definition
             throw new \InvalidArgumentException('At least one constructor required');
         }
 
-        if (!$this->isMarker() && null !== $this->parentMarker) {
+        if (! $this->isMarker() && null !== $this->parentMarker) {
             throw new \InvalidArgumentException('Parent marker is only allowed on marker definition');
         }
         $this->parentMarker = $parentMarker;
