@@ -44,12 +44,18 @@ class Definition
     private $messageName;
 
     /**
+     * @var bool
+     */
+    private $marker;
+
+    /**
      * @param string $namespace
      * @param string $name
      * @param Constructor[] $constructors
      * @param Deriving[] $derivings
      * @param Condition[] $conditions
      * @param string|null $messageName
+     * @param bool $marker
      */
     public function __construct(
         string $namespace,
@@ -57,10 +63,12 @@ class Definition
         array $constructors = [],
         array $derivings = [],
         array $conditions = [],
-        string $messageName = null
+        string $messageName = null,
+        bool $marker = false
     ) {
         $this->namespace = $namespace;
         $this->name = $name;
+        $this->marker = $marker;
 
         $allowMessageName = false;
 
@@ -72,7 +80,7 @@ class Definition
             throw new \InvalidArgumentException('Name cannot be empty string');
         }
 
-        if (empty($constructors)) {
+        if (empty($constructors) && !$this->marker) {
             throw new \InvalidArgumentException('At least one constructor required');
         }
 
@@ -177,6 +185,11 @@ class Definition
     public function messageName(): ?string
     {
         return $this->messageName;
+    }
+
+    public function isMarker(): bool
+    {
+        return $this->marker;
     }
 
     private function invalid(string $message): \InvalidArgumentException

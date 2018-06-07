@@ -34,14 +34,12 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
 
     $prefix = __DIR__ . '/templates/';
     $markerTemplateFile = $prefix . 'marker.template';
-    foreach ($definition->derivings() as $deriving) {
-        if ($deriving->equals(new Deriving\Marker())) {
-            if (! isset($cache[$markerTemplateFile])) {
-                $cache[$markerTemplateFile] = file_get_contents($markerTemplateFile);
-            }
-
-            return $cache[$markerTemplateFile];
+    if ($definition->isMarker()) {
+        if (! isset($cache[$markerTemplateFile])) {
+            $cache[$markerTemplateFile] = file_get_contents($markerTemplateFile);
         }
+
+        return $cache[$markerTemplateFile];
     }
 
     $classTemplateFile = $prefix . 'class.template';

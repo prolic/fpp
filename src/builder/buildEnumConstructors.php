@@ -20,8 +20,11 @@ const buildEnumConstructors = '\Fpp\Builder\buildEnumConstructors';
 
 function buildEnumConstructors(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
-    $replace = '';
+    if ($definition->isMarker()) {
+        return '';
+    }
 
+    $replace = '';
     foreach ($definition->constructors() as $constructor) {
         $class = buildReferencedClass($definition->namespace(), $constructor->name());
         $method = \lcfirst($class);

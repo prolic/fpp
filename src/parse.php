@@ -163,10 +163,11 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     throw ParseError::unexpectedTokenFound(';', $token, $filename);
                 }
                 // That's weird as the interface does not have ctor
-                $constructors = [new Constructor('String')];
-                $derivings = [new Deriving\Marker()];
+                $constructors = [];
+                $derivings = [];
                 $conditions = [];
                 $messageName = null;
+                $marker = true;
                 goto buildDefinition;
 
                 parseDataDefinition:
@@ -179,6 +180,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $token = $nextToken();
                 $token = $skipWhitespace($token);
                 $messageName = null;
+                $marker = false;
 
                 if ($token[1] !== '=') {
                     throw ParseError::unexpectedTokenFound('=', $token, $filename);
@@ -584,7 +586,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
 
                 buildDefinition:
-                $collection->addDefinition(new Definition($namespace, $name, $constructors, $derivings, $conditions, $messageName));
+                $collection->addDefinition(new Definition($namespace, $name, $constructors, $derivings, $conditions, $messageName, $marker));
                 break;
             case T_WHITESPACE:
                 break;

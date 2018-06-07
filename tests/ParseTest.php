@@ -1103,7 +1103,7 @@ marker MyMarker;
 CODE;
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
         $definition = $collection->definition('Foo', 'MyMarker');
-        $this->assertInstanceOf(Deriving\Marker::class, $definition->derivings()[0]);
+        $this->assertTrue($definition->isMarker());
     }
 
     public function scalarListTypes(): array

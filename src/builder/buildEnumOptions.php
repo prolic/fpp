@@ -22,6 +22,10 @@ const buildEnumOptions = '\Fpp\Builder\buildEnumOptions';
 
 function buildEnumOptions(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
+    if ($definition->isMarker()) {
+        return '';
+    }
+
     if ($constructor) {
         return $placeHolder;
     }
