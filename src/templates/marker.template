@@ -1,5 +1,5 @@
 namespace {{namespace}};
 
-interface {{interface_name}}
+interface {{interface_name}}{{class_extends}}
 {
 }

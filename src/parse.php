@@ -161,6 +161,15 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $requireString($token);
                 $name = $token[1];
                 $token = $nextToken();
+                $token = $skipWhitespace($token);
+                $parentMarker = null;
+                if (':' === $token[1]) {
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
+                    $parentMarker = $token[1];
+                    $token = $nextToken();
+                    $token = $skipWhitespace($token);
+                }
                 if (';' !== $token[1]) {
                     throw ParseError::unexpectedTokenFound(';', $token, $filename);
                 }
@@ -189,6 +198,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $constructors = [];
                 $derivings = [];
                 $conditions = [];
+                $parentMarker = null;
                 parseConstructor:
 
                 $constructorName = '';
@@ -585,7 +595,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
 
                 buildDefinition:
-                $collection->addDefinition(new Definition($definitionType, $namespace, $name, $constructors, $derivings, $conditions, $messageName));
+                $collection->addDefinition(new Definition($definitionType, $namespace, $name, $constructors, $derivings, $conditions, $messageName, $parentMarker));
                 break;
             case T_WHITESPACE:
                 break;

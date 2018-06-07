@@ -49,6 +49,11 @@ class Definition
     private $messageName;
 
     /**
+     * @var string|null
+     */
+    private $parentMarker;
+
+    /**
      * @param DefinitionType $type
      * @param string $namespace
      * @param string $name
@@ -56,6 +61,7 @@ class Definition
      * @param Deriving[] $derivings
      * @param Condition[] $conditions
      * @param string|null $messageName
+     * @param string|null $parentMarker
      */
     public function __construct(
         DefinitionType $type,
@@ -64,7 +70,8 @@ class Definition
         array $constructors = [],
         array $derivings = [],
         array $conditions = [],
-        string $messageName = null
+        string $messageName = null,
+        string $parentMarker = null
     ) {
         $this->type = $type;
         $this->namespace = $namespace;
@@ -83,6 +90,11 @@ class Definition
         if (empty($constructors) && ! $this->isMarker()) {
             throw new \InvalidArgumentException('At least one constructor required');
         }
+
+        if (!$this->isMarker() && null !== $this->parentMarker) {
+            throw new \InvalidArgumentException('Parent marker is only allowed on marker definition');
+        }
+        $this->parentMarker = $parentMarker;
 
         $constructorNames = [];
         foreach ($constructors as $constructor) {
@@ -190,6 +202,11 @@ class Definition
     public function isMarker(): bool
     {
         return $this->type->equals(DefinitionType::marker());
+    }
+
+    public function parentMarker(): ?string
+    {
+        return $this->parentMarker;
     }
 
     private function invalid(string $message): \InvalidArgumentException

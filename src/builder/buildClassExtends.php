@@ -43,6 +43,10 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
         }
     }
 
+    if ($definition->isMarker() && null !== $parentMarker = $definition->parentMarker()) {
+        return sprintf(' extends %s', $parentMarker);
+    }
+
     $fullQualifiedDefinitionClassName = $definition->name();
 
     if ($definition->namespace()) {

@@ -1105,6 +1105,26 @@ CODE;
         $this->assertTrue($definition->isMarker());
     }
 
+    /**
+     * @test
+     * @group new
+     */
+    public function it_parses_marker_extending_another_marker_interface()
+    {
+        $contents = <<<CODE
+namespace Foo;
+marker Serializable;
+marker JsonSerializable : Serializable;
+CODE;
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'Serializable');
+        $this->assertTrue($definition->isMarker());
+        $this->assertNull($definition->parentMarker());
+        $definition = $collection->definition('Foo', 'JsonSerializable');
+        $this->assertTrue($definition->isMarker());
+        $this->assertSame('Serializable', $definition->parentMarker());
+    }
+
     public function scalarListTypes(): array
     {
         return [
