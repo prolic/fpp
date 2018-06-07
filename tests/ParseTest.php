@@ -1107,7 +1107,6 @@ CODE;
 
     /**
      * @test
-     * @group new
      */
     public function it_parses_marker_extending_another_marker_interface()
     {

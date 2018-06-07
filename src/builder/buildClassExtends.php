@@ -44,6 +44,36 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
     }
 
     if ($definition->isMarker() && null !== $parentMarker = $definition->parentMarker()) {
+        $namespace = $definition->namespace();
+        $name = $parentMarker;
+
+        if (false !== strpos($parentMarker, '\\')) {
+            $namespace = substr($parentMarker, 0, strrpos($parentMarker, '\\'));
+            $name = substr($parentMarker, strrpos($parentMarker, '\\') + 1);
+            $parentMarker = '\\' . $parentMarker;
+        }
+
+        if (!$collection->hasDefinition($namespace, $name)) {
+            throw new \RuntimeException(sprintf(
+                'Marker %s\\%s cannot extend unknown marker %s\\%s',
+                $definition->namespace(),
+                $definition->name(),
+                $namespace,
+                $name
+            ));
+        }
+
+        $parentDefinition = $collection->definition($namespace, $name);
+        if (!$parentDefinition->isMarker()) {
+            throw new \RuntimeException(sprintf(
+                'Marker %s\\%s cannot extend %s\\%s because it\'s not a marker',
+                $definition->namespace(),
+                $definition->name(),
+                $namespace,
+                $name
+            ));
+        }
+
         return sprintf(' extends %s', $parentMarker);
     }
 
