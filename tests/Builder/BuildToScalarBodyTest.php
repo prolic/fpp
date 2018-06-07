@@ -14,6 +14,7 @@ namespace FppTest\Builder;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
@@ -29,6 +30,7 @@ class BuildToScalarBodyTest extends TestCase
         $constructor1 = new Constructor('Int');
 
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [$constructor1],
@@ -38,6 +40,7 @@ class BuildToScalarBodyTest extends TestCase
         $constructor2 = new Constructor('String');
 
         $email = new Definition(
+            DefinitionType::data(),
             'Some',
             'Email',
             [$constructor2],
@@ -49,6 +52,7 @@ class BuildToScalarBodyTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Email',
             [$constructor3],

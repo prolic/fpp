@@ -13,6 +13,7 @@ namespace FppTest\Builder;
 
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use PHPUnit\Framework\TestCase;
 use function Fpp\buildScalarConstructor;
 use function Fpp\buildScalarConstructorFromPayload;
@@ -26,7 +27,7 @@ class BuildScalarConstructorTest extends TestCase
     public function it_builds_scalar_constructor(string $type): void
     {
         $constructor = new Constructor($type);
-        $definition = new Definition('Foo', 'Bar', [$constructor]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor]);
 
         $this->assertSame('new Bar($value)', buildScalarConstructor($definition));
     }
@@ -38,7 +39,7 @@ class BuildScalarConstructorTest extends TestCase
     public function it_builds_scalar_constructor_from_payload(string $type): void
     {
         $constructor = new Constructor($type);
-        $definition = new Definition('Foo', 'Bar', [$constructor]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor]);
 
         $this->assertSame('new Bar($this->payload[\'value\'])', buildScalarConstructorFromPayload($definition));
     }

@@ -13,6 +13,7 @@ namespace FppTest;
 
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
@@ -60,7 +61,7 @@ class DumpTest extends TestCase
     {
         $dump = $this->dump;
 
-        $definition = new Definition('Foo', 'Bar', [new Constructor('String')]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [new Constructor('String')]);
         $collection = $this->buildCollection($definition);
 
         $expected = <<<CODE
@@ -101,6 +102,7 @@ CODE;
         $dump = $this->dump;
 
         $definition = new Definition(
+            DefinitionType::data(),
             'Foo',
             'Bar',
             [

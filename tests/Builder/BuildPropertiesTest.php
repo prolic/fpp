@@ -14,6 +14,7 @@ namespace FppTest\Builder;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +33,7 @@ class BuildPropertiesTest extends TestCase
 
         $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
-        $definition = new Definition('Foo', 'Bar', [$constructor]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor]);
 
         $expected = <<<STRING
 private \$name;
@@ -55,7 +56,7 @@ STRING;
 
         $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
-        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\Command()]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\Command()]);
 
         $expected = <<<STRING
 protected \$messageName = 'Foo\Bar';
@@ -77,7 +78,7 @@ STRING;
 
         $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
-        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\Command()], [], 'foo-bar');
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\Command()], [], 'foo-bar');
 
         $expected = <<<STRING
 protected \$messageName = 'foo-bar';
@@ -99,7 +100,7 @@ STRING;
 
         $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
-        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\DomainEvent()]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\DomainEvent()]);
 
         $expected = <<<STRING
 protected \$messageName = 'Foo\Bar';
@@ -124,7 +125,7 @@ STRING;
 
         $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
-        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\AggregateChanged()]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\AggregateChanged()]);
 
         $expected = <<<STRING
 protected \$messageName = 'Foo\Bar';
@@ -151,7 +152,7 @@ STRING;
 
         $constructor = new Constructor('Foo\Yeah', [$argument1, $argument2, $argument3]);
 
-        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\MicroAggregateChanged()]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\MicroAggregateChanged()]);
 
         $this->assertSame('{{properties}}', buildProperties($definition, null, new DefinitionCollection(), '{{properties}}'));
     }

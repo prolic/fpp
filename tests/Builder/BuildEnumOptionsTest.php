@@ -13,6 +13,7 @@ namespace FppTest\Builder;
 
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use Fpp\InvalidDeriving;
@@ -30,6 +31,7 @@ class BuildEnumOptionsTest extends TestCase
         $constructor2 = new Constructor('My\Blue');
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Color',
             [$constructor1, $constructor2],
@@ -53,6 +55,7 @@ EXPECTED;
         $constructor2 = new Constructor('My\Blue');
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Color',
             [$constructor1, $constructor2],
@@ -85,6 +88,7 @@ EXPECTED;
         $constructor2 = new Constructor('What\Color\Blue');
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Color',
             [$constructor1, $constructor2],

@@ -14,6 +14,11 @@ namespace Fpp;
 class Definition
 {
     /**
+     * @var DefinitionType
+     */
+    private $type;
+
+    /**
      * @var string
      */
     private $namespace;
@@ -44,31 +49,26 @@ class Definition
     private $messageName;
 
     /**
-     * @var bool
-     */
-    private $marker;
-
-    /**
+     * @param DefinitionType $type
      * @param string $namespace
      * @param string $name
      * @param Constructor[] $constructors
      * @param Deriving[] $derivings
      * @param Condition[] $conditions
      * @param string|null $messageName
-     * @param bool $marker
      */
     public function __construct(
+        DefinitionType $type,
         string $namespace,
         string $name,
         array $constructors = [],
         array $derivings = [],
         array $conditions = [],
-        string $messageName = null,
-        bool $marker = false
+        string $messageName = null
     ) {
+        $this->type = $type;
         $this->namespace = $namespace;
         $this->name = $name;
-        $this->marker = $marker;
 
         $allowMessageName = false;
 
@@ -80,7 +80,7 @@ class Definition
             throw new \InvalidArgumentException('Name cannot be empty string');
         }
 
-        if (empty($constructors) && !$this->marker) {
+        if (empty($constructors) && !$this->isMarker()) {
             throw new \InvalidArgumentException('At least one constructor required');
         }
 
@@ -189,7 +189,7 @@ class Definition
 
     public function isMarker(): bool
     {
-        return $this->marker;
+        return $this->type->equals(DefinitionType::marker());
     }
 
     private function invalid(string $message): \InvalidArgumentException

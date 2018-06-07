@@ -15,6 +15,7 @@ use Fpp\Argument;
 use Fpp\Condition;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildConstructor;
@@ -27,18 +28,21 @@ class BuildConstructorTest extends TestCase
     public function it_generates_properties_and_constructor_incl_conditions(): void
     {
         $name = new Definition(
+            DefinitionType::data(),
             'Foo\Bar',
             'Name',
             [new Constructor('String')]
         );
 
         $age = new Definition(
+            DefinitionType::data(),
             'Foo\Bar',
             'Age',
             [new Constructor('Int')]
         );
 
         $email = new Definition(
+            DefinitionType::data(),
             'Foo\Bar',
             'Email',
             [new Constructor('String')]
@@ -53,6 +57,7 @@ class BuildConstructorTest extends TestCase
         ]);
 
         $person = new Definition(
+            DefinitionType::data(),
             'Foo\Bar',
             'Person',
             [$constructor],

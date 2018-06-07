@@ -14,6 +14,7 @@ namespace FppTest\Builder;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
@@ -32,6 +33,7 @@ class BuildSettersTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor]
@@ -64,6 +66,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor]
@@ -96,6 +99,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor]
@@ -128,6 +132,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Email',
             [$constructor],
@@ -147,6 +152,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Email',
             [$constructor]
@@ -163,6 +169,7 @@ CODE;
         $constructor = new Constructor('My\Email');
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Email',
             [$constructor]

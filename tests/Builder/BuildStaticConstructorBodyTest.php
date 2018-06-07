@@ -14,6 +14,7 @@ namespace FppTest\Builder;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
@@ -27,6 +28,7 @@ class BuildStaticConstructorBodyTest extends TestCase
     public function it_builds_static_constructor_body_converting_to_payload_without_first_argument(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -38,6 +40,7 @@ class BuildStaticConstructorBodyTest extends TestCase
         );
 
         $email = new Definition(
+            DefinitionType::data(),
             'Some',
             'Email',
             [
@@ -57,6 +60,7 @@ class BuildStaticConstructorBodyTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'UserRegistered',
             [$constructor],
@@ -82,6 +86,7 @@ CODE;
     public function it_builds_static_constructor_body_converting_to_payload_with_first_argument(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -93,6 +98,7 @@ CODE;
         );
 
         $email = new Definition(
+            DefinitionType::data(),
             'Some',
             'Email',
             [
@@ -112,6 +118,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'UserRegistered',
             [$constructor],

@@ -143,9 +143,11 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
             case T_STRING:
                 switch ($token[1]) {
                     case 'data':
+                        $definitionType = DefinitionType::data();
                         goto parseDataDefinition;
 
                     case 'marker':
+                        $definitionType = DefinitionType::marker();
                         goto parseMarkerDefinition;
 
                     default:
@@ -167,7 +169,6 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $derivings = [];
                 $conditions = [];
                 $messageName = null;
-                $marker = true;
                 goto buildDefinition;
 
                 parseDataDefinition:
@@ -180,7 +181,6 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $token = $nextToken();
                 $token = $skipWhitespace($token);
                 $messageName = null;
-                $marker = false;
 
                 if ($token[1] !== '=') {
                     throw ParseError::unexpectedTokenFound('=', $token, $filename);
@@ -586,7 +586,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
 
                 buildDefinition:
-                $collection->addDefinition(new Definition($namespace, $name, $constructors, $derivings, $conditions, $messageName, $marker));
+                $collection->addDefinition(new Definition($definitionType, $namespace, $name, $constructors, $derivings, $conditions, $messageName));
                 break;
             case T_WHITESPACE:
                 break;

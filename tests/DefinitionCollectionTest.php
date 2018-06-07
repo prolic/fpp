@@ -14,6 +14,7 @@ namespace FppTest;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving\Equals;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +31,7 @@ class DefinitionCollectionTest extends TestCase
             new Argument('age', 'int', false),
         ]);
         $derivings = [new Equals()];
-        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
+        $definition = new Definition(DefinitionType::data(), 'Foo\Bar', 'Person', [$constructor], $derivings);
 
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
@@ -52,7 +53,7 @@ class DefinitionCollectionTest extends TestCase
             new Argument('age', 'int', false),
         ]);
         $derivings = [new Equals()];
-        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
+        $definition = new Definition(DefinitionType::data(), 'Foo\Bar', 'Person', [$constructor], $derivings);
 
         $collection = new DefinitionCollection($definition);
 
@@ -75,7 +76,7 @@ class DefinitionCollectionTest extends TestCase
             new Argument('age', 'int', false),
         ]);
         $derivings = [new Equals()];
-        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
+        $definition = new Definition(DefinitionType::data(), 'Foo\Bar', 'Person', [$constructor], $derivings);
 
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
@@ -92,13 +93,13 @@ class DefinitionCollectionTest extends TestCase
             new Argument('age', 'int', false),
         ]);
         $derivings = [new Equals()];
-        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
+        $definition = new Definition(DefinitionType::data(), 'Foo\Bar', 'Person', [$constructor], $derivings);
 
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
 
         $derivings = [new Equals()];
-        $definition = new Definition('Foo\Baz', 'Person', [$constructor], $derivings);
+        $definition = new Definition(DefinitionType::data(), 'Foo\Baz', 'Person', [$constructor], $derivings);
 
         $collection2 = new DefinitionCollection();
         $collection2->addDefinition($definition);
@@ -124,7 +125,7 @@ class DefinitionCollectionTest extends TestCase
             new Argument('age', 'int', false),
         ]);
         $derivings = [new Equals()];
-        $definition = new Definition('Foo\Bar', 'Person', [$constructor], $derivings);
+        $definition = new Definition(DefinitionType::data(), 'Foo\Bar', 'Person', [$constructor], $derivings);
 
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);
@@ -151,7 +152,7 @@ class DefinitionCollectionTest extends TestCase
         ]);
 
         $derivings = [new Equals()];
-        $definition = new Definition('Foo\Bar', 'Person', [$constructor1, $constructor2], $derivings);
+        $definition = new Definition(DefinitionType::data(), 'Foo\Bar', 'Person', [$constructor1, $constructor2], $derivings);
 
         $collection = new DefinitionCollection();
         $collection->addDefinition($definition);

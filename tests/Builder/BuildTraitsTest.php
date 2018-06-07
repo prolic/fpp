@@ -14,6 +14,7 @@ namespace FppTest\Builder;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
@@ -32,6 +33,7 @@ class BuildTraitsTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Email',
             [$constructor],
@@ -51,6 +53,7 @@ class BuildTraitsTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Email',
             [$constructor],

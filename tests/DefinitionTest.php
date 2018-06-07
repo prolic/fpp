@@ -14,6 +14,7 @@ namespace FppTest;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\Deriving;
 use Fpp\InvalidDeriving;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,7 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_simple_data_defintion(): void
     {
-        $definition = new Definition('Foo', 'Person', [new Constructor('Foo\Person')]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Person', [new Constructor('Foo\Person')]);
 
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
@@ -39,7 +40,7 @@ class DefinitionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Definition('', 'Foo');
+        new Definition(DefinitionType::data(), '', 'Foo');
     }
 
     /**
@@ -49,7 +50,7 @@ class DefinitionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Definition('Foo', '');
+        new Definition(DefinitionType::data(), 'Foo', '');
     }
 
     /**
@@ -57,7 +58,7 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_data_defintion_with_namespace(): void
     {
-        $definition = new Definition('Foo', 'Person', [new Constructor('Foo\Person')]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Person', [new Constructor('Foo\Person')]);
 
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
@@ -69,7 +70,7 @@ class DefinitionTest extends TestCase
     public function it_creates_data_defintion_with_constructor_arguments(): void
     {
         $constructor = new Constructor('Foo\Person', [new Argument('name', 'string', false)]);
-        $definition = new Definition('Foo', 'Person', [$constructor]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Person', [$constructor]);
 
         $this->assertSame('Foo', $definition->namespace());
         $this->assertSame('Person', $definition->name());
@@ -96,6 +97,7 @@ class DefinitionTest extends TestCase
         $constructor = new Constructor('Foo\Person', [new Argument('name', 'string', false)]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -121,7 +123,7 @@ class DefinitionTest extends TestCase
 
         $constructor = new Constructor('Foo\Person', [new Argument('name', 'string', false)]);
 
-        new Definition('Foo', 'Person', [$constructor], [], [], 'invalid');
+        new Definition(DefinitionType::data(), 'Foo', 'Person', [$constructor], [], [], 'invalid');
     }
 
     /**
@@ -133,7 +135,7 @@ class DefinitionTest extends TestCase
 
         $constructor = new Constructor('Foo\Person', [new Argument('name', 'string', false)]);
 
-        new Definition('Foo', 'Person', [$constructor], [new Deriving\Command()], [], '');
+        new Definition(DefinitionType::data(), 'Foo', 'Person', [$constructor], [new Deriving\Command()], [], '');
     }
 
     /**
@@ -143,7 +145,7 @@ class DefinitionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Definition(
+        new Definition(DefinitionType::data(),
             'Foo',
             'Person',
             ['invalid']
@@ -155,7 +157,7 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_prooph_message_types(): void
     {
-        $definition = new Definition(
+        $definition = new Definition(DefinitionType::data(),
             'Foo',
             'RegisterPerson',
             [new Constructor('Foo\RegisterPerson', [
@@ -181,7 +183,7 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(
+        new Definition(DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor, $constructor]
@@ -199,7 +201,7 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(
+        new Definition(DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -218,7 +220,7 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(
+        new Definition(DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -237,7 +239,7 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(
+        new Definition(DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -253,7 +255,7 @@ class DefinitionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Definition('Foo', 'Person');
+        new Definition(DefinitionType::data(), 'Foo', 'Person');
     }
 
     /**
@@ -270,7 +272,7 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(
+        new Definition(DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -291,7 +293,7 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        $definition = new Definition(
+        $definition = new Definition(DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -315,6 +317,7 @@ class DefinitionTest extends TestCase
         ]);
 
         new Definition(
+            DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],

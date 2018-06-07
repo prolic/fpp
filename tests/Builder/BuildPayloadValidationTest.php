@@ -14,6 +14,7 @@ namespace FppTest\Builder;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
@@ -27,6 +28,7 @@ class BuildPayloadValidationTest extends TestCase
     public function it_builds_payload_validation_without_first_argument(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -38,6 +40,7 @@ class BuildPayloadValidationTest extends TestCase
         );
 
         $email = new Definition(
+            DefinitionType::data(),
             'Some',
             'Email',
             [
@@ -50,6 +53,7 @@ class BuildPayloadValidationTest extends TestCase
         );
 
         $floatObject = new Definition(
+            DefinitionType::data(),
             'My',
             'FloatObject',
             [
@@ -71,6 +75,7 @@ class BuildPayloadValidationTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'UserRegistered',
             [$constructor],
@@ -111,6 +116,7 @@ CODE;
     public function it_builds_payload_validation_with_first_argument(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -122,6 +128,7 @@ CODE;
         );
 
         $email = new Definition(
+            DefinitionType::data(),
             'Some',
             'Email',
             [
@@ -141,6 +148,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'RegisterUser',
             [$constructor],
@@ -177,6 +185,7 @@ CODE;
     public function it_builds_payload_validation_with_only_one_argument(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -192,6 +201,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'UserRegistered',
             [$constructor],
