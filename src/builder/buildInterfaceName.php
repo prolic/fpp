@@ -19,5 +19,9 @@ const buildInterfaceName = '\Fpp\Builder\buildInterfaceName';
 
 function buildInterfaceName(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
+    if (! $definition->isMarker()) {
+        return $placeHolder;
+    }
+
     return \ucfirst($definition->name());
 }

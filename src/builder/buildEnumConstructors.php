@@ -21,7 +21,7 @@ const buildEnumConstructors = '\Fpp\Builder\buildEnumConstructors';
 function buildEnumConstructors(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     if ($definition->isMarker()) {
-        return '';
+        return $placeholder;
     }
 
     $replace = '';

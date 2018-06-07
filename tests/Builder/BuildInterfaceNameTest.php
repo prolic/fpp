@@ -23,20 +23,30 @@ class BuildInterfaceNameTest extends TestCase
     /**
      * @test
      */
-    public function it_resolves_interface_name(): void
+    public function it_builds_interface_name(): void
     {
         $definition = new Definition(DefinitionType::marker(), 'Foo', 'Exception');
 
-        $this->assertSame('Exception', buildInterfaceName($definition, null, new DefinitionCollection($definition), ''));
+        $this->assertSame('Exception', buildInterfaceName($definition, null, new DefinitionCollection($definition), '{{ interface_name }}'));
     }
 
     /**
      * @test
      */
-    public function it_resolves_lowercased_interface_name(): void
+    public function it_builds_lowercased_interface_name(): void
     {
         $definition = new Definition(DefinitionType::marker(), 'Foo', 'exception');
 
-        $this->assertSame('Exception', buildInterfaceName($definition, null, new DefinitionCollection($definition), ''));
+        $this->assertSame('Exception', buildInterfaceName($definition, null, new DefinitionCollection($definition), '{{ interface_name }}'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_build_data_definition()
+    {
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'FirstName', [new Constructor('String')]);
+
+        $this->assertSame('{{ interface_name }}', buildInterfaceName($definition, null, new DefinitionCollection($definition), '{{ interface_name }}'));
     }
 }
