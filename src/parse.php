@@ -164,7 +164,6 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 if (';' !== $token[1]) {
                     throw ParseError::unexpectedTokenFound(';', $token, $filename);
                 }
-                // That's weird as the interface does not have ctor
                 $constructors = [];
                 $derivings = [];
                 $conditions = [];
