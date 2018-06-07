@@ -13,8 +13,8 @@ namespace FppTest;
 
 use Fpp\Constructor;
 use Fpp\Definition;
-use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use const Fpp\loadTemplate;

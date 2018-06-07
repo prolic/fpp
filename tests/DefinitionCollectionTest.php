@@ -14,8 +14,8 @@ namespace FppTest;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
-use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use Fpp\Deriving\Equals;
 use PHPUnit\Framework\TestCase;
 

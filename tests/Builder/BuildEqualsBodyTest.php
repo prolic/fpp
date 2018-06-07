@@ -14,8 +14,8 @@ namespace FppTest\Builder;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
-use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildEqualsBody;
@@ -40,21 +40,21 @@ class BuildEqualsBodyTest extends TestCase
         $definition = new Definition(DefinitionType::data(), 'Hell', 'Yeah', [$constructor], [new Deriving\Equals()]);
 
         $definition2 = new Definition(
-            DefinitionType::data(), 
+            DefinitionType::data(),
             'Hell',
             'No',
             [new Constructor('Hell\No', [new Argument('noman', 'string')])],
             [new Deriving\ToString()]
         );
         $definition3 = new Definition(
-            DefinitionType::data(), 
+            DefinitionType::data(),
             'Hell',
             'What',
             [new Constructor('Hell\What', [new Argument('whatman', 'int')])],
             [new Deriving\Equals()]
         );
         $definition4 = new Definition(
-            DefinitionType::data(), 
+            DefinitionType::data(),
             'Hell',
             'Stat',
             [new Constructor('Hell\Stat', [new Argument('stat', 'float')])],

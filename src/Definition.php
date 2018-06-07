@@ -80,7 +80,7 @@ class Definition
             throw new \InvalidArgumentException('Name cannot be empty string');
         }
 
-        if (empty($constructors) && !$this->isMarker()) {
+        if (empty($constructors) && ! $this->isMarker()) {
             throw new \InvalidArgumentException('At least one constructor required');
         }
 

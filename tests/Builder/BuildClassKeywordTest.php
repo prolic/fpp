@@ -13,8 +13,8 @@ namespace FppTest\Builder;
 
 use Fpp\Constructor;
 use Fpp\Definition;
-use Fpp\DefinitionType;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildClassKeyword;
 
