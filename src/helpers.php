@@ -67,6 +67,7 @@ function defaultBuilders(): array
         'to_string_body' => Builder\buildToScalarBody,
         'traits' => Builder\buildTraits,
         'variable_name' => Builder\buildVariableName,
+        'interface_name' => Builder\buildInterfaceName,
     ];
 }
 

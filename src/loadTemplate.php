@@ -33,6 +33,17 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
     static $cache = [];
 
     $prefix = __DIR__ . '/templates/';
+    $markerTemplateFile = $prefix . 'marker.template';
+    foreach ($definition->derivings() as $deriving) {
+        if ($deriving->equals(new Deriving\Marker())) {
+            if (! isset($cache[$markerTemplateFile])) {
+                $cache[$markerTemplateFile] = file_get_contents($markerTemplateFile);
+            }
+
+            return $cache[$markerTemplateFile];
+        }
+    }
+
     $classTemplateFile = $prefix . 'class.template';
     $bodyTemplatesFiles = [];
 

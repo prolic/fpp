@@ -1091,6 +1091,21 @@ CODE;
         $this->assertSame(['foo' => 'bar', 'baz', 1, true, 'bam' => 123], $deriving->valueMapping()['Yellow']);
     }
 
+    /**
+     * @test
+     * @group new
+     */
+    public function it_parses_marker()
+    {
+        $contents = <<<CODE
+namespace Foo;
+marker MyMarker;
+CODE;
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'MyMarker');
+        $this->assertInstanceOf(Deriving\Marker::class, $definition->derivings()[0]);
+    }
+
     public function scalarListTypes(): array
     {
         return [

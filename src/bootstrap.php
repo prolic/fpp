@@ -58,6 +58,7 @@ $files = [
     'builder/buildToScalarBody.php',
     'builder/buildTraits.php',
     'builder/buildVariableName.php',
+    'builder/buildInterfaceName.php',
 ];
 
 foreach ($files as $file) {

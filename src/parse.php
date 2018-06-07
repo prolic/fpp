@@ -141,10 +141,35 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
                 break;
             case T_STRING:
-                if ($token[1] !== 'data') {
-                    throw ParseError::unknownDefinition($token, $filename);
+                switch ($token[1]) {
+                    case 'data':
+                        goto parseDataDefinition;
+
+                    case 'marker':
+                        goto parseMarkerDefinition;
+
+                    default:
+                        throw ParseError::unknownDefinition($token, $filename);
                 }
 
+                parseMarkerDefinition:
+                $token = $nextToken();
+                $requireWhitespace($token);
+                $token = $nextToken();
+                $requireString($token);
+                $name = $token[1];
+                $token = $nextToken();
+                if (';' !== $token[1]) {
+                    throw ParseError::unexpectedTokenFound(';', $token, $filename);
+                }
+                // That's weird as the interface does not have ctor
+                $constructors = [new Constructor('String')];
+                $derivings = [new Deriving\Marker()];
+                $conditions = [];
+                $messageName = null;
+                goto buildDefinition;
+
+                parseDataDefinition:
                 // parse name (incl. message name for prooph messages)
                 $token = $nextToken();
                 $requireWhitespace($token);
