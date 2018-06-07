@@ -1,4 +1,4 @@
-Please read [Simple examples](Simple%20Examples) and [Derivings](Derivings) first.
+Please read [Simple examples](Simple%20Examples.md) and [Derivings](Derivings.md) first.
 
 There are 5 deriving types for prooph messages:
 

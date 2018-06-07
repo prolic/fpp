@@ -1,4 +1,4 @@
-Please read [Simple examples](Simple%20Examples) first.
+Please read [Simple examples](Simple%20Examples.md) first.
 
 Conditions are useful to add further restrictions to your objects.
 
@@ -147,6 +147,6 @@ final class Boss extends Person
 }
 ```
 
-Wanna see more? check [Derivings](Derivings)
+Wanna see more? check [Derivings](Derivings.md)
 
-Wanna have [prooph components (http://getprooph.org/)](http://getprooph.org/) integration? check [prooph](prooph)
+Wanna have [prooph components (http://getprooph.org/)](http://getprooph.org/) integration? check [prooph](prooph.md)

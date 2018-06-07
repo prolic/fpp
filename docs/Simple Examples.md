@@ -55,4 +55,4 @@ namespace Foo {
 }
 ```
 
-Wanna see more? check [Derivings](Derivings) and [Conditions](Conditions)
+Wanna see more? check [Derivings](Derivings.md) and [Conditions](Conditions.md)

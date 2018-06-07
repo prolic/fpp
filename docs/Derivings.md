@@ -1,4 +1,4 @@
-Please read [Simple examples](Simple%20Examples) first.
+Please read [Simple examples](Simple%20Examples.md) first.
 
 Derivings are kind of PHP's extends keyword, the following rules apply:
 
@@ -50,6 +50,6 @@ namespace Foo;
 data UserId = UserId deriving (Uuid);
 ```
 
-Wanna see more? check [Conditions](Conditions)
+Wanna see more? check [Conditions](Conditions.md)
 
-Wanna have [prooph components (http://getprooph.org/)](http://getprooph.org/) integration? check [prooph](prooph)
+Wanna have [prooph components (http://getprooph.org/)](http://getprooph.org/) integration? check [prooph](prooph.md)
