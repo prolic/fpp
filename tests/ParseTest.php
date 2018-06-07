@@ -1093,7 +1093,6 @@ CODE;
 
     /**
      * @test
-     * @group new
      */
     public function it_parses_marker()
     {
