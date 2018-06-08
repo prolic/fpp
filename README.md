@@ -10,9 +10,10 @@ This library can generate immutable data types based on fpp definitions, the syn
 
 [![YouTube Video Tutorial](https://i.ytimg.com/vi/MYh1_sydQ5U/hqdefault.jpg?sqp=-oaymwEXCNACELwBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLCtO68XORuK-gEGeTJSXdSHqY3PBQ)](https://youtu.be/MYh1_sydQ5U)
 
-### Wiki
+### Docs
 
-[See the wiki here](https://github.com/prolic/fpp/wiki)
+[See the docs here](https://github.com/prolic/fpp/tree/master/docs/Home.md)
+
 
 ### So what really is it?
 
