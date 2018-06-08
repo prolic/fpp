@@ -190,8 +190,8 @@ CODE;
     {
         $dump = $this->dump;
 
-        $parentMarker = new Definition(DefinitionType::marker(), 'Foo', 'Baz');
-        $marker = new Definition(DefinitionType::marker(), 'Foo', 'Bar', [], [], [], null, 'Baz');
+        $parentMarker = new Definition(DefinitionType::marker(), 'Foo', 'MarkerA');
+        $marker = new Definition(DefinitionType::marker(), 'Foo', 'MarkerB', [], [], [], null, 'MarkerA');
         $collection = $this->buildCollection($parentMarker, $marker);
 
         $dump($collection);
@@ -206,7 +206,7 @@ declare(strict_types=1);
 
 namespace Foo;
 
-interface Baz
+interface MarkerA
 {
 }
 
@@ -222,13 +222,13 @@ declare(strict_types=1);
 
 namespace Foo;
 
-interface Bar extends Baz
+interface MarkerB extends MarkerA
 {
 }
 
 CODE;
-        $this->assertSame($expected1, file_get_contents($this->root->url() . '/Foo/Baz.php'));
-        $this->assertSame($expected2, file_get_contents($this->root->url() . '/Foo/Bar.php'));
+        $this->assertSame($expected1, file_get_contents($this->root->url() . '/Foo/MarkerA.php'));
+        $this->assertSame($expected2, file_get_contents($this->root->url() . '/Foo/MarkerB.php'));
     }
 
     /**
@@ -239,7 +239,7 @@ CODE;
         $dump = $this->dump;
 
         $parentMarker = new Definition(DefinitionType::marker(), 'Foo', 'MyMarkerA');
-        $marker = new Definition(DefinitionType::marker(), 'Bar', 'MyMarkerB', [], [], [], null, 'Foo\\MyMarkerA');
+        $marker = new Definition(DefinitionType::marker(), 'Bar', 'MyMarkerB', [], [], [], null, '\\Foo\\MyMarkerA');
         $collection = $this->buildCollection($parentMarker, $marker);
 
         $dump($collection);
@@ -286,7 +286,7 @@ CODE;
     {
         $dump = $this->dump;
 
-        $marker = new Definition(DefinitionType::marker(), 'Bar', 'MyMarker', [], [], [], null, '\JsonSerializable');
+        $marker = new Definition(DefinitionType::marker(), 'Bar', 'MyMarker', [], [], [], null, '\\JsonSerializable');
         $collection = $this->buildCollection($marker);
 
         $dump($collection);
@@ -317,11 +317,11 @@ CODE;
     {
         $dump = $this->dump;
 
-        $marker = new Definition(DefinitionType::marker(), 'Bar', 'MyMarker', [], [], [], null, '\XmlSerializable');
+        $marker = new Definition(DefinitionType::marker(), 'Bar', 'MyMarker', [], [], [], null, '\\XmlSerializable');
         $collection = $this->buildCollection($marker);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Marker Bar\MyMarker cannot extend unknown marker \XmlSerializable');
+        $this->expectExceptionMessage('Marker Bar\\MyMarker cannot extend unknown marker \\XmlSerializable');
 
         $dump($collection);
     }
@@ -333,11 +333,11 @@ CODE;
     {
         $dump = $this->dump;
 
-        $marker = new Definition(DefinitionType::marker(), 'Bar', 'MyMarker', [], [], [], null, '\DateTime');
+        $marker = new Definition(DefinitionType::marker(), 'Bar', 'MyMarker', [], [], [], null, '\\DateTime');
         $collection = $this->buildCollection($marker);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Marker Bar\MyMarker cannot extend unknown marker \DateTime');
+        $this->expectExceptionMessage('Marker Bar\\MyMarker cannot extend unknown marker \\DateTime');
 
         $dump($collection);
     }
@@ -354,7 +354,7 @@ CODE;
         $collection = $this->buildCollection($parentMarker, $marker);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Marker Bar\MyMarkerB cannot extend unknown marker Bar\MyMarkerA');
+        $this->expectExceptionMessage('Marker Bar\\MyMarkerB cannot extend unknown marker Bar\\MyMarkerA');
 
         $dump($collection);
     }
@@ -370,7 +370,7 @@ CODE;
         $collection = $this->buildCollection($marker);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Marker Bar\MyMarker cannot extend itself');
+        $this->expectExceptionMessage('Marker Bar\\MyMarker cannot extend itself');
 
         $dump($collection);
     }
@@ -378,7 +378,7 @@ CODE;
     /**
      * @test
      */
-    public function it_throws_exception_when_extending_data()
+    public function it_throws_exception_when_a_marker_extends_a_data_type()
     {
         $dump = $this->dump;
 
@@ -387,7 +387,7 @@ CODE;
         $collection = $this->buildCollection($data, $marker);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Marker Foo\MyMarker cannot extend Foo\MyData because it\'s not a marker');
+        $this->expectExceptionMessage('Marker Foo\\MyMarker cannot extend Foo\\MyData because it\'s not a marker');
 
         $dump($collection);
     }
@@ -395,10 +395,10 @@ CODE;
     /**
      * @test
      */
-    public function it_throws_exception_when_extending_exception()
+    public function it_throws_exception_when_a_marker_extends_an_exception_type()
     {
         $this->markTestIncomplete(
-          'This test must be implemented when the exception keyword is added'
+          'This test must be implemented when the exception type is added'
         );
     }
 

@@ -44,17 +44,16 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
     }
 
     if ($definition->isMarker() && null !== $parentMarker = $definition->parentMarker()) {
-        $namespace = $definition->namespace();
-        $name = $parentMarker;
-
-        if (false !== $pos = strpos($parentMarker, '\\')) {
-            if (0 === $pos && interface_exists($parentMarker)) {
-                return sprintf(' extends %s', $parentMarker);
-            }
-            $namespace = substr($parentMarker, 0, strrpos($parentMarker, '\\'));
-            $name = substr($parentMarker, strrpos($parentMarker, '\\') + 1);
-            $parentMarker = '\\' . $parentMarker;
+        if (0 !== strpos($parentMarker, '\\')) {
+            $parentMarker = sprintf('\\%s\\%s', $definition->namespace(), $parentMarker);
         }
+
+        if (interface_exists($parentMarker, false)) {
+            return sprintf(' extends %s', $parentMarker);
+        }
+
+        $namespace = ltrim(substr($parentMarker, 0, strrpos($parentMarker, '\\')), '\\');
+        $name = substr($parentMarker, strrpos($parentMarker, '\\') + 1);
 
         if (! $collection->hasDefinition($namespace, $name)) {
             throw new \RuntimeException(sprintf(
@@ -83,6 +82,10 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
                 $definition->namespace(),
                 $definition->name()
             ));
+        }
+
+        if ($definition->namespace() === $parentDefinition->namespace()) {
+            $parentMarker = $parentDefinition->name();
         }
 
         return sprintf(' extends %s', $parentMarker);

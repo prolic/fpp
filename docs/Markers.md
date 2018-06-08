@@ -21,7 +21,7 @@ It is also possible to extend marker located in another namespace:
 namespace Foo;
 marker MyMarkerA;
 namespace Bar;
-marker MyMarkerB : Foo\MyMarkerA;
+marker MyMarkerB : \Foo\MyMarkerA;
 ```
 
 And to extend existing interfaces:
