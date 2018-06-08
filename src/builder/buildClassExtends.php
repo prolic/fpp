@@ -43,52 +43,60 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
         }
     }
 
-    if ($definition->isMarker() && null !== $parentMarker = $definition->parentMarker()) {
-        if (0 !== strpos($parentMarker, '\\')) {
-            $parentMarker = sprintf('\\%s\\%s', $definition->namespace(), $parentMarker);
+    $parents = [];
+    $markers = $definition->markers();
+    if ($definition->isMarker() && count($markers) > 0) {
+        foreach ($markers as $marker) {
+            $marker = (string) $marker;
+            if (0 !== strpos($marker, '\\')) {
+                $marker = sprintf('\\%s\\%s', $definition->namespace(), $marker);
+            }
+
+            if (interface_exists($marker, false)) {
+                $parents[] = $marker;
+                continue;
+            }
+
+            $namespace = ltrim(substr($marker, 0, strrpos($marker, '\\')), '\\');
+            $name = substr($marker, strrpos($marker, '\\') + 1);
+
+            if (! $collection->hasDefinition($namespace, $name)) {
+                throw new \RuntimeException(sprintf(
+                    'Marker %s\\%s cannot extend unknown marker %s\\%s',
+                    $definition->namespace(),
+                    $definition->name(),
+                    $namespace,
+                    $name
+                ));
+            }
+
+            $parentDefinition = $collection->definition($namespace, $name);
+            if (! $parentDefinition->isMarker()) {
+                throw new \RuntimeException(sprintf(
+                    'Marker %s\\%s cannot extend %s\\%s because it\'s not a marker',
+                    $definition->namespace(),
+                    $definition->name(),
+                    $namespace,
+                    $name
+                ));
+            }
+
+            if ($definition === $parentDefinition) {
+                throw new \RuntimeException(sprintf(
+                    'Marker %s\\%s cannot extend itself',
+                    $definition->namespace(),
+                    $definition->name()
+                ));
+            }
+
+            if ($definition->namespace() === $parentDefinition->namespace()) {
+                $marker = $parentDefinition->name();
+            }
+
+            $parents[] = $marker;
         }
 
-        if (interface_exists($parentMarker, false)) {
-            return sprintf(' extends %s', $parentMarker);
-        }
-
-        $namespace = ltrim(substr($parentMarker, 0, strrpos($parentMarker, '\\')), '\\');
-        $name = substr($parentMarker, strrpos($parentMarker, '\\') + 1);
-
-        if (! $collection->hasDefinition($namespace, $name)) {
-            throw new \RuntimeException(sprintf(
-                'Marker %s\\%s cannot extend unknown marker %s\\%s',
-                $definition->namespace(),
-                $definition->name(),
-                $namespace,
-                $name
-            ));
-        }
-
-        $parentDefinition = $collection->definition($namespace, $name);
-        if (! $parentDefinition->isMarker()) {
-            throw new \RuntimeException(sprintf(
-                'Marker %s\\%s cannot extend %s\\%s because it\'s not a marker',
-                $definition->namespace(),
-                $definition->name(),
-                $namespace,
-                $name
-            ));
-        }
-
-        if ($definition === $parentDefinition) {
-            throw new \RuntimeException(sprintf(
-                'Marker %s\\%s cannot extend itself',
-                $definition->namespace(),
-                $definition->name()
-            ));
-        }
-
-        if ($definition->namespace() === $parentDefinition->namespace()) {
-            $parentMarker = $parentDefinition->name();
-        }
-
-        return sprintf(' extends %s', $parentMarker);
+        return sprintf(' extends %s', implode(', ', $parents));
     }
 
     $fullQualifiedDefinitionClassName = $definition->name();

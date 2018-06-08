@@ -1112,16 +1112,24 @@ CODE;
     {
         $contents = <<<CODE
 namespace Foo;
-marker Serializable;
-marker JsonSerializable : Serializable;
+marker MyMarkerA;
+marker MyMarkerB;
+marker MyMarkerC : MyMarkerA, MyMarkerB;
 CODE;
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
-        $definition = $collection->definition('Foo', 'Serializable');
+        $definition = $collection->definition('Foo', 'MyMarkerA');
         $this->assertTrue($definition->isMarker());
-        $this->assertNull($definition->parentMarker());
-        $definition = $collection->definition('Foo', 'JsonSerializable');
+        $this->assertCount(0, $definition->markers());
+
+        $definition = $collection->definition('Foo', 'MyMarkerB');
         $this->assertTrue($definition->isMarker());
-        $this->assertSame('Serializable', $definition->parentMarker());
+        $this->assertCount(0, $definition->markers());
+
+        $definition = $collection->definition('Foo', 'MyMarkerC');
+        $this->assertTrue($definition->isMarker());
+        $this->assertCount(2, $definition->markers());
+        $this->assertSame('MyMarkerA', (string) $definition->markers()[0]);
+        $this->assertSame('MyMarkerB', (string) $definition->markers()[1]);
     }
 
     public function scalarListTypes(): array

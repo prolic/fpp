@@ -31,6 +31,15 @@ namespace Foo;
 marker MyMarker : \JsonSerializable
 ```
 
+And even to extend multiple markers:
+
+```
+namespace Foo;
+marker MyMarkerA;
+marker MyMarkerB;
+marker MyMarkerC : MyMarkerA, MyMarkerB;
+```
+
 Wanna see more? check [Derivings](Derivings.md)
 
 Wanna have [prooph components (http://getprooph.org/)](http://getprooph.org/) integration? check [prooph](prooph.md)

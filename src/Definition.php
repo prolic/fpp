@@ -49,9 +49,9 @@ class Definition
     private $messageName;
 
     /**
-     * @var string|null
+     * @var MarkerReference[]
      */
-    private $parentMarker;
+    private $markers;
 
     /**
      * @param DefinitionType $type
@@ -61,7 +61,7 @@ class Definition
      * @param Deriving[] $derivings
      * @param Condition[] $conditions
      * @param string|null $messageName
-     * @param string|null $parentMarker
+     * @param MarkerReference[] $markers
      */
     public function __construct(
         DefinitionType $type,
@@ -71,7 +71,7 @@ class Definition
         array $derivings = [],
         array $conditions = [],
         string $messageName = null,
-        string $parentMarker = null
+        array $markers = []
     ) {
         $this->type = $type;
         $this->namespace = $namespace;
@@ -91,10 +91,16 @@ class Definition
             throw new \InvalidArgumentException('At least one constructor required');
         }
 
-        if (! $this->isMarker() && null !== $this->parentMarker) {
-            throw new \InvalidArgumentException('Parent marker is only allowed on marker definition');
+        foreach ($markers as $key => $marker) {
+            if (! $marker instanceof MarkerReference) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Marker at position %d must be an instance of \\Fpp\\MarkerReference, got %s',
+                    $key,
+                    is_object($marker) ? get_class($marker) : gettype($marker)
+                ));
+            }
         }
-        $this->parentMarker = $parentMarker;
+        $this->markers = $markers;
 
         $constructorNames = [];
         foreach ($constructors as $constructor) {
@@ -204,9 +210,9 @@ class Definition
         return $this->type->equals(DefinitionType::marker());
     }
 
-    public function parentMarker(): ?string
+    public function markers(): array
     {
-        return $this->parentMarker;
+        return $this->markers;
     }
 
     private function invalid(string $message): \InvalidArgumentException
