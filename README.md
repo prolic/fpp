@@ -90,8 +90,10 @@ namespace MyEnum;
 data Color = Red | Blue deriving (Enum) with (Red:'someThing', Blue: 13);
 ```
 
+```php
 var_dump(Color::red()->value()); // 'someThing'
 var_dump(Color::blue()->value()); // 13
+```
 
 ### Derivings
 
