@@ -1,5 +1,7 @@
 Markers are PHP interfaces with no method.
 
+## Definition
+
 They are defined using the `marker` keyword:
 
 ```
@@ -38,6 +40,18 @@ namespace Foo;
 marker MyMarkerA;
 marker MyMarkerB;
 marker MyMarkerC : MyMarkerA, MyMarkerB;
+```
+
+## Usage
+
+Use them on your `data` definition:
+
+```
+namespace Foo;
+marker MyMarkerA;
+marker MyMarkerB;
+marker MyMarkerC : MyMarkerA, MyMarkerB;
+data MyData = MyData : MyMarkerA, MyMarkerB, MyMarkerC;
 ```
 
 Wanna see more? check [Derivings](Derivings.md)

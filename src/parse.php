@@ -599,6 +599,10 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     }
                 }
 
+                if (':' === $token[1]) {
+                    goto parseMarkerReferences;
+                }
+
                 buildDefinition:
                 $collection->addDefinition(new Definition($definitionType, $namespace, $name, $constructors, $derivings, $conditions, $messageName, $markers));
                 break;

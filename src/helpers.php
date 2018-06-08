@@ -68,6 +68,7 @@ function defaultBuilders(): array
         'traits' => Builder\buildTraits,
         'variable_name' => Builder\buildVariableName,
         'interface_name' => Builder\buildInterfaceName,
+        'class_implements' => Builder\buildClassImplements,
     ];
 }
 

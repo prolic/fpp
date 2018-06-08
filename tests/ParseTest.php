@@ -1132,6 +1132,25 @@ CODE;
         $this->assertSame('MyMarkerB', (string) $definition->markers()[1]);
     }
 
+    /**
+     * @test
+     */
+    public function it_parses_marked_data()
+    {
+        $contents = <<<CODE
+namespace Foo;
+marker MyMarkerA;
+marker MyMarkerB;
+data MyData = MyData { String \$foo } : MyMarkerA, MyMarkerB;
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'MyData');
+        $this->assertCount(2, $definition->markers());
+        $this->assertSame('MyMarkerA', (string) $definition->markers()[0]);
+        $this->assertSame('MyMarkerB', (string) $definition->markers()[1]);
+    }
+
     public function scalarListTypes(): array
     {
         return [
