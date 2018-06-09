@@ -26,11 +26,19 @@ namespace Bar;
 marker MyMarkerB : \Foo\MyMarkerA;
 ```
 
-And to extend existing interfaces:
+And to extend existing markers:
+
+```php
+namespace App;
+
+class MyMarker
+{
+}
+```
 
 ```
 namespace Foo;
-marker MyMarker : \JsonSerializable
+marker MyMarker : \App\MyMarker;
 ```
 
 And even to extend multiple markers:
