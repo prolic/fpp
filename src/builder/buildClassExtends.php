@@ -52,6 +52,15 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
             }
 
             if (interface_exists($marker, false)) {
+                if (0 !== count((new \ReflectionClass($marker))->getMethods())) {
+                    throw new \RuntimeException(sprintf(
+                        'Cannot extend marker %s\\%s with non marker interface %s',
+                        $definition->namespace(),
+                        $definition->name(),
+                        $marker
+                    ));
+                }
+
                 $parents[] = $marker;
                 continue;
             }
