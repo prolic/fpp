@@ -1135,6 +1135,39 @@ CODE;
     /**
      * @test
      */
+    public function it_parses_marker_extending_existing_interfaces()
+    {
+        $contents = <<<CODE
+namespace Foo;
+marker MyMarker : \App\Abc\Def;
+CODE;
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'MyMarker');
+        $this->assertTrue($definition->isMarker());
+        $this->assertCount(1, $definition->markers());
+        $this->assertSame('\App\Abc\Def', (string) $definition->markers()[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_parsing_data_marked_with_existing_interface()
+    {
+        $contents = <<<CODE
+namespace Foo;
+data MyData : \App\Abc\Def = MyData;
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+
+        $definition = $collection->definition('Foo', 'MyData');
+        $this->assertCount(1, $definition->markers());
+        $this->assertSame('\App\Abc\Def', (string) $definition->markers()[0]);
+    }
+
+    /**
+     * @test
+     */
     public function it_parses_marked_data()
     {
         $contents = <<<CODE

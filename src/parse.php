@@ -169,11 +169,27 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $markers = [];
                 if (':' === $token[1]) {
                     do {
+                        $markerName = '';
                         $token = $nextToken();
                         $token = $skipWhitespace($token);
+
+                        if ($token[0] === T_NS_SEPARATOR) {
+                            $markerName = '\\';
+                            $token = $nextToken();
+                        }
+
                         $requireString($token);
-                        $markers[] = new MarkerReference($token[1]);
+                        $markerName .= $token[1];
                         $token = $nextToken();
+
+                        while ($token[0] === T_NS_SEPARATOR) {
+                            $token = $nextToken();
+                            $requireString($token);
+                            $markerName .= '\\' . $token[1];
+                            $token = $nextToken();
+                        }
+
+                        $markers[] = new MarkerReference($markerName);
                         $token = $skipWhitespace($token);
                     } while (',' === $token[1]);
                 }
@@ -196,11 +212,27 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                 if (':' === $token[1]) {
                     do {
+                        $markerName = '';
                         $token = $nextToken();
                         $token = $skipWhitespace($token);
+
+                        if ($token[0] === T_NS_SEPARATOR) {
+                            $markerName = '\\';
+                            $token = $nextToken();
+                        }
+
                         $requireString($token);
-                        $markers[] = new MarkerReference($token[1]);
+                        $markerName .= $token[1];
                         $token = $nextToken();
+
+                        while ($token[0] === T_NS_SEPARATOR) {
+                            $token = $nextToken();
+                            $requireString($token);
+                            $markerName .= '\\' . $token[1];
+                            $token = $nextToken();
+                        }
+
+                        $markers[] = new MarkerReference($markerName);
                         $token = $skipWhitespace($token);
                     } while (',' === $token[1]);
                 }
