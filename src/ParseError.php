@@ -17,7 +17,7 @@ class ParseError extends \RuntimeException
     {
         $filePart = empty($filename) ? '' : ' on file \'' . $filename . '\'';
 
-        return new self(sprintf(
+        return new self(\sprintf(
             "Syntax error, unexpected '%s', expecting 'data' or 'marker' at line %d%s",
             $actual[1],
             $actual[2],
@@ -29,7 +29,7 @@ class ParseError extends \RuntimeException
     {
         $filePart = empty($filename) ? '' : ' on file \'' . $filename . '\'';
 
-        return new self(sprintf(
+        return new self(\sprintf(
             "Syntax error, unexpected '%s', expecting '%s' at line %d%s",
             $actual[1],
             $expected,

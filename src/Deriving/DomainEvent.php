@@ -31,7 +31,7 @@ class DomainEvent extends AbstractDeriving
             }
         }
 
-        if (count($definition->constructors()) !== 1) {
+        if (\count($definition->constructors()) !== 1) {
             throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
         }
 

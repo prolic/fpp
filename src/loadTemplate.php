@@ -36,7 +36,7 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
     $markerTemplateFile = $prefix . 'marker.template';
     if ($definition->isMarker()) {
         if (! isset($cache[$markerTemplateFile])) {
-            $cache[$markerTemplateFile] = file_get_contents($markerTemplateFile);
+            $cache[$markerTemplateFile] = \file_get_contents($markerTemplateFile);
         }
 
         return $cache[$markerTemplateFile];
@@ -63,7 +63,7 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
     }
 
     if (! isset($cache[$classTemplateFile])) {
-        $cache[$classTemplateFile] = file_get_contents($classTemplateFile);
+        $cache[$classTemplateFile] = \file_get_contents($classTemplateFile);
     }
 
     $classTemplate = $cache[$classTemplateFile];
@@ -97,7 +97,7 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
 
     foreach ($bodyTemplatesFiles as $file) {
         if (! isset($cache[$file])) {
-            $cache[$file] = file_get_contents($file);
+            $cache[$file] = \file_get_contents($file);
         }
 
         $bodyTemplate .= $cache[$file] . "\n\n";

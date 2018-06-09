@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-if (! defined('T_OTHER')) {
-    define('T_OTHER', 100000);
+if (! \defined('T_OTHER')) {
+    \define('T_OTHER', 100000);
 }
 
 const parse = '\Fpp\parse';
@@ -624,7 +624,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                     $errorMessage = $token[1];
 
-                    $conditions[] = new Condition($conditionConstructor, trim($code), \substr($errorMessage, 1, -1));
+                    $conditions[] = new Condition($conditionConstructor, \trim($code), \substr($errorMessage, 1, -1));
 
                     $token = $nextToken();
                     $token = $skipWhitespace($token);

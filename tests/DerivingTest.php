@@ -109,7 +109,7 @@ class DerivingTest extends TestCase
     public function deriving_expects_at_least_one_constructor_argument(Deriving $deriving): void
     {
         $this->expectException(InvalidDeriving::class);
-        $this->expectExceptionMessage(sprintf(
+        $this->expectExceptionMessage(\sprintf(
             'Invalid deriving on Foo\Bar, deriving %s expects at least one constructor argument',
             (string) $deriving
         ));
@@ -147,7 +147,7 @@ class DerivingTest extends TestCase
     public function deriving_expects_no_conditions(Deriving $deriving): void
     {
         $this->expectException(InvalidDeriving::class);
-        $this->expectExceptionMessage(sprintf(
+        $this->expectExceptionMessage(\sprintf(
             'Invalid deriving on Foo\Bar, deriving %s expects no conditions at all',
             (string) $deriving
         ));
@@ -211,7 +211,7 @@ class DerivingTest extends TestCase
     public function deriving_expects_no_nullable_first_argument(Deriving $deriving): void
     {
         $this->expectException(InvalidDeriving::class);
-        $this->expectExceptionMessage(sprintf(
+        $this->expectExceptionMessage(\sprintf(
             'Invalid first argument for Foo\Bar, %s deriving needs first argument to be no nullable and no list',
             (string) $deriving
         ));
@@ -230,7 +230,7 @@ class DerivingTest extends TestCase
     public function deriving_expects_no_list_first_argument(Deriving $deriving): void
     {
         $this->expectException(InvalidDeriving::class);
-        $this->expectExceptionMessage(sprintf(
+        $this->expectExceptionMessage(\sprintf(
             'Invalid first argument for Foo\Bar, %s deriving needs first argument to be no nullable and no list',
             (string) $deriving
         ));

@@ -17,7 +17,7 @@ $autoloadFiles = [
 ];
 
 foreach ($autoloadFiles as $autoloadFile) {
-    if (file_exists($autoloadFile)) {
+    if (\file_exists($autoloadFile)) {
         $autoloader = require_once $autoloadFile;
         break;
     }

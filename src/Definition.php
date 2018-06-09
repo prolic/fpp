@@ -93,10 +93,10 @@ class Definition
 
         foreach ($markers as $key => $marker) {
             if (! $marker instanceof MarkerReference) {
-                throw new \InvalidArgumentException(sprintf(
+                throw new \InvalidArgumentException(\sprintf(
                     'Marker at position %d must be an instance of \\Fpp\\MarkerReference, got %s',
                     $key,
-                    is_object($marker) ? get_class($marker) : gettype($marker)
+                    \is_object($marker) ? \get_class($marker) : \gettype($marker)
                 ));
             }
         }
@@ -217,7 +217,7 @@ class Definition
 
     private function invalid(string $message): \InvalidArgumentException
     {
-        return new \InvalidArgumentException(sprintf(
+        return new \InvalidArgumentException(\sprintf(
             'Error on %s%s: %s',
             $this->namespace . '\\',
             $this->name,

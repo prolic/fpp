@@ -95,7 +95,7 @@ final class Bar
 
 CODE;
         $dump($collection);
-        $this->assertSame($expected, file_get_contents($this->root->url() . '/Foo/Bar.php'));
+        $this->assertSame($expected, \file_get_contents($this->root->url() . '/Foo/Bar.php'));
     }
 
     /**
@@ -150,8 +150,8 @@ final class Baz extends Bar
 CODE;
 
         $dump($collection);
-        $this->assertSame($expected1, file_get_contents($this->root->url() . '/Foo/Bar.php'));
-        $this->assertSame($expected2, file_get_contents($this->root->url() . '/Foo/Baz.php'));
+        $this->assertSame($expected1, \file_get_contents($this->root->url() . '/Foo/Bar.php'));
+        $this->assertSame($expected2, \file_get_contents($this->root->url() . '/Foo/Baz.php'));
     }
 
     /**
@@ -181,7 +181,7 @@ interface Bar
 }
 
 CODE;
-        $this->assertSame($expected, file_get_contents($this->root->url() . '/Foo/Bar.php'));
+        $this->assertSame($expected, \file_get_contents($this->root->url() . '/Foo/Bar.php'));
     }
 
     /**
@@ -248,9 +248,9 @@ interface MarkerC extends MarkerA, MarkerB
 }
 
 CODE;
-        $this->assertSame($expected1, file_get_contents($this->root->url() . '/Foo/MarkerA.php'));
-        $this->assertSame($expected2, file_get_contents($this->root->url() . '/Foo/MarkerB.php'));
-        $this->assertSame($expected3, file_get_contents($this->root->url() . '/Foo/MarkerC.php'));
+        $this->assertSame($expected1, \file_get_contents($this->root->url() . '/Foo/MarkerA.php'));
+        $this->assertSame($expected2, \file_get_contents($this->root->url() . '/Foo/MarkerB.php'));
+        $this->assertSame($expected3, \file_get_contents($this->root->url() . '/Foo/MarkerC.php'));
     }
 
     /**
@@ -299,8 +299,8 @@ interface MyMarkerB extends \Foo\MyMarkerA
 }
 
 CODE;
-        $this->assertSame($expected1, file_get_contents($this->root->url() . '/Foo/MyMarkerA.php'));
-        $this->assertSame($expected2, file_get_contents($this->root->url() . '/Bar/MyMarkerB.php'));
+        $this->assertSame($expected1, \file_get_contents($this->root->url() . '/Foo/MyMarkerA.php'));
+        $this->assertSame($expected2, \file_get_contents($this->root->url() . '/Bar/MyMarkerB.php'));
     }
 
     /**
@@ -336,7 +336,7 @@ interface MyMarker extends \FppTest\MyExistingMarker
 
 CODE;
 
-        $this->assertSame($expected, file_get_contents($this->root->url() . '/Foo/MyMarker.php'));
+        $this->assertSame($expected, \file_get_contents($this->root->url() . '/Foo/MyMarker.php'));
     }
 
     /**
@@ -492,7 +492,7 @@ final class MyData implements MyMarkerA, MyMarkerB
 
 CODE;
 
-        $this->assertSame($expected, file_get_contents($this->root->url() . '/Foo/MyData.php'));
+        $this->assertSame($expected, \file_get_contents($this->root->url() . '/Foo/MyData.php'));
     }
 
     /**
@@ -528,7 +528,7 @@ final class MyData implements MyMarkerA, \Bar\MyMarkerB
 
 CODE;
 
-        $this->assertSame($expected, file_get_contents($this->root->url() . '/Foo/MyData.php'));
+        $this->assertSame($expected, \file_get_contents($this->root->url() . '/Foo/MyData.php'));
     }
 
     /**
@@ -564,7 +564,7 @@ final class MyData implements \FppTest\MyExistingMarker
 
 CODE;
 
-        $this->assertSame($expected, file_get_contents($this->root->url() . '/Foo/MyData.php'));
+        $this->assertSame($expected, \file_get_contents($this->root->url() . '/Foo/MyData.php'));
     }
 
     /**
@@ -628,7 +628,7 @@ CODE;
     {
         $collection = new DefinitionCollection();
 
-        foreach (func_get_args() as $arg) {
+        foreach (\func_get_args() as $arg) {
             $collection->addDefinition($arg);
         }
 

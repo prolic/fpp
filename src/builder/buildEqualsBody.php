@@ -114,7 +114,7 @@ CODE;
                 }
 
                 if (! $compare) {
-                    throw new \RuntimeException(sprintf(
+                    throw new \RuntimeException(\sprintf(
                         'No comparable deriving given for argument $%s on definition %s',
                         $argumentName,
                         $namespace . '\\' . $name

@@ -16,7 +16,6 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving\Enum;
 use function Fpp\buildReferencedClass;
-use function Fpp\var_export;
 
 const buildEnumConsts = '\Fpp\Builder\buildEnumConsts';
 
@@ -40,7 +39,7 @@ function buildEnumConsts(Definition $definition, ?Constructor $constructor, Defi
 
     foreach ($definition->constructors() as $key => $constructor) {
         $class = buildReferencedClass($definition->namespace(), $constructor->name());
-        $export = empty($enumDeriving->valueMapping()) ? $key : var_export($enumDeriving->valueMapping()[$class], '    ');
+        $export = empty($enumDeriving->valueMapping()) ? $key : \var_export($enumDeriving->valueMapping()[$class], '    ');
         $replace .= "    public const $class = $export;\n";
     }
 
