@@ -22,7 +22,6 @@ use const Fpp\loadTemplate;
 use const Fpp\replace;
 use function Fpp\dump;
 use function Fpp\locatePsrPath;
-use org\bovigo\vfs\vfsStreamFile;
 
 class DumpTest extends TestCase
 {
@@ -303,7 +302,6 @@ CODE;
         $this->assertSame($expected1, file_get_contents($this->root->url() . '/Foo/MyMarkerA.php'));
         $this->assertSame($expected2, file_get_contents($this->root->url() . '/Bar/MyMarkerB.php'));
     }
-
 
     /**
      * @test
