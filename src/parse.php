@@ -168,16 +168,14 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $messageName = null;
                 $markers = [];
                 if (':' === $token[1]) {
-                    parseMarkerReferences:
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
-                    $requireString($token);
-                    $markers[] = new MarkerReference($token[1]);
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
-                    if (',' === $token[1]) {
-                        goto parseMarkerReferences;
-                    }
+                    do {
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+                        $requireString($token);
+                        $markers[] = new MarkerReference($token[1]);
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+                    } while (',' === $token[1]);
                 }
                 if (';' !== $token[1]) {
                     throw ParseError::unexpectedTokenFound(';', $token, $filename);
@@ -194,6 +192,18 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $token = $nextToken();
                 $token = $skipWhitespace($token);
                 $messageName = null;
+                $markers = [];
+
+                if (':' === $token[1]) {
+                    do {
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+                        $requireString($token);
+                        $markers[] = new MarkerReference($token[1]);
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+                    } while (',' === $token[1]);
+                }
 
                 if ($token[1] !== '=') {
                     throw ParseError::unexpectedTokenFound('=', $token, $filename);
@@ -203,7 +213,6 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $constructors = [];
                 $derivings = [];
                 $conditions = [];
-                $markers = [];
                 parseConstructor:
 
                 $constructorName = '';
@@ -597,10 +606,6 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     if (T_STRING === $token[0]) {
                         goto parseConditionsForConstructor;
                     }
-                }
-
-                if (':' === $token[1]) {
-                    goto parseMarkerReferences;
                 }
 
                 buildDefinition:

@@ -1141,7 +1141,7 @@ CODE;
 namespace Foo;
 marker MyMarkerA;
 marker MyMarkerB;
-data MyData = MyData { String \$foo } : MyMarkerA, MyMarkerB;
+data MyData : MyMarkerA, MyMarkerB = MyData { String \$foo };
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);

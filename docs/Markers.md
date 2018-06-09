@@ -51,7 +51,8 @@ namespace Foo;
 marker MyMarkerA;
 marker MyMarkerB;
 marker MyMarkerC : MyMarkerA, MyMarkerB;
-data MyData = MyData : MyMarkerA, MyMarkerB, MyMarkerC;
+marker MyMarkerD;
+data MyData : MyMarkerC, MyMarkerD = MyData;
 ```
 
 Wanna see more? check [Derivings](Derivings.md)
