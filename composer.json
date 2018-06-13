@@ -23,6 +23,11 @@
       "Fpp\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "FppTest\\": "tests/"
+    }
+  },
   "bin": [
     "bin/fpp"
   ]

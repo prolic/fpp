@@ -310,10 +310,8 @@ CODE;
     {
         $dump = $this->dump;
 
-        require_once __DIR__.'/MyExistingMarker.php';
-
         $data = new Definition(DefinitionType::marker(), 'Foo', 'MyMarker', [], [], [], null, [
-            new MarkerReference('\\FppTest\\MyExistingMarker'),
+            new MarkerReference('\\FppTest\\Fixtures\\MyExistingMarker1'),
         ]);
 
         $collection = $this->buildCollection($data);
@@ -330,7 +328,7 @@ declare(strict_types=1);
 
 namespace Foo;
 
-interface MyMarker extends \FppTest\MyExistingMarker
+interface MyMarker extends \FppTest\Fixtures\MyExistingMarker1
 {
 }
 
@@ -538,10 +536,8 @@ CODE;
     {
         $dump = $this->dump;
 
-        require_once __DIR__.'/MyExistingMarker.php';
-
         $data = new Definition(DefinitionType::data(), 'Foo', 'MyData', [new Constructor('Foo\\MyData')], [], [], null, [
-            new MarkerReference('\\FppTest\\MyExistingMarker'),
+            new MarkerReference('\\FppTest\\Fixtures\\MyExistingMarker2'),
         ]);
 
         $collection = $this->buildCollection($data);
@@ -558,7 +554,7 @@ declare(strict_types=1);
 
 namespace Foo;
 
-final class MyData implements \FppTest\MyExistingMarker
+final class MyData implements \FppTest\Fixtures\MyExistingMarker2
 {
 }
 

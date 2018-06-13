@@ -9,8 +9,8 @@
 
 declare(strict_types=1);
 
-namespace FppTest;
+namespace FppTest\Fixtures;
 
-interface MyExistingMarker
+interface MyExistingMarker1
 {
 }

@@ -25,7 +25,7 @@ function buildClassImplements(Definition $definition, ?Constructor $constructor,
             $marker = \sprintf('\\%s\\%s', $definition->namespace(), $marker);
         }
 
-        if (\interface_exists($marker, false)) {
+        if (\interface_exists($marker, true)) {
             if (0 !== \count((new \ReflectionClass($marker))->getMethods())) {
                 throw new \RuntimeException(\sprintf(
                     'Cannot mark %s\\%s with non marker interface %s',
