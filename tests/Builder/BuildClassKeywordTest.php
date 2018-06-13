@@ -14,6 +14,7 @@ namespace FppTest\Builder;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildClassKeyword;
 
@@ -24,7 +25,7 @@ class BuildClassKeywordTest extends TestCase
      */
     public function it_adds_abstract_keyword(): void
     {
-        $definition = new Definition('Foo', 'Color', [new Constructor('Foo\Red')]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Color', [new Constructor('Foo\Red')]);
 
         $this->assertSame('abstract ', buildClassKeyword($definition, null, new DefinitionCollection($definition), ''));
     }
@@ -35,7 +36,7 @@ class BuildClassKeywordTest extends TestCase
     public function it_adds_final_keyword(): void
     {
         $constructor = new Constructor('Foo\Red');
-        $definition = new Definition('Foo', 'Color', [$constructor]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Color', [$constructor]);
 
         $this->assertSame('final ', buildClassKeyword($definition, $constructor, new DefinitionCollection($definition), ''));
     }
@@ -46,7 +47,7 @@ class BuildClassKeywordTest extends TestCase
     public function it_adds_no_keyword(): void
     {
         $constructor = new Constructor('Foo\Bar');
-        $definition = new Definition('Foo', 'Bar', [$constructor, new Constructor('Foo\Baz')]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor, new Constructor('Foo\Baz')]);
 
         $this->assertSame('', buildClassKeyword($definition, $constructor, new DefinitionCollection($definition), ''));
     }

@@ -43,7 +43,7 @@ class Enum extends AbstractDeriving
             }
         }
 
-        if (count($definition->constructors()) < 2) {
+        if (\count($definition->constructors()) < 2) {
             throw InvalidDeriving::atLeastTwoConstructorsExpected($definition, self::VALUE);
         }
 
@@ -54,10 +54,10 @@ class Enum extends AbstractDeriving
         }
 
         $definitionNamespace = $definition->namespace();
-        $definitionNamespaceLength = strlen($definitionNamespace);
+        $definitionNamespaceLength = \strlen($definitionNamespace);
 
         foreach ($definition->constructors() as $constructor) {
-            if (count($constructor->arguments()) > 0) {
+            if (\count($constructor->arguments()) > 0) {
                 throw InvalidDeriving::exactlyZeroConstructorArgumentsExpected($definition, self::VALUE);
             }
 
@@ -67,11 +67,11 @@ class Enum extends AbstractDeriving
                 $constructorName = \substr($constructorName, $definitionNamespaceLength + 1);
             }
 
-            if ($checkValueMapping && ! array_key_exists($constructorName, $this->valueMapping)) {
+            if ($checkValueMapping && ! \array_key_exists($constructorName, $this->valueMapping)) {
                 throw InvalidDeriving::enumValueMappingDoesNotMatchConstructors($definition);
             }
 
-            if (strpos($constructorName, '\\') !== false) {
+            if (\strpos($constructorName, '\\') !== false) {
                 throw InvalidDeriving::noConstructorNamespacesAllowed($definition, self::VALUE);
             }
         }

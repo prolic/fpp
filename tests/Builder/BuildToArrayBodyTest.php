@@ -15,6 +15,7 @@ use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildToArrayBody;
@@ -27,6 +28,7 @@ class BuildToArrayBodyTest extends TestCase
     public function it_builds_to_array_body(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -38,6 +40,7 @@ class BuildToArrayBodyTest extends TestCase
         );
 
         $email = new Definition(
+            DefinitionType::data(),
             'Some',
             'Email',
             [
@@ -58,6 +61,7 @@ class BuildToArrayBodyTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor],

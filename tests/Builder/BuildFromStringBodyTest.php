@@ -15,6 +15,7 @@ use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildFromStringBody;
@@ -27,6 +28,7 @@ class BuildFromStringBodyTest extends TestCase
     public function it_builds_from_string_body(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -53,6 +55,7 @@ CODE;
     public function it_builds_from_scalar_body_from_scalar_constructor(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -77,6 +80,7 @@ CODE;
     public function it_builds_from_string_body_from_string_scalar(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -103,6 +107,7 @@ CODE;
     public function it_builds_from_string_body_from_object_of_object(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -114,6 +119,7 @@ CODE;
         );
 
         $user = new Definition(
+            DefinitionType::data(),
             'My',
             'User',
             [
@@ -140,6 +146,7 @@ CODE;
     public function it_builds_from_string_body_from_object_of_object_from_another_namespace(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'Your',
             'UserId',
             [
@@ -151,6 +158,7 @@ CODE;
         );
 
         $user = new Definition(
+            DefinitionType::data(),
             'My',
             'User',
             [
@@ -177,6 +185,7 @@ CODE;
     public function it_builds_from_string_body_from_object_of_object_with_scalar_deriving(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -190,6 +199,7 @@ CODE;
         );
 
         $user = new Definition(
+            DefinitionType::data(),
             'My',
             'User',
             [
@@ -216,6 +226,7 @@ CODE;
     public function it_throws_when_no_deriving_given(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -224,6 +235,7 @@ CODE;
         );
 
         $user = new Definition(
+            DefinitionType::data(),
             'My',
             'User',
             [
@@ -248,6 +260,7 @@ CODE;
     public function it_throws_when_unknown_argument_given(): void
     {
         $user = new Definition(
+            DefinitionType::data(),
             'My',
             'User',
             [
@@ -272,6 +285,7 @@ CODE;
     public function it_returns_placeholder_if_no_constructor_given(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [

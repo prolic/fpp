@@ -16,13 +16,13 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving\Enum;
 use function Fpp\buildReferencedClass;
-use function Fpp\var_export;
+use function Fpp\var_export as fpp_var_export;
 
 const buildEnumOptions = '\Fpp\Builder\buildEnumOptions';
 
 function buildEnumOptions(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
-    if ($constructor) {
+    if ($constructor || $definition->isMarker()) {
         return $placeHolder;
     }
 
@@ -41,7 +41,7 @@ function buildEnumOptions(Definition $definition, ?Constructor $constructor, Def
     foreach ($definition->constructors() as $key => $definitionConstructor) {
         $class = buildReferencedClass($namespace, $definitionConstructor->name());
         $value = empty($valueMapping) ? $key : $valueMapping[$class];
-        $value = var_export($value, '        ');
+        $value = fpp_var_export($value, '        ');
         $replace .= "        '$class' => $value,\n";
     }
 

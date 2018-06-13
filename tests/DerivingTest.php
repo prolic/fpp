@@ -15,6 +15,7 @@ use Fpp\Argument;
 use Fpp\Condition;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\Deriving;
 use Fpp\Deriving\Enum;
 use Fpp\Deriving\FromScalar;
@@ -46,7 +47,7 @@ class DerivingTest extends TestCase
         $this->expectExceptionMessage('Invalid deriving on Foo\Bar, deriving FromScalar expects exactly one constructor');
 
         $fromScalar = new FromScalar();
-        $fromScalar->checkDefinition(new Definition('Foo', 'Bar', [
+        $fromScalar->checkDefinition(new Definition(DefinitionType::data(), 'Foo', 'Bar', [
             new Constructor('Foo\Bar'),
             new Constructor('Foo\Baz'),
         ]));
@@ -61,7 +62,7 @@ class DerivingTest extends TestCase
         $this->expectExceptionMessage('Invalid deriving on Foo\Bar, deriving Enum expects at least two constructors');
 
         $enum = new Enum();
-        $enum->checkDefinition(new Definition('Foo', 'Bar', [
+        $enum->checkDefinition(new Definition(DefinitionType::data(), 'Foo', 'Bar', [
             new Constructor('Foo\Baz'),
         ]));
     }
@@ -75,7 +76,7 @@ class DerivingTest extends TestCase
         $this->expectExceptionMessage('Invalid deriving on Foo\Bar, deriving Enum expects exactly zero constructor arguments');
 
         $enum = new Enum();
-        $enum->checkDefinition(new Definition('Foo', 'Bar', [
+        $enum->checkDefinition(new Definition(DefinitionType::data(), 'Foo', 'Bar', [
             new Constructor('Foo\Baz', [
                 new Argument('foo', 'string'),
             ]),
@@ -94,7 +95,7 @@ class DerivingTest extends TestCase
         $this->expectExceptionMessage('Invalid deriving on Foo\Bar, deriving Uuid expects exactly zero constructor arguments');
 
         $uuid = new Uuid();
-        $uuid->checkDefinition(new Definition('Foo', 'Bar', [
+        $uuid->checkDefinition(new Definition(DefinitionType::data(), 'Foo', 'Bar', [
             new Constructor('Foo\Baz', [
                 new Argument('foo', 'string'),
             ]),
@@ -108,12 +109,12 @@ class DerivingTest extends TestCase
     public function deriving_expects_at_least_one_constructor_argument(Deriving $deriving): void
     {
         $this->expectException(InvalidDeriving::class);
-        $this->expectExceptionMessage(sprintf(
+        $this->expectExceptionMessage(\sprintf(
             'Invalid deriving on Foo\Bar, deriving %s expects at least one constructor argument',
             (string) $deriving
         ));
 
-        $deriving->checkDefinition(new Definition('Foo', 'Bar', [
+        $deriving->checkDefinition(new Definition(DefinitionType::data(), 'Foo', 'Bar', [
             new Constructor('Foo\Bar'),
         ]));
     }
@@ -146,12 +147,12 @@ class DerivingTest extends TestCase
     public function deriving_expects_no_conditions(Deriving $deriving): void
     {
         $this->expectException(InvalidDeriving::class);
-        $this->expectExceptionMessage(sprintf(
+        $this->expectExceptionMessage(\sprintf(
             'Invalid deriving on Foo\Bar, deriving %s expects no conditions at all',
             (string) $deriving
         ));
 
-        $deriving->checkDefinition(new Definition('Foo', 'Bar', [
+        $deriving->checkDefinition(new Definition(DefinitionType::data(), 'Foo', 'Bar', [
                 new Constructor('Foo\Bar', [
                     new Argument('baz', 'Foo\Baz'),
                 ]),
@@ -197,7 +198,7 @@ class DerivingTest extends TestCase
         $this->expectExceptionMessage('Invalid deriving on Foo\Bam, enum value mapping does not match constructors');
 
         $enum = new Deriving\Enum(['Foo\Bar' => 1, 'Foo\Baz' => 2]);
-        $enum->checkDefinition(new Definition('Foo', 'Bam', [
+        $enum->checkDefinition(new Definition(DefinitionType::data(), 'Foo', 'Bam', [
             new Constructor('Foo\Bar'),
             new Constructor('Foo\Bag'),
         ]));
@@ -210,12 +211,12 @@ class DerivingTest extends TestCase
     public function deriving_expects_no_nullable_first_argument(Deriving $deriving): void
     {
         $this->expectException(InvalidDeriving::class);
-        $this->expectExceptionMessage(sprintf(
+        $this->expectExceptionMessage(\sprintf(
             'Invalid first argument for Foo\Bar, %s deriving needs first argument to be no nullable and no list',
             (string) $deriving
         ));
 
-        $deriving->checkDefinition(new Definition('Foo', 'Bar', [
+        $deriving->checkDefinition(new Definition(DefinitionType::data(), 'Foo', 'Bar', [
             new Constructor('Foo\Bar', [
                 new Argument('name', 'string', true),
             ]),
@@ -229,12 +230,12 @@ class DerivingTest extends TestCase
     public function deriving_expects_no_list_first_argument(Deriving $deriving): void
     {
         $this->expectException(InvalidDeriving::class);
-        $this->expectExceptionMessage(sprintf(
+        $this->expectExceptionMessage(\sprintf(
             'Invalid first argument for Foo\Bar, %s deriving needs first argument to be no nullable and no list',
             (string) $deriving
         ));
 
-        $deriving->checkDefinition(new Definition('Foo', 'Bar', [
+        $deriving->checkDefinition(new Definition(DefinitionType::data(), 'Foo', 'Bar', [
             new Constructor('Foo\Bar', [
                 new Argument('name', 'string', false, true),
             ]),

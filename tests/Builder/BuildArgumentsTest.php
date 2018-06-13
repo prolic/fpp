@@ -15,6 +15,7 @@ use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildArguments;
 
@@ -33,6 +34,7 @@ class BuildArgumentsTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'UserRegistered',
             [$constructor]

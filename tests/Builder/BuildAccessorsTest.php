@@ -15,6 +15,7 @@ use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildAccessors;
@@ -31,7 +32,7 @@ class BuildAccessorsTest extends TestCase
         $argument3 = new Argument('whatever');
 
         $constructor = new Constructor('Hell\Yeah', [$argument1, $argument2, $argument3]);
-        $definition = new Definition('Hell', 'Yeah', [$constructor], [new Deriving\Command()]);
+        $definition = new Definition(DefinitionType::data(), 'Hell', 'Yeah', [$constructor], [new Deriving\Command()]);
         $collection = new DefinitionCollection($definition);
 
         $expected = <<<STRING
@@ -65,7 +66,7 @@ STRING;
         $argument3 = new Argument('whatever');
 
         $constructor = new Constructor('Hell\Yeah', [$argument1, $argument2, $argument3]);
-        $definition = new Definition('Hell', 'Yeah', [$constructor], [new Deriving\DomainEvent()]);
+        $definition = new Definition(DefinitionType::data(), 'Hell', 'Yeah', [$constructor], [new Deriving\DomainEvent()]);
         $collection = new DefinitionCollection($definition);
 
         $expected = <<<STRING
@@ -110,7 +111,7 @@ STRING;
         $argument3 = new Argument('whatever');
 
         $constructor = new Constructor('Hell\Yeah', [$argument1, $argument2, $argument3]);
-        $definition = new Definition('Hell', 'Yeah', [$constructor]);
+        $definition = new Definition(DefinitionType::data(), 'Hell', 'Yeah', [$constructor]);
         $collection = new DefinitionCollection($definition);
 
         $expected = <<<STRING

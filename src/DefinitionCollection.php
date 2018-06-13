@@ -38,7 +38,7 @@ class DefinitionCollection
     public function addDefinition(Definition $definition): void
     {
         if (isset($this->registry[$definition->namespace()][$definition->name()])) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 'Duplicate definition found: %s\\%s',
                 $definition->namespace(),
                 $definition->name()
@@ -99,7 +99,7 @@ class DefinitionCollection
 
         foreach ($collection->definitions() as $definition) {
             if ($this->hasDefinition($definition->namespace(), $definition->name())) {
-                throw new \InvalidArgumentException(sprintf(
+                throw new \InvalidArgumentException(\sprintf(
                     'Duplicate definition found: %s\\%s',
                     $definition->namespace(),
                     $definition->name()

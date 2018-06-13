@@ -26,23 +26,23 @@ function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, Definition $def
     }
 
     // PSR-4 lookup
-    $logicalPathPsr4 = strtr($class, '\\', DIRECTORY_SEPARATOR);
+    $logicalPathPsr4 = \strtr($class, '\\', DIRECTORY_SEPARATOR);
 
     foreach ($prefixesPsr4 as $prefix => $dirs) {
-        if (0 === strpos($class, $prefix)) {
+        if (0 === \strpos($class, $prefix)) {
             $dir = $dirs[0];
 
-            return $dir . DIRECTORY_SEPARATOR . \substr($logicalPathPsr4, strlen($prefix)) . '.php';
+            return $dir . DIRECTORY_SEPARATOR . \substr($logicalPathPsr4, \strlen($prefix)) . '.php';
         }
     }
 
     // PSR-0 lookup
     $pos = \strrpos($class, '\\');
     $logicalPathPsr0 = \substr($logicalPathPsr4, 0, $pos + 1)
-        . strtr(\substr($logicalPathPsr4, $pos + 1), '_', DIRECTORY_SEPARATOR);
+        . \strtr(\substr($logicalPathPsr4, $pos + 1), '_', DIRECTORY_SEPARATOR);
 
     foreach ($prefixesPsr0 as $prefix => $dirs) {
-        if (0 === strpos($class, $prefix)) {
+        if (0 === \strpos($class, $prefix)) {
             $dir = $dirs[0];
 
             return $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0 . '.php';

@@ -1091,6 +1091,99 @@ CODE;
         $this->assertSame(['foo' => 'bar', 'baz', 1, true, 'bam' => 123], $deriving->valueMapping()['Yellow']);
     }
 
+    /**
+     * @test
+     */
+    public function it_parses_marker()
+    {
+        $contents = <<<CODE
+namespace Foo;
+marker MyMarker;
+CODE;
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'MyMarker');
+        $this->assertTrue($definition->isMarker());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_marker_extending_another_marker_interface()
+    {
+        $contents = <<<CODE
+namespace Foo;
+marker MyMarkerA;
+marker MyMarkerB;
+marker MyMarkerC : MyMarkerA, MyMarkerB;
+CODE;
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'MyMarkerA');
+        $this->assertTrue($definition->isMarker());
+        $this->assertCount(0, $definition->markers());
+
+        $definition = $collection->definition('Foo', 'MyMarkerB');
+        $this->assertTrue($definition->isMarker());
+        $this->assertCount(0, $definition->markers());
+
+        $definition = $collection->definition('Foo', 'MyMarkerC');
+        $this->assertTrue($definition->isMarker());
+        $this->assertCount(2, $definition->markers());
+        $this->assertSame('MyMarkerA', (string) $definition->markers()[0]);
+        $this->assertSame('MyMarkerB', (string) $definition->markers()[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_marker_extending_existing_interfaces()
+    {
+        $contents = <<<CODE
+namespace Foo;
+marker MyMarker : \App\Abc\Def;
+CODE;
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'MyMarker');
+        $this->assertTrue($definition->isMarker());
+        $this->assertCount(1, $definition->markers());
+        $this->assertSame('\App\Abc\Def', (string) $definition->markers()[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_parsing_data_marked_with_existing_interface()
+    {
+        $contents = <<<CODE
+namespace Foo;
+data MyData : \App\Abc\Def = MyData;
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+
+        $definition = $collection->definition('Foo', 'MyData');
+        $this->assertCount(1, $definition->markers());
+        $this->assertSame('\App\Abc\Def', (string) $definition->markers()[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_marked_data()
+    {
+        $contents = <<<CODE
+namespace Foo;
+marker MyMarkerA;
+marker MyMarkerB;
+data MyData : MyMarkerA, MyMarkerB = MyData { String \$foo };
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'MyData');
+        $this->assertCount(2, $definition->markers());
+        $this->assertSame('MyMarkerA', (string) $definition->markers()[0]);
+        $this->assertSame('MyMarkerB', (string) $definition->markers()[1]);
+    }
+
     public function scalarListTypes(): array
     {
         return [

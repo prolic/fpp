@@ -14,6 +14,7 @@ namespace FppTest;
 use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
+use Fpp\DefinitionType;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\loadTemplate;
@@ -26,14 +27,14 @@ class LoadTemplateTest extends TestCase
     public function it_loads_default_class_template(): void
     {
         $constructor = new Constructor('Foo\Bar');
-        $definition = new Definition('Foo', 'Bar', [$constructor]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor]);
 
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
 namespace {{namespace}};
 
-{{class_keyword}}class {{class_name}}{{class_extends}}
+{{class_keyword}}class {{class_name}}{{class_extends}}{{class_implements}}
 {
     {{traits}}
     {{properties}}
@@ -53,14 +54,14 @@ TEMPLATE;
     public function it_loads_template_for_string_constructor(): void
     {
         $constructor = new Constructor('String');
-        $definition = new Definition('Foo', 'Bar', [$constructor]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor]);
 
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
 namespace {{namespace}};
 
-{{class_keyword}}class {{class_name}}{{class_extends}}
+{{class_keyword}}class {{class_name}}{{class_extends}}{{class_implements}}
 {
     {{traits}}
     {{properties}}
@@ -92,14 +93,14 @@ TEMPLATE;
     public function it_loads_class_template_with_deriving_body_templates(): void
     {
         $constructor = new Constructor('Foo\Bar', [new Argument('name', 'string')]);
-        $definition = new Definition('Foo', 'Bar', [$constructor], [new Deriving\ToString(), new Deriving\FromString()]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\ToString(), new Deriving\FromString()]);
 
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
 namespace {{namespace}};
 
-{{class_keyword}}class {{class_name}}{{class_extends}}
+{{class_keyword}}class {{class_name}}{{class_extends}}{{class_implements}}
 {
     {{traits}}
     {{properties}}
@@ -134,14 +135,14 @@ TEMPLATE;
     {
         $constructor1 = new Constructor('Foo\Blue');
         $constructor2 = new Constructor('Foo\Red');
-        $definition = new Definition('Foo', 'Color', [$constructor1, $constructor2], [new Deriving\Enum()]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Color', [$constructor1, $constructor2], [new Deriving\Enum()]);
 
         $template = loadTemplate($definition, null);
 
         $expected = <<<TEMPLATE
 namespace {{namespace}};
 
-{{class_keyword}}class {{class_name}}{{class_extends}}
+{{class_keyword}}class {{class_name}}{{class_extends}}{{class_implements}}
 {
     {{traits}}
     {{properties}}
@@ -217,14 +218,14 @@ TEMPLATE;
     public function it_loads_body_template_for_scalar_list_constructors(): void
     {
         $constructor = new Constructor('Float[]');
-        $definition = new Definition('Foo', 'Color', [$constructor]);
+        $definition = new Definition(DefinitionType::data(), 'Foo', 'Color', [$constructor]);
 
         $template = loadTemplate($definition, $constructor);
 
         $expected = <<<TEMPLATE
 namespace {{namespace}};
 
-{{class_keyword}}class {{class_name}}{{class_extends}}
+{{class_keyword}}class {{class_name}}{{class_extends}}{{class_implements}}
 {
     {{traits}}
     {{properties}}

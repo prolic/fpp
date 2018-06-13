@@ -25,7 +25,7 @@ const scan = '\Fpp\scan';
  */
 function scan(string $directoryOrFile): array
 {
-    if (! is_readable($directoryOrFile)) {
+    if (! \is_readable($directoryOrFile)) {
         throw new RuntimeException("'$directoryOrFile' is not readable");
     }
 

@@ -67,15 +67,17 @@ function defaultBuilders(): array
         'to_string_body' => Builder\buildToScalarBody,
         'traits' => Builder\buildTraits,
         'variable_name' => Builder\buildVariableName,
+        'interface_name' => Builder\buildInterfaceName,
+        'class_implements' => Builder\buildClassImplements,
     ];
 }
 
 function buildReferencedClass(string $namespace, string $fqcn): string
 {
-    $position = strpos($fqcn, $namespace . '\\');
+    $position = \strpos($fqcn, $namespace . '\\');
 
     if (false !== $position) {
-        return \substr($fqcn, strlen($namespace) + 1);
+        return \substr($fqcn, \strlen($namespace) + 1);
     }
 
     return '\\' . $fqcn;
@@ -159,7 +161,7 @@ function buildArgumentConstructor(Argument $argument, Definition $definition, De
     }
 
     if (! $collection->hasDefinition($namespace, $name)) {
-        throw new \RuntimeException(sprintf(
+        throw new \RuntimeException(\sprintf(
             'Cannot build argument constructor for %s, no definition found',
             $namespace !== '' ? $namespace . '\\' . $name : $name
         ));
@@ -185,7 +187,7 @@ function buildArgumentConstructor(Argument $argument, Definition $definition, De
         }
     }
 
-    throw new \RuntimeException(sprintf(
+    throw new \RuntimeException(\sprintf(
         'Cannot build argument constructor for %s, give a scalar type or a deriving like Enum, FromString, Uuid, FromScalar, FromArray',
         $namespace !== '' ? $namespace . '\\' . $name : $name
     ));
@@ -241,7 +243,7 @@ CODE;
     }
 
     if (! $collection->hasDefinition($namespace, $name)) {
-        throw new \RuntimeException(sprintf(
+        throw new \RuntimeException(\sprintf(
             'Cannot build argument constructor for %s, no definition found',
             $namespace !== '' ? $namespace . '\\' . $name : $name
         ));
@@ -273,7 +275,7 @@ CODE;
     }
 
     if (empty($method)) {
-        throw new \RuntimeException(sprintf(
+        throw new \RuntimeException(\sprintf(
             'Cannot build argument constructor for %s, give a scalar type or a deriving like Enum, FromString, Uuid, FromScalar, FromArray',
             $namespace !== '' ? $namespace . '\\' . $name : $name
         ));
@@ -383,7 +385,7 @@ CODE;
     }
 
     if (! $collection->hasDefinition($namespace, $name)) {
-        throw new \RuntimeException(sprintf(
+        throw new \RuntimeException(\sprintf(
             'Cannot build argument constructor for %s, no definition found',
             $namespace !== '' ? $namespace . '\\' . $name : $name
         ));
@@ -425,7 +427,7 @@ CODE;
         }
     }
 
-    throw new \RuntimeException(sprintf(
+    throw new \RuntimeException(\sprintf(
         'Cannot build argument constructor for %s, give a scalar type hint or a deriving like Enum, FromString, Uuid, FromScalar, FromArray',
         $namespace !== '' ? $namespace . '\\' . $name : $name
     ));
@@ -434,19 +436,19 @@ CODE;
 // found on https://stackoverflow.com/questions/24316347/how-to-format-var-export-to-php5-4-array-syntax
 function var_export($var, $indent = '')
 {
-    switch (gettype($var)) {
+    switch (\gettype($var)) {
         case 'string':
-            return '\'' . addcslashes($var, "\\\$\"\r\n\t\v\f") . '\'';
+            return '\'' . \addcslashes($var, "\\\$\"\r\n\t\v\f") . '\'';
         case 'array':
-            $indexed = array_keys($var) === range(0, \count($var) - 1);
+            $indexed = \array_keys($var) === \range(0, \count($var) - 1);
             $r = [];
             foreach ($var as $key => $value) {
                 $r[] = "$indent    "
-                    . ($indexed ? '' : var_export($key) . ' => ')
-                    . var_export($value, "$indent    ");
+                    . ($indexed ? '' : \Fpp\var_export($key) . ' => ')
+                    . \Fpp\var_export($value, "$indent    ");
             }
 
-            return "[\n" . implode(",\n", $r) . ",\n" . $indent . ']';
+            return "[\n" . \implode(",\n", $r) . ",\n" . $indent . ']';
         case 'boolean':
             return $var ? 'true' : 'false';
         default:

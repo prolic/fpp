@@ -107,7 +107,7 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
                 }
 
                 if (! $match) {
-                    throw new \RuntimeException(sprintf(
+                    throw new \RuntimeException(\sprintf(
                         'No toArray, ToScalar, ToString, Enum or Uuid deriving given for argument $%s on definition %s',
                         $argumentName,
                         $namespace . '\\' . $name

@@ -14,6 +14,11 @@ namespace Fpp;
 class Definition
 {
     /**
+     * @var DefinitionType
+     */
+    private $type;
+
+    /**
      * @var string
      */
     private $namespace;
@@ -44,21 +49,31 @@ class Definition
     private $messageName;
 
     /**
+     * @var MarkerReference[]
+     */
+    private $markers;
+
+    /**
+     * @param DefinitionType $type
      * @param string $namespace
      * @param string $name
      * @param Constructor[] $constructors
      * @param Deriving[] $derivings
      * @param Condition[] $conditions
      * @param string|null $messageName
+     * @param MarkerReference[] $markers
      */
     public function __construct(
+        DefinitionType $type,
         string $namespace,
         string $name,
         array $constructors = [],
         array $derivings = [],
         array $conditions = [],
-        string $messageName = null
+        string $messageName = null,
+        array $markers = []
     ) {
+        $this->type = $type;
         $this->namespace = $namespace;
         $this->name = $name;
 
@@ -72,9 +87,20 @@ class Definition
             throw new \InvalidArgumentException('Name cannot be empty string');
         }
 
-        if (empty($constructors)) {
+        if (empty($constructors) && ! $this->isMarker()) {
             throw new \InvalidArgumentException('At least one constructor required');
         }
+
+        foreach ($markers as $key => $marker) {
+            if (! $marker instanceof MarkerReference) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Marker at position %d must be an instance of \\Fpp\\MarkerReference, got %s',
+                    $key,
+                    \is_object($marker) ? \get_class($marker) : \gettype($marker)
+                ));
+            }
+        }
+        $this->markers = $markers;
 
         $constructorNames = [];
         foreach ($constructors as $constructor) {
@@ -179,9 +205,19 @@ class Definition
         return $this->messageName;
     }
 
+    public function isMarker(): bool
+    {
+        return $this->type->equals(DefinitionType::marker());
+    }
+
+    public function markers(): array
+    {
+        return $this->markers;
+    }
+
     private function invalid(string $message): \InvalidArgumentException
     {
-        return new \InvalidArgumentException(sprintf(
+        return new \InvalidArgumentException(\sprintf(
             'Error on %s%s: %s',
             $this->namespace . '\\',
             $this->name,

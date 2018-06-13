@@ -32,7 +32,7 @@ class ToString extends AbstractDeriving
                 continue;
             }
 
-            if (count($constructor->arguments()) !== 1) {
+            if (\count($constructor->arguments()) !== 1) {
                 throw InvalidDeriving::exactlyOneConstructorArgumentExpected($definition, self::VALUE);
             }
         }

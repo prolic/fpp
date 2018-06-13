@@ -1,0 +1,5 @@
+namespace {{namespace}};
+
+interface {{interface_name}}{{class_extends}}
+{
+}

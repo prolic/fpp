@@ -27,11 +27,11 @@ class FromArray extends AbstractDeriving
             }
         }
 
-        if (count($definition->constructors()) > 1) {
+        if (\count($definition->constructors()) > 1) {
             throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
         }
 
-        if (count($definition->constructors()[0]->arguments()) < 1) {
+        if (\count($definition->constructors()[0]->arguments()) < 1) {
             throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
         }
     }

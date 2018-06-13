@@ -15,6 +15,7 @@ use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildFromArrayBody;
@@ -27,6 +28,7 @@ class BuildFromArrayBodyTest extends TestCase
     public function it_builds_from_array_body(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -38,6 +40,7 @@ class BuildFromArrayBodyTest extends TestCase
         );
 
         $email = new Definition(
+            DefinitionType::data(),
             'Some',
             'Email',
             [
@@ -57,6 +60,7 @@ class BuildFromArrayBodyTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor],
@@ -112,6 +116,7 @@ CODE;
     public function it_builds_from_array_body_2(): void
     {
         $userId = new Definition(
+            DefinitionType::data(),
             'My',
             'UserId',
             [
@@ -120,6 +125,7 @@ CODE;
         );
 
         $age = new Definition(
+            DefinitionType::data(),
             'Some',
             'Age',
             [
@@ -133,6 +139,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor],
@@ -171,6 +178,7 @@ CODE;
     public function it_builds_from_array_body_3(): void
     {
         $name = new Definition(
+            DefinitionType::data(),
             'My',
             'Name',
             [
@@ -183,6 +191,7 @@ CODE;
         );
 
         $age = new Definition(
+            DefinitionType::data(),
             'Some',
             'Age',
             [
@@ -200,6 +209,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor],
@@ -238,6 +248,7 @@ CODE;
     public function it_builds_from_array_body_4(): void
     {
         $float1 = new Definition(
+            DefinitionType::data(),
             'My',
             'Float1',
             [
@@ -250,6 +261,7 @@ CODE;
         );
 
         $float2 = new Definition(
+            DefinitionType::data(),
             'My',
             'Float2',
             [
@@ -269,6 +281,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor],
@@ -333,6 +346,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor],
@@ -379,6 +393,7 @@ CODE;
     public function it_builds_from_array_body_6(): void
     {
         $nickname = new Definition(
+            DefinitionType::data(),
             'My',
             'Nickname',
             [new Constructor('My\Nickname', [new Argument('nickname', 'string', false, false)])],
@@ -392,6 +407,7 @@ CODE;
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'My',
             'Person',
             [$constructor],

@@ -31,12 +31,12 @@ class Uuid extends AbstractDeriving
             }
         }
 
-        if (count($definition->constructors()) !== 1) {
+        if (\count($definition->constructors()) !== 1) {
             throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
         }
 
         foreach ($definition->constructors() as $constructor) {
-            if (count($constructor->arguments()) > 0) {
+            if (\count($constructor->arguments()) > 0) {
                 throw InvalidDeriving::exactlyZeroConstructorArgumentsExpected($definition, self::VALUE);
             }
         }

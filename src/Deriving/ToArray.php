@@ -28,7 +28,7 @@ class ToArray extends AbstractDeriving
         }
 
         foreach ($definition->constructors() as $constructor) {
-            if (count($constructor->arguments()) < 1) {
+            if (\count($constructor->arguments()) < 1) {
                 throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
             }
         }

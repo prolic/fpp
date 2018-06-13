@@ -17,7 +17,7 @@ $autoloadFiles = [
 ];
 
 foreach ($autoloadFiles as $autoloadFile) {
-    if (file_exists($autoloadFile)) {
+    if (\file_exists($autoloadFile)) {
         $autoloader = require_once $autoloadFile;
         break;
     }
@@ -58,6 +58,8 @@ $files = [
     'builder/buildToScalarBody.php',
     'builder/buildTraits.php',
     'builder/buildVariableName.php',
+    'builder/buildInterfaceName.php',
+    'builder/buildClassImplements.php',
 ];
 
 foreach ($files as $file) {

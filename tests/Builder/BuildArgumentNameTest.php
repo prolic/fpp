@@ -15,6 +15,7 @@ use Fpp\Argument;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\DefinitionType;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildArgumentName;
 
@@ -30,6 +31,7 @@ class BuildArgumentNameTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'Foo',
             'Bar',
             [$constructor]
@@ -47,6 +49,7 @@ class BuildArgumentNameTest extends TestCase
         $constructor = new Constructor('String');
 
         $definition = new Definition(
+            DefinitionType::data(),
             'Foo',
             'Bar',
             [$constructor]
@@ -64,6 +67,7 @@ class BuildArgumentNameTest extends TestCase
         $constructor = new Constructor('String');
 
         $definition = new Definition(
+            DefinitionType::data(),
             'Foo',
             'Bar',
             [$constructor]
@@ -84,6 +88,7 @@ class BuildArgumentNameTest extends TestCase
         ]);
 
         $definition = new Definition(
+            DefinitionType::data(),
             'Foo',
             'Bar',
             [$constructor]

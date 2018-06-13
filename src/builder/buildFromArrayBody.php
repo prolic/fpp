@@ -427,10 +427,10 @@ CODE;
         }
     }
 
-    if (count($arguments) > 2) {
-        $arguments = "\n            " . implode(",\n            ", $arguments) . "\n        ";
+    if (\count($arguments) > 2) {
+        $arguments = "\n            " . \implode(",\n            ", $arguments) . "\n        ";
     } else {
-        $arguments = implode(', ', $arguments);
+        $arguments = \implode(', ', $arguments);
     }
 
     $code .= "        return new self($arguments);\n";

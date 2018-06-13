@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-if (! defined('T_OTHER')) {
-    define('T_OTHER', 100000);
+if (! \defined('T_OTHER')) {
+    \define('T_OTHER', 100000);
 }
 
 const parse = '\Fpp\parse';
@@ -141,10 +141,64 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
                 break;
             case T_STRING:
-                if ($token[1] !== 'data') {
-                    throw ParseError::unknownDefinition($token, $filename);
+                switch ($token[1]) {
+                    case 'data':
+                        $definitionType = DefinitionType::data();
+                        goto parseDataDefinition;
+
+                    case 'marker':
+                        $definitionType = DefinitionType::marker();
+                        goto parseMarkerDefinition;
+
+                    default:
+                        throw ParseError::unknownDefinition($token, $filename);
                 }
 
+                parseMarkerDefinition:
+                $token = $nextToken();
+                $requireWhitespace($token);
+                $token = $nextToken();
+                $requireString($token);
+                $name = $token[1];
+                $token = $nextToken();
+                $token = $skipWhitespace($token);
+                $constructors = [];
+                $derivings = [];
+                $conditions = [];
+                $messageName = null;
+                $markers = [];
+                if (':' === $token[1]) {
+                    do {
+                        $markerName = '';
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+
+                        if ($token[0] === T_NS_SEPARATOR) {
+                            $markerName = '\\';
+                            $token = $nextToken();
+                        }
+
+                        $requireString($token);
+                        $markerName .= $token[1];
+                        $token = $nextToken();
+
+                        while ($token[0] === T_NS_SEPARATOR) {
+                            $token = $nextToken();
+                            $requireString($token);
+                            $markerName .= '\\' . $token[1];
+                            $token = $nextToken();
+                        }
+
+                        $markers[] = new MarkerReference($markerName);
+                        $token = $skipWhitespace($token);
+                    } while (',' === $token[1]);
+                }
+                if (';' !== $token[1]) {
+                    throw ParseError::unexpectedTokenFound(';', $token, $filename);
+                }
+                goto buildDefinition;
+
+                parseDataDefinition:
                 // parse name (incl. message name for prooph messages)
                 $token = $nextToken();
                 $requireWhitespace($token);
@@ -154,6 +208,34 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $token = $nextToken();
                 $token = $skipWhitespace($token);
                 $messageName = null;
+                $markers = [];
+
+                if (':' === $token[1]) {
+                    do {
+                        $markerName = '';
+                        $token = $nextToken();
+                        $token = $skipWhitespace($token);
+
+                        if ($token[0] === T_NS_SEPARATOR) {
+                            $markerName = '\\';
+                            $token = $nextToken();
+                        }
+
+                        $requireString($token);
+                        $markerName .= $token[1];
+                        $token = $nextToken();
+
+                        while ($token[0] === T_NS_SEPARATOR) {
+                            $token = $nextToken();
+                            $requireString($token);
+                            $markerName .= '\\' . $token[1];
+                            $token = $nextToken();
+                        }
+
+                        $markers[] = new MarkerReference($markerName);
+                        $token = $skipWhitespace($token);
+                    } while (',' === $token[1]);
+                }
 
                 if ($token[1] !== '=') {
                     throw ParseError::unexpectedTokenFound('=', $token, $filename);
@@ -542,7 +624,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                     $errorMessage = $token[1];
 
-                    $conditions[] = new Condition($conditionConstructor, trim($code), \substr($errorMessage, 1, -1));
+                    $conditions[] = new Condition($conditionConstructor, \trim($code), \substr($errorMessage, 1, -1));
 
                     $token = $nextToken();
                     $token = $skipWhitespace($token);
@@ -559,7 +641,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
 
                 buildDefinition:
-                $collection->addDefinition(new Definition($namespace, $name, $constructors, $derivings, $conditions, $messageName));
+                $collection->addDefinition(new Definition($definitionType, $namespace, $name, $constructors, $derivings, $conditions, $messageName, $markers));
                 break;
             case T_WHITESPACE:
                 break;
