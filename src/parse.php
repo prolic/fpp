@@ -54,7 +54,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $line,
             ];
         } else {
-            $token[2] = $token[2] - 1;
+            $token[2] = $token[2] - 2;
             $line = $token[2];
         }
 
