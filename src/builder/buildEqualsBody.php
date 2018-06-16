@@ -132,6 +132,7 @@ CODE;
         foreach ($definition->derivings() as $deriving) {
             switch ((string) $deriving) {
                 case Deriving\Equals::VALUE:
+                case Deriving\Enum::VALUE:
                     $addCode .= $nullCheck($argument->nullable(), $argument->name(), "&& \$this->{$argument->name()}->equals(\${$variableName}->{$argument->name()})");
                     continue 3;
                 case Deriving\ToArray::VALUE:
@@ -140,7 +141,6 @@ CODE;
                 case Deriving\ToScalar::VALUE:
                     $addCode .= $nullCheck($argument->nullable(), $argument->name(), "&& \$this->{$argument->name()}->toScalar() === \${$variableName}->{$argument->name()}->toScalar()");
                     continue 3;
-                case Deriving\Enum::VALUE:
                 case Deriving\ToString::VALUE:
                 case Deriving\Uuid::VALUE:
                     $addCode .= $nullCheck($argument->nullable(), $argument->name(), "&& \$this->{$argument->name()}->toString() === \${$variableName}->{$argument->name()}->toString()");

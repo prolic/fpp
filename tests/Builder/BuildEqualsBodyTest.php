@@ -35,6 +35,7 @@ class BuildEqualsBodyTest extends TestCase
         $arguments[] = new Argument('what', 'Hell\What', true);
         $arguments[] = new Argument('emails', 'string', false, true);
         $arguments[] = new Argument('stats', 'Hell\Stat', false, true);
+        $arguments[] = new Argument('myEnum', 'Hell\MyEnum');
 
         $constructor = new Constructor('Hell\Yeah', $arguments);
         $definition = new Definition(DefinitionType::data(), 'Hell', 'Yeah', [$constructor], [new Deriving\Equals()]);
@@ -60,7 +61,14 @@ class BuildEqualsBodyTest extends TestCase
             [new Constructor('Hell\Stat', [new Argument('stat', 'float')])],
             [new Deriving\Equals()]
         );
-        $collection = new DefinitionCollection($definition, $definition2, $definition3, $definition4);
+        $definition5 = new Definition(
+            DefinitionType::data(),
+            'Hell',
+            'MyEnum',
+            [new Constructor('Hell\\Value1'), new Constructor('Hell\\Value2')],
+            [new Deriving\Enum()]
+        );
+        $collection = new DefinitionCollection($definition, $definition2, $definition3, $definition4, $definition5);
 
         $expected = <<<STRING
 if (\get_class(\$this) !== \get_class(\$yeah)) {
@@ -93,7 +101,8 @@ if (\get_class(\$this) !== \get_class(\$yeah)) {
             && \$this->no->toString() === \$yeah->no->toString()
             && ((null === \$this->what && null === \$yeah->what)
                 || (null !== \$this->what && null !== \$yeah->what && \$this->what->equals(\$yeah->what))
-            );
+            )
+            && \$this->myEnum->equals(\$yeah->myEnum);
 STRING;
 
         $this->assertSame($expected, buildEqualsBody($definition, $constructor, $collection, ''));
