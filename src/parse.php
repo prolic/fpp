@@ -54,7 +54,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $line,
             ];
         } else {
-            $token[2] = $token[2] - 2;
+            $token[2] -= 2;
             $line = $token[2];
         }
 
@@ -70,7 +70,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
         return $token;
     };
 
-    $skipWhitespace = function (array $token) use ($tokens, &$position, $nextToken): array {
+    $skipWhitespace = function (array $token) use ($nextToken): array {
         while ($token[0] === T_WHITESPACE) {
             $token = $nextToken();
         }
@@ -160,8 +160,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $token = $nextToken();
                 $requireString($token);
                 $name = $token[1];
-                $token = $nextToken();
-                $token = $skipWhitespace($token);
+                $token = $skipWhitespace($nextToken());
                 $constructors = [];
                 $derivings = [];
                 $conditions = [];
@@ -170,8 +169,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 if (':' === $token[1]) {
                     do {
                         $markerName = '';
-                        $token = $nextToken();
-                        $token = $skipWhitespace($token);
+                        $token = $skipWhitespace($nextToken());
 
                         if ($token[0] === T_NS_SEPARATOR) {
                             $markerName = '\\';
@@ -205,16 +203,14 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 $token = $nextToken();
                 $requireString($token);
                 $name = $token[1];
-                $token = $nextToken();
-                $token = $skipWhitespace($token);
+                $token = $skipWhitespace($nextToken());
                 $messageName = null;
                 $markers = [];
 
                 if (':' === $token[1]) {
                     do {
                         $markerName = '';
-                        $token = $nextToken();
-                        $token = $skipWhitespace($token);
+                        $token = $skipWhitespace($nextToken());
 
                         if ($token[0] === T_NS_SEPARATOR) {
                             $markerName = '\\';
@@ -249,8 +245,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                 $constructorName = '';
                 $arguments = [];
-                $token = $nextToken();
-                $token = $skipWhitespace($token);
+                $token = $skipWhitespace($nextToken());
 
                 if ($token[0] === T_NS_SEPARATOR) {
                     $constructorName = '\\';
@@ -306,8 +301,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                         if ($token[1] === '?') {
                             $nullable = true;
-                            $token = $nextToken();
-                            $token = $skipWhitespace($token);
+                            $token = $skipWhitespace($nextToken());
                             if ($token[0] !== T_STRING && $token[0] !== T_NS_SEPARATOR) {
                                 throw ParseError::unexpectedTokenFound('T_STRING or T_NS_SEPARATOR', $token, $filename);
                             }
@@ -375,8 +369,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                             $token = $nextToken();
                             $requireVariable($token);
                             $argumentName = \substr($token[1], 1);
-                            $token = $nextToken();
-                            $token = $skipWhitespace($token);
+                            $token = $skipWhitespace($nextToken());
 
                             if (\in_array($token[1], [',', '}'], true)) {
                                 $arguments[] = new Argument($argumentName, $type, $nullable, $isList);
@@ -385,8 +378,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                             throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
                         } elseif ($token[0] === T_VARIABLE) {
                             $arguments[] = new Argument(\substr($token[1], 1));
-                            $token = $nextToken();
-                            $token = $skipWhitespace($token);
+                            $token = $skipWhitespace($nextToken());
 
                             if (\in_array($token[1], [',', '}'], true)) {
                                 goto parseArguments;
@@ -420,8 +412,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
 
                 if ('deriving' === $token[1]) {
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
+                    $token = $skipWhitespace($nextToken());
 
                     if ($token[1] !== '(') {
                         throw ParseError::unexpectedTokenFound('(', $token, $filename);
@@ -440,14 +431,12 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         $derivingName = $token[1];
 
                         $derivings[] = $derivingMap[$token[1]];
-                        $token = $nextToken();
-                        $token = $skipWhitespace($token);
+                        $token = $skipWhitespace($nextToken());
 
                         if (\in_array($derivingName, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)
                             && ':' === $token[1]
                         ) {
-                            $token = $nextToken();
-                            $token = $skipWhitespace($token);
+                            $token = $skipWhitespace($nextToken());
 
                             if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
                                 throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
@@ -455,8 +444,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                             $messageName = \substr($token[1], 1, -1);
 
-                            $token = $nextToken();
-                            $token = $skipWhitespace($token);
+                            $token = $skipWhitespace($nextToken());
                         }
 
                         if ($token[1] === ',') {
@@ -464,8 +452,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         }
                     }
 
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
+                    $token = $skipWhitespace($nextToken());
 
                     if (';' === $token[1]) {
                         goto buildDefinition;
@@ -487,8 +474,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     }
 
                     $valueMapping = [];
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
+                    $token = $skipWhitespace($nextToken());
 
                     if ($token[1] !== '(') {
                         throw ParseError::unexpectedTokenFound('(', $token, $filename);
@@ -500,15 +486,13 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         $token = $skipWhitespace($token);
                         $requireString($token);
                         $enumConstructor = $token[1];
-                        $token = $nextToken();
-                        $token = $skipWhitespace($token);
+                        $token = $skipWhitespace($nextToken());
 
                         if ($token[1] !== ':') {
                             throw ParseError::unexpectedTokenFound(':', $token, $filename);
                         }
 
-                        $token = $nextToken();
-                        $token = $skipWhitespace($token);
+                        $token = $skipWhitespace($nextToken());
 
                         $bracesOpened = 0;
                         $code = '';
@@ -523,13 +507,11 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                             }
 
                             $code .= $token[1];
-                            $token = $nextToken();
-                            $token = $skipWhitespace($token);
+                            $token = $skipWhitespace($nextToken());
 
                             if (\in_array($code, ['+', '-'], true)) {
                                 $code .= $token[1];
-                                $token = $nextToken();
-                                $token = $skipWhitespace($token);
+                                $token = $skipWhitespace($nextToken());
                             }
 
                             if (0 === $bracesOpened) {
@@ -542,8 +524,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         }
 
                         if ($token[1] !== ')') {
-                            $token = $nextToken();
-                            $token = $skipWhitespace($token);
+                            $token = $skipWhitespace($nextToken());
                         }
 
                         if (\in_array(\substr($code, 0, 1), ['\'', '"'], true)) {
@@ -555,16 +536,14 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         $valueMapping[$enumConstructor] = $code;
                     }
 
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
+                    $token = $skipWhitespace($nextToken());
                     unset($derivings[$key]);
                     $derivings[] = new Deriving\Enum($valueMapping);
                 }
 
                 if ('where' === $token[1]) {
                     $conditionConstructor = '_';
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
+                    $token = $skipWhitespace($nextToken());
 
                     if (T_STRING === $token[0]) {
                         parseConditionsForConstructor:
@@ -576,23 +555,20 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                             $conditionConstructor = $namespace . '\\' . $conditionConstructor;
                         }
 
-                        $token = $nextToken();
-                        $token = $skipWhitespace($token);
+                        $token = $skipWhitespace($nextToken());
 
                         if (':' !== $token[1]) {
                             throw ParseError::unexpectedTokenFound(':', $token, $filename);
                         }
 
-                        $token = $nextToken();
-                        $token = $skipWhitespace($token);
+                        $token = $skipWhitespace($nextToken());
                     }
 
                     if ('|' !== $token[1]) {
                         throw ParseError::unexpectedTokenFound('|', $token, $filename);
                     }
 
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
+                    $token = $skipWhitespace($nextToken());
 
                     parseCondition:
                     $bracesOpened = 0;
@@ -615,8 +591,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         $token = $nextToken();
                     }
 
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
+                    $token = $skipWhitespace($nextToken());
 
                     if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
                         throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
@@ -626,12 +601,10 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                     $conditions[] = new Condition($conditionConstructor, \trim($code), \substr($errorMessage, 1, -1));
 
-                    $token = $nextToken();
-                    $token = $skipWhitespace($token);
+                    $token = $skipWhitespace($nextToken());
 
                     if ('|' === $token[1]) {
-                        $token = $nextToken();
-                        $token = $skipWhitespace($token);
+                        $token = $skipWhitespace($nextToken());
                         goto parseCondition;
                     }
 

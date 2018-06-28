@@ -20,7 +20,7 @@ const buildClassImplements = '\Fpp\Builder\buildClassImplements';
 function buildClassImplements(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
     $interfaces = [];
-    foreach (\array_map('strval', $definition->markers()) as $marker) {
+    foreach (\array_map('\strval', $definition->markers()) as $marker) {
         if (0 !== \strpos($marker, '\\')) {
             $marker = \sprintf('\\%s\\%s', $definition->namespace(), $marker);
         }

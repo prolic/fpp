@@ -19,7 +19,7 @@ class Enum extends AbstractDeriving
 {
     public const VALUE = 'Enum';
 
-    private $valueMapping = [];
+    private $valueMapping;
 
     public function __construct(array $valueMapping = [])
     {

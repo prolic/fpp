@@ -89,7 +89,7 @@ class DefinitionCollection
 
     public function constructorDefinition(string $name): ?Definition
     {
-        return isset($this->constructorDefinitions[$name]) ? $this->constructorDefinitions[$name] : null;
+        return $this->constructorDefinitions[$name] ?? null;
     }
 
     public function merge(DefinitionCollection $collection): DefinitionCollection

@@ -46,7 +46,7 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
     $parents = [];
     $markers = $definition->markers();
     if ($definition->isMarker() && \count($markers) > 0) {
-        foreach (\array_map('strval', $markers) as $marker) {
+        foreach (\array_map('\strval', $markers) as $marker) {
             if (0 !== \strpos($marker, '\\')) {
                 $marker = \sprintf('\\%s\\%s', $definition->namespace(), $marker);
             }
