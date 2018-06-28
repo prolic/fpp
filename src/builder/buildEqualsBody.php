@@ -66,7 +66,7 @@ CODE;
 
     foreach ($constructor->arguments() as $argument) {
         $nullableOrScalarType = (null === $argument->type() || $argument->isScalartypeHint());
-        if (! $argument->isList() && $nullableOrScalarType) {
+        if ($nullableOrScalarType && ! $argument->isList()) {
             $addCode .= "            && \$this->{$argument->name()} === \$$variableName->{$argument->name()}\n";
             continue;
         }

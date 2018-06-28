@@ -619,7 +619,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
             case T_WHITESPACE:
                 break;
             case T_OTHER:
-                if ($token[1] === '}' && $namespaceFound) {
+                if ($namespaceFound && $token[1] === '}') {
                     $namespaceFound = false;
                     $namespace = '';
                     break;

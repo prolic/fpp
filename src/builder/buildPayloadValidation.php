@@ -218,7 +218,7 @@ CODE;
 
                     $floatCheck = '';
 
-                    if ($argument->isList() && $type === 'float') {
+                    if ($type === 'float' && $argument->isList()) {
                         $floatCheck = ' && ! \is_int($__value)';
                     } elseif ($type === 'float') {
                         $floatCheck = " && ! \is_int(\$payload['{$argument->name()}'])";

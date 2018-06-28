@@ -59,7 +59,7 @@ function buildStaticConstructorBody(Definition $definition, ?Constructor $constr
 
     $buildToArrayBlock = function (Argument $argument, string &$start): void {
         $intend = '';
-        if ($argument->nullable() && empty($start)) {
+        if (empty($start) && $argument->nullable()) {
             $start = "if (null !== \${$argument->name()}) {\n";
             $intend = '    ';
         }
