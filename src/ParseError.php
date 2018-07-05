@@ -58,4 +58,9 @@ class ParseError extends \RuntimeException
 
         return new self('Unknown deriving at line ' . $line . $filePart);
     }
+
+    public static function unknownDefinitionType(string $namespace, string $name): ParseError
+    {
+        return new self(\sprintf('Unknown definition type for definition %s\\%s', $namespace, $name));
+    }
 }

@@ -618,6 +618,10 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
 
                 buildDefinition:
+                if (null === $definitionType) {
+                    throw ParseError::unknownDefinitionType($namespace, $name);
+                }
+
                 $collection->addDefinition(new Definition($definitionType, $namespace, $name, $constructors, $derivings, $conditions, $messageName, $markers));
                 break;
             case T_WHITESPACE:

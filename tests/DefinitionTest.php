@@ -145,7 +145,8 @@ class DefinitionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new Definition(DefinitionType::data(),
+        new Definition(
+            DefinitionType::data(),
             'Foo',
             'Person',
             ['invalid']
@@ -157,7 +158,8 @@ class DefinitionTest extends TestCase
      */
     public function it_creates_prooph_message_types(): void
     {
-        $definition = new Definition(DefinitionType::data(),
+        $definition = new Definition(
+            DefinitionType::data(),
             'Foo',
             'RegisterPerson',
             [new Constructor('Foo\RegisterPerson', [
@@ -183,7 +185,8 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(DefinitionType::data(),
+        new Definition(
+            DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor, $constructor]
@@ -201,7 +204,8 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(DefinitionType::data(),
+        new Definition(
+            DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -220,7 +224,8 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(DefinitionType::data(),
+        new Definition(
+            DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -239,7 +244,8 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(DefinitionType::data(),
+        new Definition(
+            DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -272,7 +278,8 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        new Definition(DefinitionType::data(),
+        new Definition(
+            DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
@@ -293,7 +300,8 @@ class DefinitionTest extends TestCase
             new Argument('name', 'string', false),
         ]);
 
-        $definition = new Definition(DefinitionType::data(),
+        $definition = new Definition(
+            DefinitionType::data(),
             'Foo',
             'Person',
             [$constructor],
