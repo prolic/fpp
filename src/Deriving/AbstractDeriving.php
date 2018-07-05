@@ -15,6 +15,8 @@ use Fpp\Deriving as FppDeriving;
 
 abstract class AbstractDeriving implements FppDeriving
 {
+    const VALUE = '';
+
     public function __toString(): string
     {
         return static::VALUE;

@@ -27,6 +27,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
         throw new \RuntimeException("'$filename' is not readable");
     }
 
+    $definitionType = null;
     $namespaceFound = false;
     $contents = \file_get_contents($filename);
     $tokens = \token_get_all("<?php\n\n$contents");
