@@ -28,10 +28,14 @@ function buildEnumOptions(Definition $definition, ?Constructor $constructor, Def
 
     $namespace = buildNamespace($definition, $constructor, $collection, 'namespace');
 
+    $deriving = null;
     foreach ($definition->derivings() as $deriving) {
         if ($deriving->equals(new Enum())) {
             break;
         }
+    }
+    if (! $deriving) {
+        return $placeHolder;
     }
 
     /* @var Enum $deriving */

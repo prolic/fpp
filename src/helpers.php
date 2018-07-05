@@ -202,6 +202,7 @@ function buildMethodBodyFromPayload(Argument $argument, Definition $definition, 
 {
     $argumentName = $argument->name();
 
+    $check = '';
     if ($withCache && $argument->nullable()) {
         $check = "if (null === \$this->$argumentName && isset(\$this->payload['$argumentName'])) {";
     } elseif ($withCache && ! $argument->nullable()) {

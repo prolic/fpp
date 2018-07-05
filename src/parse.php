@@ -463,6 +463,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 if ('with' === $token[1]) {
                     $enumDerivingFound = false;
 
+                    $key = null;
                     foreach ($derivings as $key => $deriving) {
                         if ($deriving->equals(new Deriving\Enum())) {
                             $enumDerivingFound = true;
@@ -538,7 +539,9 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     }
 
                     $token = $skipWhitespace($nextToken());
-                    unset($derivings[$key]);
+                    if (null !== $key) {
+                        unset($derivings[$key]);
+                    }
                     $derivings[] = new Deriving\Enum($valueMapping);
                 }
 
