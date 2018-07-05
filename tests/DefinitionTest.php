@@ -168,7 +168,7 @@ class DefinitionTest extends TestCase
             'register.person'
         );
 
-        $this->assertTrue((string) $definition->derivings()[0] === (string) Deriving\Command::VALUE);
+        $this->assertTrue((string) $definition->derivings()[0] === Deriving\Command::VALUE);
         $this->assertSame('register.person', $definition->messageName());
     }
 
