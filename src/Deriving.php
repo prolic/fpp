@@ -13,6 +13,8 @@ namespace Fpp;
 
 interface Deriving
 {
+    const VALUE = '';
+
     /**
      * @throws InvalidDeriving
      */

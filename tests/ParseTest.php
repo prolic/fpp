@@ -1082,7 +1082,7 @@ CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
         $definition = $collection->definition('Foo', 'Color');
-        /* @var Deriving\Enum $deriving */
+        /** @var Deriving\Enum $deriving */
         $deriving = $definition->derivings()[0];
 
         $this->assertSame([1, 2], $deriving->valueMapping()['Blue']);

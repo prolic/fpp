@@ -36,6 +36,7 @@ class ScanTest extends TestCase
             'fpp3.fpp' => '',
         ], vfsStream::setup('foo'));
 
+        /** @var \org\bovigo\vfs\vfsStreamContainer */
         $bar = $this->root->getChild('Bar');
         $file = $bar->getChild('fpp1.fpp');
         $file->chmod('0000');

@@ -28,18 +28,21 @@ function buildEnumOptions(Definition $definition, ?Constructor $constructor, Def
 
     $namespace = buildNamespace($definition, $constructor, $collection, 'namespace');
 
-    $deriving = null;
+    $found = false;
+    $enumDeriving = new Enum();
     foreach ($definition->derivings() as $deriving) {
-        if ($deriving->equals(new Enum())) {
+        if ($deriving->equals($enumDeriving)) {
+            /** @var Enum */
+            $enumDeriving = $deriving;
+            $found = true;
             break;
         }
     }
-    if (! $deriving) {
+    if (! $found) {
         return $placeHolder;
     }
 
-    /* @var Enum $deriving */
-    $valueMapping = $deriving->valueMapping();
+    $valueMapping = $enumDeriving->valueMapping();
 
     $replace = '';
     foreach ($definition->constructors() as $key => $definitionConstructor) {
