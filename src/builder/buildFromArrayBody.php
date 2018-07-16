@@ -191,6 +191,8 @@ CODE;
         }
 
         \${$argument->name()} = $argumentClass::fromArray(\$data['{$argument->name()}']);
+
+
 CODE;
                     }
                     continue 3;
