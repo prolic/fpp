@@ -434,18 +434,43 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         $derivings[] = $derivingMap[$token[1]];
                         $token = $skipWhitespace($nextToken());
 
-                        if (':' === $token[1]
-                            && \in_array($derivingName, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)
-                        ) {
+                        if (':' === $token[1]) {
                             $token = $skipWhitespace($nextToken());
 
-                            if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
-                                throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
+                            switch ($derivingName) {
+                                case 'AggregateChanged':
+                                case 'Command':
+                                case 'DomainEvent':
+                                case 'Query':
+                                    if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
+                                        throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
+                                    }
+                                    $messageName = \substr($token[1], 1, -1);
+                                    $token = $skipWhitespace($nextToken());
+                                    break;
+
+                                case 'Exception':
+                                    $parent = '';
+
+                                    if ($token[0] === T_NS_SEPARATOR) {
+                                        $parent = '\\';
+                                        $token = $nextToken();
+                                    }
+
+                                    $requireString($token);
+                                    $parent .= $token[1];
+                                    $token = $nextToken();
+
+                                    while ($token[0] === T_NS_SEPARATOR) {
+                                        $token = $nextToken();
+                                        $requireString($token);
+                                        $parent .= '\\' . $token[1];
+                                        $token = $nextToken();
+                                    }
+
+                                    $derivings[\count($derivings) - 1]->extendsClass($parent);
+                                    break;
                             }
-
-                            $messageName = \substr($token[1], 1, -1);
-
-                            $token = $skipWhitespace($nextToken());
                         }
 
                         if ($token[1] === ',') {
