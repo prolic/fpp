@@ -26,7 +26,7 @@ class ArgumentTest extends TestCase
         $this->assertSame($dataProvider[1], $argument->isScalartypeHint());
     }
 
-    public function dataProvider()
+    public function dataProvider(): array
     {
         return [
             [

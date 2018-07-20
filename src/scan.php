@@ -39,7 +39,7 @@ function scan(string $directoryOrFile): array
             parent::__construct($directoryOrFile);
         }
 
-        public function accept()
+        public function accept(): bool
         {
             $file = $this->getInnerIterator()->current();
 

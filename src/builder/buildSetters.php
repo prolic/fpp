@@ -69,7 +69,7 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
             }
         }
 
-        if (1 === \count($constructor->arguments()) && $argument->isList()) {
+        if ($argument->isList() && 1 === \count($constructor->arguments())) {
             $constructorArguments = '...' . $constructorArguments;
         }
 

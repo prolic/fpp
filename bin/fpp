@@ -1,4 +1,4 @@
 #!/usr/bin/env php
 
 <?php
-include('fpp.php');
+include 'fpp.php';

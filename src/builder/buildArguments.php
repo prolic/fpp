@@ -35,7 +35,7 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
             $argumentList .= '?';
         }
 
-        if (1 === \count($constructor->arguments()) && $argument->isScalartypeHint()) {
+        if ($argument->isScalartypeHint() && 1 === \count($constructor->arguments())) {
             $argumentType = $argument->isList() ? $argument->type() . ' ...' : $argument->type() . ' ';
             $argumentList .= $argumentType . '$' . $argument->name() . ', ';
             continue;
@@ -54,7 +54,7 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
             ? $name
             : '\\' . $argument->type();
 
-        if (1 === \count($constructor->arguments()) && $argument->isList()) {
+        if ($argument->isList() && 1 === \count($constructor->arguments())) {
             $argumentList .= $type . ' ...$' . $argument->name() . ', ';
         } elseif ($argument->isList()) {
             $argumentList .= 'array $' . $argument->name() . ', ';

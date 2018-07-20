@@ -416,7 +416,8 @@ CODE;
         $this->assertFalse($argument1->nullable());
 
         $argument2 = $constructor->arguments()[1];
-        $this->assertSame(null, $argument2->type());
+
+        $this->assertNull($argument2->type());
         $this->assertSame('age', $argument2->name());
         $this->assertFalse($argument2->nullable());
     }
@@ -667,7 +668,7 @@ CODE;
         $this->assertCount(1, $derivings);
 
         $this->assertSame(Deriving\Command::VALUE, $derivings[0]::VALUE);
-        $this->assertSame(null, $definition->messageName());
+        $this->assertNull($definition->messageName());
     }
 
     /**
@@ -1094,7 +1095,7 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_marker()
+    public function it_parses_marker(): void
     {
         $contents = <<<CODE
 namespace Foo;
@@ -1108,7 +1109,7 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_marker_extending_another_marker_interface()
+    public function it_parses_marker_extending_another_marker_interface(): void
     {
         $contents = <<<CODE
 namespace Foo;
@@ -1135,7 +1136,7 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_marker_extending_existing_interfaces()
+    public function it_parses_marker_extending_existing_interfaces(): void
     {
         $contents = <<<CODE
 namespace Foo;
@@ -1151,7 +1152,7 @@ CODE;
     /**
      * @test
      */
-    public function it_throws_exception_when_parsing_data_marked_with_existing_interface()
+    public function it_throws_exception_when_parsing_data_marked_with_existing_interface(): void
     {
         $contents = <<<CODE
 namespace Foo;
@@ -1168,7 +1169,7 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_marked_data()
+    public function it_parses_marked_data(): void
     {
         $contents = <<<CODE
 namespace Foo;

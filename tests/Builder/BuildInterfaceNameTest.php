@@ -43,7 +43,7 @@ class BuildInterfaceNameTest extends TestCase
     /**
      * @test
      */
-    public function it_does_not_build_data_definition()
+    public function it_does_not_build_data_definition(): void
     {
         $definition = new Definition(DefinitionType::data(), 'Foo', 'FirstName', [new Constructor('String')]);
 

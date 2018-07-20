@@ -25,8 +25,8 @@ function buildEnumConstructors(Definition $definition, ?Constructor $constructor
     }
 
     $replace = '';
-    foreach ($definition->constructors() as $constructor) {
-        $class = buildReferencedClass($definition->namespace(), $constructor->name());
+    foreach ($definition->constructors() as $constructor2) {
+        $class = buildReferencedClass($definition->namespace(), $constructor2->name());
         $method = \lcfirst($class);
         $replace .= "    public static function $method(): self\n";
         $replace .= "    {\n";

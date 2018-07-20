@@ -111,7 +111,7 @@ class DefinitionTest extends TestCase
 
         $deriving = $definition->derivings()[0];
 
-        $this->assertTrue((string) $deriving === Deriving\ToScalar::VALUE);
+        $this->assertSame(Deriving\ToScalar::VALUE, (string) $deriving);
     }
 
     /**
@@ -170,7 +170,7 @@ class DefinitionTest extends TestCase
             'register.person'
         );
 
-        $this->assertTrue((string) $definition->derivings()[0] === Deriving\Command::VALUE);
+        $this->assertSame(Deriving\Command::VALUE, (string) $definition->derivings()[0]);
         $this->assertSame('register.person', $definition->messageName());
     }
 

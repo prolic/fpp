@@ -154,7 +154,7 @@ CODE;
 
     if ($addCode !== '        return ') {
         $addCode = \str_replace('        return             &&', '        return', $addCode);
-        $addCode = \substr($addCode, 0, \strlen($addCode) - 1) . ';';
+        $addCode = \substr($addCode, 0, -1) . ';';
         $code .= $addCode;
     }
 

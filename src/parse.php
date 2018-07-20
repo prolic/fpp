@@ -265,8 +265,8 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     $token = $nextToken();
                 }
 
-                if (\in_array($constructorName, ['Bool', 'Float', 'Int', 'String'], true)
-                    && $token[1] === '['
+                if ($token[1] === '['
+                    && \in_array($constructorName, ['Bool', 'Float', 'Int', 'String'], true)
                 ) {
                     $token = $nextToken();
 
@@ -434,8 +434,8 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         $derivings[] = $derivingMap[$token[1]];
                         $token = $skipWhitespace($nextToken());
 
-                        if (\in_array($derivingName, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)
-                            && ':' === $token[1]
+                        if (':' === $token[1]
+                            && \in_array($derivingName, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)
                         ) {
                             $token = $skipWhitespace($nextToken());
 

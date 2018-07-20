@@ -25,6 +25,8 @@ function buildStaticConstructorBody(Definition $definition, ?Constructor $constr
         return $placeHolder;
     }
 
+    $inclFirstArgument = null;
+
     foreach ($definition->derivings() as $deriving) {
         if ($deriving->equals(new Deriving\AggregateChanged())
             || $deriving->equals(new Deriving\MicroAggregateChanged())
@@ -40,7 +42,7 @@ function buildStaticConstructorBody(Definition $definition, ?Constructor $constr
         }
     }
 
-    if (! isset($inclFirstArgument)) {
+    if (null === $inclFirstArgument) {
         return $placeHolder;
     }
 

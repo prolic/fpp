@@ -60,7 +60,7 @@ CODE;
     }
 
     foreach ($constructor->arguments() as $key => $argument) {
-        if (1 !== \count($constructor->arguments()) && $argument->isList()) {
+        if ($argument->isList() && 1 !== \count($constructor->arguments())) {
             if ($printed && \substr($code, -2) !== "\n\n") {
                 $code .= "\n";
             }

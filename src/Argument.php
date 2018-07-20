@@ -53,7 +53,7 @@ class Argument
         return $this->isList;
     }
 
-    public function isScalartypeHint(): bool
+    public function isScalarTypeHint(): bool
     {
         return \in_array($this->type, ['string', 'int', 'bool', 'float'], true);
     }
