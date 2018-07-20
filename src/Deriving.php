@@ -13,7 +13,7 @@ namespace Fpp;
 
 interface Deriving
 {
-    const VALUE = '';
+    public const VALUE = '<override me in implementations>';
 
     /**
      * @throws InvalidDeriving
