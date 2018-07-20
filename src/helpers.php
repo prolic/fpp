@@ -34,6 +34,7 @@ function defaultDerivingMap(): array
         'ToScalar' => new Deriving\ToScalar(),
         'ToString' => new Deriving\ToString(),
         'Uuid' => new Deriving\Uuid(),
+        'Exception' => new Deriving\Exception(),
     ];
 }
 
