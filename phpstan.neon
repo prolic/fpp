@@ -1,0 +1,6 @@
+parameters:
+    level: 5
+    paths: [src, tests, bin]
+    bootstrap: src/bootstrap.php
+    excludes_analyse:
+        - tests/DefinitionTest.php

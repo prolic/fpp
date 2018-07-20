@@ -74,10 +74,15 @@ class Foo
 
 TEMPLATE;
 
-        $definition = $this->prophesize(Definition::class);
-        $constructor = $this->prophesize(Constructor::class);
-        $collection = $this->prophesize(DefinitionCollection::class);
+        /** @var Definition */
+        $definition = $this->prophesize(Definition::class)->reveal();
 
-        $this->assertSame($expected, replace($template, $definition->reveal(), $constructor->reveal(), $collection->reveal(), $builders));
+        /** @var Constructor */
+        $constructor = $this->prophesize(Constructor::class)->reveal();
+
+        /** @var DefinitionCollection */
+        $collection = $this->prophesize(DefinitionCollection::class)->reveal();
+
+        $this->assertSame($expected, replace($template, $definition, $constructor, $collection, $builders));
     }
 }

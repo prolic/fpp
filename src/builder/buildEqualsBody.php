@@ -64,6 +64,8 @@ function buildEqualsBody(Definition $definition, ?Constructor $constructor, Defi
 CODE;
     };
 
+    $namespace = null;
+    $name = null;
     foreach ($constructor->arguments() as $argument) {
         $nullableOrScalarType = (null === $argument->type() || $argument->isScalartypeHint());
         if ($nullableOrScalarType && ! $argument->isList()) {
@@ -114,11 +116,12 @@ CODE;
                 }
 
                 if (! $compare) {
-                    throw new \RuntimeException(\sprintf(
-                        'No comparable deriving given for argument $%s on definition %s',
-                        $argumentName,
-                        $namespace . '\\' . $name
-                    ));
+                    $message = \sprintf('No comparable deriving given for argument $%s', $argumentName);
+                    if ($namespace && $name) {
+                        $message .= \sprintf(' on definition %s\\%s', $namespace, $name);
+                    }
+
+                    throw new \RuntimeException($message);
                 }
 
                 $code .= "            if (! $compare) {\n";

@@ -471,11 +471,12 @@ CODE;
      */
     public function it_returns_place_holder_when_no_constructor_given(): void
     {
-        $this->assertSame('placeholder', buildFromArrayBody(
-            $this->prophesize(Definition::class)->reveal(),
-            null,
-            $this->prophesize(DefinitionCollection::class)->reveal(),
-            'placeholder'
-        ));
+        /** @var Definition */
+        $definition = $this->prophesize(Definition::class)->reveal();
+
+        /** @var DefinitionCollection */
+        $collection = $this->prophesize(DefinitionCollection::class)->reveal();
+
+        $this->assertSame('placeholder', buildFromArrayBody($definition, null, $collection, 'placeholder'));
     }
 }

@@ -28,6 +28,7 @@ function buildEnumConsts(Definition $definition, ?Constructor $constructor, Defi
     $enumDeriving = new Enum();
     foreach ($definition->derivings() as $deriving) {
         if ($deriving->equals($enumDeriving)) {
+            /** @var Enum */
             $enumDeriving = $deriving;
             $found = true;
             break;

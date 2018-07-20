@@ -26,7 +26,7 @@ use function Fpp\locatePsrPath;
 class DumpTest extends TestCase
 {
     /**
-     * @var vfsStream
+     * @var \org\bovigo\vfs\vfsStreamDirectory
      */
     private $root;
 

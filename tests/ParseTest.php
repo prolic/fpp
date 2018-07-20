@@ -35,7 +35,7 @@ class ParseTest extends TestCase
     {
         $this->root = vfsStream::setup('test-dir');
         vfsStream::newFile('not_readable.fpp')->withContent('')->at($this->root);
-        $this->root->getChild('not_readable.fpp')->chmod('0000');
+        $this->root->getChild('not_readable.fpp')->chmod(0000);
 
         $this->derivingMap = defaultDerivingMap();
     }
@@ -1082,7 +1082,7 @@ CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
         $definition = $collection->definition('Foo', 'Color');
-        /* @var Deriving\Enum $deriving */
+        /** @var Deriving\Enum $deriving */
         $deriving = $definition->derivings()[0];
 
         $this->assertSame([1, 2], $deriving->valueMapping()['Blue']);

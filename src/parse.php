@@ -27,6 +27,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
         throw new \RuntimeException("'$filename' is not readable");
     }
 
+    $definitionType = null;
     $namespaceFound = false;
     $contents = \file_get_contents($filename);
     $tokens = \token_get_all("<?php\n\n$contents");
@@ -462,6 +463,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 if ('with' === $token[1]) {
                     $enumDerivingFound = false;
 
+                    $key = null;
                     foreach ($derivings as $key => $deriving) {
                         if ($deriving->equals(new Deriving\Enum())) {
                             $enumDerivingFound = true;
@@ -537,7 +539,9 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     }
 
                     $token = $skipWhitespace($nextToken());
-                    unset($derivings[$key]);
+                    if (null !== $key) {
+                        unset($derivings[$key]);
+                    }
                     $derivings[] = new Deriving\Enum($valueMapping);
                 }
 
@@ -614,6 +618,10 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 }
 
                 buildDefinition:
+                if (null === $definitionType) {
+                    throw ParseError::unknownDefinitionType($namespace, $name);
+                }
+
                 $collection->addDefinition(new Definition($definitionType, $namespace, $name, $constructors, $derivings, $conditions, $messageName, $markers));
                 break;
             case T_WHITESPACE:

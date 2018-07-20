@@ -16,11 +16,19 @@ $autoloadFiles = [
     __DIR__ . '/../../../autoload.php',
 ];
 
+$autoloader = null;
 foreach ($autoloadFiles as $autoloadFile) {
     if (\file_exists($autoloadFile)) {
         $autoloader = require_once $autoloadFile;
         break;
     }
+}
+
+if (! $autoloader) {
+    throw new \RuntimeException(\sprintf(
+        'Unable to locate autoloader in "%s"',
+        \implode(', ', $autoloadFiles)
+    ));
 }
 
 $files = [
