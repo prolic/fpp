@@ -86,8 +86,9 @@ CODE;
             }
         }
 
+        $argumentName = $argument->name();
+
         if ($argument->isList()) {
-            $argumentName = $argument->name();
             $code .= "        if (\count(\$this->$argumentName) !== \count(\${$variableName}->{$argumentName})) {\n";
             $code .= "            return false;\n";
             $code .= "        }\n\n";
@@ -136,20 +137,22 @@ CODE;
             switch ((string) $deriving) {
                 case Deriving\Equals::VALUE:
                 case Deriving\Enum::VALUE:
-                    $addCode .= $nullCheck($argument->nullable(), $argument->name(), "&& \$this->{$argument->name()}->equals(\${$variableName}->{$argument->name()})");
+                    $addCode .= $nullCheck($argument->nullable(), $argumentName, "&& \$this->{$argumentName}->equals(\${$variableName}->{$argumentName})");
                     continue 3;
                 case Deriving\ToArray::VALUE:
-                    $addCode .= $nullCheck($argument->nullable(), $argument->name(), "&& \$this->{$argument->name()}->toArray() === \${$variableName}->{$argument->name()}->toArray()");
+                    $addCode .= $nullCheck($argument->nullable(), $argumentName, "&& \$this->{$argumentName}->toArray() === \${$variableName}->{$argumentName}->toArray()");
                     continue 3;
                 case Deriving\ToScalar::VALUE:
-                    $addCode .= $nullCheck($argument->nullable(), $argument->name(), "&& \$this->{$argument->name()}->toScalar() === \${$variableName}->{$argument->name()}->toScalar()");
+                    $addCode .= $nullCheck($argument->nullable(), $argumentName, "&& \$this->{$argumentName}->toScalar() === \${$variableName}->{$argumentName}->toScalar()");
                     continue 3;
                 case Deriving\ToString::VALUE:
                 case Deriving\Uuid::VALUE:
-                    $addCode .= $nullCheck($argument->nullable(), $argument->name(), "&& \$this->{$argument->name()}->toString() === \${$variableName}->{$argument->name()}->toString()");
+                    $addCode .= $nullCheck($argument->nullable(), $argumentName, "&& \$this->{$argumentName}->toString() === \${$variableName}->{$argumentName}->toString()");
                     continue 3;
             }
         }
+
+        $addCode .= $nullCheck($argument->nullable(), $argumentName, "&& \$this->{$argumentName} === \${$variableName}->{$argumentName}");
     }
 
     if ($addCode !== '        return ') {

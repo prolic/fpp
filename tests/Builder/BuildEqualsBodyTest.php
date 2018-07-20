@@ -107,4 +107,43 @@ STRING;
 
         $this->assertSame($expected, buildEqualsBody($definition, $constructor, $collection, ''));
     }
+
+    /**
+     * @test
+     */
+    public function it_builds_equals_body_for_composed_objects_without_deriving(): void
+    {
+        $constructor = new Constructor('Foo\Bar', [new Argument('baz', 'Foo\Baz')]);
+        $definition = new Definition(
+            DefinitionType::data(),
+            'Foo',
+            'Bar',
+            [
+                $constructor,
+            ],
+            [
+                new Deriving\Equals(),
+            ]
+        );
+
+        $definition2 = new Definition(DefinitionType::data(), 'Foo', 'Baz', [
+            new Constructor('Foo\Baz', [
+                new Argument('value', 'int'),
+            ]),
+        ], [
+            new Deriving\FromScalar(),
+        ]);
+
+        $collection = new DefinitionCollection($definition, $definition2);
+
+        $expected = <<<CODE
+if (\get_class(\$this) !== \get_class(\$bar)) {
+            return false;
+        }
+
+        return \$this->baz === \$bar->baz;
+CODE;
+
+        $this->assertSame($expected, buildEqualsBody($definition, $constructor, $collection, ''));
+    }
 }
