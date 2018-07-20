@@ -1096,6 +1096,56 @@ CODE;
     /**
      * @test
      */
+    public function it_parses_exception_without_parent_class(): void
+    {
+        $contents = <<<CODE
+namespace Foo;
+data UserNotFound = UserNotFound deriving (Exception);
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'UserNotFound');
+        $deriving = $definition->derivings()[0];
+
+        $this->assertSame(\Exception::class, $deriving->parent());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_exception_with_parent_class(): void
+    {
+        $contents = <<<CODE
+namespace Foo;
+data UserNotFound = UserNotFound deriving (Exception: \RuntimeException);
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'UserNotFound');
+        $deriving = $definition->derivings()[0];
+
+        $this->assertSame('\\RuntimeException', $deriving->parent());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_exception_with_named_constructors()
+    {
+        $contents = <<<CODE
+namespace Foo;
+data EmailAlreadyUsed = EmailAlreadyUsed deriving (Exception) with
+    | withEmail { string \$email } => 'Email {{\$email}} is already used';
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'EmailAlreadyUsed');
+        $this->assertCount(2, $definition->constructors());
+    }
+
+    /**
+     * @test
+     */
     public function it_parses_marker(): void
     {
         $contents = <<<CODE
