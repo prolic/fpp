@@ -19,16 +19,33 @@ class Exception extends AbstractDeriving
 {
     public const VALUE = 'Exception';
 
-    private $parent = \Exception::class;
+    private $baseClass;
+    private $constructors;
 
-    public function extendsClass(string $parent): void
+    public function __construct(string $baseClass = '\\Exception', array $constructors = [])
     {
-        $this->parent = $parent;
+        $this->baseClass = $baseClass;
+        $this->constructors = $constructors;
     }
 
-    public function parent(): string
+    public function withBaseClass(string $baseClass): self
     {
-        return $this->parent;
+        return new self($baseClass, $this->constructors);
+    }
+
+    public function withConstructors(array $constructors): self
+    {
+        return new self($this->baseClass, $constructors);
+    }
+
+    public function baseClass(): string
+    {
+        return $this->baseClass;
+    }
+
+    public function constructors(): array
+    {
+        return $this->constructors;
     }
 
     public function checkDefinition(Definition $definition): void

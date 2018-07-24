@@ -41,6 +41,10 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
         if ($deriving->equals(new Deriving\MicroAggregateChanged())) {
             return ' extends \Prooph\Common\Messaging\DomainEvent';
         }
+
+        if ($deriving->equals(new Deriving\Exception())) {
+            return \sprintf(' extends %s', $deriving->baseClass());
+        }
     }
 
     $parents = [];
