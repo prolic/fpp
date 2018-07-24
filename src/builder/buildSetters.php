@@ -37,6 +37,7 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
             || $deriving->equals(new Deriving\DomainEvent())
             || $deriving->equals(new Deriving\AggregateChanged())
             || $deriving->equals(new Deriving\MicroAggregateChanged())
+            || $deriving->equals(new Deriving\Exception())
         ) {
             return $placeHolder;
         }

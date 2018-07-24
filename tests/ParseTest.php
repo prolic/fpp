@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace FppTest;
 
+use Fpp\Argument;
 use Fpp\Deriving;
 use Fpp\ParseError;
 use org\bovigo\vfs\vfsStream;
@@ -1096,7 +1097,7 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_exception_without_parent_class(): void
+    public function it_parses_exception_without_base_class_class(): void
     {
         $contents = <<<CODE
 namespace Foo;
@@ -1107,13 +1108,13 @@ CODE;
         $definition = $collection->definition('Foo', 'UserNotFound');
         $deriving = $definition->derivings()[0];
 
-        $this->assertSame(\Exception::class, $deriving->parent());
+        $this->assertSame('\\Exception', $deriving->baseClass());
     }
 
     /**
      * @test
      */
-    public function it_parses_exception_with_parent_class(): void
+    public function it_parses_exception_with_base_class_class(): void
     {
         $contents = <<<CODE
 namespace Foo;
@@ -1124,23 +1125,39 @@ CODE;
         $definition = $collection->definition('Foo', 'UserNotFound');
         $deriving = $definition->derivings()[0];
 
-        $this->assertSame('\\RuntimeException', $deriving->parent());
+        $this->assertSame('\\RuntimeException', $deriving->baseClass());
     }
 
     /**
      * @test
      */
-    public function it_parses_exception_with_named_constructors()
+    public function it_parses_exception_with_constructors()
     {
         $contents = <<<CODE
 namespace Foo;
-data EmailAlreadyUsed = EmailAlreadyUsed deriving (Exception) with
-    | withEmail { string \$email } => 'Email {{\$email}} is already used';
+data UserNotFound = UserNotFound deriving (Exception) with
+    | withEmail { string \$email } => 'User with email {{\$email}} cannot be found'
+    | withUsername { string \$username } => 'User with username {{\$username}} cannot be found';
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
-        $definition = $collection->definition('Foo', 'EmailAlreadyUsed');
-        $this->assertCount(2, $definition->constructors());
+        $definition = $collection->definition('Foo', 'UserNotFound');
+        $deriving = $definition->derivings()[0];
+
+        $ctors = $deriving->constructors();
+        $this->assertCount(2, $ctors);
+
+        $this->assertSame('withEmail', $ctors[0]->name());
+        $this->assertSame('User with email {{$email}} cannot be found', $ctors[0]->message());
+        $args = $ctors[0]->arguments();
+        $this->assertCount(1, $args);
+        $this->assertEquals(new Argument('email', 'string', false, false), $args[0]);
+
+        $this->assertSame('withUsername', $ctors[1]->name());
+        $this->assertSame('User with username {{$username}} cannot be found', $ctors[1]->message());
+        $args = $ctors[1]->arguments();
+        $this->assertCount(1, $args);
+        $this->assertEquals(new Argument('username', 'string', false, false), $args[0]);
     }
 
     /**

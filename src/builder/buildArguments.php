@@ -15,6 +15,7 @@ namespace Fpp\Builder;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
+use Fpp\Deriving;
 
 const buildArguments = '\Fpp\Builder\buildArguments';
 
@@ -86,6 +87,13 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
             }
 
             $argumentList .= ', ';
+        }
+    }
+
+    foreach ($definition->derivings() as $deriving) {
+        if ($deriving->equals(new Deriving\Exception())) {
+            $argumentList .= 'string $message = \'\', int $code = 0, \\Exception $previous = null, ';
+            break;
         }
     }
 
