@@ -46,6 +46,7 @@ class FromArray extends AbstractDeriving
             Query::VALUE,
             MicroAggregateChanged::VALUE,
             Uuid::VALUE,
+            Exception::VALUE,
         ];
     }
 }
