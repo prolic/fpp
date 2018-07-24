@@ -59,6 +59,7 @@ class Uuid extends AbstractDeriving
             ToArray::VALUE,
             ToScalar::VALUE,
             ToString::VALUE,
+            Exception::VALUE,
         ];
     }
 }
