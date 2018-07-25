@@ -40,9 +40,17 @@ function buildExceptionConstructors(Definition $definition, ?Constructor $constr
 
     foreach ($deriving->constructors() as $ctor) {
         $fnArgs = \implode(', ', \array_merge(
-            \array_map(function (Argument $arg): string {
-                return \sprintf('%s $%s', $arg->type(), $arg->name());
-            }, $ctor->arguments()),
+            \array_map(
+                function (Argument $arg): string {
+                    return \sprintf('%s $%s', $arg->type(), $arg->name());
+                },
+                \array_unique(
+                    \array_merge(
+                        $ctor->arguments(),
+                        $definition->constructors()[0]->arguments()
+                    )
+                )
+            ),
             [
                 'int $code = 0',
                 '\Exception $previous = null',
@@ -54,18 +62,7 @@ function buildExceptionConstructors(Definition $definition, ?Constructor $constr
                 function (Argument $arg): string {
                     return \sprintf('$%s', $arg->name());
                 },
-                \array_filter(
-                    $ctor->arguments(),
-                    function (Argument $arg) use ($definition): bool {
-                        foreach ($definition->constructors()[0]->arguments() as $ctorArg) {
-                            if ($arg == $ctorArg) {
-                                return true;
-                            }
-                        }
-
-                        return false;
-                    }
-                )
+                $definition->constructors()[0]->arguments()
             ),
             [
                 \sprintf('sprintf(\'%s\')', $ctor->message()),
