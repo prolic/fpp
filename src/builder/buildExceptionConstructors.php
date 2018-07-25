@@ -21,7 +21,6 @@ const buildExceptionConstructors = '\Fpp\Builder\buildExceptionConstructors';
 
 function buildExceptionConstructors(Definition $definition, ?Constructor $constructor, DefinitionCollection $collection, string $placeHolder): string
 {
-    xdebug_break();
     if (null === $constructor) {
         return $placeHolder;
     }
