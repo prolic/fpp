@@ -17,7 +17,7 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionType;
-use Fpp\Deriving\Exception;
+use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildArguments;
 
@@ -85,10 +85,10 @@ class BuildArgumentsTest extends TestCase
             'My',
             'UserRegistered',
             [$constructor],
-            [new Exception()]
+            [(new Deriving\Exception())->withDefaultMessage('Lorem Ipsum')]
         );
 
-        $expected = 'UserId $id, ?string $name, \Some\Email $email, array $string, string $message = \'\', int $code = 0, \Exception $previous = null';
+        $expected = 'UserId $id, ?string $name, \Some\Email $email, array $string, string $message = \'Lorem Ipsum\', int $code = 0, \Exception $previous = null';
         $this->assertSame($expected, buildArguments($definition, $constructor, new DefinitionCollection(), ''));
     }
 }
