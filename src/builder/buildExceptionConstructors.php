@@ -26,6 +26,7 @@ function buildExceptionConstructors(Definition $definition, ?Constructor $constr
     }
 
     $supported = false;
+    $deriving = null;
     foreach ($definition->derivings() as $deriving) {
         if ($deriving->equals(new Deriving\Exception())) {
             $supported = true;
@@ -38,6 +39,8 @@ function buildExceptionConstructors(Definition $definition, ?Constructor $constr
 
     $code = '';
 
+    /** @var Deriving\Exception $deriving */
+    $deriving = $deriving;
     foreach ($deriving->constructors() as $ctor) {
         $fnArgs = \implode(', ', \array_merge(
             \array_map(
