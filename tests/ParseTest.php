@@ -1106,6 +1106,7 @@ CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
         $definition = $collection->definition('Foo', 'UserNotFound');
+        /** @var Deriving\Exception $deriving */
         $deriving = $definition->derivings()[0];
 
         $this->assertSame('\\Exception', $deriving->baseClass());
@@ -1123,6 +1124,7 @@ CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
         $definition = $collection->definition('Foo', 'UserNotFound');
+        /** @var Deriving\Exception $deriving */
         $deriving = $definition->derivings()[0];
 
         $this->assertSame('\\RuntimeException', $deriving->baseClass());
@@ -1142,6 +1144,7 @@ CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
         $definition = $collection->definition('Foo', 'UserNotFound');
+        /** @var Deriving\Exception $deriving */
         $deriving = $definition->derivings()[0];
 
         $ctors = $deriving->constructors();

@@ -44,6 +44,9 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
         }
 
         if ($deriving->equals(new Deriving\Exception())) {
+            /** @var Deriving\Exception $deriving */
+            $deriving = $deriving;
+
             return \sprintf(' extends %s', $deriving->baseClass());
         }
     }
