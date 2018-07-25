@@ -59,7 +59,9 @@ STRING;
         $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\Command()]);
 
         $expected = <<<STRING
-protected \$messageName = 'Foo\Bar';
+public const MESSAGE_NAME = 'Foo\Bar';
+
+    protected \$messageName = self::MESSAGE_NAME;
 
 
 STRING;
@@ -81,7 +83,9 @@ STRING;
         $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\Command()], [], 'foo-bar');
 
         $expected = <<<STRING
-protected \$messageName = 'foo-bar';
+public const MESSAGE_NAME = 'foo-bar';
+
+    protected \$messageName = self::MESSAGE_NAME;
 
 
 STRING;
@@ -103,7 +107,9 @@ STRING;
         $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\DomainEvent()]);
 
         $expected = <<<STRING
-protected \$messageName = 'Foo\Bar';
+public const MESSAGE_NAME = 'Foo\Bar';
+
+    protected \$messageName = self::MESSAGE_NAME;
 
     private \$name;
     private \$age;
@@ -128,7 +134,9 @@ STRING;
         $definition = new Definition(DefinitionType::data(), 'Foo', 'Bar', [$constructor], [new Deriving\AggregateChanged()]);
 
         $expected = <<<STRING
-protected \$messageName = 'Foo\Bar';
+public const MESSAGE_NAME = 'Foo\Bar';
+
+    protected \$messageName = self::MESSAGE_NAME;
 
     protected \$payload = [];
 
