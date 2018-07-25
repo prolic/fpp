@@ -1138,7 +1138,8 @@ CODE;
 namespace Foo;
 data UserNotFound = UserNotFound deriving (Exception) with
     | withEmail { string \$email } => 'User with email {{\$email}} cannot be found'
-    | create => 'User is nowhere to be found';
+    | create => 'User is nowhere to be found'
+    | _ => 'No user found';
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
@@ -1146,6 +1147,7 @@ CODE;
         /** @var Deriving\Exception $deriving */
         $deriving = $definition->derivings()[0];
 
+        $this->assertSame('No user found', $deriving->defaultMessage());
         $ctors = $deriving->constructors();
         $this->assertCount(2, $ctors);
 

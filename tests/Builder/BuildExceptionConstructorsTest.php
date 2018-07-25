@@ -36,7 +36,7 @@ class BuildExceptionConstructorsTest extends TestCase
             'App\\',
             'Foo',
             [$constructor],
-            [(new Deriving\Exception())->withConstructors([new ExceptionConstructor('create', [new Argument('foo', 'int'), new Argument('email', 'string')], 'Something is wrong!')])]
+            [(new Deriving\Exception())->withConstructors(...[new ExceptionConstructor('create', [new Argument('foo', 'int'), new Argument('email', 'string')], 'Something is wrong!')])]
         );
 
         $expected = <<<STRING

@@ -590,10 +590,25 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     $token = $skipWhitespace($nextToken());
                     parseExceptionConstructor:
                     if ('|' !== $token[1]) {
-                        throw ParseError::unexpectedTokenFound('|', $token, $filename);
+                        $derivings[$key] = $derivings[$key]->withConstructors(...$extraConstructors);
+                        goto endParseWithStatment;
                     }
                     $token = $skipWhitespace($nextToken());
                     $requireString($token);
+                    if ('_' === $token[1]) {
+                        $token = $skipWhitespace($nextToken());
+                        if ('=>' !== $token[1]) {
+                            throw ParseError::unexpectedTokenFound('=>', $token, $filename);
+                        }
+                        $token = $skipWhitespace($nextToken());
+                        if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
+                            throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
+                        }
+                        $derivings[$key] = $derivings[$key]->withDefaultMessage(\substr($token[1], 1, -1));
+                        $token = $skipWhitespace($nextToken());
+                        goto parseExceptionConstructor;
+                    }
+
                     $constructor = new ExceptionConstructor($token[1]);
 
                     $token = $skipWhitespace($nextToken());
@@ -612,10 +627,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     $extraConstructors[] = $constructor;
 
                     $token = $skipWhitespace($nextToken());
-                    if ('|' === $token[1]) {
-                        goto parseExceptionConstructor;
-                    }
-                    $derivings[$key] = $derivings[$key]->withConstructors($extraConstructors);
+                    goto parseExceptionConstructor;
 
                     endParseWithStatment:
                 }

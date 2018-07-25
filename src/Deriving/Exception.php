@@ -13,6 +13,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Definition;
 
+use Fpp\ExceptionConstructor;
 use Fpp\InvalidDeriving;
 
 class Exception extends AbstractDeriving
@@ -21,21 +22,31 @@ class Exception extends AbstractDeriving
 
     private $baseClass;
     private $constructors;
+    private $defaultMessage;
 
-    public function __construct(string $baseClass = '\\Exception', array $constructors = [])
-    {
+    public function __construct(
+        string $baseClass = '\\Exception',
+        array $constructors = [],
+        string $defaultMessage = ''
+    ) {
         $this->baseClass = $baseClass;
         $this->constructors = $constructors;
+        $this->defaultMessage = $defaultMessage;
     }
 
     public function withBaseClass(string $baseClass): self
     {
-        return new self($baseClass, $this->constructors);
+        return new self($baseClass, $this->constructors, $this->defaultMessage);
     }
 
-    public function withConstructors(array $constructors): self
+    public function withConstructors(ExceptionConstructor ...$constructors): self
     {
-        return new self($this->baseClass, $constructors);
+        return new self($this->baseClass, $constructors, $this->defaultMessage);
+    }
+
+    public function withDefaultMessage(string $defaultMessage): self
+    {
+        return new self($this->baseClass, $this->constructors, $defaultMessage);
     }
 
     public function baseClass(): string
@@ -46,6 +57,11 @@ class Exception extends AbstractDeriving
     public function constructors(): array
     {
         return $this->constructors;
+    }
+
+    public function defaultMessage(): string
+    {
+        return $this->defaultMessage;
     }
 
     public function checkDefinition(Definition $definition): void
