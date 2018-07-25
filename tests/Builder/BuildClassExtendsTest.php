@@ -26,7 +26,13 @@ class BuildClassExtendsTest extends TestCase
      */
     public function it_extends_base_exception_class()
     {
-        $definition = new Definition(DefinitionType::data(), 'Foo', 'UserNotFound', [new Constructor('Foo\\UserNotFound')], [new Deriving\Exception()]);
+        $definition = new Definition(
+            DefinitionType::data(),
+            'Foo',
+            'UserNotFound',
+            [new Constructor('Foo\\UserNotFound')],
+            [new Deriving\Exception()]
+        );
 
         $this->assertSame(
             ' extends \\Exception',
@@ -37,14 +43,89 @@ class BuildClassExtendsTest extends TestCase
     /**
      * @test
      */
-    public function it_extends_custom_exception_class()
+    public function it_extends_exception_class_defined_in_the_global_namespace()
     {
-        $deriving = new Deriving\Exception('Some\\Custom\\Exception');
-        $definition = new Definition(DefinitionType::data(), 'Foo', 'UserNotFound', [new Constructor('Foo\\UserNotFound')], [$deriving]);
+        $definition = new Definition(
+            DefinitionType::data(),
+            'Foo',
+            'UserNotFound',
+            [new Constructor('Foo\\UserNotFound')],
+            [new Deriving\Exception('\\RuntimeException')]
+        );
 
         $this->assertSame(
-            ' extends Some\\Custom\\Exception',
+            ' extends \\RuntimeException',
             buildClassExtends($definition, null, new DefinitionCollection($definition), '')
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_extends_exception_definition_defined_in_the_current_namespace()
+    {
+        $parent = new Definition(
+            DefinitionType::data(),
+            'Foo',
+            'MyException',
+            [new Constructor('Foo\\MyException')],
+            [new Deriving\Exception()]
+        );
+        $child = new Definition(
+            DefinitionType::data(),
+            'Foo',
+            'MyChildException',
+            [new Constructor('Foo\\MyChildException')],
+            [new Deriving\Exception('MyException')]
+        );
+
+        $this->assertSame(
+            ' extends MyException',
+            buildClassExtends($child, null, new DefinitionCollection($parent, $child), '')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_extends_exception_definition_defined_in_another_namespace()
+    {
+        $parent = new Definition(
+            DefinitionType::data(),
+            'Bar',
+            'MyException',
+            [new Constructor('Bar\\MyException')],
+            [new Deriving\Exception()]
+        );
+        $child = new Definition(
+            DefinitionType::data(),
+            'Foo',
+            'MyChildException',
+            [new Constructor('Foo\\MyChildException')],
+            [new Deriving\Exception('\\Bar\\MyException')]
+        );
+
+        $this->assertSame(
+            ' extends \\Bar\\MyException',
+            buildClassExtends($child, null, new DefinitionCollection($parent, $child), '')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_extending_unknown_exception()
+    {
+        $definition = new Definition(
+            DefinitionType::data(),
+            'Foo',
+            'UserNotFound',
+            [new Constructor('Foo\\UserNotFound')],
+            [new Deriving\Exception('\\Unknown')]
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('"Foo\\UserNotFound" cannot extend unknown exception "\\Unknown"');
+        buildClassExtends($definition, null, new DefinitionCollection($definition), '');
     }
 }
