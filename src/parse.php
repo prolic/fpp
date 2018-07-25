@@ -598,9 +598,10 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     $constructor = new ExceptionConstructor($token[1]);
 
                     $token = $skipWhitespace($nextToken());
-                    $constructor = $constructor->withArguments(...$parseArguments($token, $namespace));
-
-                    $token = $skipWhitespace($nextToken());
+                    if ('{' === $token[1]) {
+                        $constructor = $constructor->withArguments(...$parseArguments($token, $namespace));
+                        $token = $skipWhitespace($nextToken());
+                    }
                     if ('=>' !== $token[1]) {
                         throw ParseError::unexpectedTokenFound('=>', $token, $filename);
                     }
