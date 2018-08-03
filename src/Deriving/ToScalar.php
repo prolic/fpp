@@ -49,6 +49,7 @@ class ToScalar extends AbstractDeriving
             Query::VALUE,
             MicroAggregateChanged::VALUE,
             Uuid::VALUE,
+            Exception::VALUE,
         ];
     }
 }

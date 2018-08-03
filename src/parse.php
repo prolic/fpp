@@ -101,6 +101,113 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
         return $position === ($tokenCount - 1);
     };
 
+    $parseArguments = function (array &$token, string $namespace) use ($nextToken, $skipWhitespace, $requireString, $requireVariable, $requireWhitespace, $filename): array {
+        $arguments = [];
+        if ($token[1] !== '{') {
+            return $arguments;
+        }
+
+        parseArguments:
+        while ($token[1] !== '}') {
+            $token = $nextToken();
+            $type = null;
+            $nullable = false;
+
+            $token = $skipWhitespace($token);
+
+            if ($token[1] === '?') {
+                $nullable = true;
+                $token = $skipWhitespace($nextToken());
+                if ($token[0] !== T_STRING && $token[0] !== T_NS_SEPARATOR) {
+                    throw ParseError::unexpectedTokenFound('T_STRING or T_NS_SEPARATOR', $token, $filename);
+                }
+            }
+
+            if ($token[0] === T_NS_SEPARATOR) {
+                $type = '\\';
+                $token = $nextToken();
+            }
+
+            if ($token[0] === T_STRING) {
+                $type .= $token[1];
+
+                if (! \in_array($type, ['string', 'int', 'bool', 'float'], true)) {
+                    $requireString($token);
+                }
+
+                $token = $nextToken();
+
+                $isList = false;
+
+                if ($token[1] === '[') {
+                    $token = $nextToken();
+
+                    if ($token[1] !== ']') {
+                        throw ParseError::unexpectedTokenFound(']', $token, $filename);
+                    }
+                    $token = $nextToken();
+                    $requireWhitespace($token);
+                    $isList = true;
+                }
+
+                while ($token[0] !== T_WHITESPACE) {
+                    if ($token[0] !== T_NS_SEPARATOR) {
+                        throw ParseError::unexpectedTokenFound('T_WHITESPACE or T_NS_SEPARATOR', $token, $filename);
+                    }
+
+                    $type .= '\\';
+                    $token = $nextToken();
+                    $requireString($token);
+                    $type .= $token[1];
+                    $token = $nextToken();
+
+                    if ($token[1] === '[') {
+                        $token = $nextToken();
+
+                        if ($token[1] !== ']') {
+                            throw ParseError::unexpectedTokenFound(']', $token, $filename);
+                        }
+
+                        $token = $nextToken();
+                        $requireWhitespace($token);
+                        $isList = true;
+                    }
+                }
+
+                if (\substr($type, 0, 1) === '\\') {
+                    $type = \substr($type, 1);
+                } elseif (\substr($type, 0, 1) !== '\\'
+                    && ! \in_array($type, ['string', 'int', 'bool', 'float'], true)
+                ) {
+                    $type = $namespace . '\\' . $type;
+                }
+
+                $token = $nextToken();
+                $requireVariable($token);
+                $argumentName = \substr($token[1], 1);
+                $token = $skipWhitespace($nextToken());
+
+                if (\in_array($token[1], [',', '}'], true)) {
+                    $arguments[] = new Argument($argumentName, $type, $nullable, $isList);
+                    goto parseArguments;
+                }
+                throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
+            } elseif ($token[0] === T_VARIABLE) {
+                $arguments[] = new Argument(\substr($token[1], 1));
+                $token = $skipWhitespace($nextToken());
+
+                if (\in_array($token[1], [',', '}'], true)) {
+                    goto parseArguments;
+                }
+                throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
+            }
+        }
+
+        $token = $nextToken();
+
+        return $arguments;
+    };
+
     $nextToken();
 
     if ($isEndOfFile()) {
@@ -289,107 +396,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                 $token = $skipWhitespace($token);
 
-                if ($token[1] === '{') {
-                    $arguments = [];
-                    parseArguments:
-
-                    while ($token[1] !== '}') {
-                        $token = $nextToken();
-                        $type = null;
-                        $nullable = false;
-
-                        $token = $skipWhitespace($token);
-
-                        if ($token[1] === '?') {
-                            $nullable = true;
-                            $token = $skipWhitespace($nextToken());
-                            if ($token[0] !== T_STRING && $token[0] !== T_NS_SEPARATOR) {
-                                throw ParseError::unexpectedTokenFound('T_STRING or T_NS_SEPARATOR', $token, $filename);
-                            }
-                        }
-
-                        if ($token[0] === T_NS_SEPARATOR) {
-                            $type = '\\';
-                            $token = $nextToken();
-                        }
-
-                        if ($token[0] === T_STRING) {
-                            $type .= $token[1];
-
-                            if (! \in_array($type, ['string', 'int', 'bool', 'float'], true)) {
-                                $requireString($token);
-                            }
-
-                            $token = $nextToken();
-
-                            $isList = false;
-
-                            if ($token[1] === '[') {
-                                $token = $nextToken();
-
-                                if ($token[1] !== ']') {
-                                    throw ParseError::unexpectedTokenFound(']', $token, $filename);
-                                }
-                                $token = $nextToken();
-                                $requireWhitespace($token);
-                                $isList = true;
-                            }
-
-                            while ($token[0] !== T_WHITESPACE) {
-                                if ($token[0] !== T_NS_SEPARATOR) {
-                                    throw ParseError::unexpectedTokenFound('T_WHITESPACE or T_NS_SEPARATOR', $token, $filename);
-                                }
-
-                                $type .= '\\';
-                                $token = $nextToken();
-                                $requireString($token);
-                                $type .= $token[1];
-                                $token = $nextToken();
-
-                                if ($token[1] === '[') {
-                                    $token = $nextToken();
-
-                                    if ($token[1] !== ']') {
-                                        throw ParseError::unexpectedTokenFound(']', $token, $filename);
-                                    }
-
-                                    $token = $nextToken();
-                                    $requireWhitespace($token);
-                                    $isList = true;
-                                }
-                            }
-
-                            if (\substr($type, 0, 1) === '\\') {
-                                $type = \substr($type, 1);
-                            } elseif (\substr($type, 0, 1) !== '\\'
-                                && ! \in_array($type, ['string', 'int', 'bool', 'float'], true)
-                            ) {
-                                $type = $namespace . '\\' . $type;
-                            }
-
-                            $token = $nextToken();
-                            $requireVariable($token);
-                            $argumentName = \substr($token[1], 1);
-                            $token = $skipWhitespace($nextToken());
-
-                            if (\in_array($token[1], [',', '}'], true)) {
-                                $arguments[] = new Argument($argumentName, $type, $nullable, $isList);
-                                goto parseArguments;
-                            }
-                            throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
-                        } elseif ($token[0] === T_VARIABLE) {
-                            $arguments[] = new Argument(\substr($token[1], 1));
-                            $token = $skipWhitespace($nextToken());
-
-                            if (\in_array($token[1], [',', '}'], true)) {
-                                goto parseArguments;
-                            }
-                            throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
-                        }
-                    }
-
-                    $token = $nextToken();
-                }
+                $arguments = $parseArguments($token, $namespace);
 
                 if ('|' === $token[1]) {
                     $constructors[] = new Constructor($constructorName, $arguments);
@@ -434,18 +441,45 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         $derivings[] = $derivingMap[$token[1]];
                         $token = $skipWhitespace($nextToken());
 
-                        if (':' === $token[1]
-                            && \in_array($derivingName, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)
-                        ) {
+                        if (':' === $token[1]) {
                             $token = $skipWhitespace($nextToken());
 
-                            if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
-                                throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
+                            switch ($derivingName) {
+                                case 'AggregateChanged':
+                                case 'Command':
+                                case 'DomainEvent':
+                                case 'Query':
+                                    if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
+                                        throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
+                                    }
+                                    $messageName = \substr($token[1], 1, -1);
+                                    $token = $skipWhitespace($nextToken());
+                                    break;
+
+                                case 'Exception':
+                                    $baseClass = '';
+
+                                    if ($token[0] === T_NS_SEPARATOR) {
+                                        $baseClass = '\\';
+                                        $token = $nextToken();
+                                    }
+
+                                    $requireString($token);
+                                    $baseClass .= $token[1];
+                                    $token = $nextToken();
+
+                                    while ($token[0] === T_NS_SEPARATOR) {
+                                        $token = $nextToken();
+                                        $requireString($token);
+                                        $baseClass .= '\\' . $token[1];
+                                        $token = $nextToken();
+                                    }
+
+                                    $exception = \array_pop($derivings);
+                                    $exception = $exception->withBaseClass($baseClass);
+                                    $derivings[] = $exception;
+                                    break;
                             }
-
-                            $messageName = \substr($token[1], 1, -1);
-
-                            $token = $skipWhitespace($nextToken());
                         }
 
                         if ($token[1] === ',') {
@@ -462,19 +496,24 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                 if ('with' === $token[1]) {
                     $enumDerivingFound = false;
+                    $exceptionDerivingFound = false;
 
                     $key = null;
                     foreach ($derivings as $key => $deriving) {
                         if ($deriving->equals(new Deriving\Enum())) {
-                            $enumDerivingFound = true;
-                            break;
+                            goto buildEnumValueMapping;
                         }
                     }
 
-                    if (! $enumDerivingFound) {
-                        throw ParseError::unexpectedTokenFound('\'where\' or \';\'', $token, $filename);
+                    foreach ($derivings as $key => $deriving) {
+                        if ($deriving->equals(new Deriving\Exception())) {
+                            goto buildExceptionConstructors;
+                        }
                     }
 
+                    throw ParseError::unexpectedTokenFound('\'where\' or \';\'', $token, $filename);
+
+                    buildEnumValueMapping:
                     $valueMapping = [];
                     $token = $skipWhitespace($nextToken());
 
@@ -543,6 +582,54 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                         unset($derivings[$key]);
                     }
                     $derivings[] = new Deriving\Enum($valueMapping);
+                    goto endParseWithStatment;
+
+                    buildExceptionConstructors:
+                    $extraConstructors = [];
+
+                    $token = $skipWhitespace($nextToken());
+                    parseExceptionConstructor:
+                    if ('|' !== $token[1]) {
+                        $derivings[$key] = $derivings[$key]->withConstructors(...$extraConstructors);
+                        goto endParseWithStatment;
+                    }
+                    $token = $skipWhitespace($nextToken());
+                    $requireString($token);
+                    if ('_' === $token[1]) {
+                        $token = $skipWhitespace($nextToken());
+                        if ('=>' !== $token[1]) {
+                            throw ParseError::unexpectedTokenFound('=>', $token, $filename);
+                        }
+                        $token = $skipWhitespace($nextToken());
+                        if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
+                            throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
+                        }
+                        $derivings[$key] = $derivings[$key]->withDefaultMessage(\substr($token[1], 1, -1));
+                        $token = $skipWhitespace($nextToken());
+                        goto parseExceptionConstructor;
+                    }
+
+                    $constructor = new ExceptionConstructor($token[1]);
+
+                    $token = $skipWhitespace($nextToken());
+                    if ('{' === $token[1]) {
+                        $constructor = $constructor->withArguments(...$parseArguments($token, $namespace));
+                        $token = $skipWhitespace($nextToken());
+                    }
+                    if ('=>' !== $token[1]) {
+                        throw ParseError::unexpectedTokenFound('=>', $token, $filename);
+                    }
+                    $token = $skipWhitespace($nextToken());
+                    if (T_CONSTANT_ENCAPSED_STRING !== $token[0]) {
+                        throw ParseError::unexpectedTokenFound('T_CONSTANT_ENCAPSED_STRING', $token, $filename);
+                    }
+                    $constructor = $constructor->withMessage(\substr($token[1], 1, -1));
+                    $extraConstructors[] = $constructor;
+
+                    $token = $skipWhitespace($nextToken());
+                    goto parseExceptionConstructor;
+
+                    endParseWithStatment:
                 }
 
                 if ('where' === $token[1]) {

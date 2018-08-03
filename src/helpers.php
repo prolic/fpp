@@ -33,6 +33,7 @@ function defaultDerivingMap(): array
         'ToScalar' => new Deriving\ToScalar(),
         'ToString' => new Deriving\ToString(),
         'Uuid' => new Deriving\Uuid(),
+        'Exception' => new Deriving\Exception(),
     ];
 }
 
@@ -69,6 +70,7 @@ function defaultBuilders(): array
         'variable_name' => Builder\buildVariableName,
         'interface_name' => Builder\buildInterfaceName,
         'class_implements' => Builder\buildClassImplements,
+        'exception_constructors' => Builder\buildExceptionConstructors,
     ];
 }
 

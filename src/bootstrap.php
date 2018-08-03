@@ -68,6 +68,7 @@ $files = [
     'builder/buildVariableName.php',
     'builder/buildInterfaceName.php',
     'builder/buildClassImplements.php',
+    'builder/buildExceptionConstructors.php',
 ];
 
 foreach ($files as $file) {
