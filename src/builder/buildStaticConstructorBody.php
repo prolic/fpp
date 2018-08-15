@@ -120,7 +120,7 @@ CODE;
                         $code .= $addArgument($key, $argument->name(), "\$__array_{$argument->name()}");
                     } else {
                         $value = $argument->nullable()
-                            ? "null === \${$argument->name()} ? null : "
+                            ? "null === \${$argument->name()} ? null : \${$argument->name()}->toArray()"
                             : "\${$argument->name()}->toArray()";
 
                         $code .= $addArgument($key, $argument->name(), $value);
