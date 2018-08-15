@@ -27,7 +27,14 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
 
     foreach ($constructor->arguments() as $argument) {
         if (null === $argument->type()) {
-            $argumentList .= '$' . $argument->name() . ', ';
+            $argumentList .= '$' . $argument->name();
+
+            if ($argument->defaultValue()) {
+                $argumentList .= ' = ' . $argument->defaultValue();
+            }
+
+            $argumentList .= ', ';
+
             continue;
         }
 
@@ -37,11 +44,23 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
 
         if ($argument->isScalartypeHint() && 1 === \count($constructor->arguments())) {
             $argumentType = $argument->isList() ? $argument->type() . ' ...' : $argument->type() . ' ';
-            $argumentList .= $argumentType . '$' . $argument->name() . ', ';
+            $argumentList .= $argumentType . '$' . $argument->name();
+
+            if ($argument->defaultValue()) {
+                $argumentList .= ' = ' . $argument->defaultValue();
+            }
+
+            $argumentList .= ', ';
             continue;
         } elseif ($argument->isScalartypeHint()) {
             $argumentType = $argument->isList() ? 'array' : $argument->type();
-            $argumentList .= $argumentType . ' $' . $argument->name() . ', ';
+            $argumentList .= $argumentType . ' $' . $argument->name();
+
+            if ($argument->defaultValue()) {
+                $argumentList .= ' = ' . $argument->defaultValue();
+            }
+
+            $argumentList .= ', ';
             continue;
         }
 
@@ -59,7 +78,13 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
         } elseif ($argument->isList()) {
             $argumentList .= 'array $' . $argument->name() . ', ';
         } else {
-            $argumentList .= $type . ' $' . $argument->name() . ', ';
+            $argumentList .= $type . ' $' . $argument->name();
+
+            if ($argument->defaultValue()) {
+                $argumentList .= ' = ' . $argument->defaultValue();
+            }
+
+            $argumentList .= ', ';
         }
     }
 

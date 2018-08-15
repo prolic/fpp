@@ -370,16 +370,33 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                             $token = $nextToken();
                             $requireVariable($token);
                             $argumentName = \substr($token[1], 1);
+                            $defaultValue = null;
                             $token = $skipWhitespace($nextToken());
 
+                            if ('=' === $token[1]) {
+                                $token = $skipWhitespace($nextToken());
+                                $defaultValue = $token[1];
+                                $token = $skipWhitespace($nextToken());
+                            }
+
                             if (\in_array($token[1], [',', '}'], true)) {
-                                $arguments[] = new Argument($argumentName, $type, $nullable, $isList);
+                                $arguments[] = new Argument($argumentName, $type, $nullable, $isList, $defaultValue);
                                 goto parseArguments;
                             }
                             throw ParseError::unexpectedTokenFound(', or }', $token, $filename);
                         } elseif ($token[0] === T_VARIABLE) {
-                            $arguments[] = new Argument(\substr($token[1], 1));
+                            $argumentName = \substr($token[1], 1);
+
                             $token = $skipWhitespace($nextToken());
+                            $defaultValue = null;
+
+                            if ('=' === $token[1]) {
+                                $token = $skipWhitespace($nextToken());
+                                $defaultValue = $token[1];
+                                $token = $skipWhitespace($nextToken());
+                            }
+
+                            $arguments[] = new Argument($argumentName, null, false, false, $defaultValue);
 
                             if (\in_array($token[1], [',', '}'], true)) {
                                 goto parseArguments;

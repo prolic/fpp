@@ -43,4 +43,26 @@ class BuildArgumentsTest extends TestCase
         $expected = 'UserId $id, ?string $name, \Some\Email $email, array $string';
         $this->assertSame($expected, buildArguments($definition, $constructor, new DefinitionCollection(), ''));
     }
+
+    /**
+     * @test
+     */
+    public function it_builds_arguments_with_default_values(): void
+    {
+        $constructor = new Constructor('Foo\Bar', [
+            new Argument('name', 'string', false, false, '\'test\''),
+            new Argument('value', 'int', false, false, 5),
+            new Argument('value2', null, false, false, '\'test2\''),
+        ]);
+
+        $definition = new Definition(
+            DefinitionType::data(),
+            'Foo',
+            'Bar',
+            [$constructor]
+        );
+
+        $expected = 'string $name = \'test\', int $value = 5, $value2 = \'test2\'';
+        $this->assertSame($expected, buildArguments($definition, $constructor, new DefinitionCollection(), ''));
+    }
 }
