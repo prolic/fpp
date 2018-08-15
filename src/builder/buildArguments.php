@@ -29,7 +29,7 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
         if (null === $argument->type()) {
             $argumentList .= '$' . $argument->name();
 
-            if ($argument->defaultValue()) {
+            if (null !== $argument->defaultValue()) {
                 $argumentList .= ' = ' . $argument->defaultValue();
             }
 
@@ -46,7 +46,7 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
             $argumentType = $argument->isList() ? $argument->type() . ' ...' : $argument->type() . ' ';
             $argumentList .= $argumentType . '$' . $argument->name();
 
-            if ($argument->defaultValue()) {
+            if (null !== $argument->defaultValue()) {
                 $argumentList .= ' = ' . $argument->defaultValue();
             }
 
@@ -56,7 +56,7 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
             $argumentType = $argument->isList() ? 'array' : $argument->type();
             $argumentList .= $argumentType . ' $' . $argument->name();
 
-            if ($argument->defaultValue()) {
+            if (null !== $argument->defaultValue()) {
                 $argumentList .= ' = ' . $argument->defaultValue();
             }
 
@@ -80,7 +80,7 @@ function buildArguments(Definition $definition, ?Constructor $constructor, Defin
         } else {
             $argumentList .= $type . ' $' . $argument->name();
 
-            if ($argument->defaultValue()) {
+            if (null !== $argument->defaultValue()) {
                 $argumentList .= ' = ' . $argument->defaultValue();
             }
 
