@@ -9,6 +9,13 @@ namespace Foo;
 data Person = Person { string $name, ?int $age };
 ```
 
+Or adding default values:
+
+```
+namespace Foo;
+data Person = Person { string $name, int $value = 5 };
+```
+
 But you can also reuse objects:
 
 ```
