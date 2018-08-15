@@ -25,7 +25,11 @@ function replace(
     }
 
     foreach ($builders as $placeHolder => $builder) {
-        $template = \str_replace('{{' . $placeHolder . '}}', $builder($definition, $constructor, $collection, '{{' . $placeHolder . '}}'), $template);
+        $searchString = '{{' . $placeHolder . '}}';
+
+        if (false !== \strpos($template, $searchString)) {
+            $template = \str_replace($searchString, $builder($definition, $constructor, $collection, '{{' . $placeHolder . '}}'), $template);
+        }
     }
 
     foreach ($builders as $placeHolder => $builder) {
