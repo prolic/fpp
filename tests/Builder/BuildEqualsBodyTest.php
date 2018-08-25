@@ -71,11 +71,7 @@ class BuildEqualsBodyTest extends TestCase
         $collection = new DefinitionCollection($definition, $definition2, $definition3, $definition4, $definition5);
 
         $expected = <<<STRING
-if (\get_class(\$this) !== \get_class(\$yeah)) {
-            return false;
-        }
-
-        if (\count(\$this->emails) !== \count(\$yeah->emails)) {
+if (\count(\$this->emails) !== \count(\$yeah->emails)) {
             return false;
         }
 
@@ -137,11 +133,7 @@ STRING;
         $collection = new DefinitionCollection($definition, $definition2);
 
         $expected = <<<CODE
-if (\get_class(\$this) !== \get_class(\$bar)) {
-            return false;
-        }
-
-        return \$this->baz === \$bar->baz;
+return \$this->baz === \$bar->baz;
 CODE;
 
         $this->assertSame($expected, buildEqualsBody($definition, $constructor, $collection, ''));

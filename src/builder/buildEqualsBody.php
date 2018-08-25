@@ -39,11 +39,15 @@ function buildEqualsBody(Definition $definition, ?Constructor $constructor, Defi
     }
 
     $variableName = \lcfirst($definition->name());
-    $code = "if (\get_class(\$this) !== \get_class(\$$variableName)) {\n";
-    $code .= "            return false;\n";
-    $code .= "        }\n\n";
-
+    $isFinal = buildClassKeyword($definition, $constructor, $collection, $placeHolder) === 'final ';
+    $code = '';
     $addCode = '        return ';
+
+    if (! $isFinal) {
+        $code = "if (\get_class(\$this) !== \get_class(\$$variableName)) {\n";
+        $code .= "            return false;\n";
+        $code .= "        }\n\n";
+    }
 
     if (0 === \count($constructor->arguments())) {
         $code .= "        return \$this->value === \${$variableName}->value;";
@@ -89,7 +93,12 @@ CODE;
         $argumentName = $argument->name();
 
         if ($argument->isList()) {
-            $code .= "        if (\count(\$this->$argumentName) !== \count(\${$variableName}->{$argumentName})) {\n";
+            if ($code === '') {
+                $code .= "if (\count(\$this->$argumentName) !== \count(\${$variableName}->{$argumentName})) {\n";
+            } else {
+                $code .= "        if (\count(\$this->$argumentName) !== \count(\${$variableName}->{$argumentName})) {\n";
+            }
+
             $code .= "            return false;\n";
             $code .= "        }\n\n";
             $code .= "        foreach (\$this->$argumentName as \$__i => \$__value) {\n";
@@ -156,7 +165,11 @@ CODE;
     }
 
     if ($addCode !== '        return ') {
-        $addCode = \str_replace('        return             &&', '        return', $addCode);
+        if ($isFinal && '' === $code) {
+            $addCode = \str_replace('        return             &&', 'return', $addCode);
+        } else {
+            $addCode = \str_replace('        return             &&', '        return', $addCode);
+        }
         $addCode = \substr($addCode, 0, -1) . ';';
         $code .= $addCode;
     }
