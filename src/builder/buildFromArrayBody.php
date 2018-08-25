@@ -83,6 +83,8 @@ CODE;
         if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
+        
+        \${$argument->name()} = [];
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
             if (! \is_{$argument->type()}(\$__value)$floatCheck) {
@@ -397,6 +399,8 @@ CODE;
         if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
+        
+        \${$argument->name()} = [];
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
             if (! \is_{$argument->type()}(\$__value)$floatCheck) {
