@@ -51,7 +51,7 @@ class BuildArgumentsTest extends TestCase
     {
         $constructor = new Constructor('Foo\Bar', [
             new Argument('name', 'string', false, false, '\'test\''),
-            new Argument('value', 'int', false, false, 5),
+            new Argument('value', 'int', false, false, '0'),
             new Argument('value2', null, false, false, '\'test2\''),
         ]);
 
@@ -62,7 +62,7 @@ class BuildArgumentsTest extends TestCase
             [$constructor]
         );
 
-        $expected = 'string $name = \'test\', int $value = 5, $value2 = \'test2\'';
+        $expected = 'string $name = \'test\', int $value = 0, $value2 = \'test2\'';
         $this->assertSame($expected, buildArguments($definition, $constructor, new DefinitionCollection(), ''));
     }
 }
