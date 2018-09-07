@@ -53,6 +53,7 @@ class FromScalar extends AbstractDeriving
             Query::VALUE,
             MicroAggregateChanged::VALUE,
             Uuid::VALUE,
+            Exception::VALUE,
         ];
     }
 }

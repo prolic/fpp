@@ -11,21 +11,6 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Fpp\Deriving\AggregateChanged;
-use Fpp\Deriving\Command;
-use Fpp\Deriving\DomainEvent;
-use Fpp\Deriving\Enum;
-use Fpp\Deriving\Equals;
-use Fpp\Deriving\FromArray;
-use Fpp\Deriving\FromScalar;
-use Fpp\Deriving\FromString;
-use Fpp\Deriving\MicroAggregateChanged;
-use Fpp\Deriving\Query;
-use Fpp\Deriving\ToArray;
-use Fpp\Deriving\ToScalar;
-use Fpp\Deriving\ToString;
-use Fpp\Deriving\Uuid;
-
 const loadTemplate = '\Fpp\loadTemplate';
 
 function loadTemplate(Definition $definition, ?Constructor $constructor): string
@@ -70,22 +55,23 @@ function loadTemplate(Definition $definition, ?Constructor $constructor): string
 
     foreach ($definition->derivings() as $deriving) {
         switch ((string) $deriving) {
-            case AggregateChanged::VALUE:
-            case Command::VALUE:
-            case DomainEvent::VALUE:
-            case Query::VALUE:
-            case MicroAggregateChanged::VALUE:
-            case Uuid::VALUE:
-            case Equals::VALUE:
-            case FromArray::VALUE:
-            case FromScalar::VALUE:
-            case FromString::VALUE:
-            case ToArray::VALUE:
-            case ToScalar::VALUE:
-            case ToString::VALUE:
+            case Deriving\AggregateChanged::VALUE:
+            case Deriving\Command::VALUE:
+            case Deriving\DomainEvent::VALUE:
+            case Deriving\Query::VALUE:
+            case Deriving\MicroAggregateChanged::VALUE:
+            case Deriving\Uuid::VALUE:
+            case Deriving\Equals::VALUE:
+            case Deriving\FromArray::VALUE:
+            case Deriving\FromScalar::VALUE:
+            case Deriving\FromString::VALUE:
+            case Deriving\ToArray::VALUE:
+            case Deriving\ToScalar::VALUE:
+            case Deriving\ToString::VALUE:
+            case Deriving\Exception::VALUE:
                 $bodyTemplatesFiles[] = $prefix . \strtolower((string) $deriving) . '.template';
                 break;
-            case Enum::VALUE:
+            case Deriving\Enum::VALUE:
                 if (null === $constructor) {
                     $bodyTemplatesFiles[] = $prefix . 'enum.template';
                 }

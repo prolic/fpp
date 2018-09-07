@@ -12,11 +12,57 @@ declare(strict_types=1);
 namespace Fpp\Deriving;
 
 use Fpp\Definition;
+
+use Fpp\ExceptionConstructor;
 use Fpp\InvalidDeriving;
 
-class AggregateChanged extends AbstractDeriving
+class Exception extends AbstractDeriving
 {
-    public const VALUE = 'AggregateChanged';
+    public const VALUE = 'Exception';
+
+    private $baseClass;
+    private $constructors;
+    private $defaultMessage;
+
+    public function __construct(
+        string $baseClass = '\\Exception',
+        array $constructors = [],
+        string $defaultMessage = ''
+    ) {
+        $this->baseClass = $baseClass;
+        $this->constructors = $constructors;
+        $this->defaultMessage = $defaultMessage;
+    }
+
+    public function withBaseClass(string $baseClass): self
+    {
+        return new self($baseClass, $this->constructors, $this->defaultMessage);
+    }
+
+    public function withConstructors(ExceptionConstructor ...$constructors): self
+    {
+        return new self($this->baseClass, $constructors, $this->defaultMessage);
+    }
+
+    public function withDefaultMessage(string $defaultMessage): self
+    {
+        return new self($this->baseClass, $this->constructors, $defaultMessage);
+    }
+
+    public function baseClass(): string
+    {
+        return $this->baseClass;
+    }
+
+    public function constructors(): array
+    {
+        return $this->constructors;
+    }
+
+    public function defaultMessage(): string
+    {
+        return $this->defaultMessage;
+    }
 
     public function checkDefinition(Definition $definition): void
     {
@@ -29,25 +75,12 @@ class AggregateChanged extends AbstractDeriving
                 throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
             }
         }
-
-        if (\count($definition->constructors()) !== 1) {
-            throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
-        }
-
-        if (0 === \count($definition->constructors()[0]->arguments())) {
-            throw InvalidDeriving::atLeastOneConstructorArgumentExpected($definition, self::VALUE);
-        }
-
-        $firstArgument = $definition->constructors()[0]->arguments()[0];
-        if ($firstArgument->nullable() || $firstArgument->isList()) {
-            throw InvalidDeriving::invalidFirstArgumentForDeriving($definition, self::VALUE);
-        }
     }
 
     private function forbidsDerivings(): array
     {
         return [
-            Command::VALUE,
+            AggregateChanged::VALUE,
             DomainEvent::VALUE,
             Enum::VALUE,
             Equals::VALUE,
@@ -60,7 +93,6 @@ class AggregateChanged extends AbstractDeriving
             ToScalar::VALUE,
             ToString::VALUE,
             Uuid::VALUE,
-            Exception::VALUE,
         ];
     }
 }

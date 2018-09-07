@@ -71,4 +71,9 @@ class Argument
     {
         return \in_array($this->type, ['string', 'int', 'bool', 'float'], true);
     }
+
+    public function __toString(): string
+    {
+        return \sprintf('%s:%s:%d:%d', $this->name, $this->type, $this->nullable, $this->isList);
+    }
 }

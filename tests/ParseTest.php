@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace FppTest;
 
+use Fpp\Argument;
 use Fpp\Deriving;
 use Fpp\ParseError;
 use org\bovigo\vfs\vfsStream;
@@ -1090,6 +1091,76 @@ CODE;
         $this->assertSame('r', $deriving->valueMapping()['Red']);
         $this->assertSame(0, $deriving->valueMapping()['Green']);
         $this->assertSame(['foo' => 'bar', 'baz', 1, true, 'bam' => 123], $deriving->valueMapping()['Yellow']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_exception_without_base_class_class(): void
+    {
+        $contents = <<<CODE
+namespace Foo;
+data UserNotFound = UserNotFound deriving (Exception);
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'UserNotFound');
+        /** @var Deriving\Exception $deriving */
+        $deriving = $definition->derivings()[0];
+
+        $this->assertSame('\\Exception', $deriving->baseClass());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_exception_with_base_class_class(): void
+    {
+        $contents = <<<CODE
+namespace Foo;
+data UserNotFound = UserNotFound deriving (Exception: \RuntimeException);
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'UserNotFound');
+        /** @var Deriving\Exception $deriving */
+        $deriving = $definition->derivings()[0];
+
+        $this->assertSame('\\RuntimeException', $deriving->baseClass());
+    }
+
+    /**
+     * @test
+     */
+    public function it_parses_exception_with_constructors()
+    {
+        $contents = <<<CODE
+namespace Foo;
+data UserNotFound = UserNotFound deriving (Exception) with
+    | withEmail { string \$email } => 'User with email {{\$email}} cannot be found'
+    | create => 'User is nowhere to be found'
+    | _ => 'No user found';
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'UserNotFound');
+        /** @var Deriving\Exception $deriving */
+        $deriving = $definition->derivings()[0];
+
+        $this->assertSame('No user found', $deriving->defaultMessage());
+        $ctors = $deriving->constructors();
+        $this->assertCount(2, $ctors);
+
+        $this->assertSame('withEmail', $ctors[0]->name());
+        $this->assertSame('User with email {{$email}} cannot be found', $ctors[0]->message());
+        $args = $ctors[0]->arguments();
+        $this->assertCount(1, $args);
+        $this->assertEquals(new Argument('email', 'string', false, false), $args[0]);
+
+        $this->assertSame('create', $ctors[1]->name());
+        $this->assertSame('User is nowhere to be found', $ctors[1]->message());
+        $args = $ctors[1]->arguments();
+        $this->assertCount(0, $args);
     }
 
     /**
