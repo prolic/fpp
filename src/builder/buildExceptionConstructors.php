@@ -60,6 +60,14 @@ function buildExceptionConstructors(Definition $definition, ?Constructor $constr
             ]
         ));
 
+        $messageArg = \sprintf('\'%s\'', $ctor->message());
+        if (\preg_match_all('/\{{2}([^}]+)\}{2}/', $messageArg, $matches) > 0) {
+            $messageArg = \sprintf(
+                'sprintf(\'%s\', %s)',
+                \preg_replace('/\{{2}([^}]+)\}{2}/', '%s', \substr($messageArg, 1, -1)),
+                \implode(', ', \array_map('trim', $matches[1]))
+            );
+        }
         $selfArgs = \implode(', ', \array_merge(
             \array_map(
                 function (Argument $arg): string {
@@ -68,7 +76,7 @@ function buildExceptionConstructors(Definition $definition, ?Constructor $constr
                 $definition->constructors()[0]->arguments()
             ),
             [
-                \sprintf('sprintf(\'%s\')', $ctor->message()),
+                $messageArg,
                 '$code',
                 '$previous',
             ]
