@@ -205,6 +205,11 @@ namespace {{namespace}};
     {
         return \$this->name;
     }
+    
+    public function toString(): string
+    {
+        return \$this->name;
+    }
 }
 
 TEMPLATE;
