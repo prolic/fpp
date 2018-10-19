@@ -429,8 +429,8 @@ CODE;
     }
 
     throw new \RuntimeException(\sprintf(
-        'Cannot build argument constructor for %s, give a scalar type hint or a deriving like Enum, FromString, Uuid, FromScalar, FromArray',
-        $namespace !== '' ? $namespace . '\\' . $name : $name
+        'First argument of %s will be used as an aggregateId. It should give a scalar type hint or a deriving like Enum, FromString, Uuid, FromScalar',
+        $definition->name()
     ));
 }
 
