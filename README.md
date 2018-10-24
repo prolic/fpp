@@ -14,6 +14,11 @@ This library can generate immutable data types based on fpp definitions. The syn
 
 [See the docs here](https://github.com/prolic/fpp/tree/master/docs/Home.md)
 
+### Install
+
+```console
+composer require prolic/fpp
+```
 
 ### So what is it really?
 
