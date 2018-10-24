@@ -1,4 +1,4 @@
-After installing FPP into your project.
+Do the following after installing FPP into your project.
 
 1) First you'll need to install the [File Watchers plugin](https://www.jetbrains.com/help/phpstorm/settings-tools-file-watchers.html), if you haven't already done so.  
 To install the plugin, go to the PhpStorm Settings/Preferences -> "Plugins" -> and search for "File Watchers". Check off the plugin to install it. You'll need to restart PhpStorm.  
