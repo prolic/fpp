@@ -4,7 +4,7 @@
 
 ### What it this?
 
-This library can generate immutable data types based on fpp definitions, the syntax is inspired by Haskell.
+This library can generate immutable data types based on fpp definitions. The syntax is inspired by Haskell.
 
 ### YouTube Video Tutorial
 
@@ -15,7 +15,7 @@ This library can generate immutable data types based on fpp definitions, the syn
 [See the docs here](https://github.com/prolic/fpp/tree/master/docs/Home.md)
 
 
-### So what really is it?
+### So what is it really?
 
 Create a file and put this in it:
 
@@ -101,7 +101,7 @@ var_dump(Color::blue()->value()); // 13
 Derivings are kind of PHP's extends keyword, the following rules apply:
 
 - It's possible to derive multiple times
-- Some derivings are not compatible to each other (f.e. Command and ToArray cannot be mixed)
+- Some derivings are not compatible to each other (ie, Command and ToArray cannot be mixed)
 
 There are 14 deriving types for now:
 
