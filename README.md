@@ -157,7 +157,11 @@ data Person = Person { FirstName $firstName, LastName $lastName, Age $age } | Bo
 
 ### Usage
 
-`php bin/fpp.php <source dir or file>`
+```php
+php bin/fpp.php <source dir or file>
+# or
+php vendor/prolic/fpp/bin/fpp.php <source dir or file>
+```
 
 It will try to find your composer autoload and fetch psr-4 and psr-0 prefixes from it.
 You'll get an exception, if you want to dump a class, where you have no composer autoload definition.
