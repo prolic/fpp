@@ -52,4 +52,4 @@ data UserId = UserId deriving (Uuid);
 
 Wanna see more? check [Conditions](Conditions.md)
 
-Wanna have [prooph components (http://getprooph.org/)](http://getprooph.org/) integration? check [prooph](prooph.md)
+Wanna have [prooph components](http://getprooph.org/) integration? See the [prooph integration](prooph.md)
