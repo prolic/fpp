@@ -149,4 +149,4 @@ final class Boss extends Person
 
 Wanna see more? check [Markers](Markers.md)
 
-Wanna have [prooph components (http://getprooph.org/)](http://getprooph.org/) integration? check [prooph](prooph.md)
+Wanna have [prooph components](http://getprooph.org/) integration? See the [prooph integration](prooph.md)
