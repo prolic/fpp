@@ -139,6 +139,29 @@ function buildArgumentReturnType(Argument $argument, Definition $definition): st
     return ': ' . buildArgumentType($argument, $definition);
 }
 
+function buildDocBlockReturnType(Argument $argument): string {
+    if ($argument->isList() && ! $argument->nullable()) {
+        $type = $argument->type();
+        return <<<CODE
+    /**
+     * @return \\{$type}[]
+     */
+
+CODE;
+    }
+    if ($argument->isList() && $argument->nullable()) {
+        $type = $argument->type();
+        return <<<CODE
+    /**
+     * @return \\{$type}[]|null
+     */
+
+CODE;
+    }
+
+    return '';
+}
+
 function buildScalarConstructor(Definition $definition): string
 {
     return "new {$definition->name()}(\$value)";
@@ -146,7 +169,7 @@ function buildScalarConstructor(Definition $definition): string
 
 function buildArgumentConstructor(Argument $argument, Definition $definition, DefinitionCollection $collection): string
 {
-    if ($argument->isScalartypeHint() || null === $argument->type()) {
+    if ($argument->isScalarTypeHint() || null === $argument->type()) {
         return "\${$argument->name()}";
     }
 

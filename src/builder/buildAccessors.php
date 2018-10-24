@@ -18,6 +18,7 @@ use Fpp\Deriving;
 use function Fpp\buildArgumentReturnType;
 use function Fpp\buildMethodBodyFromAggregateId;
 use function Fpp\buildMethodBodyFromPayload;
+use function Fpp\buildDocBlockReturnType;
 
 const buildAccessors = '\Fpp\Builder\buildAccessors';
 
@@ -45,8 +46,9 @@ function buildAccessors(Definition $definition, ?Constructor $constructor, Defin
                     $methodBody = buildMethodBodyFromPayload($argument, $definition, $collection, true);
                 }
 
+                $accessors .= buildDocBlockReturnType($argument);
                 $accessors .= <<<CODE
-    public function {$argument->name()}()$returnType
+    public function {$argument->type()}()$returnType
     {
         $methodBody
     }
@@ -64,6 +66,8 @@ CODE;
             foreach ($constructor->arguments() as $argument) {
                 $returnType = buildArgumentReturnType($argument, $definition);
                 $methodBody = buildMethodBodyFromPayload($argument, $definition, $collection, false);
+
+                $accessors .= buildDocBlockReturnType($argument);
                 $accessors .= <<<CODE
     public function {$argument->name()}()$returnType
     {
@@ -83,6 +87,8 @@ CODE;
 
     foreach ($constructor->arguments() as $argument) {
         $returnType = buildArgumentReturnType($argument, $definition);
+
+        $accessors .= buildDocBlockReturnType($argument);
         $accessors .= <<<CODE
     public function {$argument->name()}()$returnType
     {
