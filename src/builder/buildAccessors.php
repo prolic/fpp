@@ -48,7 +48,7 @@ function buildAccessors(Definition $definition, ?Constructor $constructor, Defin
 
                 $accessors .= buildDocBlockReturnType($argument);
                 $accessors .= <<<CODE
-    public function {$argument->type()}()$returnType
+    public function {$argument->name()}()$returnType
     {
         $methodBody
     }
