@@ -83,6 +83,7 @@ public function __construct(Name \$name, Age \$age, array \$strings, array \$flo
         \$this->name = \$name;
         \$this->age = \$age;
 
+        \$this->strings = [];
         foreach (\$strings as \$__value) {
             if (! \is_string(\$__value)) {
                 throw new \InvalidArgumentException('strings expected an array of string');
@@ -90,6 +91,7 @@ public function __construct(Name \$name, Age \$age, array \$strings, array \$flo
             \$this->strings[] = \$__value;
         }
 
+        \$this->floats = [];
         foreach (\$floats as \$__value) {
             if (! \is_float(\$__value) && ! \is_int(\$__value)) {
                 throw new \InvalidArgumentException('floats expected an array of float');
@@ -97,6 +99,7 @@ public function __construct(Name \$name, Age \$age, array \$strings, array \$flo
             \$this->floats[] = \$__value;
         }
 
+        \$this->emails = [];
         foreach (\$emails as \$__value) {
             if (! \$__value instanceof \Foo\Bar\Email) {
                 throw new \InvalidArgumentException('emails expected an array of Foo\Bar\Email');
