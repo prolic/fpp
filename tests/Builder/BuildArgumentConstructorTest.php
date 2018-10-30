@@ -172,7 +172,7 @@ class BuildArgumentConstructorTest extends TestCase
     /**
      * @test
      */
-    public function is_can_build_enum_withValue()
+    public function is_can_build_enum_as_value()
     {
         $constructor1 = new Constructor('My\Red');
         $constructor2 = new Constructor('My\Blue');
@@ -196,7 +196,7 @@ class BuildArgumentConstructorTest extends TestCase
             [$constructor1, $constructor2],
             [new Deriving\Enum(
                 [],
-                ['withValue']
+                ['asValue']
             )]
         );
 

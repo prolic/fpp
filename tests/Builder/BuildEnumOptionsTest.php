@@ -80,7 +80,7 @@ EXPECTED;
     /**
      * @test
      */
-    public function it_builds_enum_options_withValue(): void
+    public function it_builds_enum_options_as_value(): void
     {
         $constructor1 = new Constructor('My\RED');
         $constructor2 = new Constructor('My\VERY_RED');
@@ -92,7 +92,7 @@ EXPECTED;
             [$constructor1, $constructor2],
             [new Deriving\Enum(
                 [],
-                ['withValue']
+                ['asValue']
             )]
         );
 

@@ -77,7 +77,7 @@ EXPECTED;
     /**
      * @test
      */
-    public function is_build_enum_consts_as_value_withValue(): void
+    public function is_build_enum_consts_as_value_as_value(): void
     {
         $constructor1 = new Constructor('My\RED');
         $constructor2 = new Constructor('My\VERY_RED');
@@ -89,7 +89,7 @@ EXPECTED;
             [$constructor1, $constructor2],
             [new Deriving\Enum(
                 [],
-                ['withValue']
+                ['asValue']
             )]
         );
 

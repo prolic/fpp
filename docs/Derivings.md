@@ -10,7 +10,7 @@ There are 14 deriving types for now:
 - AggregateChanged
 - Command
 - DomainEvent
-- Enum / Enum(fromValue)
+- Enum / Enum(asValue)
 - Equals
 - FromArray
 - FromScalar

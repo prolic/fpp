@@ -46,7 +46,7 @@ class Enum extends AbstractDeriving
 
     public function asValue() : bool
     {
-        return \in_array('withValue', $this->arguments, true);
+        return \in_array('asValue', $this->arguments, true);
     }
 
     public function checkDefinition(Definition $definition): void

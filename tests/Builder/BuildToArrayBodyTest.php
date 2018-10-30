@@ -117,7 +117,7 @@ CODE;
             [$constructor1, $constructor2],
             [new Deriving\Enum(
                 [],
-                ['withValue']
+                ['asValue']
             )]
         );
 
