@@ -477,6 +477,88 @@ CODE;
     /**
      * @test
      */
+    public function it_builds_from_array_body_7(): void
+    {
+        $constructor1 = new Constructor('My\Red');
+        $constructor2 = new Constructor('My\Blue');
+
+        $simpleColor = new Definition(
+            DefinitionType::data(),
+            'My',
+            'SimpleColor',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum()]
+        );
+
+
+        $constructor1 = new Constructor('My\RED');
+        $constructor2 = new Constructor('My\VERY_RED');
+
+        $color = new Definition(
+            DefinitionType::data(),
+            'My',
+            'Color',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum(
+                [],
+                ['withValue']
+            )]
+        );
+
+        $constructor = new Constructor('My\Person', [
+            new Argument('simpleColors', 'My\SimpleColor', false, true),
+            new Argument('colors', 'My\Color', false, true),
+        ]);
+
+        $definition = new Definition(
+            DefinitionType::data(),
+            'My',
+            'Person',
+            [$constructor],
+            [
+                new Deriving\FromArray(),
+            ]
+        );
+
+        $expected = <<<CODE
+if (! isset(\$data['simpleColors']) || ! \is_array(\$data['simpleColors'])) {
+            throw new \InvalidArgumentException("Key 'simpleColors' is missing in data array or is not an array");
+        }
+
+        \$simpleColors = [];
+
+        foreach (\$data['simpleColors'] as \$__value) {
+            if (! \is_string(\$__value)) {
+                throw new \InvalidArgumentException("Value for 'simpleColors' in data array is not an array of string");
+            }
+
+            \$simpleColors[] = SimpleColor::fromName(\$__value);
+        }
+
+        if (! isset(\$data['colors']) || ! \is_array(\$data['colors'])) {
+            throw new \InvalidArgumentException("Key 'colors' is missing in data array or is not an array");
+        }
+
+        \$colors = [];
+
+        foreach (\$data['colors'] as \$__value) {
+            if (! \is_string(\$__value)) {
+                throw new \InvalidArgumentException("Value for 'colors' in data array is not an array of string");
+            }
+
+            \$colors[] = Color::fromValue(\$__value);
+        }
+
+        return new self(\$simpleColors, \$colors);
+
+CODE;
+
+        $this->assertSame($expected, buildFromArrayBody($definition, $constructor, new DefinitionCollection($definition, $color, $simpleColor), ''));
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_place_holder_when_no_constructor_given(): void
     {
         /** @var Definition */

@@ -146,9 +146,10 @@ CODE;
                         $buildToArrayBlock($argument, $start);
                         $code .= $addArgument($key, $argument->name(), "\$__array_{$argument->name()}");
                     } else {
+                        $asWhat = $deriving->asValue() ? 'value' : 'name';
                         $value = $argument->nullable()
-                            ? "null === \${$argument->name()} ? null : \${$argument->name()}->name()"
-                            : "\${$argument->name()}->name()";
+                            ? "null === \${$argument->name()} ? null : \${$argument->name()}->{$asWhat}()"
+                            : "\${$argument->name()}->{$asWhat}()";
                         $code .= $addArgument($key, $argument->name(), $value);
                     }
 

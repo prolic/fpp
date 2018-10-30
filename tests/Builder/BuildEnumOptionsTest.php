@@ -80,6 +80,33 @@ EXPECTED;
     /**
      * @test
      */
+    public function it_builds_enum_options_withValue(): void
+    {
+        $constructor1 = new Constructor('My\RED');
+        $constructor2 = new Constructor('My\VERY_RED');
+
+        $definition = new Definition(
+            DefinitionType::data(),
+            'My',
+            'Color',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum(
+                [],
+                ['withValue']
+            )]
+        );
+
+        $expected = <<<EXPECTED
+'RED' => 'RED',
+        'VERY_RED' => 'VERY_RED',
+EXPECTED;
+
+        $this->assertSame($expected, buildEnumOptions($definition, null, new DefinitionCollection($definition), ''));
+    }
+
+    /**
+     * @test
+     */
     public function it_does_not_allow_enum_options_with_namespaces(): void
     {
         $this->expectException(InvalidDeriving::class);
