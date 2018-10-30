@@ -448,8 +448,23 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                         $derivingName = $token[1];
 
-                        $derivings[] = $derivingMap[$token[1]];
+                        $derivingType = $derivingMap[$token[1]];
+
                         $token = $skipWhitespace($nextToken());
+
+                        $arguments = [];
+                        if ('(' === $token[1]) {
+                            $token = $skipWhitespace($nextToken());
+                            $requireString($token);
+
+                            $arguments[] = $token[1];
+
+                            $token = $skipWhitespace($nextToken());
+                            if ($token[1] !== ')') {
+                                throw ParseError::unexpectedTokenFound(')', $token, $filename);
+                            }
+                        }
+                        $derivings[] = [$derivingType, $arguments];
 
                         if (':' === $token[1]
                             && \in_array($derivingName, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)

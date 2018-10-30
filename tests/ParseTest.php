@@ -1185,6 +1185,22 @@ CODE;
         $this->assertSame('MyMarkerB', (string) $definition->markers()[1]);
     }
 
+    /**
+     * @test
+     */
+    public function is_parses_deriving_argument(): void
+    {
+        $contents = <<<CODE
+namespace Foo;
+data Color = Red | Blue deriving(Enum(withValue))
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'Color');
+        $this->assertSame('Enum', (string) $definition->derivings()[0]);
+        $this->assertTrue($definition->derivings()[0]->asValue());
+    }
+
     public function scalarListTypes(): array
     {
         return [

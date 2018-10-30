@@ -13,6 +13,7 @@ namespace Fpp\Deriving;
 
 use Fpp\Definition;
 
+use Fpp\Deriving as FppDeriving;
 use Fpp\InvalidDeriving;
 
 class Enum extends AbstractDeriving
@@ -20,15 +21,32 @@ class Enum extends AbstractDeriving
     public const VALUE = 'Enum';
 
     private $valueMapping;
+    private $arguments;
 
-    public function __construct(array $valueMapping = [])
+    public function __construct(array $valueMapping = [], $arguments = [])
     {
         $this->valueMapping = $valueMapping;
+        $this->arguments = $arguments;
     }
 
     public function valueMapping(): array
     {
         return $this->valueMapping;
+    }
+
+    /**
+     * @param Definition $definition
+     * @param string[] $arguments
+     * @return Enum
+     */
+    public function withArguments(Definition $definition, array $arguments): FppDeriving
+    {
+        return new self($this->valueMapping, $arguments);
+    }
+
+    public function asValue() : bool
+    {
+        return \in_array('withValue', $this->arguments, true);
     }
 
     public function checkDefinition(Definition $definition): void

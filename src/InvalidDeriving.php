@@ -106,6 +106,15 @@ class InvalidDeriving extends \RuntimeException
         ));
     }
 
+    public static function noArgumentsExpected(Definition $definition, string $deriving): InvalidDeriving
+    {
+        return new self(\sprintf(
+            "Invalid deriving on %s, deriving %s doesn't expect any arguments",
+            self::className($definition),
+            $deriving
+        ));
+    }
+
     private static function className(Definition $definition): string
     {
         return $definition->namespace() . '\\' . $definition->name();
