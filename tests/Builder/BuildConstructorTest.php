@@ -54,6 +54,7 @@ class BuildConstructorTest extends TestCase
             new Argument('strings', 'string', false, true),
             new Argument('floats', 'float', false, true),
             new Argument('emails', 'Foo\Bar\Email', false, true),
+            new Argument('hobbies', 'Foo\Bar\Hobby', true, true)
         ]);
 
         $person = new Definition(
@@ -70,7 +71,7 @@ class BuildConstructorTest extends TestCase
         );
 
         $expected = <<<STRING
-public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails)
+public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails, ?array \$hobbies)
     {
         if (strlen(\$name->value()) === 0) {
             throw new \InvalidArgumentException('Name too short');
@@ -83,25 +84,34 @@ public function __construct(Name \$name, Age \$age, array \$strings, array \$flo
         \$this->name = \$name;
         \$this->age = \$age;
 
-        foreach (\$strings as \$__value) {
-            if (! \is_string(\$__value)) {
-                throw new \InvalidArgumentException('strings expected an array of string');
+            foreach (\$strings as \$__value) {
+                if (! \is_string(\$__value)) {
+                    throw new \InvalidArgumentException('strings expected an array of string');
+                }
+                \$this->strings[] = \$__value;
             }
-            \$this->strings[] = \$__value;
-        }
 
-        foreach (\$floats as \$__value) {
-            if (! \is_float(\$__value) && ! \is_int(\$__value)) {
-                throw new \InvalidArgumentException('floats expected an array of float');
+            foreach (\$floats as \$__value) {
+                if (! \is_float(\$__value) && ! \is_int(\$__value)) {
+                    throw new \InvalidArgumentException('floats expected an array of float');
+                }
+                \$this->floats[] = \$__value;
             }
-            \$this->floats[] = \$__value;
-        }
 
-        foreach (\$emails as \$__value) {
-            if (! \$__value instanceof \Foo\Bar\Email) {
-                throw new \InvalidArgumentException('emails expected an array of Foo\Bar\Email');
+            foreach (\$emails as \$__value) {
+                if (! \$__value instanceof \Foo\Bar\Email) {
+                    throw new \InvalidArgumentException('emails expected an array of Foo\Bar\Email');
+                }
+                \$this->emails[] = \$__value;
             }
-            \$this->emails[] = \$__value;
+
+        if (\$hobbies !== null) {
+            foreach (\$hobbies as \$__value) {
+                if (! \$__value instanceof \Foo\Bar\Hobby) {
+                    throw new \InvalidArgumentException('hobbies expected an array of Foo\Bar\Hobby');
+                }
+                \$this->hobbies[] = \$__value;
+            }
         }
 
     }
