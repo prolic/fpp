@@ -1192,7 +1192,7 @@ CODE;
     {
         $contents = <<<CODE
 namespace Foo;
-data Color = Red | Blue deriving(Enum(withValue))
+data Color = Red | Blue deriving(Enum(withValue, bla))
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);

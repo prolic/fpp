@@ -452,19 +452,28 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                         $token = $skipWhitespace($nextToken());
 
-                        $arguments = [];
+                        $enumArgs = [];
                         if ('(' === $token[1]) {
-                            $token = $skipWhitespace($nextToken());
-                            $requireString($token);
 
-                            $arguments[] = $token[1];
 
-                            $token = $skipWhitespace($nextToken());
-                            if ($token[1] !== ')') {
-                                throw ParseError::unexpectedTokenFound(')', $token, $filename);
+                            while ($token[1] !== ')') {
+                                $token = $skipWhitespace($nextToken());
+                                $requireString($token);
+                                $enumArgs[] = $token[1];
+
+                                $token = $skipWhitespace($nextToken());
+                                if ($token[1] === ')') {
+                                    break;
+                                }
+                                if ($token[1] !== ',') {
+                                    throw ParseError::unexpectedTokenFound(',', $token, $filename);
+                                }
                             }
                         }
-                        $derivings[] = [$derivingType, $arguments];
+                        if ($enumArgs) {
+                            $derivingType = $derivingType->withArguments($enumArgs);
+                        }
+                        $derivings[] = $derivingType;
 
                         if (':' === $token[1]
                             && \in_array($derivingName, ['AggregateChanged', 'Command', 'DomainEvent', 'Query'], true)

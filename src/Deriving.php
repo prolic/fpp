@@ -24,5 +24,5 @@ interface Deriving
 
     public function equals(Deriving $deriving): bool;
 
-    public function withArguments(Definition $definition, array $arguments): self;
+    public function withArguments(array $arguments): self;
 }

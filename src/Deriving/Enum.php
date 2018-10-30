@@ -34,12 +34,12 @@ class Enum extends AbstractDeriving
         return $this->valueMapping;
     }
 
-    /**
-     * @param Definition $definition
-     * @param string[] $arguments
-     * @return Enum
-     */
-    public function withArguments(Definition $definition, array $arguments): FppDeriving
+    public function withValueMapping(array $valueMapping = []): Enum
+    {
+        return new self($valueMapping, $this->arguments);
+    }
+
+    public function withArguments(array $arguments): FppDeriving
     {
         return new self($this->valueMapping, $arguments);
     }

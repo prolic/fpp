@@ -117,19 +117,13 @@ class Definition
         }
 
         $derivingNames = [];
-        foreach ($derivings as $derivingData) {
-            [$deriving, $arguments] = $derivingData;
-
+        foreach ($derivings as $deriving) {
             if (! $deriving instanceof Deriving) {
                 throw new \InvalidArgumentException('Invalid deriving given, must be an instance of ' . Deriving::class);
             }
 
             if (isset($derivingNames[(string) $deriving])) {
                 throw new \InvalidArgumentException('Duplicate deriving given');
-            }
-
-            if ($arguments) {
-                $deriving = $deriving->withArguments($this, $arguments);
             }
 
             $deriving->checkDefinition($this);
