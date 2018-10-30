@@ -44,9 +44,9 @@ class Enum extends AbstractDeriving
         return new self($this->valueMapping, $arguments);
     }
 
-    public function asValue() : bool
+    public function useValue() : bool
     {
-        return \in_array('asValue', $this->arguments, true);
+        return \in_array('useValue', $this->arguments, true);
     }
 
     public function checkDefinition(Definition $definition): void

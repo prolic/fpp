@@ -89,7 +89,7 @@ EXPECTED;
             [$constructor1, $constructor2],
             [new Deriving\Enum(
                 [],
-                ['asValue']
+                ['useValue']
             )]
         );
 

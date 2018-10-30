@@ -48,7 +48,7 @@ function buildEnumOptions(Definition $definition, ?Constructor $constructor, Def
     foreach ($definition->constructors() as $key => $definitionConstructor) {
         $class = buildReferencedClass($namespace, $definitionConstructor->name());
 
-        $keyValue = $enumDeriving->asValue() ? $class : $key;
+        $keyValue = $enumDeriving->useValue() ? $class : $key;
         $value = empty($valueMapping) ? $keyValue : $valueMapping[$class];
         $value = fpp_var_export($value, '        ');
         $replace .= "        '$class' => $value,\n";

@@ -1192,13 +1192,13 @@ CODE;
     {
         $contents = <<<CODE
 namespace Foo;
-data Color = Red | Blue deriving(Enum(asValue, bla))
+data Color = Red | Blue deriving(Enum(useValue, bla))
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
         $definition = $collection->definition('Foo', 'Color');
         $this->assertSame('Enum', (string) $definition->derivings()[0]);
-        $this->assertTrue($definition->derivings()[0]->asValue());
+        $this->assertTrue($definition->derivings()[0]->useValueK());
     }
 
     public function scalarListTypes(): array

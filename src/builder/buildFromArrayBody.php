@@ -267,7 +267,7 @@ CODE;
                     }
                     continue 3;
                 case Deriving\Enum::VALUE:
-                    $fromWhat = $deriving->asValue() ? 'fromValue' : 'fromName';
+                    $fromWhat = $deriving->useValue() ? 'fromValue' : 'fromName';
 
                     if ($argument->nullable()) {
                         $code .= <<<CODE
