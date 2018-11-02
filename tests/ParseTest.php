@@ -1185,6 +1185,20 @@ CODE;
         $this->assertSame('MyMarkerB', (string) $definition->markers()[1]);
     }
 
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_data_definition_does_not_end_in_semicolon(): void
+    {
+        $this->expectException(ParseError::class);
+
+        $contents = <<<CODE
+data Foo = Foo SOME_NONSENSE_TOKEN
+CODE;
+
+        parse($this->createDefaultFile($contents), $this->derivingMap);
+    }
+
     public function scalarListTypes(): array
     {
         return [
