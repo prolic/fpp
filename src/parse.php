@@ -638,6 +638,9 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                 if (null === $definitionType) {
                     throw ParseError::unknownDefinitionType($namespace, $name);
                 }
+                if (';' !== $token[1]) {
+                    throw ParseError::unexpectedTokenFound(';', $token, $filename);
+                }
 
                 $collection->addDefinition(new Definition($definitionType, $namespace, $name, $constructors, $derivings, $conditions, $messageName, $markers));
                 break;
