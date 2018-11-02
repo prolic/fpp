@@ -1193,6 +1193,7 @@ CODE;
         $this->expectException(ParseError::class);
 
         $contents = <<<CODE
+namespace Foo;
 data Foo = Foo SOME_NONSENSE_TOKEN
 CODE;
 
