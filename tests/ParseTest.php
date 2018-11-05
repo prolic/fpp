@@ -1097,7 +1097,7 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_exception_without_base_class_class(): void
+    public function it_parses_exception_without_base_class(): void
     {
         $contents = <<<CODE
 namespace Foo;
@@ -1115,7 +1115,7 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_exception_with_base_class_class(): void
+    public function it_parses_exception_with_base_class(): void
     {
         $contents = <<<CODE
 namespace Foo;
@@ -1133,7 +1133,7 @@ CODE;
     /**
      * @test
      */
-    public function it_parses_exception_with_constructors()
+    public function it_parses_exception_with_constructors(): void
     {
         $contents = <<<CODE
 namespace Foo;
