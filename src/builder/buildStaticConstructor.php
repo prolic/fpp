@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Fpp\Builder;
 
+use function Fpp\buildDocBlockArgumentTypes;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
@@ -24,7 +25,7 @@ function buildStaticConstructor(Definition $definition, ?Constructor $constructo
         return $placeHolder;
     }
 
-    return <<<CODE
+    return buildDocBlockArgumentTypes($constructor->arguments()) . <<<CODE
 public static function with({{arguments}}): {{class_name}}
     {
         {{static_constructor_body}}

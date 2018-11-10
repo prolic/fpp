@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Fpp\Builder;
 
+use function Fpp\buildDocBlockArgumentTypes;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
@@ -64,6 +65,7 @@ function buildSetters(Definition $definition, ?Constructor $constructor, Definit
         }
 
         $setterName = 'with' . \ucfirst($argument->name());
+        $setters .= buildDocBlockArgumentTypes([$argument], $constructor->name());
         $setters .= "    public function $setterName($type\${$argument->name()}): $self\n    {\n";
         $constructorArguments = '';
 

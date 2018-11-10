@@ -141,23 +141,69 @@ function buildArgumentReturnType(Argument $argument, Definition $definition): st
 }
 
 function buildDocBlockReturnType(Argument $argument): string {
+    $leadingSlash = $argument->isScalarTypeHint() ? '' : '\\';
+
     if ($argument->isList() && ! $argument->nullable()) {
         $type = $argument->type();
         return <<<CODE
     /**
-     * @return \\{$type}[]
+     * @return $leadingSlash{$type}[]
      */
 
 CODE;
     }
+
     if ($argument->isList() && $argument->nullable()) {
         $type = $argument->type();
         return <<<CODE
     /**
-     * @return \\{$type}[]|null
+     * @return $leadingSlash{$type}[]|null
      */
 
 CODE;
+    }
+
+    return '';
+}
+
+/**
+ * @param Argument[] $arguments
+ * @param string $instance
+ * @return string
+ */
+function buildDocBlockArgumentTypes(array $arguments, string $instance = ''): string {
+    $isList = false;
+    $params = '';
+
+    foreach ($arguments as $argument) {
+        $type = $argument->type();
+        $name = $argument->name();
+        $leadingSlash = $argument->isScalarTypeHint() ? '' : '\\';
+
+        if ($argument->isList()) {
+            $isList = true;
+
+
+            if ($argument->nullable()) {
+                $params .= "     * @param $leadingSlash{$type}[] \$$name\n";
+            } else {
+                $params .= "     * @param $leadingSlash{$type}[]|null \$$name\n";
+            }
+        } else {
+            if ($argument->type()) {
+                $params .= "     * @param $leadingSlash{$type} \$$name\n";
+            } else {
+                $params .= "     * @param $leadingSlash{$type} \$$name\n";
+            }
+        }
+    }
+
+    if ($isList && '' === $instance) {
+        return "    /**\n" . $params . "     */\n";
+    }
+
+    if ($isList && '' !== $instance) {
+        return "    /**\n" . $params . "     * @return \\$instance\n     */\n";
     }
 
     return '';

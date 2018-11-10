@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Fpp\Builder;
 
+use function Fpp\buildDocBlockArgumentTypes;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
@@ -42,7 +43,13 @@ function buildConstructor(Definition $definition, ?Constructor $constructor, Def
         return $placeHolder;
     }
 
-    $code = "public function __construct($argumentList)\n    {\n";
+    $docblock = buildDocBlockArgumentTypes($constructor->arguments());
+
+    if ($docblock) {
+        $docblock = \substr($docblock, 4) . '    ';
+    }
+
+    $code = $docblock . "public function __construct($argumentList)\n    {\n";
     $printed = false;
 
     foreach ($definition->conditions() as $condition) {
