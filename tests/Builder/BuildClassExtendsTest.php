@@ -24,7 +24,7 @@ class BuildClassExtendsTest extends TestCase
     /**
      * @test
      */
-    public function it_extends_base_exception_class()
+    public function it_extends_base_exception_class(): void
     {
         $definition = new Definition(
             DefinitionType::data(),
@@ -43,7 +43,7 @@ class BuildClassExtendsTest extends TestCase
     /**
      * @test
      */
-    public function it_extends_exception_class_defined_in_the_global_namespace()
+    public function it_extends_exception_class_defined_in_the_global_namespace(): void
     {
         $definition = new Definition(
             DefinitionType::data(),
@@ -62,7 +62,7 @@ class BuildClassExtendsTest extends TestCase
     /**
      * @test
      */
-    public function it_extends_exception_definition_defined_in_the_current_namespace()
+    public function it_extends_exception_definition_defined_in_the_current_namespace(): void
     {
         $parent = new Definition(
             DefinitionType::data(),
@@ -88,7 +88,7 @@ class BuildClassExtendsTest extends TestCase
     /**
      * @test
      */
-    public function it_extends_exception_definition_defined_in_another_namespace()
+    public function it_extends_exception_definition_defined_in_another_namespace(): void
     {
         $parent = new Definition(
             DefinitionType::data(),
@@ -114,7 +114,7 @@ class BuildClassExtendsTest extends TestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_extending_unknown_exception()
+    public function it_throws_exception_when_extending_unknown_exception(): void
     {
         $definition = new Definition(
             DefinitionType::data(),

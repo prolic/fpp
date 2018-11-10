@@ -26,7 +26,7 @@ class BuildExceptionConstructorsTest extends TestCase
     /**
      * @test
      */
-    public function it_generates_exception_constructors()
+    public function it_generates_exception_constructors(): void
     {
         $constructor = new Constructor('App\\Foo', [
             new Argument('email', 'string'),
@@ -52,7 +52,7 @@ STRING;
     /**
      * @test
      */
-    public function it_generates_exception_constructors_with_dynamic_message()
+    public function it_generates_exception_constructors_with_dynamic_message(): void
     {
         $constructor = new Constructor('App\\Foo', [
             new Argument('email', 'string'),
@@ -78,7 +78,7 @@ STRING;
     /**
      * @test
      */
-    public function it_ignores_definition_without_constructor()
+    public function it_ignores_definition_without_constructor(): void
     {
         $definition = new Definition(
             DefinitionType::data(),
@@ -93,7 +93,7 @@ STRING;
     /**
      * @test
      */
-    public function it_ignores_non_deriving_exception_definition()
+    public function it_ignores_non_deriving_exception_definition(): void
     {
         $constructor = new Constructor('String');
         $definition = new Definition(

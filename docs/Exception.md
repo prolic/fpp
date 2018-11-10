@@ -70,7 +70,7 @@ class UserNotFound extends \RuntimeException
 ```
 namespace App;
 data UserException = UserException deriving (Exception: \RuntimeException);
-data UserNotFound = UserNotFound deriving (UserException);
+data UserNotFound = UserNotFound deriving (Exception: UserException);
 ```
 
 generates
