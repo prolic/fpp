@@ -17,9 +17,9 @@ use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
 use function Fpp\buildArgumentReturnType;
+use function Fpp\buildDocBlockReturnType;
 use function Fpp\buildMethodBodyFromAggregateId;
 use function Fpp\buildMethodBodyFromPayload;
-use function Fpp\buildDocBlockReturnType;
 
 const buildAccessors = '\Fpp\Builder\buildAccessors';
 

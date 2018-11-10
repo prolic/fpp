@@ -140,11 +140,13 @@ function buildArgumentReturnType(Argument $argument, Definition $definition): st
     return ': ' . buildArgumentType($argument, $definition);
 }
 
-function buildDocBlockReturnType(Argument $argument): string {
+function buildDocBlockReturnType(Argument $argument): string
+{
     $leadingSlash = $argument->isScalarTypeHint() ? '' : '\\';
 
     if ($argument->isList() && ! $argument->nullable()) {
         $type = $argument->type();
+
         return <<<CODE
     /**
      * @return $leadingSlash{$type}[]
@@ -155,6 +157,7 @@ CODE;
 
     if ($argument->isList() && $argument->nullable()) {
         $type = $argument->type();
+
         return <<<CODE
     /**
      * @return $leadingSlash{$type}[]|null
@@ -171,7 +174,8 @@ CODE;
  * @param string $instance
  * @return string
  */
-function buildDocBlockArgumentTypes(array $arguments, string $instance = ''): string {
+function buildDocBlockArgumentTypes(array $arguments, string $instance = ''): string
+{
     $isList = false;
     $params = '';
 
@@ -182,7 +186,6 @@ function buildDocBlockArgumentTypes(array $arguments, string $instance = ''): st
 
         if ($argument->isList()) {
             $isList = true;
-
 
             if ($argument->nullable()) {
                 $params .= "     * @param $leadingSlash{$type}[] \$$name\n";
