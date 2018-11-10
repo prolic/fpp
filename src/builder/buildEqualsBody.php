@@ -53,6 +53,10 @@ function buildEqualsBody(Definition $definition, ?Constructor $constructor, Defi
     if (0 === \count($constructor->arguments())) {
         $code .= "        return \$this->value === \${$variableName}->value;";
 
+        if (\substr($code, 0, 8) === '        ') {
+            return \substr($code, 8);
+        }
+
         return $code;
     }
 
