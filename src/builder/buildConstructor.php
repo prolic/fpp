@@ -75,9 +75,13 @@ CODE;
 
             $printed = true;
 
-            $code .= "        \$this->{$argument->name()} = [];\n";
-            $code .= "        foreach (\${$argument->name()} as \$__value) {\n";
-            $code .= '            if (! ';
+            if ($argument->nullable()) {
+                $code .= "        if (\${$argument->name()} !== null) {\n";
+            }
+
+            $code .= "            \$this->{$argument->name()} = [];\n";
+            $code .= "            foreach (\${$argument->name()} as \$__value) {\n";
+            $code .= '                if (! ';
 
             if ($argument->isScalartypeHint()) {
                 $floatCheck = '';
@@ -90,10 +94,14 @@ CODE;
                 $code .= "\$__value instanceof $type) {\n";
             }
 
-            $code .= "                throw new \InvalidArgumentException('{$argument->name()} expected an array of {$argument->type()}');\n";
+            $code .= "                    throw new \InvalidArgumentException('{$argument->name()} expected an array of {$argument->type()}');\n";
+            $code .= "                }\n";
+            $code .= "                \$this->{$argument->name()}[] = \$__value;\n";
             $code .= "            }\n";
-            $code .= "            \$this->{$argument->name()}[] = \$__value;\n";
-            $code .= "        }\n\n";
+            if ($argument->nullable()) {
+                $code .= "        }\n";
+            }
+            $code .= "\n";
         } else {
             $code .= "        \$this->{$argument->name()} = \${$argument->name()};\n";
         }

@@ -74,4 +74,31 @@ EXPECTED;
 
         $this->assertSame($expected, buildEnumConsts($definition, null, new DefinitionCollection($definition), 'enum_consts'));
     }
+
+    /**
+     * @test
+     */
+    public function is_build_enum_consts_as_value_as_value(): void
+    {
+        $constructor1 = new Constructor('My\RED');
+        $constructor2 = new Constructor('My\VERY_RED');
+
+        $definition = new Definition(
+            DefinitionType::data(),
+            'My',
+            'Color',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum(
+                [],
+                ['useValue']
+            )]
+        );
+
+        $expected = <<<EXPECTED
+public const RED = 'RED';
+    public const VERY_RED = 'VERY_RED';
+EXPECTED;
+
+        $this->assertSame($expected, buildEnumConsts($definition, null, new DefinitionCollection($definition), 'enum_consts'));
+    }
 }

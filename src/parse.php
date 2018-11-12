@@ -439,8 +439,31 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                         $derivingName = $token[1];
 
-                        $derivings[] = $derivingMap[$token[1]];
+                        $derivingType = $derivingMap[$token[1]];
+
                         $token = $skipWhitespace($nextToken());
+
+                        $enumArgs = [];
+                        if ('(' === $token[1]) {
+                            while ($token[1] !== ')') {
+                                $token = $skipWhitespace($nextToken());
+                                $requireString($token);
+                                $enumArgs[] = $token[1];
+
+                                $token = $skipWhitespace($nextToken());
+                                if ($token[1] === ')') {
+                                    $token = $skipWhitespace($nextToken());
+                                    break;
+                                }
+                                if ($token[1] !== ',') {
+                                    throw ParseError::unexpectedTokenFound(',', $token, $filename);
+                                }
+                            }
+                        }
+                        if ($enumArgs) {
+                            $derivingType = $derivingType->withArguments($enumArgs);
+                        }
+                        $derivings[] = $derivingType;
 
                         if (':' === $token[1]) {
                             $token = $skipWhitespace($nextToken());
@@ -579,10 +602,8 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     }
 
                     $token = $skipWhitespace($nextToken());
-                    if (null !== $key) {
-                        unset($derivings[$key]);
-                    }
-                    $derivings[] = new Deriving\Enum($valueMapping);
+                    $derivings[$key] = $derivings[$key]->withValueMapping($valueMapping);
+
                     goto endParseWithStatment;
 
                     buildExceptionConstructors:

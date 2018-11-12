@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Fpp\Deriving;
 
 use Fpp\Deriving as FppDeriving;
+use Fpp\InvalidDeriving;
 
 abstract class AbstractDeriving implements FppDeriving
 {
@@ -24,5 +25,10 @@ abstract class AbstractDeriving implements FppDeriving
     public function equals(FppDeriving $deriving): bool
     {
         return \get_class($this) === \get_class($deriving);
+    }
+
+    public function withArguments(array $arguments): FppDeriving
+    {
+        throw InvalidDeriving::noArgumentsExpected(static::VALUE);
     }
 }

@@ -96,7 +96,8 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
                             $match = true;
                             break;
                         case Deriving\Enum::VALUE:
-                            $prefixCode .= "            \${$argumentName}[] = \$__value->name();\n";
+                            $asWhat = $deriving->useValue() ? 'value' : 'name';
+                            $prefixCode .= "            \${$argumentName}[] = \$__value->{$asWhat}();\n";
                             $match = true;
                             break;
                         case Deriving\ToString::VALUE:
@@ -146,7 +147,8 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
 
             switch ((string) $deriving) {
                 case Deriving\Enum::VALUE:
-                    $code .= "\$this->{$argument->name()}->name(),\n";
+                    $asWhat = $deriving->useValue() ? 'value' : 'name';
+                    $code .= "\$this->{$argument->name()}->{$asWhat}(),\n";
                     continue 3;
                 case Deriving\ToString::VALUE:
                 case Deriving\Uuid::VALUE:

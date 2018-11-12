@@ -90,4 +90,63 @@ CODE;
 
         $this->assertSame($expected, buildToArrayBody($definition, $constructor, new DefinitionCollection($definition, $userId, $email), ''));
     }
+
+    /**
+     * @test
+     */
+    public function it_builds_enum_to_body()
+    {
+        $constructor1 = new Constructor('My\Red');
+        $constructor2 = new Constructor('My\Blue');
+
+        $simpleColor = new Definition(
+            DefinitionType::data(),
+            'My',
+            'SimpleColor',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum()]
+        );
+
+        $constructor1 = new Constructor('My\RED');
+        $constructor2 = new Constructor('My\VERY_RED');
+
+        $color = new Definition(
+            DefinitionType::data(),
+            'My',
+            'Color',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum(
+                [],
+                ['useValue']
+            )]
+        );
+
+        $constructor = new Constructor('My\Person', [
+            new Argument('simpleColors', 'My\SimpleColor', false, false),
+            new Argument('simpleColorsNullable', 'My\SimpleColor', true, false),
+            new Argument('colors', 'My\Color', false, false),
+            new Argument('colorsNullable', 'My\Color', true, false),
+        ]);
+
+        $definition = new Definition(
+            DefinitionType::data(),
+            'My',
+            'Person',
+            [$constructor],
+            [new Deriving\ToArray()]
+        );
+        $collection = new DefinitionCollection($simpleColor, $color, $definition);
+
+        $expected = <<<CODE
+return [
+            'simpleColors' => \$this->simpleColors->name(),
+            'simpleColorsNullable' => null === \$this->simpleColorsNullable ? null : \$this->simpleColorsNullable->name(),
+            'colors' => \$this->colors->value(),
+            'colorsNullable' => null === \$this->colorsNullable ? null : \$this->colorsNullable->value(),
+        ];
+
+CODE;
+
+        $this->assertSame($expected, buildToArrayBody($definition, $constructor, $collection, ''));
+    }
 }

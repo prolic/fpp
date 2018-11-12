@@ -24,4 +24,6 @@ interface Deriving
     public function __toString(): string;
 
     public function equals(Deriving $deriving): bool;
+
+    public function withArguments(array $arguments): self;
 }

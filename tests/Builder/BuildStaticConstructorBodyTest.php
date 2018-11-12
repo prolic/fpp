@@ -139,4 +139,62 @@ CODE;
 
         $this->assertSame($expected, buildStaticConstructorBody($definition, $constructor, $collection, ''));
     }
+
+    /**
+     * @test
+     */
+    public function it_builds_static_constructor_body_converting_to_payload_with_enums(): void
+    {
+        $constructor1 = new Constructor('My\Red');
+        $constructor2 = new Constructor('My\Blue');
+
+        $simpleColor = new Definition(
+            DefinitionType::data(),
+            'My',
+            'SimpleColor',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum()]
+        );
+
+        $constructor1 = new Constructor('My\RED');
+        $constructor2 = new Constructor('My\VERY_RED');
+
+        $color = new Definition(
+            DefinitionType::data(),
+            'My',
+            'Color',
+            [$constructor1, $constructor2],
+            [new Deriving\Enum(
+                [],
+                ['useValue']
+            )]
+        );
+
+        $constructor = new Constructor('My\Person', [
+            new Argument('simpleColors', 'My\SimpleColor', false, false),
+            new Argument('simpleColorsNullable', 'My\SimpleColor', true, false),
+            new Argument('colors', 'My\Color', false, false),
+            new Argument('colorsNullable', 'My\Color', true, false),
+        ]);
+
+        $definition = new Definition(
+            DefinitionType::data(),
+            'My',
+            'Person',
+            [$constructor],
+            [new Deriving\Command()]
+        );
+        $collection = new DefinitionCollection($simpleColor, $color, $definition);
+
+        $expected = <<<CODE
+return new self([
+            'simpleColors' => \$simpleColors->name(),
+            'simpleColorsNullable' => null === \$simpleColorsNullable ? null : \$simpleColorsNullable->name(),
+            'colors' => \$colors->value(),
+            'colorsNullable' => null === \$colorsNullable ? null : \$colorsNullable->value(),
+        ]);
+CODE;
+
+        $this->assertSame($expected, buildStaticConstructorBody($definition, $constructor, $collection, ''));
+    }
 }

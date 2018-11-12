@@ -56,6 +56,7 @@ class BuildConstructorTest extends TestCase
             new Argument('strings', 'string', false, true),
             new Argument('floats', 'float', false, true),
             new Argument('emails', 'Foo\Bar\Email', false, true),
+            new Argument('hobbies', 'Foo\Bar\Hobby', true, true),
         ]);
 
         $person = new Definition(
@@ -79,7 +80,7 @@ class BuildConstructorTest extends TestCase
      * @param float[]|null \$floats
      * @param \Foo\Bar\Email[]|null \$emails
      */
-    public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails, string \$message = '', int \$code = 0, \Exception \$previous = null)
+    public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails, ?array \$hobbies, string \$message = '', int \$code = 0, \Exception \$previous = null)
     {
         if (strlen(\$name->value()) === 0) {
             throw new \InvalidArgumentException('Name too short');
@@ -116,6 +117,14 @@ class BuildConstructorTest extends TestCase
             \$this->emails[] = \$__value;
         }
 
+        if (\$hobbies !== null) {
+            foreach (\$hobbies as \$__value) {
+                if (! \$__value instanceof \Foo\Bar\Hobby) {
+                    throw new \InvalidArgumentException('hobbies expected an array of Foo\Bar\Hobby');
+                }
+                \$this->hobbies[] = \$__value;
+            }
+        }
         parent::__construct(\$message, \$code, \$previous);
     }
 

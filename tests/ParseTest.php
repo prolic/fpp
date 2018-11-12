@@ -1272,6 +1272,23 @@ CODE;
         parse($this->createDefaultFile($contents), $this->derivingMap);
     }
 
+    /**
+     * @test
+     */
+    public function is_parses_deriving_argument(): void
+    {
+        $contents = <<<CODE
+namespace Foo;
+data Color = Red | Blue deriving(Enum(useValue, bla));
+data LotTracing = BestBeforeDate | NoBestBeforeDate deriving(Enum(useValue)) with (BestBeforeDate:'01', NoBestBeforeDate: '03');
+CODE;
+
+        $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
+        $definition = $collection->definition('Foo', 'Color');
+        $this->assertSame('Enum', (string) $definition->derivings()[0]);
+        $this->assertTrue($definition->derivings()[0]->useValue());
+    }
+
     public function scalarListTypes(): array
     {
         return [
