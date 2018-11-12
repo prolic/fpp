@@ -79,7 +79,7 @@ class BuildConstructorTest extends TestCase
      * @param float[]|null \$floats
      * @param \Foo\Bar\Email[]|null \$emails
      */
-public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails, string \$message = '', int \$code = 0, \Exception \$previous = null)
+    public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails, string \$message = '', int \$code = 0, \Exception \$previous = null)
     {
         if (strlen(\$name->value()) === 0) {
             throw new \InvalidArgumentException('Name too short');
