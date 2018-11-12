@@ -451,16 +451,6 @@ CODE;
     /**
      * @test
      */
-    public function it_throws_exception_when_a_marker_extends_an_exception_type(): void
-    {
-        $this->markTestIncomplete(
-          'This test must be implemented when the exception type is added'
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_dumps_data_with_markers(): void
     {
         $dump = $this->dump;

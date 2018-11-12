@@ -14,11 +14,56 @@ namespace Fpp\Deriving;
 
 use Fpp\Definition;
 
+use Fpp\ExceptionConstructor;
 use Fpp\InvalidDeriving;
 
-class Uuid extends AbstractDeriving
+class Exception extends AbstractDeriving
 {
-    public const VALUE = 'Uuid';
+    public const VALUE = 'Exception';
+
+    private $baseClass;
+    private $constructors;
+    private $defaultMessage;
+
+    public function __construct(
+        string $baseClass = '\\Exception',
+        array $constructors = [],
+        string $defaultMessage = ''
+    ) {
+        $this->baseClass = $baseClass;
+        $this->constructors = $constructors;
+        $this->defaultMessage = $defaultMessage;
+    }
+
+    public function withBaseClass(string $baseClass): self
+    {
+        return new self($baseClass, $this->constructors, $this->defaultMessage);
+    }
+
+    public function withConstructors(ExceptionConstructor ...$constructors): self
+    {
+        return new self($this->baseClass, $constructors, $this->defaultMessage);
+    }
+
+    public function withDefaultMessage(string $defaultMessage): self
+    {
+        return new self($this->baseClass, $this->constructors, $defaultMessage);
+    }
+
+    public function baseClass(): string
+    {
+        return $this->baseClass;
+    }
+
+    public function constructors(): array
+    {
+        return $this->constructors;
+    }
+
+    public function defaultMessage(): string
+    {
+        return $this->defaultMessage;
+    }
 
     public function checkDefinition(Definition $definition): void
     {
@@ -31,23 +76,12 @@ class Uuid extends AbstractDeriving
                 throw InvalidDeriving::conflictingDerivings($definition, self::VALUE, (string) $deriving);
             }
         }
-
-        if (\count($definition->constructors()) !== 1) {
-            throw InvalidDeriving::exactlyOneConstructorExpected($definition, self::VALUE);
-        }
-
-        foreach ($definition->constructors() as $constructor) {
-            if (\count($constructor->arguments()) > 0) {
-                throw InvalidDeriving::exactlyZeroConstructorArgumentsExpected($definition, self::VALUE);
-            }
-        }
     }
 
     private function forbidsDerivings(): array
     {
         return [
             AggregateChanged::VALUE,
-            Command::VALUE,
             DomainEvent::VALUE,
             Enum::VALUE,
             Equals::VALUE,
@@ -59,7 +93,7 @@ class Uuid extends AbstractDeriving
             ToArray::VALUE,
             ToScalar::VALUE,
             ToString::VALUE,
-            Exception::VALUE,
+            Uuid::VALUE,
         ];
     }
 }

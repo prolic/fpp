@@ -98,7 +98,12 @@ CODE;
             $code .= "        \$this->{$argument->name()} = \${$argument->name()};\n";
         }
     }
-
+    foreach ($definition->derivings() as $deriving) {
+        if ($deriving->equals(new Deriving\Exception())) {
+            $code .= "        parent::__construct(\$message, \$code, \$previous);\n";
+            break;
+        }
+    }
     $code .= "    }\n";
 
     return $code;

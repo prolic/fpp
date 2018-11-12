@@ -18,6 +18,7 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionType;
+use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
 use function Fpp\Builder\buildConstructor;
 
@@ -62,7 +63,7 @@ class BuildConstructorTest extends TestCase
             'Foo\Bar',
             'Person',
             [$constructor],
-            [],
+            [new Deriving\Exception()],
             [
                 new Condition('Person', 'strlen($name->value()) === 0', 'Name too short'),
                 new Condition('_', '$age->value() < 18', 'Too young'),
@@ -78,7 +79,7 @@ class BuildConstructorTest extends TestCase
      * @param float[]|null \$floats
      * @param \Foo\Bar\Email[]|null \$emails
      */
-    public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails)
+    public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails, string \$message = '', int \$code = 0, \Exception \$previous = null)
     {
         if (strlen(\$name->value()) === 0) {
             throw new \InvalidArgumentException('Name too short');
@@ -115,6 +116,7 @@ class BuildConstructorTest extends TestCase
             \$this->emails[] = \$__value;
         }
 
+        parent::__construct(\$message, \$code, \$previous);
     }
 
 STRING;

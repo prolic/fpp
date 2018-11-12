@@ -42,6 +42,38 @@ function buildClassExtends(Definition $definition, ?Constructor $constructor, De
         if ($deriving->equals(new Deriving\MicroAggregateChanged())) {
             return ' extends \Prooph\Common\Messaging\DomainEvent';
         }
+
+        if ($deriving->equals(new Deriving\Exception())) {
+            /** @var Deriving\Exception $deriving */
+            $deriving = $deriving;
+
+            $baseClass = $deriving->baseClass();
+            if (0 !== \strpos($baseClass, '\\')) {
+                $baseClass = \sprintf('\\%s\\%s', $definition->namespace(), $baseClass);
+            }
+
+            if (\is_a($baseClass, \Exception::class, true)) {
+                return \sprintf(' extends %s', $baseClass);
+            }
+
+            $namespace = \ltrim(\substr($baseClass, 0, \strrpos($baseClass, '\\')), '\\');
+            $name = \substr($baseClass, \strrpos($baseClass, '\\') + 1);
+
+            if ($collection->hasDefinition($namespace, $name)) {
+                if ($namespace === $definition->namespace()) {
+                    $baseClass = $name;
+                }
+
+                return \sprintf(' extends %s', $baseClass);
+            }
+
+            throw new \RuntimeException(\sprintf(
+                '"%s\\%s" cannot extend unknown exception "%s"',
+                $definition->namespace(),
+                $definition->name(),
+                $baseClass
+            ));
+        }
     }
 
     $parents = [];

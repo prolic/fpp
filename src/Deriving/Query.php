@@ -53,6 +53,7 @@ class Query extends AbstractDeriving
             ToScalar::VALUE,
             ToString::VALUE,
             Uuid::VALUE,
+            Exception::VALUE,
         ];
     }
 }

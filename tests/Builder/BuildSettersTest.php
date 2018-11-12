@@ -197,6 +197,9 @@ CODE;
             [
                 new Deriving\MicroAggregateChanged(),
             ],
+            [
+                new Deriving\Exception(),
+            ],
         ];
     }
 }
