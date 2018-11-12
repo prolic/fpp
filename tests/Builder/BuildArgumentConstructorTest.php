@@ -173,7 +173,7 @@ class BuildArgumentConstructorTest extends TestCase
     /**
      * @test
      */
-    public function is_can_build_enum_as_value()
+    public function it_can_build_enum_as_value(): void
     {
         $constructor1 = new Constructor('My\Red');
         $constructor2 = new Constructor('My\Blue');

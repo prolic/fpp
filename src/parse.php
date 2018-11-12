@@ -439,16 +439,16 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                         $derivingName = $token[1];
 
-                        $derivingType = $derivingMap[$token[1]];
+                        $derivingInstance = $derivingMap[$token[1]];
 
                         $token = $skipWhitespace($nextToken());
 
-                        $enumArgs = [];
+                        $derivingArgs = [];
                         if ('(' === $token[1]) {
                             while ($token[1] !== ')') {
                                 $token = $skipWhitespace($nextToken());
                                 $requireString($token);
-                                $enumArgs[] = $token[1];
+                                $derivingArgs[] = $token[1];
 
                                 $token = $skipWhitespace($nextToken());
                                 if ($token[1] === ')') {
@@ -460,10 +460,10 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                                 }
                             }
                         }
-                        if ($enumArgs) {
-                            $derivingType = $derivingType->withArguments($enumArgs);
+                        if ($derivingArgs) {
+                            $derivingInstance = $derivingInstance->withArguments($derivingArgs);
                         }
-                        $derivings[] = $derivingType;
+                        $derivings[] = $derivingInstance;
 
                         if (':' === $token[1]) {
                             $token = $skipWhitespace($nextToken());

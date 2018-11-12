@@ -110,24 +110,24 @@ Derivings are kind of PHP's extends keyword, the following rules apply:
 
 There are 14 deriving types for now:
 
-- AggregateChanged
-- Command
-- DomainEvent
-- Enum
-- Equals
-- FromArray
-- FromScalar
-- FromString
-- Query
-- MicroAggregateChanged (not extending from prooph/eventsourcing, f.e. for prooph/micro)
-- ToArray
-- ToScalar
-- ToString
-- Uuid
+- `AggregateChanged`
+- `Command`
+- `DomainEvent`
+- `Enum(useName)` (default) / `Enum(useValue)`
+- `Equals`
+- `FromArray`
+- `FromScalar`
+- `FromString`
+- `Query`
+- `MicroAggregateChanged` (not extending from prooph/eventsourcing, f.e. for prooph/micro)
+- `ToArray`
+- `ToScalar`
+- `ToString`
+- `Uuid`
 
 Deriving Equals + ToArray
 
-```console
+```fpp
 namespace Model\Foo;
 
 data Person = Person { string $name, ?int $age } deriving (ToArray, Equals);

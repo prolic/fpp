@@ -1073,6 +1073,16 @@ CODE;
         $this->assertSame($scalarListType, $definition->constructors()[0]->name());
     }
 
+    public function scalarListTypes(): array
+    {
+        return [
+            ['Bool[]'],
+            ['Float[]'],
+            ['Int[]'],
+            ['String[]'],
+        ];
+    }
+
     /**
      * @test
      */
@@ -1275,12 +1285,13 @@ CODE;
     /**
      * @test
      */
-    public function is_parses_deriving_argument(): void
+    public function is_parses_deriving_argument_on_enum(): void
     {
         $contents = <<<CODE
 namespace Foo;
 data Color = Red | Blue deriving(Enum(useValue, bla));
 data LotTracing = BestBeforeDate | NoBestBeforeDate deriving(Enum(useValue)) with (BestBeforeDate:'01', NoBestBeforeDate: '03');
+data MyTracing = BestBeforeDate | NoBestBeforeDate deriving(Enum(useName)) with (BestBeforeDate:'01', NoBestBeforeDate: '03');
 CODE;
 
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
@@ -1289,13 +1300,18 @@ CODE;
         $this->assertTrue($definition->derivings()[0]->useValue());
     }
 
-    public function scalarListTypes(): array
+    /**
+     * @test
+     */
+    public function it_parses_deriving_arguments_on_other_derivings(): void
     {
-        return [
-            ['Bool[]'],
-            ['Float[]'],
-            ['Int[]'],
-            ['String[]'],
-        ];
+        $contents = <<<CODE
+namespace Something;
+data Person = Person { string \$name, ?int \$age } deriving(FromArray(nonExistingArgument));
+CODE;
+
+        $this->expectException(\Fpp\InvalidDeriving::class);
+        $this->expectExceptionMessage('Deriving FromArray doesn\'t expect any arguments');
+        parse($this->createDefaultFile($contents), $this->derivingMap);
     }
 }

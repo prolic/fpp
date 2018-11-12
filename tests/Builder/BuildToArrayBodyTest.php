@@ -94,7 +94,7 @@ CODE;
     /**
      * @test
      */
-    public function it_builds_enum_to_body()
+    public function it_builds_enum_to_body(): void
     {
         $constructor1 = new Constructor('My\Red');
         $constructor2 = new Constructor('My\Blue');
