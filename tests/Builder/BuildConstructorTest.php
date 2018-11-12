@@ -79,6 +79,7 @@ class BuildConstructorTest extends TestCase
      * @param string[]|null \$strings
      * @param float[]|null \$floats
      * @param \Foo\Bar\Email[]|null \$emails
+     * @param \Foo\Bar\Hobby[] \$hobbies
      */
     public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails, ?array \$hobbies, string \$message = '', int \$code = 0, \Exception \$previous = null)
     {
@@ -93,31 +94,32 @@ class BuildConstructorTest extends TestCase
         \$this->name = \$name;
         \$this->age = \$age;
 
-        \$this->strings = [];
-        foreach (\$strings as \$__value) {
-            if (! \is_string(\$__value)) {
-                throw new \InvalidArgumentException('strings expected an array of string');
+            \$this->strings = [];
+            foreach (\$strings as \$__value) {
+                if (! \is_string(\$__value)) {
+                    throw new \InvalidArgumentException('strings expected an array of string');
+                }
+                \$this->strings[] = \$__value;
             }
-            \$this->strings[] = \$__value;
-        }
 
-        \$this->floats = [];
-        foreach (\$floats as \$__value) {
-            if (! \is_float(\$__value) && ! \is_int(\$__value)) {
-                throw new \InvalidArgumentException('floats expected an array of float');
+            \$this->floats = [];
+            foreach (\$floats as \$__value) {
+                if (! \is_float(\$__value) && ! \is_int(\$__value)) {
+                    throw new \InvalidArgumentException('floats expected an array of float');
+                }
+                \$this->floats[] = \$__value;
             }
-            \$this->floats[] = \$__value;
-        }
 
-        \$this->emails = [];
-        foreach (\$emails as \$__value) {
-            if (! \$__value instanceof \Foo\Bar\Email) {
-                throw new \InvalidArgumentException('emails expected an array of Foo\Bar\Email');
+            \$this->emails = [];
+            foreach (\$emails as \$__value) {
+                if (! \$__value instanceof \Foo\Bar\Email) {
+                    throw new \InvalidArgumentException('emails expected an array of Foo\Bar\Email');
+                }
+                \$this->emails[] = \$__value;
             }
-            \$this->emails[] = \$__value;
-        }
 
         if (\$hobbies !== null) {
+            \$this->hobbies = [];
             foreach (\$hobbies as \$__value) {
                 if (! \$__value instanceof \Foo\Bar\Hobby) {
                     throw new \InvalidArgumentException('hobbies expected an array of Foo\Bar\Hobby');
@@ -125,6 +127,7 @@ class BuildConstructorTest extends TestCase
                 \$this->hobbies[] = \$__value;
             }
         }
+
         parent::__construct(\$message, \$code, \$previous);
     }
 
