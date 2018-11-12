@@ -490,7 +490,6 @@ CODE;
             [new Deriving\Enum()]
         );
 
-
         $constructor1 = new Constructor('My\RED');
         $constructor2 = new Constructor('My\VERY_RED');
 

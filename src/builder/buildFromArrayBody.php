@@ -437,7 +437,7 @@ CODE;
 
     if (\count($arguments) > 2) {
         $arguments = "\n            " . \implode(",\n            ", $arguments) . "\n        ";
-    } elseif(\count($arguments) === 1 && $arguments[0]->isList()) {
+    } elseif (\count($arguments) === 1 && $arguments[0]->isList()) {
         $arguments = '...' . \implode(', ', $arguments);
     } else {
         $arguments = \implode(', ', $arguments);

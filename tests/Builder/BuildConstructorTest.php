@@ -54,7 +54,7 @@ class BuildConstructorTest extends TestCase
             new Argument('strings', 'string', false, true),
             new Argument('floats', 'float', false, true),
             new Argument('emails', 'Foo\Bar\Email', false, true),
-            new Argument('hobbies', 'Foo\Bar\Hobby', true, true)
+            new Argument('hobbies', 'Foo\Bar\Hobby', true, true),
         ]);
 
         $person = new Definition(

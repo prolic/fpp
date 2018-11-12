@@ -177,6 +177,7 @@ function buildArgumentConstructor(Argument $argument, Definition $definition, De
         switch ((string) $deriving) {
             case Deriving\Enum::VALUE:
                 $asWhat = $deriving->useValue() ? 'fromValue' : 'fromName';
+
                 return "$calledClass::{$asWhat}(\${$argument->name()})";
             case Deriving\FromString::VALUE:
             case Deriving\Uuid::VALUE:

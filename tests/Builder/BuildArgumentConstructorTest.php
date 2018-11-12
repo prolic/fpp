@@ -185,7 +185,6 @@ class BuildArgumentConstructorTest extends TestCase
             [new Deriving\Enum()]
         );
 
-
         $constructor1 = new Constructor('My\RED');
         $constructor2 = new Constructor('My\VERY_RED');
 
@@ -222,7 +221,6 @@ class BuildArgumentConstructorTest extends TestCase
 SimpleColor::fromName(\$simpleColors)
 CODE;
         $this->assertSame($expected, buildArgumentConstructor($argument, $definition, $collection));
-
 
         $argument = new Argument('colors', 'My\Color', false, false);
         $expected = <<<CODE

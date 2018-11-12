@@ -44,7 +44,7 @@ class Enum extends AbstractDeriving
         return new self($this->valueMapping, $arguments);
     }
 
-    public function useValue() : bool
+    public function useValue(): bool
     {
         return \in_array('useValue', $this->arguments, true);
     }
