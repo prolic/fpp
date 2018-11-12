@@ -454,8 +454,6 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                         $enumArgs = [];
                         if ('(' === $token[1]) {
-
-
                             while ($token[1] !== ')') {
                                 $token = $skipWhitespace($nextToken());
                                 $requireString($token);
@@ -463,6 +461,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
 
                                 $token = $skipWhitespace($nextToken());
                                 if ($token[1] === ')') {
+                                    $token = $skipWhitespace($nextToken());
                                     break;
                                 }
                                 if ($token[1] !== ',') {
@@ -580,10 +579,7 @@ function parse(string $filename, array $derivingMap): DefinitionCollection
                     }
 
                     $token = $skipWhitespace($nextToken());
-                    if (null !== $key) {
-                        unset($derivings[$key]);
-                    }
-                    $derivings[] = new Deriving\Enum($valueMapping);
+                    $derivings[$key] = $derivings[$key]->withValueMapping($valueMapping);
                 }
 
                 if ('where' === $token[1]) {
