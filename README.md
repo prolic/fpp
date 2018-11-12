@@ -24,7 +24,7 @@ composer require prolic/fpp
 
 Create a file and put this in it:
 
-```console
+```fpp
 namespace Model\Foo;
 
 data Person = Person { string $name, ?int $age };
@@ -71,7 +71,7 @@ final class Person
 
 No problem
 
-```console
+```fpp
 namespace MyEnum;
 
 data Color = Red | Blue | Green | Yellow deriving (Enum);
@@ -90,7 +90,7 @@ function (MyEnum\Color $color): string
 
 Enums with value mappings
 
-```console
+```fpp
 namespace MyEnum;
 
 data Color = Red | Blue deriving (Enum) with (Red:'someThing', Blue: 13);

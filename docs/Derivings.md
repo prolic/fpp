@@ -7,20 +7,20 @@ Derivings are kind of PHP's extends keyword, the following rules apply:
 
 There are 14 deriving types for now:
 
-- AggregateChanged
-- Command
-- DomainEvent
-- Enum / Enum(useValue)
-- Equals
-- FromArray
-- FromScalar
-- FromString
-- Query
-- MicroAggregateChanged (not extending from prooph/eventsourcing, f.e. for prooph/micro)
-- ToArray
-- ToScalar
-- ToString
-- Uuid
+- `AggregateChanged`
+- `Command`
+- `DomainEvent`
+- `Enum(useName)` (default) / `Enum(useValue)`
+- `Equals`
+- `FromArray`
+- `FromScalar`
+- `FromString`
+- `Query`
+- `MicroAggregateChanged` (not extending from prooph/eventsourcing, f.e. for prooph/micro)
+- `ToArray`
+- `ToScalar`
+- `ToString`
+- `Uuid`
 
 Okay, but as always, it's easier to see for yourself, so generate this code:
 
@@ -38,7 +38,7 @@ data Color = Red | Blue | Green | Yellow deriving (Enum);
 
 Even enums with value mapping:
 
-```console
+```fpp
 namespace Foo;
 data Color = Red | Blue | Yellow deriving (Enum) with (Red:'someThing', Blue: 13, Yellow:['key' => 'value']);
 ```
