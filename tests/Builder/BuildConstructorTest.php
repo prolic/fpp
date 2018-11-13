@@ -78,6 +78,9 @@ class BuildConstructorTest extends TestCase
      * @param string[]|null \$strings
      * @param float[]|null \$floats
      * @param \Foo\Bar\Email[]|null \$emails
+     * @param string \$message
+     * @param int \$code
+     * @param null|\Exception \$previous
      */
     public function __construct(Name \$name, Age \$age, array \$strings, array \$floats, array \$emails, string \$message = '', int \$code = 0, \Exception \$previous = null)
     {
