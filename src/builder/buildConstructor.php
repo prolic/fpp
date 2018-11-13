@@ -43,7 +43,14 @@ function buildConstructor(Definition $definition, ?Constructor $constructor, Def
         return $placeHolder;
     }
 
-    $docblock = buildDocBlockArgumentTypes($constructor->arguments());
+    $hasExceptionDeriving = false;
+    foreach ($definition->derivings() as $deriving) {
+        if ($deriving->equals(new Deriving\Exception())) {
+            $hasExceptionDeriving = true;
+            break;
+        }
+    }
+    $docblock = buildDocBlockArgumentTypes($constructor->arguments(), '', $hasExceptionDeriving);
 
     if ($docblock) {
         $docblock = \substr($docblock, 4) . '    ';
@@ -98,11 +105,8 @@ CODE;
             $code .= "        \$this->{$argument->name()} = \${$argument->name()};\n";
         }
     }
-    foreach ($definition->derivings() as $deriving) {
-        if ($deriving->equals(new Deriving\Exception())) {
-            $code .= "        parent::__construct(\$message, \$code, \$previous);\n";
-            break;
-        }
+    if ($hasExceptionDeriving) {
+        $code .= "        parent::__construct(\$message, \$code, \$previous);\n";
     }
     $code .= "    }\n";
 
