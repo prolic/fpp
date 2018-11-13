@@ -176,7 +176,7 @@ CODE;
  * @param string $instance
  * @return string
  */
-function buildDocBlockArgumentTypes(array $arguments, string $instance = ''): string
+function buildDocBlockArgumentTypes(array $arguments, string $instance = '', bool $appendExceptionConstructorParams = false): string
 {
     $isList = false;
     $params = '';
@@ -201,6 +201,12 @@ function buildDocBlockArgumentTypes(array $arguments, string $instance = ''): st
                 $params .= "     * @param $leadingSlash{$type} \$$name\n";
             }
         }
+    }
+
+    if ($appendExceptionConstructorParams) {
+        $params .= "     * @param string \$message\n";
+        $params .= "     * @param int \$code\n";
+        $params .= "     * @param null|\Exception \$previous\n";
     }
 
     if ($isList && '' === $instance) {
