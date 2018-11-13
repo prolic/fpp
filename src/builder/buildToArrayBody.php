@@ -86,22 +86,22 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
                 $match = false;
 
                 foreach ($argumentDefinition->derivings() as $deriving) {
-                    switch ((string) $deriving) {
-                        case Deriving\ToArray::VALUE:
+                    switch (true) {
+                        case $deriving instanceof Deriving\ToArray:
                             $prefixCode .= "            \${$argumentName}[] = \$__value->toArray();\n";
                             $match = true;
                             break;
-                        case Deriving\ToScalar::VALUE:
+                        case $deriving instanceof Deriving\ToScalar:
                             $prefixCode .= "            \${$argumentName}[] = \$__value->toScalar();\n";
                             $match = true;
                             break;
-                        case Deriving\Enum::VALUE:
+                        case $deriving instanceof Deriving\Enum:
                             $asWhat = $deriving->useValue() ? 'value' : 'name';
                             $prefixCode .= "            \${$argumentName}[] = \$__value->{$asWhat}();\n";
                             $match = true;
                             break;
-                        case Deriving\ToString::VALUE:
-                        case Deriving\Uuid::VALUE:
+                        case $deriving instanceof Deriving\ToString:
+                        case $deriving instanceof Deriving\Uuid:
                             $prefixCode .= "            \${$argumentName}[] = \$__value->toString();\n";
                             $match = true;
                             break;
@@ -145,19 +145,19 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
                 $code .= "null === \$this->{$argument->name()} ? null : ";
             }
 
-            switch ((string) $deriving) {
-                case Deriving\Enum::VALUE:
+            switch (true) {
+                case $deriving instanceof Deriving\Enum:
                     $asWhat = $deriving->useValue() ? 'value' : 'name';
                     $code .= "\$this->{$argument->name()}->{$asWhat}(),\n";
                     continue 3;
-                case Deriving\ToString::VALUE:
-                case Deriving\Uuid::VALUE:
+                case $deriving instanceof Deriving\ToString:
+                case $deriving instanceof Deriving\Uuid:
                     $code .= "\$this->{$argument->name()}->toString(),\n";
                     continue 3;
-                case Deriving\ToArray::VALUE:
+                case $deriving instanceof Deriving\ToArray:
                     $code .= "\$this->{$argument->name()}->toArray(),\n";
                     continue 3;
-                case Deriving\ToScalar::VALUE:
+                case $deriving instanceof Deriving\ToScalar:
                     $code .= "\$this->{$argument->name()}->toScalar(),\n";
                     continue 3;
             }

@@ -153,8 +153,8 @@ CODE;
         }
 
         foreach ($argumentDefinition->derivings() as $deriving) {
-            switch ((string) $deriving) {
-                case Deriving\FromArray::VALUE:
+            switch (true) {
+                case $deriving instanceof Deriving\FromArray:
                     if ($argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
@@ -199,7 +199,7 @@ CODE;
 CODE;
                     }
                     continue 3;
-                case Deriving\FromScalar::VALUE:
+                case $deriving instanceof Deriving\FromScalar:
                     if (isScalarConstructor($argumentConstructor)) {
                         $argumentType = \strtolower($argumentConstructor->name());
                     } elseif (isset($argumentConstructor->arguments()[0])) {
@@ -267,7 +267,7 @@ CODE;
 CODE;
                     }
                     continue 3;
-                case Deriving\Enum::VALUE:
+                case $deriving instanceof Deriving\Enum:
                     $fromWhat = $deriving->useValue() ? 'fromValue' : 'fromName';
 
                     if ($argument->nullable()) {
@@ -314,8 +314,8 @@ CODE;
 CODE;
                     }
                     continue 3;
-                case Deriving\FromString::VALUE:
-                case Deriving\Uuid::VALUE:
+                case $deriving instanceof Deriving\FromString:
+                case $deriving instanceof Deriving\Uuid:
                     if ($argument->nullable()) {
                         $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
@@ -438,7 +438,7 @@ CODE;
 
     if (\count($arguments) > 2) {
         $arguments = "\n            " . \implode(",\n            ", $arguments) . "\n        ";
-    } elseif (\count($arguments) === 1 && $arguments[0]->isList()) {
+    } elseif (\count($arguments) === 1 && $constructor->arguments()[0]->isList()) {
         $arguments = '...' . \implode(', ', $arguments);
     } else {
         $arguments = \implode(', ', $arguments);

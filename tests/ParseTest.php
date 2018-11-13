@@ -1297,7 +1297,10 @@ CODE;
         $collection = parse($this->createDefaultFile($contents), $this->derivingMap);
         $definition = $collection->definition('Foo', 'Color');
         $this->assertSame('Enum', (string) $definition->derivings()[0]);
-        $this->assertTrue($definition->derivings()[0]->useValue());
+
+        /** @var Deriving\Enum $deriving */
+        $deriving = $definition->derivings()[0];
+        $this->assertTrue($deriving->useValue());
     }
 
     /**

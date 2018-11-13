@@ -249,17 +249,17 @@ function buildArgumentConstructor(Argument $argument, Definition $definition, De
         : '\\' . $argument->type();
 
     foreach ($argumentDefinition->derivings() as $deriving) {
-        switch ((string) $deriving) {
-            case Deriving\Enum::VALUE:
+        switch (true) {
+            case $deriving instanceof Deriving\Enum:
                 $asWhat = $deriving->useValue() ? 'fromValue' : 'fromName';
 
                 return "$calledClass::{$asWhat}(\${$argument->name()})";
-            case Deriving\FromString::VALUE:
-            case Deriving\Uuid::VALUE:
+            case $deriving instanceof Deriving\FromString:
+            case $deriving instanceof Deriving\Uuid:
                 return "$calledClass::fromString(\${$argument->name()})";
-            case Deriving\FromScalar::VALUE:
+            case $deriving instanceof Deriving\FromScalar:
                 return "$calledClass::fromScalar(\${$argument->name()})";
-            case Deriving\FromArray::VALUE:
+            case $deriving instanceof Deriving\FromArray:
                 return "$calledClass::fromArray(\${$argument->name()})";
         }
     }

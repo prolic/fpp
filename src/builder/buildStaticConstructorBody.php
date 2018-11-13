@@ -113,8 +113,8 @@ CODE;
         }
 
         foreach ($definition->derivings() as $deriving) {
-            switch ((string) $deriving) {
-                case Deriving\ToArray::VALUE:
+            switch (true) {
+                case $deriving instanceof Deriving\ToArray:
                     if ($argument->isList()) {
                         $foundList = true;
                         $buildToArrayBlock($argument, $start);
@@ -128,7 +128,7 @@ CODE;
                     }
 
                     continue 3;
-                case Deriving\ToScalar::VALUE:
+                case $deriving instanceof Deriving\ToScalar:
                     if ($argument->isList()) {
                         $foundList = true;
                         $buildToArrayBlock($argument, $start);
@@ -141,7 +141,7 @@ CODE;
                     }
 
                     continue 3;
-                case Deriving\Enum::VALUE:
+                case $deriving instanceof Deriving\Enum:
                     if ($argument->isList()) {
                         $foundList = true;
                         $buildToArrayBlock($argument, $start);
@@ -155,8 +155,8 @@ CODE;
                     }
 
                     continue 3;
-                case Deriving\ToString::VALUE:
-                case Deriving\Uuid::VALUE:
+                case $deriving instanceof Deriving\ToString:
+                case $deriving instanceof Deriving\Uuid:
                     if ($argument->isList()) {
                         $foundList = true;
                         $buildToArrayBlock($argument, $start);
