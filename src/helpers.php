@@ -343,7 +343,7 @@ CODE;
     foreach ($argumentDefinition->derivings() as $deriving) {
         switch ((string) $deriving) {
             case Deriving\Enum::VALUE:
-                $method = 'fromName';
+                $method = $deriving->useValue() ? 'fromValue' : 'fromName';
                 break;
             case Deriving\FromScalar::VALUE:
                 $method = 'fromScalar';
