@@ -396,6 +396,13 @@ CODE;
                 $floatCheck = ' && ! \is_int($__value)';
             }
 
+            if ($argument->isScalarTypeHint()) {
+                $forachTest = '\is_'.$argument->type();
+            } else {
+                $instanceof = ('\\' === $argument->type()[0]) ? $argument->type() : '\\'.$argument->type();
+                $forachTest = '$__value instanceof '.$instanceof;
+            } 
+
             $code .= <<<CODE
         if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
@@ -404,8 +411,8 @@ CODE;
         \${$argument->name()} = [];
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
-            if (! \is_{$argument->type()}(\$__value)$floatCheck) {
-                throw new \InvalidArgumentException("Key '{$argument->name()}' in data array or is not an array of {$argument->type()}");
+            if (! {$forachTest}$floatCheck) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' in data array or is not an array of {$instanceof}");
             }
 
             \${$argument->name()}[] = \$__value;
