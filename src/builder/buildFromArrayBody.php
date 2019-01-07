@@ -396,14 +396,10 @@ CODE;
                 $floatCheck = ' && ! \is_int($__value)';
             }
 
-            if ($argument->isScalarTypeHint()) {
-                $forachTest = '\is_'.$argument->type();
-            } else {
-                $instanceof = ('\\' === $argument->type()[0]) ? $argument->type() : '\\'.$argument->type();
-                $forachTest = '$__value instanceof '.$instanceof;
-            } 
+            if ($argument->isScalartypeHint()) {
 
-            $code .= <<<CODE
+                $code .= <<<CODE
+
         if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
         }
@@ -411,15 +407,33 @@ CODE;
         \${$argument->name()} = [];
 
         foreach (\$data['{$argument->name()}'] as \$__value) {
-            if (! {$forachTest}$floatCheck) {
-                throw new \InvalidArgumentException("Key '{$argument->name()}' in data array or is not an array of {$instanceof}");
+            if (! \is_{$argumentType}(\$__value)$floatCheck) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' in data array or is not an array of {$argumentType}");
             }
-
             \${$argument->name()}[] = \$__value;
         }
 
+CODE;
+            } else {
+                $protoName = '\\'.$argument->type();
+                $code .= <<<CODE
+
+        if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
+            throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
+        }
+        
+        \${$argument->name()} = [];
+
+        foreach (\$data['{$argument->name()}'] as \$__value) {
+            if (! \is_{$argumentType}(\$__value)$floatCheck) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' in data array or is not an array of {$argumentType}");
+            }
+            \$__objValue = new {$protoName}(\$__value);
+            \${$argument->name()}[] = \$__objValue;
+        }
 
 CODE;
+            }
         } else {
             $floatCheckStart = '';
             $floatCheck = '';
