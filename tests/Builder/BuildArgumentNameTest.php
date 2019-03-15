@@ -13,12 +13,12 @@ declare(strict_types=1);
 namespace FppTest\Builder;
 
 use Fpp\Argument;
+use function Fpp\Builder\buildArgumentName;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionType;
 use PHPUnit\Framework\TestCase;
-use function Fpp\Builder\buildArgumentName;
 
 class BuildArgumentNameTest extends TestCase
 {

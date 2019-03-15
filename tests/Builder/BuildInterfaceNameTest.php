@@ -12,12 +12,12 @@ declare(strict_types=1);
 
 namespace FppTest\Builder;
 
+use function Fpp\Builder\buildInterfaceName;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionType;
 use PHPUnit\Framework\TestCase;
-use function Fpp\Builder\buildInterfaceName;
 
 class BuildInterfaceNameTest extends TestCase
 {

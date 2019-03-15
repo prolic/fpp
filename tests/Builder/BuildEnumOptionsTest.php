@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace FppTest\Builder;
 
+use function Fpp\Builder\buildEnumOptions;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
@@ -19,7 +20,6 @@ use Fpp\DefinitionType;
 use Fpp\Deriving;
 use Fpp\InvalidDeriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\Builder\buildEnumOptions;
 
 class BuildEnumOptionsTest extends TestCase
 {

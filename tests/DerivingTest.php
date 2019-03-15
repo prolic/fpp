@@ -15,6 +15,7 @@ namespace FppTest;
 use Fpp\Argument;
 use Fpp\Condition;
 use Fpp\Constructor;
+use function Fpp\defaultDerivingMap;
 use Fpp\Definition;
 use Fpp\DefinitionType;
 use Fpp\Deriving;
@@ -23,7 +24,6 @@ use Fpp\Deriving\FromScalar;
 use Fpp\Deriving\Uuid;
 use Fpp\InvalidDeriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\defaultDerivingMap;
 
 class DerivingTest extends TestCase
 {

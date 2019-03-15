@@ -12,14 +12,14 @@ declare(strict_types=1);
 
 namespace Fpp\Builder;
 
-use Fpp\Constructor;
-use Fpp\Definition;
-use Fpp\DefinitionCollection;
-use Fpp\Deriving;
 use function Fpp\buildArgumentReturnType;
 use function Fpp\buildDocBlockReturnType;
 use function Fpp\buildMethodBodyFromAggregateId;
 use function Fpp\buildMethodBodyFromPayload;
+use Fpp\Constructor;
+use Fpp\Definition;
+use Fpp\DefinitionCollection;
+use Fpp\Deriving;
 
 const buildAccessors = '\Fpp\Builder\buildAccessors';
 

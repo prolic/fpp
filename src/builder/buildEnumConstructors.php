@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace Fpp\Builder;
 
+use function Fpp\buildReferencedClass;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
-use function Fpp\buildReferencedClass;
 
 const buildEnumConstructors = '\Fpp\Builder\buildEnumConstructors';
 

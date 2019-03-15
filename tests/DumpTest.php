@@ -16,13 +16,13 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionType;
+use function Fpp\dump;
+use const Fpp\loadTemplate;
+use function Fpp\locatePsrPath;
 use Fpp\MarkerReference;
+use const Fpp\replace;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use const Fpp\loadTemplate;
-use const Fpp\replace;
-use function Fpp\dump;
-use function Fpp\locatePsrPath;
 
 class DumpTest extends TestCase
 {

@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace FppTest;
 
+use function Fpp\scan;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
-use function Fpp\scan;
 
 class ScanTest extends TestCase
 {

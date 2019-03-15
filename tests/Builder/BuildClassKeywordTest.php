@@ -12,12 +12,12 @@ declare(strict_types=1);
 
 namespace FppTest\Builder;
 
+use function Fpp\Builder\buildClassKeyword;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionType;
 use PHPUnit\Framework\TestCase;
-use function Fpp\Builder\buildClassKeyword;
 
 class BuildClassKeywordTest extends TestCase
 {

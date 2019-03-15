@@ -12,12 +12,12 @@ declare(strict_types=1);
 
 namespace Fpp\Builder;
 
+use function Fpp\buildArgumentType;
+use function Fpp\buildDocBlockArgumentTypes;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving;
-use function Fpp\buildArgumentType;
-use function Fpp\buildDocBlockArgumentTypes;
 
 const buildSetters = '\Fpp\Builder\buildSetters';
 

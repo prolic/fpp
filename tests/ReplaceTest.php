@@ -15,8 +15,8 @@ namespace FppTest;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
-use PHPUnit\Framework\TestCase;
 use function Fpp\replace;
+use PHPUnit\Framework\TestCase;
 
 class ReplaceTest extends TestCase
 {

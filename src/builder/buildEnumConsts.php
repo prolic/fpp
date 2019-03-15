@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace Fpp\Builder;
 
+use function Fpp\buildReferencedClass;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\Deriving\Enum;
-use function Fpp\buildReferencedClass;
 use function Fpp\var_export as fpp_var_export;
 
 const buildEnumConsts = '\Fpp\Builder\buildEnumConsts';

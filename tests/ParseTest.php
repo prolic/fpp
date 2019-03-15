@@ -13,13 +13,13 @@ declare(strict_types=1);
 namespace FppTest;
 
 use Fpp\Argument;
+use function Fpp\defaultDerivingMap;
 use Fpp\Deriving;
+use function Fpp\parse;
 use Fpp\ParseError;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
-use function Fpp\defaultDerivingMap;
-use function Fpp\parse;
 
 class ParseTest extends TestCase
 {

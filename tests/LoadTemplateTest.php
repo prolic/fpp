@@ -17,8 +17,8 @@ use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionType;
 use Fpp\Deriving;
-use PHPUnit\Framework\TestCase;
 use function Fpp\loadTemplate;
+use PHPUnit\Framework\TestCase;
 
 class LoadTemplateTest extends TestCase
 {

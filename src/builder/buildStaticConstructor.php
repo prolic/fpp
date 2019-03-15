@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace Fpp\Builder;
 
+use function Fpp\buildDocBlockArgumentTypes;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
-use function Fpp\buildDocBlockArgumentTypes;
 
 const buildStaticConstructor = '\Fpp\Builder\buildStaticConstructor';
 

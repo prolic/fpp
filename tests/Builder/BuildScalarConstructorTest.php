@@ -12,12 +12,12 @@ declare(strict_types=1);
 
 namespace FppTest\Builder;
 
+use function Fpp\buildScalarConstructor;
+use function Fpp\buildScalarConstructorFromPayload;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionType;
 use PHPUnit\Framework\TestCase;
-use function Fpp\buildScalarConstructor;
-use function Fpp\buildScalarConstructorFromPayload;
 
 class BuildScalarConstructorTest extends TestCase
 {

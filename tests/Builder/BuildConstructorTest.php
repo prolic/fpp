@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace FppTest\Builder;
 
 use Fpp\Argument;
+use function Fpp\Builder\buildConstructor;
 use Fpp\Condition;
 use Fpp\Constructor;
 use Fpp\Definition;
@@ -20,7 +21,6 @@ use Fpp\DefinitionCollection;
 use Fpp\DefinitionType;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\Builder\buildConstructor;
 
 class BuildConstructorTest extends TestCase
 {

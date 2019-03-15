@@ -13,13 +13,13 @@ declare(strict_types=1);
 namespace FppTest\Builder;
 
 use Fpp\Argument;
+use function Fpp\Builder\buildTraits;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionType;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\Builder\buildTraits;
 
 class BuildTraitsTest extends TestCase
 {

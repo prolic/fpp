@@ -12,13 +12,13 @@ declare(strict_types=1);
 
 namespace FppTest\Builder;
 
+use function Fpp\Builder\buildClassExtends;
 use Fpp\Constructor;
 use Fpp\Definition;
 use Fpp\DefinitionCollection;
 use Fpp\DefinitionType;
 use Fpp\Deriving;
 use PHPUnit\Framework\TestCase;
-use function Fpp\Builder\buildClassExtends;
 
 class BuildClassExtendsTest extends TestCase
 {
