@@ -341,18 +341,19 @@ CODE;
 
     $method = '';
     foreach ($argumentDefinition->derivings() as $deriving) {
-        switch (\get_class($deriving)) {
-            case Deriving\Enum::class:
+        switch ((string) $deriving) {
+            case Deriving\Enum::VALUE:
+                \assert($deriving instanceof Deriving\Enum);
                 $method = $deriving->useValue() ? 'fromValue' : 'fromName';
                 break;
-            case Deriving\FromScalar::class:
+            case Deriving\FromScalar::VALUE:
                 $method = 'fromScalar';
                 break;
-            case Deriving\FromString::class:
+            case Deriving\FromString::VALUE:
             case Deriving\Uuid::VALUE:
                 $method = 'fromString';
                 break;
-            case Deriving\FromArray::class:
+            case Deriving\FromArray::VALUE:
                 $method = 'fromArray';
                 break;
         }
