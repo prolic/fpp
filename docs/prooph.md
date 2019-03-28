@@ -20,19 +20,19 @@ namespace Foo {
     data Name = String deriving (ToString, FromString);
     data Age = Int deriving (ToScalar, FromScalar);
     data Email = String deriving (ToString, FromString);
-    data Person = Person { Name $name, ?Age $age, Email[] $emails };
+    data Person = Person { Name $name, ?Age $age, Email[] $emails } deriving (ToArray, FromArray);
 }
 
 namespace Foo\Command {
-    data CreateUser = CreateUser { UserId $userId, Person $person } deriving (Command);
+    data CreateUser = CreateUser { \Foo\UserId $userId, \Foo\Person $person } deriving (Command);
 }
 
 namespace Foo\Query {
-    data FindUser = FindUser { UserId $userId } deriving (Query);
+    data FindUser = FindUser { \Foo\UserId $userId } deriving (Query);
 }
 
 namespace Foo\DomainEvent {
-    data UserCreated = UserCreated { UserId $userId, Person $person } deriving (DomainEvent);
+    data UserCreated = UserCreated { \Foo\UserId $userId, \Foo\Person $person } deriving (DomainEvent);
 }
 ```
 
