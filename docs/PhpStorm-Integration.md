@@ -36,10 +36,39 @@ Select FPP as the File type.
 Select your Scope, if you don't have one, create it. Set it to `src` for example.  
 Set "Programm" to `php`.  
 Set this as "Arguments": `$ProjectFileDir$/vendor/prolic/fpp/bin/fpp.php $FilePath$`  
-Enter an output path, such as `$Sourcepath$`
+Enter an output path, such as `$Sourcepath$` (PHPStorm will refresh this path to look for changes to the generated classes)
 Disable the checkbox "Auto-save edited files to trigger the watcher" – in my experience this is really awkward.  
 Select "On error" for "Show Console".  
 Click OK.  
 ![Configure the File Watcher](https://raw.githubusercontent.com/prolic/fpp/master/docs/img/phpstorm_3.png)
 
 Try it out! Have fun!
+
+----
+
+# Advanced Options
+
+## If you have `.fpp` files that reference classes defined in other `.fpp` files
+
+The default "Arguments" setting works great if you only have one `.fpp` file *or* every `.fpp` file only references classes defined in that same file.
+
+If you have multiple `.fpp` files and one or more of them reference a class defined in another `.fpp`, you will get an error. To combat this, you can specify a directory as a part of the "Arguments" instead of the exact file that changed.
+
+For example, consider the following files that define value objects, events and commands for Accounts, Forms, Subscriptions and Users.
+
+```
+config
+└── model
+    ├── account.fpp
+    ├── form.fpp
+    ├── subscription.fpp
+    └── user.fpp
+```
+
+In this case, the commands and events for Form (from `form.fpp`) and Subscription (from `subscription.fpp`) reference `AccountId` (from `account.fpp`).
+
+Changes to `form.fpp` would trigger `$ProjectFileDir$/vendor/bin/fpp $ProjectFileDir$/config/model/form.fpp`. This will cause an error as `form.fpp` references `AccountId` which is not itself defined in `form.fpp`. However, if we change the "Arguments" to the following, everything works:
+
+> $ProjectFileDir$/vendor/bin/fpp $ProjectFileDir$/config/model
+
+This is because when `form.fpp` changes, all `.fpp` files in the directory are rebuilt together by `fpp`. This means `form.fpp` and `subscription.fpp` can safely find `AccountId` that is defined in `account.fpp`.
