@@ -67,7 +67,7 @@ STRING;
         $argument3 = new Argument('whatever');
 
         $constructor = new Constructor('Hell\Yeah', [$argument1, $argument2, $argument3]);
-        $definition = new Definition(DefinitionType::data(), 'Hell', 'Yeah', [$constructor], [new Deriving\DomainEvent()]);
+        $definition = new Definition(DefinitionType::data(), 'Hell', 'Yeah', [$constructor], [new Deriving\AggregateChanged()]);
         $collection = new DefinitionCollection($definition);
 
         $expected = <<<STRING
@@ -75,6 +75,51 @@ public function name(): string
     {
         if (null === \$this->name) {
             \$this->name = \$this->aggregateId();
+        }
+
+        return \$this->name;
+    }
+
+    public function age(): ?int
+    {
+        if (null === \$this->age && isset(\$this->payload['age'])) {
+            \$this->age = \$this->payload['age'];
+        }
+
+        return \$this->age;
+    }
+
+    public function whatever()
+    {
+        if (null === \$this->whatever) {
+            \$this->whatever = \$this->payload['whatever'];
+        }
+
+        return \$this->whatever;
+    }
+STRING;
+
+        $this->assertSame($expected, buildAccessors($definition, $constructor, $collection, ''));
+    }
+
+    /**
+     * @test
+     */
+    public function it_builds_domain_event_accessors(): void
+    {
+        $argument1 = new Argument('name', 'string');
+        $argument2 = new Argument('age', 'int', true);
+        $argument3 = new Argument('whatever');
+
+        $constructor = new Constructor('Hell\Yeah', [$argument1, $argument2, $argument3]);
+        $definition = new Definition(DefinitionType::data(), 'Hell', 'Yeah', [$constructor], [new Deriving\DomainEvent()]);
+        $collection = new DefinitionCollection($definition);
+
+        $expected = <<<STRING
+public function name(): string
+    {
+        if (null === \$this->name) {
+            \$this->name = \$this->payload['name'];
         }
 
         return \$this->name;
