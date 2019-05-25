@@ -41,7 +41,7 @@ function buildAccessors(Definition $definition, ?Constructor $constructor, Defin
             foreach ($constructor->arguments() as $index => $argument) {
                 $returnType = buildArgumentReturnType($argument, $definition);
 
-                if (0 === $index && !$deriving->equals(new Deriving\DomainEvent())) {
+                if (0 === $index && ! $deriving->equals(new Deriving\DomainEvent())) {
                     $methodBody = buildMethodBodyFromAggregateId($argument, $definition, $collection, true);
                 } else {
                     $methodBody = buildMethodBodyFromPayload($argument, $definition, $collection, true);
