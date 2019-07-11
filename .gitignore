@@ -8,3 +8,4 @@
 .php_cs.cache
 nbproject
 composer.lock
+/tests/Fixtures/Generated
