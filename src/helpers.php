@@ -189,7 +189,7 @@ function buildDocBlockArgumentTypes(array $arguments, string $instance = '', boo
         if ($argument->isList()) {
             $isList = true;
 
-            if ($argument->nullable()) {
+            if (! $argument->nullable()) {
                 $params .= "     * @param $leadingSlash{$type}[] \$$name\n";
             } else {
                 $params .= "     * @param $leadingSlash{$type}[]|null \$$name\n";
