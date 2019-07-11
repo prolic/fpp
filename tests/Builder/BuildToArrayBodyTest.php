@@ -53,12 +53,26 @@ class BuildToArrayBodyTest extends TestCase
             ]
         );
 
+        $phoneNumber = new Definition(
+            DefinitionType::data(),
+            'Some',
+            'PhoneNumber',
+            [
+                new Constructor('String'),
+            ],
+            [
+                new Deriving\FromString(),
+                new Deriving\ToString(),
+            ]
+        );
+
         $constructor = new Constructor('My\Person', [
             new Argument('id', 'My\UserId'),
             new Argument('name', 'string', true),
             new Argument('email', 'Some\Email'),
             new Argument('secondaryEmails', 'Some\Email', false, true),
             new Argument('nickNames', 'string', false, true),
+            new Argument('phoneNumbers', 'Some\PhoneNumber', true, true),
         ]);
 
         $definition = new Definition(
@@ -78,17 +92,28 @@ class BuildToArrayBodyTest extends TestCase
             \$secondaryEmails[] = \$__value->toString();
         }
 
+        if (null !== \$this->phoneNumbers) {
+            \$phoneNumbers = [];
+
+            foreach (\$this->phoneNumbers as \$__value) {
+                \$phoneNumbers[] = \$__value->toString();
+            }
+        } else {
+            \$phoneNumbers = null;
+        }
+
         return [
             'id' => \$this->id->toString(),
             'name' => \$this->name,
             'email' => \$this->email->toString(),
             'secondaryEmails' => \$secondaryEmails,
             'nickNames' => \$this->nickNames,
+            'phoneNumbers' => \$phoneNumbers,
         ];
 
 CODE;
 
-        $this->assertSame($expected, buildToArrayBody($definition, $constructor, new DefinitionCollection($definition, $userId, $email), ''));
+        $this->assertSame($expected, buildToArrayBody($definition, $constructor, new DefinitionCollection($definition, $userId, $email, $phoneNumber), ''));
     }
 
     /**
