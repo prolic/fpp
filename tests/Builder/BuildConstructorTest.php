@@ -76,10 +76,10 @@ class BuildConstructorTest extends TestCase
 /**
      * @param \Foo\Bar\Name \$name
      * @param \Foo\Bar\Age \$age
-     * @param string[]|null \$strings
-     * @param float[]|null \$floats
-     * @param \Foo\Bar\Email[]|null \$emails
-     * @param \Foo\Bar\Hobby[] \$hobbies
+     * @param string[] \$strings
+     * @param float[] \$floats
+     * @param \Foo\Bar\Email[] \$emails
+     * @param \Foo\Bar\Hobby[]|null \$hobbies
      * @param string \$message
      * @param int \$code
      * @param null|\Exception \$previous
