@@ -270,7 +270,27 @@ CODE;
                 case $deriving instanceof Deriving\Enum:
                     $fromWhat = $deriving->useValue() ? 'fromValue' : 'fromName';
 
-                    if ($argument->nullable()) {
+                    if ($argument->nullable() && $argument->isList()) {
+                        $code .= <<<CODE
+        \${$argument->name()} = null;
+
+        if (isset(\$data['{$argument->name()}'])) {
+            if (! \is_array(\$data['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a string");
+            }
+            
+            foreach (\$data['{$argument->name()}'] as \$__value) {
+                if (! \is_string(\$__value)) {
+                    throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of string");
+                }
+    
+                \${$argument->name()}[] = $argumentClass::{$fromWhat}(\$__value);
+            }
+        }
+
+
+CODE;
+                    } elseif ($argument->nullable() && ! $argument->isList()) {
                         $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
             if (! \is_string(\$data['{$argument->name()}'])) {
@@ -284,7 +304,7 @@ CODE;
 
 
 CODE;
-                    } elseif ($argument->isList()) {
+                    } elseif ($argument->isList() && ! $argument->nullable()) {
                         $code .= <<<CODE
         if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
@@ -316,7 +336,27 @@ CODE;
                     continue 3;
                 case $deriving instanceof Deriving\FromString:
                 case $deriving instanceof Deriving\Uuid:
-                    if ($argument->nullable()) {
+                    if ($argument->nullable() && $argument->isList()) {
+                        $code .= <<<CODE
+        \${$argument->name()} = null;
+
+        if (isset(\$data['{$argument->name()}'])) {
+            if (! \is_array(\$data['{$argument->name()}'])) {
+                throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not a string");
+            }
+            
+            foreach (\$data['{$argument->name()}'] as \$__value) {
+                if (! \is_string(\$__value)) {
+                    throw new \InvalidArgumentException("Value for '{$argument->name()}' in data array is not an array of string");
+                }
+    
+                \${$argument->name()}[] = $argumentClass::fromString(\$__value);
+            }
+        }
+
+
+CODE;
+                    } elseif ($argument->nullable() && ! $argument->isList()) {
                         $code .= <<<CODE
         if (isset(\$data['{$argument->name()}'])) {
             if (! \is_string(\$data['{$argument->name()}'])) {
@@ -330,7 +370,7 @@ CODE;
 
 
 CODE;
-                    } elseif ($argument->isList()) {
+                    } elseif ($argument->isList() && ! $argument->nullable()) {
                         $code .= <<<CODE
         if (! isset(\$data['{$argument->name()}']) || ! \is_array(\$data['{$argument->name()}'])) {
             throw new \InvalidArgumentException("Key '{$argument->name()}' is missing in data array or is not an array");
@@ -444,7 +484,7 @@ CODE;
         $arguments = \implode(', ', $arguments);
     }
 
-    $code .= "        return new self($arguments);\n";
+    $code .= "\n        return new self($arguments);\n";
 
     return \ltrim($code);
 }
