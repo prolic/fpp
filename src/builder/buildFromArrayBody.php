@@ -484,7 +484,7 @@ CODE;
         $arguments = \implode(', ', $arguments);
     }
 
-    $code .= "\n        return new self($arguments);\n";
+    $code .= "        return new self($arguments);\n";
 
     return \ltrim($code);
 }
