@@ -60,12 +60,6 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
         if ($argument->isList()) {
             $argumentName = $argument->name();
 
-            if ($argument->nullable()) {
-                $prefixCode .= "        if (null === \$this->$argumentName) {\n";
-                $prefixCode .= "            return null;\n";
-                $prefixCode .= "        }\n\n";
-            }
-
             if (null !== $argument->type() && ! $argument->isScalartypeHint()) {
                 $position = \strrpos($argument->type(), '\\');
 
@@ -80,29 +74,37 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
                     throw new \RuntimeException("Cannot build ToArray for $class, no argument type hint for {$argument->type()} given");
                 }
 
-                $prefixCode .= "        \${$argumentName} = [];\n\n";
-                $prefixCode .= "        foreach (\$this->$argumentName as \$__value) {\n";
+                if ($argument->nullable()) {
+                    $prefixCode .= "\n        \${$argumentName} = null;\n\n";
+                    $prefixCode .= "        if (null !== \$this->{$argumentName}) {\n";
+                    $indent = '    ';
+                } else {
+                    $prefixCode .= "        \${$argumentName} = [];\n\n";
+                    $indent = '';
+                }
+
+                $prefixCode .= "$indent        foreach (\$this->$argumentName as \$__value) {\n";
 
                 $match = false;
 
                 foreach ($argumentDefinition->derivings() as $deriving) {
                     switch (true) {
                         case $deriving instanceof Deriving\ToArray:
-                            $prefixCode .= "            \${$argumentName}[] = \$__value->toArray();\n";
+                            $prefixCode .= "$indent            \${$argumentName}[] = \$__value->toArray();\n";
                             $match = true;
                             break;
                         case $deriving instanceof Deriving\ToScalar:
-                            $prefixCode .= "            \${$argumentName}[] = \$__value->toScalar();\n";
+                            $prefixCode .= "$indent            \${$argumentName}[] = \$__value->toScalar();\n";
                             $match = true;
                             break;
                         case $deriving instanceof Deriving\Enum:
                             $asWhat = $deriving->useValue() ? 'value' : 'name';
-                            $prefixCode .= "            \${$argumentName}[] = \$__value->{$asWhat}();\n";
+                            $prefixCode .= "$indent            \${$argumentName}[] = \$__value->{$asWhat}();\n";
                             $match = true;
                             break;
                         case $deriving instanceof Deriving\ToString:
                         case $deriving instanceof Deriving\Uuid:
-                            $prefixCode .= "            \${$argumentName}[] = \$__value->toString();\n";
+                            $prefixCode .= "$indent            \${$argumentName}[] = \$__value->toString();\n";
                             $match = true;
                             break;
                     }
@@ -116,7 +118,14 @@ function buildToArrayBody(Definition $definition, ?Constructor $constructor, Def
                     ));
                 }
 
-                $prefixCode .= "        }\n\n";
+                $prefixCode .= "$indent        }\n";
+
+                if ($argument->nullable()) {
+                    $prefixCode .= "        }\n\n";
+                } else {
+                    $prefixCode .= "\n";
+                }
+
                 $code .= "            '{$argumentName}' => \${$argumentName},\n";
             } else {
                 $code .= "            '{$argumentName}' => \$this->{$argumentName},\n";
