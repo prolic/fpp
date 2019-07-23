@@ -25,7 +25,7 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_simple_data_defintion(): void
+    public function it_creates_simple_data_definition(): void
     {
         $definition = new Definition(DefinitionType::data(), 'Foo', 'Person', [new Constructor('Foo\Person')]);
 
@@ -37,7 +37,7 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_requires_defintion_namespace(): void
+    public function it_requires_definition_namespace(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -47,7 +47,7 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_requires_defintion_name(): void
+    public function it_requires_definition_name(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -57,7 +57,7 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_data_defintion_with_namespace(): void
+    public function it_creates_data_definition_with_namespace(): void
     {
         $definition = new Definition(DefinitionType::data(), 'Foo', 'Person', [new Constructor('Foo\Person')]);
 
@@ -68,7 +68,7 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_data_defintion_with_constructor_arguments(): void
+    public function it_creates_data_definition_with_constructor_arguments(): void
     {
         $constructor = new Constructor('Foo\Person', [new Argument('name', 'string', false)]);
         $definition = new Definition(DefinitionType::data(), 'Foo', 'Person', [$constructor]);
@@ -93,7 +93,7 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_data_defintion_with_derivings(): void
+    public function it_creates_data_definition_with_derivings(): void
     {
         $constructor = new Constructor('Foo\Person', [new Argument('name', 'string', false)]);
 
@@ -142,21 +142,6 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_requires_constructors_to_be_correct_instance(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        new Definition(
-            DefinitionType::data(),
-            'Foo',
-            'Person',
-            ['invalid']
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_creates_prooph_message_types(): void
     {
         $definition = new Definition(
@@ -197,26 +182,6 @@ class DefinitionTest extends TestCase
     /**
      * @test
      */
-    public function it_forbids_invalid_derivings(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $constructor = new Constructor('Foo\Person', [
-            new Argument('name', 'string', false),
-        ]);
-
-        new Definition(
-            DefinitionType::data(),
-            'Foo',
-            'Person',
-            [$constructor],
-            ['invalid']
-        );
-    }
-
-    /**
-     * @test
-     */
     public function it_forbids_duplicate_derivings(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -231,27 +196,6 @@ class DefinitionTest extends TestCase
             'Person',
             [$constructor],
             [new Deriving\ToString(), new Deriving\ToString()]
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_forbids_invalid_conditions(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $constructor = new Constructor('Foo\Person', [
-            new Argument('name', 'string', false),
-        ]);
-
-        new Definition(
-            DefinitionType::data(),
-            'Foo',
-            'Person',
-            [$constructor],
-            [],
-            ['invalid']
         );
     }
 

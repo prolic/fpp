@@ -33,7 +33,7 @@ class ParseTest extends TestCase
      */
     private $derivingMap = [];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->root = vfsStream::setup('test-dir');
         vfsStream::newFile('not_readable.fpp')->withContent('')->at($this->root);
