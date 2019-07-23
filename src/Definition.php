@@ -92,23 +92,10 @@ class Definition
             throw new \InvalidArgumentException('At least one constructor required');
         }
 
-        foreach ($markers as $key => $marker) {
-            if (! $marker instanceof MarkerReference) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Marker at position %d must be an instance of \\Fpp\\MarkerReference, got %s',
-                    $key,
-                    \is_object($marker) ? \get_class($marker) : \gettype($marker)
-                ));
-            }
-        }
         $this->markers = $markers;
 
         $constructorNames = [];
         foreach ($constructors as $constructor) {
-            if (! $constructor instanceof Constructor) {
-                throw new \InvalidArgumentException('Invalid constructor given, must be an instance of ' . Constructor::class);
-            }
-
             if (isset($constructorNames[$constructor->name()])) {
                 throw new \InvalidArgumentException('Duplicate constructor name given');
             }
@@ -119,10 +106,6 @@ class Definition
 
         $derivingNames = [];
         foreach ($derivings as $deriving) {
-            if (! $deriving instanceof Deriving) {
-                throw new \InvalidArgumentException('Invalid deriving given, must be an instance of ' . Deriving::class);
-            }
-
             if (isset($derivingNames[(string) $deriving])) {
                 throw new \InvalidArgumentException('Duplicate deriving given');
             }
@@ -143,13 +126,7 @@ class Definition
             }
         }
 
-        foreach ($conditions as $condition) {
-            if (! $condition instanceof Condition) {
-                throw new \InvalidArgumentException('Invalid condition given, must be an instance of ' . Condition::class);
-            }
-            $this->conditions[] = $condition;
-        }
-
+        $this->conditions = $conditions;
         $this->messageName = $messageName;
 
         if (! $allowMessageName && ! empty($messageName)) {

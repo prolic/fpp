@@ -12,11 +12,11 @@
     "php": "^7.1"
   },
   "require-dev": {
-    "mikey179/vfsStream": "^1.6.5",
-    "phpunit/phpunit": "^7.0",
+    "mikey179/vfsstream": "^1.6.5",
+    "phpunit/phpunit": "^8.2",
     "prooph/php-cs-fixer-config": "^0.3",
     "satooshi/php-coveralls": "^2.0",
-    "phpstan/phpstan": "^0.10.1"
+    "phpstan/phpstan": "^0.11.12"
   },
   "autoload": {
     "psr-4": {
