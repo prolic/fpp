@@ -14,6 +14,10 @@ This library can generate immutable data types based on fpp definitions. The syn
 
 [See the docs here](https://github.com/prolic/fpp/tree/master/docs/Home.md)
 
+### Sponsor
+
+If you want to support my work, become a patron at [patreon.com/prolic](https://www.patreon.com/notifications).
+
 ### Install
 
 ```console
