@@ -1,4 +1,0 @@
-    public static function fromString(string ${{argument_name}}): {{class_name}}
-    {
-        {{from_string_body}}
-    }

@@ -1,4 +1,0 @@
-    public static function fromScalar({{scalar_type}} ${{argument_name}}): {{class_name}}
-    {
-        {{from_scalar_body}}
-    }

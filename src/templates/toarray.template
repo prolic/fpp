@@ -1,4 +1,0 @@
-    public function toArray(): array
-    {
-        {{to_array_body}}
-    }

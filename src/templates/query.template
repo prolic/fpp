@@ -1,7 +1,0 @@
-    {{static_constructor}}
-
-    protected function setPayload(array $payload): void
-    {
-        {{payload_validation}}
-        $this->payload = $payload;
-    }
