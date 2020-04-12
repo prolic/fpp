@@ -12,13 +12,13 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Fpp\Type\Enum;
+use Fpp\Type\EnumType;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
 
 const buildEnum = 'Fpp\buildEnum';
 
-function buildEnum(Enum $enum): ClassType
+function buildEnum(EnumType $enum): ClassType
 {
     $className = $enum->className();
     $lcClassName = \lcfirst($className);

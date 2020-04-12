@@ -16,8 +16,8 @@ use function Fpp\constructorSeparator;
 use function Fpp\enum;
 use function Fpp\enumConstructors;
 use function Fpp\namespaceName;
-use Fpp\Type\Enum;
 use Fpp\Type\Enum\Constructor;
+use Fpp\Type\EnumType;
 use Fpp\Type\NamespaceType;
 use function Fpp\typeName;
 use Phunkie\Types\ImmList;
@@ -99,7 +99,7 @@ describe("Fpp\Parser", function () {
         describe('enum', function () {
             it('can parse enums', function () {
                 expect(enum()->run("enum Color = Red | Green | Blue\n")->head()->_1)->toEqual(
-                    new Enum(
+                    new EnumType(
                         'Color',
                         ImmList(
                             new Constructor('Red'),
@@ -132,7 +132,7 @@ namespace Foo {
 FPP;
                 expect(namespaceName(enum())->run($testString)->head()->_1)->toEqual(
                     new NamespaceType('Foo', ImmList(
-                        new Enum(
+                        new EnumType(
                             'Color',
                             ImmList(
                                 new Constructor('Red'),
@@ -153,7 +153,7 @@ namespace Foo {
 FPP;
                 expect(namespaceName(enum())->run($testString)->head()->_1)->toEqual(
                     new NamespaceType('Foo', ImmList(
-                        new Enum(
+                        new EnumType(
                             'Color',
                             ImmList(
                                 new Constructor('Red'),
@@ -161,7 +161,7 @@ FPP;
                                 new Constructor('Blue')
                             )
                         ),
-                        new Enum(
+                        new EnumType(
                             'Human',
                             ImmList(
                                 new Constructor('Man'),

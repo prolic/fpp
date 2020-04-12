@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Fpp;
 
 use Fpp\Type\Enum\Constructor;
-use Fpp\Type\Enum;
+use Fpp\Type\EnumType;
 use Fpp\Type\NamespaceType;
 use const Phunkie\Functions\immlist\concat;
 
@@ -78,7 +78,7 @@ function namespaceName(Parser $parsers): Parser
                 __($_)->_(spaces())
             )->yields($c)
         ))
-    )->call(fn ($n, $cs) => new NamespaceType($n, $cs), $n, $cs);
+    )->call(fn ($n, $cs) => isKeyword($n) ? Nil() : new NamespaceType($n, $cs), $n, $cs);
 }
 
 const enum = 'Fpp\enum';
@@ -92,5 +92,5 @@ function enum(): Parser
         __($t)->_(typeName()->map(fn ($c) => isKeyword($c) ? Nil() : $c)),
         __($_)->_(assignment()),
         __($cs)->_(enumConstructors())
-    )->call(fn ($t, $cs) => new Enum($t, $cs), $t, $cs);
+    )->call(fn ($t, $cs) => new EnumType($t, $cs), $t, $cs);
 }

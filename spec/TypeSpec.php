@@ -12,15 +12,15 @@ declare(strict_types=1);
 
 namespace FppSpec;
 
-use Fpp\Type\Enum;
 use Fpp\Type\Enum\Constructor;
+use Fpp\Type\EnumType;
 use Phunkie\Types\Nil;
 
 describe("Fpp\Type", function () {
     context('Fpp Type Objects', function () {
         describe('Enum', function () {
             it('creates a neat enum object', function () {
-                $enum = new Enum(
+                $enum = new EnumType(
                     'Color',
                     \ImmList(
                         new Constructor('Red'),

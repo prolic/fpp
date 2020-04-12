@@ -12,26 +12,17 @@ declare(strict_types=1);
 
 namespace Fpp\Type;
 
-use function Fpp\isKeyword;
 use Phunkie\Types\ImmList;
 
 class NamespaceType
 {
     private string $name;
-    private ImmList $classes;
+    private ImmList $types;
 
-    public function __construct(string $namespaceName, ImmList $classes)
+    public function __construct(string $namespaceName, ImmList $types)
     {
-        if (empty($namespaceName)) {
-            throw new \InvalidArgumentException('Empty name is forbidden');
-        }
-
-        if (isKeyword($namespaceName)) {
-            throw new \InvalidArgumentException("\"$namespaceName\" is a reserved PHP keyword and cannot be used as a namespace");
-        }
-
         $this->name = $namespaceName;
-        $this->classes = $classes;
+        $this->types = $types;
     }
 
     public function name(): string
@@ -39,8 +30,8 @@ class NamespaceType
         return $this->name;
     }
 
-    public function classes(): ImmList
+    public function types(): ImmList
     {
-        return $this->classes;
+        return $this->types;
     }
 }

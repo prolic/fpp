@@ -51,7 +51,7 @@ function dump(NamespaceType $ns, array $config)
 
     $namespace = $file->addNamespace($ns->name());
 
-    $ns->classes()->map(function ($t) use ($namespace, $builders) {
+    $ns->types()->map(function ($t) use ($namespace, $builders) {
         $builder = $builders[\get_class($t)];
         $namespace->add($builder($t));
     });

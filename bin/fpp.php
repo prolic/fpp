@@ -45,7 +45,7 @@ $config = [
     'printer' => PsrPrinter::class,
     'namespace_parser' => Pair(namespaceName, 'buildNamespace'),
     'types' => [
-        Type\Enum::class => Pair(enum, buildEnum),
+        Type\EnumType::class => Pair(enum, buildEnum),
     ],
 ];
 
@@ -66,7 +66,7 @@ return [
     'printer' => PsrPrinter::class,
     'namespace_parser' => Pair(namespaceName, 'buildNamespace'),
     'types' => [
-        Type\Enum::class => Pair(enum, buildEnum),
+        Type\EnumType::class => Pair(enum, buildEnum),
     ],
 ];
 
