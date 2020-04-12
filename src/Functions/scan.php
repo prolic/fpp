@@ -18,7 +18,6 @@ use function Nil;
 use Phunkie\Types;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use RuntimeException;
 
 const scan = '\Fpp\scan';
 
@@ -26,8 +25,6 @@ const scan = '\Fpp\scan';
  * @param string $directoryOrFile
  *
  * @return Types\ImmList<string>
- *
- * @throws RuntimeException
  */
 function scan(string $directoryOrFile): Types\ImmList
 {

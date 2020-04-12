@@ -41,7 +41,6 @@ require "{$pwd}/{$vendorName}/autoload.php";
 
 $config = [
     'use_strict_types' => true,
-    'one_class_per_file' => true, // @todo this configuration isn't working right now
     'printer' => PsrPrinter::class,
     'namespace_parser' => Pair(namespaceName, 'buildNamespace'),
     'types' => [
@@ -62,7 +61,6 @@ use function Pair;
 
 return [
     'use_strict_types' => true,
-    'one_class_per_file' => true, // @todo this configuration isn't working right now
     'printer' => PsrPrinter::class,
     'namespace_parser' => Pair(namespaceName, 'buildNamespace'),
     'types' => [
@@ -89,14 +87,12 @@ if (empty($config['types'])) {
 
 // bootstrapping done - @todo: make this bottom part more FP stylish
 $parser = zero();
+$toDump = Nil();
+$namespaceParser = $config['namespace_parser']->_1;
 
 foreach ($config['types'] as $type => $pair) {
     $parser = $parser->or(($pair->_1)());
 }
-
-$namespaceParser = $config['namespace_parser']->_1;
-
-$toDump = \Nil();
 
 scan($path)->map(
     fn ($f) => Pair(manyList($namespaceParser($parser))->run(\file_get_contents($f)), $f)

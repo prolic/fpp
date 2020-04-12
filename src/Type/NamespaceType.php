@@ -17,17 +17,24 @@ use Phunkie\Types\ImmList;
 class NamespaceType
 {
     private string $name;
+    private ImmList $imports;
     private ImmList $types;
 
-    public function __construct(string $namespaceName, ImmList $types)
+    public function __construct(string $namespaceName, ImmList $imports, ImmList $types)
     {
         $this->name = $namespaceName;
+        $this->imports = $imports;
         $this->types = $types;
     }
 
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function imports(): ImmList
+    {
+        return $this->imports;
     }
 
     public function types(): ImmList

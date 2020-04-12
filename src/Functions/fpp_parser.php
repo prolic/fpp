@@ -15,7 +15,7 @@ namespace Fpp;
 use Fpp\Type\Enum\Constructor;
 use Fpp\Type\EnumType;
 use Fpp\Type\NamespaceType;
-use const Phunkie\Functions\immlist\concat;
+use Phunkie\Types\Nil;
 
 function assignment(): Parser
 {
@@ -30,8 +30,16 @@ function typeName(): Parser
 {
     return for_(
         __($x)->_(plus(letter(), char('_'))),
-        __($xs)->_(many(plus(alphanum(), char('_'))))
-    )->call(concat, $x, $xs);
+        __($xs)->_(many(plus(alphanum(), char('_')))),
+        __($c)->_(new Parser(function ($s) use (&$x, &$xs) {
+            $c = $x . $xs;
+            if (isKeyword($c)) {
+                return ImmList(Pair('', $c . $s));
+            }
+
+            return ImmList(Pair($c, $s));
+        })),
+    )->yields($c);
 }
 
 function constructorSeparator(): Parser
@@ -71,6 +79,7 @@ function namespaceName(Parser $parsers): Parser
                 __($o)->_(char('{')),
                 __($_)->_(spaces())
             )->yields($o),
+            // @todo add import parsing here
             manyList($parsers),
             for_(
                 __($_)->_(spaces()),
@@ -78,7 +87,7 @@ function namespaceName(Parser $parsers): Parser
                 __($_)->_(spaces())
             )->yields($c)
         ))
-    )->call(fn ($n, $cs) => isKeyword($n) ? Nil() : new NamespaceType($n, $cs), $n, $cs);
+    )->call(fn ($n, $cs) => new NamespaceType($n, \Nil(), $cs), $n, $cs);
 }
 
 const enum = 'Fpp\enum';

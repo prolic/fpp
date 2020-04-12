@@ -64,6 +64,10 @@ describe("Fpp\Parser", function () {
                 expect(typeName()->run('2Yes!'))
                     ->toEqual(Nil());
             });
+
+            it('cannot parse php keyword as type name', function () {
+                expect(namespaceName(enum())->run('Public'))->toEqual(Nil());
+            });
         });
 
         describe('constructorSeparator', function () {
@@ -114,13 +118,13 @@ describe("Fpp\Parser", function () {
         describe('namespace', function () {
             it('can parse empty namespace', function () {
                 expect(namespaceName(enum())->run('namespace Foo { }')->head()->_1)->toEqual(
-                    new NamespaceType('Foo', Nil())
+                    new NamespaceType('Foo', Nil(), Nil())
                 );
             });
 
             it('can parse namespace with sub namespace', function () {
                 expect(namespaceName(enum())->run('namespace Foo\Bar { }')->head()->_1)->toEqual(
-                    new NamespaceType('Foo\Bar', Nil())
+                    new NamespaceType('Foo\Bar', Nil(), Nil())
                 );
             });
 
@@ -131,7 +135,7 @@ namespace Foo {
 }
 FPP;
                 expect(namespaceName(enum())->run($testString)->head()->_1)->toEqual(
-                    new NamespaceType('Foo', ImmList(
+                    new NamespaceType('Foo', Nil(), ImmList(
                         new EnumType(
                             'Color',
                             ImmList(
@@ -152,7 +156,7 @@ namespace Foo {
 }
 FPP;
                 expect(namespaceName(enum())->run($testString)->head()->_1)->toEqual(
-                    new NamespaceType('Foo', ImmList(
+                    new NamespaceType('Foo', Nil(), ImmList(
                         new EnumType(
                             'Color',
                             ImmList(
