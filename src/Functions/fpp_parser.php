@@ -12,9 +12,8 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Fpp\Type\ClassType;
 use Fpp\Type\Enum\Constructor;
-use Fpp\Type\Enum\Enum;
+use Fpp\Type\Enum;
 use Fpp\Type\NamespaceType;
 use const Phunkie\Functions\immlist\concat;
 
@@ -90,7 +89,7 @@ function enum(): Parser
         __($_)->_(spaces()),
         __($_)->_(string('enum')),
         __($b)->_(spaces1()),
-        __($t)->_(typeName()->map(fn ($c) => new ClassType($c))),
+        __($t)->_(typeName()->map(fn ($c) => isKeyword($c) ? Nil() : $c)),
         __($_)->_(assignment()),
         __($cs)->_(enumConstructors())
     )->call(fn ($t, $cs) => new Enum($t, $cs), $t, $cs);

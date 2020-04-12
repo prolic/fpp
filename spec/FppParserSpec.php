@@ -16,9 +16,8 @@ use function Fpp\constructorSeparator;
 use function Fpp\enum;
 use function Fpp\enumConstructors;
 use function Fpp\namespaceName;
-use Fpp\Type\ClassType;
+use Fpp\Type\Enum;
 use Fpp\Type\Enum\Constructor;
-use Fpp\Type\Enum\Enum;
 use Fpp\Type\NamespaceType;
 use function Fpp\typeName;
 use Phunkie\Types\ImmList;
@@ -101,7 +100,7 @@ describe("Fpp\Parser", function () {
             it('can parse enums', function () {
                 expect(enum()->run("enum Color = Red | Green | Blue\n")->head()->_1)->toEqual(
                     new Enum(
-                        new ClassType('Color'),
+                        'Color',
                         ImmList(
                             new Constructor('Red'),
                             new Constructor('Green'),
@@ -134,7 +133,7 @@ FPP;
                 expect(namespaceName(enum())->run($testString)->head()->_1)->toEqual(
                     new NamespaceType('Foo', ImmList(
                         new Enum(
-                            new ClassType('Color'),
+                            'Color',
                             ImmList(
                                 new Constructor('Red'),
                                 new Constructor('Green'),
@@ -155,7 +154,7 @@ FPP;
                 expect(namespaceName(enum())->run($testString)->head()->_1)->toEqual(
                     new NamespaceType('Foo', ImmList(
                         new Enum(
-                            new ClassType('Color'),
+                            'Color',
                             ImmList(
                                 new Constructor('Red'),
                                 new Constructor('Green'),
@@ -163,7 +162,7 @@ FPP;
                             )
                         ),
                         new Enum(
-                            new ClassType('Human'),
+                            'Human',
                             ImmList(
                                 new Constructor('Man'),
                                 new Constructor('Woman')

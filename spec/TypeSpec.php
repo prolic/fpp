@@ -12,9 +12,8 @@ declare(strict_types=1);
 
 namespace FppSpec;
 
-use Fpp\Type\ClassType;
+use Fpp\Type\Enum;
 use Fpp\Type\Enum\Constructor;
-use Fpp\Type\Enum\Enum;
 use Phunkie\Types\Nil;
 
 describe("Fpp\Type", function () {
@@ -22,7 +21,7 @@ describe("Fpp\Type", function () {
         describe('Enum', function () {
             it('creates a neat enum object', function () {
                 $enum = new Enum(
-                    new ClassType('Color'),
+                    'Color',
                     \ImmList(
                         new Constructor('Red'),
                         new Constructor('Green'),
@@ -30,7 +29,7 @@ describe("Fpp\Type", function () {
                     )
                 );
 
-                expect($enum->className()->name())->toBe('Color');
+                expect($enum->className())->toBe('Color');
                 expect($enum->constructors())->not->toBeAnInstanceOf(Nil::class);
             });
         });

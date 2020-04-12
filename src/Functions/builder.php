@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Fpp\Type\Enum\Enum;
+use Fpp\Type\Enum;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
 
@@ -20,7 +20,7 @@ const buildEnum = 'Fpp\buildEnum';
 
 function buildEnum(Enum $enum): ClassType
 {
-    $className = $enum->className()->name();
+    $className = $enum->className();
     $lcClassName = \lcfirst($className);
 
     $class = new ClassType($className);

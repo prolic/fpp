@@ -10,30 +10,29 @@
 
 declare(strict_types=1);
 
-namespace Fpp\Type\Enum;
+namespace Fpp\Type;
 
-use Fpp\Type\ClassType;
 use Phunkie\Types\ImmList;
 
 class Enum
 {
-    private ClassType $className;
-    /** @var Immlist<Constructor> */
+    private string $className;
+    /** @var Immlist<Enum\Constructor> */
     private ImmList $constructors;
 
-    public function __construct(ClassType $className, ImmList $constructors)
+    public function __construct(string $className, ImmList $constructors)
     {
         $this->className = $className;
         $this->constructors = $constructors;
     }
 
-    public function className(): ClassType
+    public function className(): string
     {
         return $this->className;
     }
 
     /**
-     * @return ImmList<Constructor>
+     * @return ImmList<Enum\Constructor>
      */
     public function constructors(): ImmList
     {
