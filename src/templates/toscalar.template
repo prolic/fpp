@@ -1,4 +1,0 @@
-    public function toScalar(): {{scalar_type}}
-    {
-        {{to_scalar_body}}
-    }
