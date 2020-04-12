@@ -12,22 +12,12 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Enum;
 
-use function Fpp\isKeyword;
-
 class Constructor
 {
     private string $name;
 
     public function __construct(string $name)
     {
-        if (empty($name)) {
-            throw new \InvalidArgumentException('Empty name is forbidden');
-        }
-
-        if (isKeyword($name)) {
-            throw new \InvalidArgumentException("\"$name\" is a reserved PHP keyword and cannot be used as a constructor");
-        }
-
         $this->name = $name;
     }
 
