@@ -22,7 +22,7 @@ Coming soon...
 ## Install
 
 ```console
-composer require prolic/fpp
+composer require prolic/fpp dev-master
 ```
 
 ## Usage
@@ -38,3 +38,9 @@ php vendor/bin/fpp.php --gen-config
 ```
 
 You can then modify the config file to adjust to your needs.
+
+## Changes from 0.1.0 Release
+
+This library has been rewritten from scratch. If you want to use the old version, pin your composer requirement to 0.1.0.
+
+The master branch is not compatible at all.
