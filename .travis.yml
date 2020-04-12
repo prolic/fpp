@@ -3,18 +3,12 @@ language: php
 matrix:
   fast_finish: true
   include:
-    - php: 7.2
+    - php: 7.4
       env:
         - DEPENDENCIES=""
         - EXECUTE_CS_CHECK=true
         - TEST_COVERAGE=true
-    - php: 7.2
-      env:
-        - DEPENDENCIES="--prefer-lowest --prefer-stable"
-    - php: 7.3
-      env:
-        - DEPENDENCIES=""
-    - php: 7.3
+    - php: 7.4
       env:
         - DEPENDENCIES="--prefer-lowest --prefer-stable"
 
@@ -31,9 +25,9 @@ before_script:
   - composer update --prefer-dist $DEPENDENCIES
 
 script:
-  - if [[ $TEST_COVERAGE == 'true' ]]; then php -dzend_extension=xdebug.so ./vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml; else ./vendor/bin/phpunit; fi
+  - if [[ $TEST_COVERAGE == 'true' ]]; then mkdir -p build/logs; fi
+  - if [[ $TEST_COVERAGE == 'true' ]]; then php -dzend_extension=xdebug.so ./vendor/bin/kahlan --coverage-text --clover ./build/logs/clover.xml; else ./vendor/bin/kahlan; fi
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run; fi
-  - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/phpstan analyse; fi
 
 after_success:
   - if [[ $TEST_COVERAGE == 'true' ]]; then php vendor/bin/coveralls -v; fi
