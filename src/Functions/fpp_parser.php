@@ -15,7 +15,6 @@ namespace Fpp;
 use Fpp\Type\Enum\Constructor;
 use Fpp\Type\EnumType;
 use Fpp\Type\NamespaceType;
-use Phunkie\Types\Nil;
 
 function assignment(): Parser
 {
@@ -33,11 +32,7 @@ function typeName(): Parser
         __($xs)->_(many(plus(alphanum(), char('_')))),
         __($c)->_(new Parser(function ($s) use (&$x, &$xs) {
             $c = $x . $xs;
-            if (isKeyword($c)) {
-                return ImmList(Pair('', $c . $s));
-            }
-
-            return ImmList(Pair($c, $s));
+            return isKeyword($c) ? ImmList(Pair('', $c . $s)) : ImmList(Pair($c, $s));
         })),
     )->yields($c);
 }
@@ -68,11 +63,12 @@ const namespaceName = 'Fpp\namespaceName';
 
 function namespaceName(Parser $parsers): Parser
 {
+    // @todo parse one namespace per file ending with ";" as well
     return for_(
         __($_)->_(spaces()),
         __($_)->_(string('namespace')),
         __($_)->_(spaces1()),
-        __($n)->_(sepBy1With(typeName(), char('\\'))),
+        __($n)->_(plus(sepBy1With(typeName(), char('\\')), result(''))),
         __($cs)->_(surrounded(
             for_(
                 __($_)->_(spaces()),

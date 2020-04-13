@@ -128,6 +128,12 @@ describe("Fpp\Parser", function () {
                 );
             });
 
+            it('can parse default namespace', function () {
+                expect(namespaceName(enum())->run('namespace { }')->head()->_1)->toEqual(
+                    new NamespaceType('', Nil(), Nil())
+                );
+            });
+
             it('can parse namespace containing an enum', function () {
                 $testString = <<<FPP
 namespace Foo {
