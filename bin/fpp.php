@@ -40,7 +40,14 @@ if (! \file_exists("{$pwd}/{$vendorName}/autoload.php")) {
     exit(1);
 }
 
-require "{$pwd}/{$vendorName}/autoload.php";
+$autoloader = require "{$pwd}/{$vendorName}/autoload.php";
+
+$prefixesPsr4 = $autoloader->getPrefixesPsr4();
+$prefixesPsr0 = $autoloader->getPrefixes();
+
+$locatePsrPath = function (string $classname) use ($prefixesPsr4, $prefixesPsr0): string {
+    return locatePsrPath($prefixesPsr4, $prefixesPsr0, $classname);
+};
 
 $config = [
     'use_strict_types' => true,
@@ -121,7 +128,17 @@ scan($path)->map(
     $type = $p->_1;
     $namespace = $p->_2;
 
-    \var_dump(dump($printer, $type, $namespace, $config));
+    return Pair(dump($printer, $type, $namespace, $config), $namespace->name() . '\\' . $type->className());
+})->map(function (Pair $p) use ($locatePsrPath) {
+    $filename = $locatePsrPath($p->_2);
+    $directory = \dirname($filename);
+
+    if (! is_dir($directory)) {
+        \mkdir($directory, 0777, true);
+    }
+
+    \file_put_contents($filename, $p->_1);
 });
 
+echo "Successfully generated and written to disk\n";
 exit(0);

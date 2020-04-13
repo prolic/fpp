@@ -36,6 +36,37 @@ function isKeyword(string $string): bool
     ], true);
 }
 
+function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, string $classname): string
+{
+    // PSR-4 lookup
+    $logicalPathPsr4 = \strtr($classname, '\\', DIRECTORY_SEPARATOR);
+
+    foreach ($prefixesPsr4 as $prefix => $dirs) {
+        if (0 === \strpos($classname, $prefix)) {
+            $dir = $dirs[0];
+
+            return $dir . DIRECTORY_SEPARATOR . \substr($logicalPathPsr4, \strlen($prefix)) . '.php';
+        }
+    }
+
+    // PSR-0 lookup
+    $pos = \strrpos($classname, '\\');
+    $logicalPathPsr0 = \substr($logicalPathPsr4, 0, $pos + 1)
+        . \strtr(\substr($logicalPathPsr4, $pos + 1), '_', DIRECTORY_SEPARATOR);
+
+    foreach ($prefixesPsr0 as $prefix => $dirs) {
+        if (0 === \strpos($classname, $prefix)) {
+            $dir = $dirs[0];
+
+            return $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0 . '.php';
+        }
+    }
+
+    throw new \RuntimeException(
+        'Could not find psr-autoloading path for ' . $classname . ', check your composer.json'
+    );
+}
+
 function dump(Printer $printer, $type, NamespaceType $ns, array $config)
 {
     if (! isset($config['types'][\get_class($type)])) {

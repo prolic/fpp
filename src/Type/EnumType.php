@@ -16,19 +16,19 @@ use Phunkie\Types\ImmList;
 
 class EnumType
 {
-    private string $className;
+    private string $classname;
     /** @var Immlist<Enum\Constructor> */
     private ImmList $constructors;
 
-    public function __construct(string $className, ImmList $constructors)
+    public function __construct(string $classname, ImmList $constructors)
     {
-        $this->className = $className;
+        $this->classname = $classname;
         $this->constructors = $constructors;
     }
 
-    public function className(): string
+    public function classname(): string
     {
-        return $this->className;
+        return $this->classname;
     }
 
     /**

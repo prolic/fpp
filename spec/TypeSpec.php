@@ -29,7 +29,7 @@ describe("Fpp\Type", function () {
                     )
                 );
 
-                expect($enum->className())->toBe('Color');
+                expect($enum->classname())->toBe('Color');
                 expect($enum->constructors())->not->toBeAnInstanceOf(Nil::class);
             });
         });

@@ -20,7 +20,7 @@ const buildEnum = 'Fpp\buildEnum';
 
 function buildEnum(EnumType $enum): ClassType
 {
-    $className = $enum->className();
+    $className = $enum->classname();
     $lcClassName = \lcfirst($className);
 
     $class = new ClassType($className);
