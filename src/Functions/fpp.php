@@ -36,25 +36,20 @@ function isKeyword(string $string): bool
     ], true);
 }
 
-function dump(NamespaceType $ns, array $config)
+function dump(Printer $printer, $type, NamespaceType $ns, array $config)
 {
-    $builders = [];
-    foreach ($config['types'] as $type => $pair) {
-        $builders[$type] = ($pair->_2);
+    if (! isset($config['types'][\get_class($type)])) {
+        throw new \RuntimeException('No builder found for ' . \get_class($type));
     }
 
-    $printer = new $config['printer']();
-    \assert($printer instanceof Printer);
+    $builder = $config['types'][\get_class($type)]->_2;
 
     $file = new PhpFile();
     $file->setStrictTypes($config['use_strict_types']);
 
     $namespace = $file->addNamespace($ns->name());
 
-    $ns->types()->map(function ($t) use ($namespace, $builders) {
-        $builder = $builders[\get_class($t)];
-        $namespace->add($builder($t));
-    });
+    $namespace->add($builder($type));
 
     return $printer->printFile($file);
 }

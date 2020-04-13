@@ -12,8 +12,11 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Fpp\Type\NamespaceType;
 use Nette\PhpGenerator\PsrPrinter;
 use function Pair;
+use Phunkie\Types\ImmList;
+use Phunkie\Types\Pair;
 
 if (! isset($argv[1])) {
     echo 'Missing input directory or file argument';
@@ -42,7 +45,6 @@ require "{$pwd}/{$vendorName}/autoload.php";
 $config = [
     'use_strict_types' => true,
     'printer' => PsrPrinter::class,
-    'namespace_parser' => Pair(namespaceName, 'buildNamespace'),
     'types' => [
         Type\EnumType::class => Pair(enum, buildEnum),
     ],
@@ -62,7 +64,6 @@ use function Pair;
 return [
     'use_strict_types' => true,
     'printer' => PsrPrinter::class,
-    'namespace_parser' => Pair(namespaceName, 'buildNamespace'),
     'types' => [
         Type\EnumType::class => Pair(enum, buildEnum),
     ],
@@ -87,30 +88,40 @@ if (empty($config['types'])) {
 
 // bootstrapping done - @todo: make this bottom part more FP stylish
 $parser = zero();
-$toDump = Nil();
-$namespaceParser = $config['namespace_parser']->_1;
+$printer = new $config['printer']();
 
 foreach ($config['types'] as $type => $pair) {
     $parser = $parser->or(($pair->_1)());
 }
 
 scan($path)->map(
-    fn ($f) => Pair(manyList($namespaceParser($parser))->run(\file_get_contents($f)), $f)
-)->map(function ($p) use ($config, &$toDump) {
-    $parsed = $p->_1->head();
+    fn ($f) => Pair(manyList(namespaceName($parser))->run(\file_get_contents($f)), $f)
+)->map(function (Pair $p) {
+    $parsed = $p->_1;
     $filename = $p->_2;
 
-    if (\strlen($parsed->_2) !== 0) {
+    $p = $parsed->head();
+
+    if ($p->_2 !== '') {
         echo "\033[1;31mSyntax error at file $filename at:\033[0m" . PHP_EOL . PHP_EOL;
-        echo \substr($parsed->_2, 0, 40) . PHP_EOL;
+        echo \substr($p->_2, 0, 100) . PHP_EOL;
         exit(1);
     }
 
-    $toDump = $toDump->combine($parsed->_1);
-});
+    return $p->_1;
+})->fold(Nil(), function (ImmList $types, ImmList $nsl) {
+    $nsl->map(function (NamespaceType $n) use (&$types) {
+        $n->types()->map(function ($t) use ($n, &$types) {
+            $types = $types->combine(\ImmList(Pair($t, $n)));
+        });
+    });
 
-$toDump->map(function ($ns) use ($config) {
-    \var_dump(dump($ns, $config));
+    return $types;
+})->map(function (Pair $p) use ($printer, $config) {
+    $type = $p->_1;
+    $namespace = $p->_2;
+
+    \var_dump(dump($printer, $type, $namespace, $config));
 });
 
 exit(0);

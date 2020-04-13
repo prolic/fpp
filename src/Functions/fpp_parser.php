@@ -32,6 +32,7 @@ function typeName(): Parser
         __($xs)->_(many(plus(alphanum(), char('_')))),
         __($c)->_(new Parser(function ($s) use (&$x, &$xs) {
             $c = $x . $xs;
+
             return isKeyword($c) ? ImmList(Pair('', $c . $s)) : ImmList(Pair($c, $s));
         })),
     )->yields($c);
