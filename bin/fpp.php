@@ -12,7 +12,9 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Fpp\Type\EnumType;
 use Fpp\Type\NamespaceType;
+use Fpp\Type\Type;
 use Nette\PhpGenerator\PsrPrinter;
 use function Pair;
 use Phunkie\Types\ImmList;
@@ -53,7 +55,7 @@ $config = [
     'use_strict_types' => true,
     'printer' => PsrPrinter::class,
     'types' => [
-        Type\EnumType::class => Pair(enum, buildEnum),
+        EnumType::class => Pair(enum, buildEnum),
     ],
 ];
 
@@ -66,13 +68,16 @@ declare(strict_types=1);
 namespace Fpp;
 
 use Nette\PhpGenerator\PsrPrinter;
-use function Pair;
 
 return [
     'use_strict_types' => true,
     'printer' => PsrPrinter::class,
     'types' => [
-        Type\EnumType::class => Pair(enum, buildEnum),
+        // key value pair with
+        // key = class name of a type
+        // value = Pair(parser, builder)
+        // f.e.
+        // Type\EnumType::class => \Pair(enum, buildEnum),
     ],
 ];
 
@@ -85,15 +90,9 @@ CODE;
 }
 
 if (\file_exists("{$pwd}/fpp-config.php")) {
-    $config = \array_merge_recursive($config, require "{$pwd}/fpp-config.php");
+    $config = mergeCustomConfig($config, require "{$pwd}/fpp-config.php");
 }
 
-if (empty($config['types'])) {
-    echo "\033[1;31mNo parser found, check your fpp-config.php file\033[0m" . PHP_EOL;
-    exit(1);
-}
-
-// bootstrapping done - @todo: make this bottom part more FP stylish
 $parser = zero();
 $printer = new $config['printer']();
 
@@ -118,7 +117,7 @@ scan($path)->map(
     return $p->_1;
 })->fold(Nil(), function (ImmList $types, ImmList $nsl) {
     $nsl->map(function (NamespaceType $n) use (&$types) {
-        $n->types()->map(function ($t) use ($n, &$types) {
+        $n->types()->map(function (Type $t) use ($n, &$types) {
             $types = $types->combine(\ImmList(Pair($t, $n)));
         });
     });
@@ -128,12 +127,12 @@ scan($path)->map(
     $type = $p->_1;
     $namespace = $p->_2;
 
-    return Pair(dump($printer, $type, $namespace, $config), $namespace->name() . '\\' . $type->className());
+    return Pair(dump($printer, $type, $namespace, $config), $namespace->name() . '\\' . $type->classname());
 })->map(function (Pair $p) use ($locatePsrPath) {
     $filename = $locatePsrPath($p->_2);
     $directory = \dirname($filename);
 
-    if (! is_dir($directory)) {
+    if (! \is_dir($directory)) {
         \mkdir($directory, 0777, true);
     }
 

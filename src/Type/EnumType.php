@@ -14,7 +14,7 @@ namespace Fpp\Type;
 
 use Phunkie\Types\ImmList;
 
-class EnumType
+class EnumType implements Type
 {
     private string $classname;
     /** @var Immlist<Enum\Constructor> */

@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Fpp;
 
 use Fpp\Type\NamespaceType;
+use Fpp\Type\Type;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Printer;
 
@@ -67,7 +68,26 @@ function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, string $classna
     );
 }
 
-function dump(Printer $printer, $type, NamespaceType $ns, array $config)
+function mergeCustomConfig(array $config, array $customConfig): array
+{
+    if (isset($customConfig['use_strict_types'])) {
+        $config['use_strict_types'] = $customConfig['use_strict_types'];
+    }
+
+    if (isset($customConfig['printer'])) {
+        $config['printer'] = $customConfig['printer'];
+    }
+
+    if (isset($customConfig['types'])) {
+        foreach ($customConfig['types'] as $type => $pair) {
+            $config['types'][$type] = $pair;
+        }
+    }
+
+    return $config;
+}
+
+function dump(Printer $printer, Type $type, NamespaceType $ns, array $config)
 {
     if (! isset($config['types'][\get_class($type)])) {
         throw new \RuntimeException('No builder found for ' . \get_class($type));
