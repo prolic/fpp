@@ -30,19 +30,19 @@ $path = $argv[1];
 $pwd = \realpath(\getcwd());
 $vendorName = 'vendor';
 
-if (\file_exists($composerPath = "{$pwd}/composer.json")) {
+if (\file_exists($composerPath = "$pwd/composer.json")) {
     $composerJson = \json_decode(\file_get_contents($composerPath), true);
     $vendorName = isset($composerJson['config']['vendor-dir']) ? $composerJson['config']['vendor-dir'] : $vendorName;
 }
 
-if (! \file_exists("{$pwd}/{$vendorName}/autoload.php")) {
+if (! \file_exists("$pwd/$vendorName/autoload.php")) {
     echo "\033[1;31mYou need to set up the project dependencies using the following commands: \033[0m" . PHP_EOL;
     echo 'curl -s http://getcomposer.org/installer | php' . PHP_EOL;
     echo 'php composer.phar install' . PHP_EOL;
     exit(1);
 }
 
-$autoloader = require "{$pwd}/{$vendorName}/autoload.php";
+$autoloader = require "$pwd/$vendorName/autoload.php";
 
 $prefixesPsr4 = $autoloader->getPrefixesPsr4();
 $prefixesPsr0 = $autoloader->getPrefixes();
@@ -83,14 +83,14 @@ return [
 
 CODE;
 
-    \file_put_contents("{$pwd}/fpp-config.php", $file);
+    \file_put_contents("$pwd/fpp-config.php", $file);
 
-    echo "Default configuration written to {$pwd}/fpp-config.php\n";
+    echo "Default configuration written to $pwd/fpp-config.php\n";
     exit(0);
 }
 
-if (\file_exists("{$pwd}/fpp-config.php")) {
-    $config = mergeCustomConfig($config, require "{$pwd}/fpp-config.php");
+if (\file_exists("$pwd/fpp-config.php")) {
+    $config = mergeCustomConfig($config, require "$pwd/fpp-config.php");
 }
 
 $parser = zero();
