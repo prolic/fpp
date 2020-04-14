@@ -58,5 +58,11 @@ function scan(string $directoryOrFile): Types\ImmList
         }
     };
 
-    return ImmList(...\iterator_to_array($iterator));
+    $files = [];
+
+    foreach ($iterator as $f => $i) {
+        $files[] = $f;
+    }
+
+    return ImmList(...$files);
 }

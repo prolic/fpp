@@ -63,7 +63,7 @@ CODE
     $method = $class->addMethod('fromValue')->setPublic()->setStatic()->setReturnType('self');
     $method->addParameter('value')->setType(Type::INT);
     $method->setBody(<<<CODE
-foreach (self::OPTIONS as \$n => \$v) {
+foreach (self::Options as \$n => \$v) {
     if (\$v === \$value) {
         return self::{\$n}();
     }
