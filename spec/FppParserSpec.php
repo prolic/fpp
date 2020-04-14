@@ -15,6 +15,7 @@ namespace FppSpec;
 use function Fpp\constructorSeparator;
 use function Fpp\enum;
 use function Fpp\enumConstructors;
+use function Fpp\imports;
 use function Fpp\multipleNamespaces;
 use function Fpp\singleNamespace;
 use Fpp\Type\Enum\Constructor;
@@ -80,6 +81,18 @@ describe("Fpp\Parser", function () {
             });
         });
 
+        describe('imports', function () {
+            it('can parse use imports', function () {
+                expect(imports()->run("use Foo\n")->head()->_1)->toEqual(Pair('Foo', null));
+                expect(imports()->run("use Foo\Bar\n")->head()->_1)->toEqual(Pair('Foo\Bar', null));
+            });
+
+            it('can parse aliased use imports', function () {
+                expect(imports()->run("use Foo as F\n")->head()->_1)->toEqual(Pair('Foo', 'F'));
+                expect(imports()->run("use Foo\Bar as Baz\n")->head()->_1)->toEqual(Pair('Foo\Bar', 'Baz'));
+            });
+        });
+
         describe('enumConstructors', function () {
             it('can parse enum constructors', function () {
                 expect(enumConstructors()->run("Red|Green|Blue\n")->head()->_1)->toEqual(ImmList(
@@ -137,6 +150,35 @@ describe("Fpp\Parser", function () {
                             )
                         )
                     ))
+                );
+            });
+
+            it('can parse one namespace when ending with ; with use imports and an enum inside', function () {
+                $testString = <<<CODE
+namespace Foo
+use Foo\Bar
+use Foo\Baz as B
+enum Color = Red | Blue
+
+CODE;
+
+                expect(singleNamespace(enum())->run($testString)->head()->_1)->toEqual(
+                    new NamespaceType(
+                        'Foo',
+                        ImmList(
+                            Pair('Foo\Bar', null),
+                            Pair('Foo\Baz', 'B')
+                        ),
+                        ImmList(
+                            new EnumType(
+                                'Color',
+                                ImmList(
+                                    new Constructor('Red'),
+                                    new Constructor('Blue')
+                                )
+                            )
+                        )
+                    )
                 );
             });
         });

@@ -99,8 +99,9 @@ function dump(Printer $printer, Type $type, NamespaceType $ns, array $config)
     $file->setStrictTypes($config['use_strict_types']);
 
     $namespace = $file->addNamespace($ns->name());
-
     $namespace->add($builder($type));
+
+    $ns->imports()->map(fn ($i) => $namespace->addUse($i->_1, $i->_2));
 
     return $printer->printFile($file);
 }

@@ -47,16 +47,27 @@ function constructorSeparator(): Parser
     )->yields($s);
 }
 
-function enumConstructors(): Parser
+function imports(): Parser
 {
-    return for_(
-        __($constructors)->_(sepBy1list(typeName(), constructorSeparator())),
-        __($_)->_(nl())
-    )->call(
-        fn ($c) => $c->map(
-            fn ($c) => new Constructor($c)
-        ),
-        $constructors
+    return plus(
+        for_(
+            __($_)->_(spaces()),
+            __($_)->_(string('use')),
+            __($_)->_(spaces1()),
+            __($i)->_(sepBy1With(typeName(), char('\\'))),
+            __($_)->_(nl())
+        )->call(fn ($i) => Pair($i, null), $i),
+        for_(
+            __($_)->_(spaces()),
+            __($_)->_(string('use')),
+            __($_)->_(spaces1()),
+            __($i)->_(sepBy1With(typeName(), char('\\'))),
+            __($_)->_(spaces1()),
+            __($_)->_(string('as')),
+            __($_)->_(spaces1()),
+            __($a)->_(typeName()),
+            __($_)->_(nl())
+        )->yields($i, $a)
     );
 }
 
@@ -68,8 +79,9 @@ function singleNamespace(Parser $parserComposite): Parser
         __($_)->_(spaces1()),
         __($n)->_(sepBy1With(typeName(), char('\\'))),
         __($_)->_(nl()),
+        __($is)->_(manyList(imports())),
         __($cs)->_(manyList($parserComposite))
-    )->call(fn ($n, $cs) => new NamespaceType($n, \Nil(), $cs), $n, $cs);
+    )->call(fn ($n, $is, $cs) => new NamespaceType($n, $is, $cs), $n, $is, $cs);
 }
 
 function multipleNamespaces(Parser $parserComposite): Parser
@@ -79,21 +91,60 @@ function multipleNamespaces(Parser $parserComposite): Parser
         __($_)->_(string('namespace')),
         __($_)->_(spaces1()),
         __($n)->_(sepBy1With(typeName(), char('\\'))),
-        __($cs)->_(surrounded(
+        __($_)->_(
             for_(
                 __($_)->_(spaces()),
                 __($o)->_(char('{')),
                 __($_)->_(spaces())
             )->yields($o),
-            // @todo add import parsing here
-            manyList($parserComposite),
+        ),
+        __($is)->_(manyList(imports())),
+        __($cs)->_(manyList($parserComposite)),
+        __($_)->_(
             for_(
                 __($_)->_(spaces()),
                 __($c)->_(char('}')),
                 __($_)->_(spaces())
             )->yields($c)
-        ))
-    )->call(fn ($n, $cs) => new NamespaceType($n, \Nil(), $cs), $n, $cs);
+        )
+    )->call(fn ($n, $is, $cs) => new NamespaceType($n, $is, $cs), $n, $is, $cs);
+    /*
+        return for_(
+            __($_)->_(spaces()),
+            __($_)->_(string('namespace')),
+            __($_)->_(spaces1()),
+            __($n)->_(sepBy1With(typeName(), char('\\'))),
+            __($cis)->_(surrounded(
+                for_(
+                    __($_)->_(spaces()),
+                    __($o)->_(char('{')),
+                    __($_)->_(spaces())
+                )->yields($o),
+                for_(
+                    __($is)->_(manyList(imports())),
+                    __($cs)->_(manyList($parserComposite))
+                )->call(fn ($is, $cs) => Pair($is, $cs), $is, $cs),
+                for_(
+                    __($_)->_(spaces()),
+                    __($c)->_(char('}')),
+                    __($_)->_(spaces())
+                )->yields($c)
+            ))
+        )->call(fn ($n, $cis) => new NamespaceType($n, $cis->_1, $cis->_2), $n, $cis);
+    */
+}
+
+function enumConstructors(): Parser
+{
+    return for_(
+        __($constructors)->_(sepBy1list(typeName(), constructorSeparator())),
+        __($_)->_(nl())
+    )->call(
+        fn ($c) => $c->map(
+            fn ($c) => new Constructor($c)
+        ),
+        $constructors
+    );
 }
 
 const enum = 'Fpp\enum';
