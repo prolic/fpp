@@ -20,8 +20,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Fpp\\": "src/",
-      "Foo\\": "demo/"
+      "Fpp\\": "src/"
     },
     "files": [
       "src/Functions/builder.php",
