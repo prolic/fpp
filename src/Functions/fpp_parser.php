@@ -60,16 +60,25 @@ function enumConstructors(): Parser
     );
 }
 
-const namespaceName = 'Fpp\namespaceName';
-
-function namespaceName(Parser $parsers): Parser
+function singleNamespace(Parser $parserComposite): Parser
 {
-    // @todo parse one namespace per file ending with ";" as well
     return for_(
         __($_)->_(spaces()),
         __($_)->_(string('namespace')),
         __($_)->_(spaces1()),
-        __($n)->_(plus(sepBy1With(typeName(), char('\\')), result(''))),
+        __($n)->_(sepBy1With(typeName(), char('\\'))),
+        __($_)->_(nl()),
+        __($cs)->_(manyList($parserComposite))
+    )->call(fn ($n, $cs) => new NamespaceType($n, \Nil(), $cs), $n, $cs);
+}
+
+function multipleNamespaces(Parser $parserComposite): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($_)->_(string('namespace')),
+        __($_)->_(spaces1()),
+        __($n)->_(sepBy1With(typeName(), char('\\'))),
         __($cs)->_(surrounded(
             for_(
                 __($_)->_(spaces()),
@@ -77,7 +86,7 @@ function namespaceName(Parser $parsers): Parser
                 __($_)->_(spaces())
             )->yields($o),
             // @todo add import parsing here
-            manyList($parsers),
+            manyList($parserComposite),
             for_(
                 __($_)->_(spaces()),
                 __($c)->_(char('}')),

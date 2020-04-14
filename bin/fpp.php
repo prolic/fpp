@@ -101,7 +101,7 @@ foreach ($config['types'] as $type => $pair) {
 }
 
 scan($path)->map(
-    fn ($f) => Pair(manyList(namespaceName($parser))->run(\file_get_contents($f)), $f)
+    fn ($f) => Pair(manyList(multipleNamespaces($parser))->run(\file_get_contents($f)), $f)
 )->map(function (Pair $p) {
     $parsed = $p->_1;
     $filename = $p->_2;

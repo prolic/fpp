@@ -15,13 +15,13 @@ namespace FppSpec;
 use function Fpp\constructorSeparator;
 use function Fpp\enum;
 use function Fpp\enumConstructors;
-use function Fpp\namespaceName;
+use function Fpp\multipleNamespaces;
+use function Fpp\singleNamespace;
 use Fpp\Type\Enum\Constructor;
 use Fpp\Type\EnumType;
 use Fpp\Type\NamespaceType;
 use function Fpp\typeName;
 use Phunkie\Types\ImmList;
-use Phunkie\Types\Pair;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
@@ -66,7 +66,7 @@ describe("Fpp\Parser", function () {
             });
 
             it('cannot parse php keyword as type name', function () {
-                expect(namespaceName(enum())->run('Public'))->toEqual(Nil());
+                expect(multipleNamespaces(enum())->run('Public'))->toEqual(Nil());
             });
         });
 
@@ -115,23 +115,47 @@ describe("Fpp\Parser", function () {
             });
         });
 
-        describe('namespace', function () {
+        describe('singleNamespace', function () {
+            it('can parse one namespace when ending with ;', function () {
+                expect(singleNamespace(enum())->run("namespace Foo\n")->head()->_1)->toEqual(
+                    new NamespaceType('Foo', Nil(), Nil())
+                );
+            });
+
+            it('cannot parse second namespace when ending with ;', function () {
+                expect(singleNamespace(enum())->run("namespace Foo\nnamespace Bar\n")->head()->_2)->toBe("namespace Bar\n");
+            });
+
+            it('can parse one namespace when ending with ; with an enum inside', function () {
+                expect(singleNamespace(enum())->run("namespace Foo\nenum Color = Red | Blue\n")->head()->_1)->toEqual(
+                    new NamespaceType('Foo', Nil(), ImmList(
+                        new EnumType(
+                            'Color',
+                            ImmList(
+                                new Constructor('Red'),
+                                new Constructor('Blue')
+                            )
+                        )
+                    ))
+                );
+            });
+        });
+
+        describe('multipleNamespaces', function () {
             it('can parse empty namespace', function () {
-                expect(namespaceName(enum())->run('namespace Foo { }')->head()->_1)->toEqual(
+                expect(multipleNamespaces(enum())->run('namespace Foo { }')->head()->_1)->toEqual(
                     new NamespaceType('Foo', Nil(), Nil())
                 );
             });
 
             it('can parse namespace with sub namespace', function () {
-                expect(namespaceName(enum())->run('namespace Foo\Bar { }')->head()->_1)->toEqual(
+                expect(multipleNamespaces(enum())->run('namespace Foo\Bar { }')->head()->_1)->toEqual(
                     new NamespaceType('Foo\Bar', Nil(), Nil())
                 );
             });
 
-            it('can parse default namespace', function () {
-                expect(namespaceName(enum())->run('namespace { }')->head()->_1)->toEqual(
-                    new NamespaceType('', Nil(), Nil())
-                );
+            it('cannot parse default namespace', function () {
+                expect(multipleNamespaces(enum())->run('namespace { }'))->toEqual(Nil());
             });
 
             it('can parse namespace containing an enum', function () {
@@ -140,7 +164,7 @@ namespace Foo {
     enum Color = Red | Green | Blue
 }
 FPP;
-                expect(namespaceName(enum())->run($testString)->head()->_1)->toEqual(
+                expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
                     new NamespaceType('Foo', Nil(), ImmList(
                         new EnumType(
                             'Color',
@@ -161,7 +185,7 @@ namespace Foo {
     enum Human = Man | Woman
 }
 FPP;
-                expect(namespaceName(enum())->run($testString)->head()->_1)->toEqual(
+                expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
                     new NamespaceType('Foo', Nil(), ImmList(
                         new EnumType(
                             'Color',

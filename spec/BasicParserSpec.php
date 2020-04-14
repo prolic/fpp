@@ -151,6 +151,8 @@ describe("Fpp\Parser", function () {
 
         describe('nl', function () {
             it('can combine parsers to parse new line', function () {
+                expect(nl()->run("    \n"))->toEqual(ImmList(Pair("\n", '')));
+                expect(nl()->run("\n"))->toEqual(ImmList(Pair("\n", '')));
                 expect(nl()->run("\nhello"))->toEqual(ImmList(Pair("\n", 'hello')));
                 expect(nl()->run("\n\nhello"))->toEqual(ImmList(Pair("\n", "\nhello")));
                 expect(nl()->run('hello'))->toEqual(Nil());

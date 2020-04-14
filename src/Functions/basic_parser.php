@@ -95,7 +95,10 @@ function letter(): Parser
 
 function nl(): Parser
 {
-    return sat(fn (string $s) => $s === \PHP_EOL);
+    return for_(
+        __($_)->_(many(char(' '))),
+        __($nl)->_(sat(fn (string $s) => $s === \PHP_EOL))
+    )->yields($nl);
 }
 
 function alphanum(): Parser
