@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Fpp\Type\Data\Argument;
+use Fpp\Type\DataType;
 use Fpp\Type\Enum\Constructor;
 use Fpp\Type\EnumType;
 use Fpp\Type\NamespaceType;
@@ -28,6 +30,7 @@ function assignment(): Parser
 function typeName(): Parser
 {
     return for_(
+        __($_)->_(spaces()),
         __($x)->_(plus(letter(), char('_'))),
         __($xs)->_(many(plus(alphanum(), char('_')))),
         __($c)->_(new Parser(function ($s) use (&$x, &$xs) {
@@ -108,43 +111,6 @@ function multipleNamespaces(Parser $parserComposite): Parser
             )->yields($c)
         )
     )->call(fn ($n, $is, $cs) => new NamespaceType($n, $is, $cs), $n, $is, $cs);
-    /*
-        return for_(
-            __($_)->_(spaces()),
-            __($_)->_(string('namespace')),
-            __($_)->_(spaces1()),
-            __($n)->_(sepBy1With(typeName(), char('\\'))),
-            __($cis)->_(surrounded(
-                for_(
-                    __($_)->_(spaces()),
-                    __($o)->_(char('{')),
-                    __($_)->_(spaces())
-                )->yields($o),
-                for_(
-                    __($is)->_(manyList(imports())),
-                    __($cs)->_(manyList($parserComposite))
-                )->call(fn ($is, $cs) => Pair($is, $cs), $is, $cs),
-                for_(
-                    __($_)->_(spaces()),
-                    __($c)->_(char('}')),
-                    __($_)->_(spaces())
-                )->yields($c)
-            ))
-        )->call(fn ($n, $cis) => new NamespaceType($n, $cis->_1, $cis->_2), $n, $cis);
-    */
-}
-
-function enumConstructors(): Parser
-{
-    return for_(
-        __($constructors)->_(sepBy1list(typeName(), constructorSeparator())),
-        __($_)->_(nl())
-    )->call(
-        fn ($c) => $c->map(
-            fn ($c) => new Constructor($c)
-        ),
-        $constructors
-    );
 }
 
 const enum = 'Fpp\enum';
@@ -154,9 +120,60 @@ function enum(): Parser
     return for_(
         __($_)->_(spaces()),
         __($_)->_(string('enum')),
-        __($b)->_(spaces1()),
+        __($_)->_(spaces1()),
         __($t)->_(typeName()->map(fn ($c) => isKeyword($c) ? Nil() : $c)),
         __($_)->_(assignment()),
-        __($cs)->_(enumConstructors())
+        __($cs)->_(
+            for_(
+                __($constructors)->_(sepBy1list(typeName(), constructorSeparator())),
+                __($_)->_(nl())
+            )->call(
+                fn ($c) => $c->map(
+                    fn ($c) => new Constructor($c)
+                ),
+                $constructors
+            )
+        )
     )->call(fn ($t, $cs) => new EnumType($t, $cs), $t, $cs);
+}
+
+const data = 'Fpp\data';
+
+function data(): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($_)->_(string('data')),
+        __($_)->_(spaces1()),
+        __($t)->_(typeName()),
+        __($_)->_(spaces()),
+        __($_)->_(assignment()),
+        __($as)->_(surrounded(
+            for_(
+                __($_)->_(spaces()),
+                __($o)->_(char('{')),
+                __($_)->_(spaces())
+            )->yields($o),
+            sepBy1list(
+                for_(
+                    __($at)->_(typeName()->or(zero())),
+                    __($_)->_(spaces()),
+                    __($_)->_(char('$')),
+                    __($x)->_(plus(letter(), char('_'))),
+                    __($xs)->_(many(plus(alphanum(), char('_')))),
+                )->call(
+                    fn ($at, $x, $xs) => new Argument($x . $xs, $at, false, false, null),
+                    $at,
+                    $x,
+                    $xs
+                ),
+                char(',')
+            ),
+            for_(
+                __($_)->_(spaces()),
+                __($c)->_(char('}')),
+                __($_)->_(spaces())
+            )->yields($c)
+        ))
+    )->call(fn ($t, $as) => new DataType($t, $as), $t, $as);
 }

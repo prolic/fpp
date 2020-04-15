@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Fpp\Type\Data\Argument;
+use Fpp\Type\DataType;
 use Fpp\Type\EnumType;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
@@ -88,6 +90,30 @@ CODE
 
     $method = $class->addMethod('toString')->setPublic()->setReturnType(Type::STRING);
     $method->setBody('return $this->name;');
+
+    return $class;
+}
+
+const buildData = 'Fpp\buildData';
+
+function buildData(DataType $data): ClassType
+{
+    $className = $data->classname();
+
+    $class = new ClassType($className);
+    $constructor = $class->addMethod('__construct');
+
+    $body = '';
+    $data->arguments()->map(function (Argument $a) use ($data, $class, $constructor, &$body) {
+        $class->addProperty($a->name())->setType($a->type())->setPrivate();
+        $constructor->addParameter($a->name())->setType($a->type());
+        $body .= "\$this->{$a->name()} = \${$a->name()};\n";
+
+        $method = $class->addMethod($a->name())->setReturnType($a->type());
+        $method->setBody("return \$this->{$a->name()};");
+    });
+
+    $constructor->setBody(\substr($body, 0, -1));
 
     return $class;
 }

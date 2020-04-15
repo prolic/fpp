@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Fpp\Type\DataType;
 use Fpp\Type\EnumType;
 use Fpp\Type\NamespaceType;
 use Fpp\Type\Type;
@@ -55,6 +56,7 @@ $config = [
     'use_strict_types' => true,
     'printer' => PsrPrinter::class,
     'types' => [
+        DataType::class => Pair(data, buildData),
         EnumType::class => Pair(enum, buildEnum),
     ],
 ];

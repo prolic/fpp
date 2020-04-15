@@ -13,16 +13,14 @@ declare(strict_types=1);
 namespace FppSpec;
 
 use function Fpp\constructorSeparator;
+use function Fpp\data;
 use function Fpp\enum;
-use function Fpp\enumConstructors;
 use function Fpp\imports;
 use function Fpp\multipleNamespaces;
 use function Fpp\singleNamespace;
-use Fpp\Type\Enum\Constructor;
-use Fpp\Type\EnumType;
-use Fpp\Type\NamespaceType;
+use Fpp\Type;
+use Fpp\Type\DataType;
 use function Fpp\typeName;
-use Phunkie\Types\ImmList;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
@@ -93,45 +91,29 @@ describe("Fpp\Parser", function () {
             });
         });
 
-        describe('enumConstructors', function () {
-            it('can parse enum constructors', function () {
-                expect(enumConstructors()->run("Red|Green|Blue\n")->head()->_1)->toEqual(ImmList(
-                    new Constructor('Red'),
-                    new Constructor('Green'),
-                    new Constructor('Blue')
-                ));
-
-                expect(enumConstructors()->run("Red|Green|Blue\n")->head()->_1)->toEqual(ImmList(
-                    new Constructor('Red'),
-                    new Constructor('Green'),
-                    new Constructor('Blue')
-                ));
-            });
-
-            it('cannot parse enum constructors without new line ending', function () {
-                expect(enumConstructors()->run('Red|Green|Blue'))->toEqual(Nil());
-            });
-        });
-
         describe('enum', function () {
             it('can parse enums', function () {
                 expect(enum()->run("enum Color = Red | Green | Blue\n")->head()->_1)->toEqual(
-                    new EnumType(
+                    new Type\EnumType(
                         'Color',
                         ImmList(
-                            new Constructor('Red'),
-                            new Constructor('Green'),
-                            new Constructor('Blue')
+                            new Type\Enum\Constructor('Red'),
+                            new Type\Enum\Constructor('Green'),
+                            new Type\Enum\Constructor('Blue')
                         )
                     )
                 );
+            });
+
+            it('cannot parse enum constructors without new line ending', function () {
+                expect(enum()->run('enum Color = Red | Green | Blue'))->toEqual(Nil());
             });
         });
 
         describe('singleNamespace', function () {
             it('can parse one namespace when ending with ;', function () {
                 expect(singleNamespace(enum())->run("namespace Foo\n")->head()->_1)->toEqual(
-                    new NamespaceType('Foo', Nil(), Nil())
+                    new Type\NamespaceType('Foo', Nil(), Nil())
                 );
             });
 
@@ -141,12 +123,12 @@ describe("Fpp\Parser", function () {
 
             it('can parse one namespace when ending with ; with an enum inside', function () {
                 expect(singleNamespace(enum())->run("namespace Foo\nenum Color = Red | Blue\n")->head()->_1)->toEqual(
-                    new NamespaceType('Foo', Nil(), ImmList(
-                        new EnumType(
+                    new Type\NamespaceType('Foo', Nil(), ImmList(
+                        new Type\EnumType(
                             'Color',
                             ImmList(
-                                new Constructor('Red'),
-                                new Constructor('Blue')
+                                new Type\Enum\Constructor('Red'),
+                                new Type\Enum\Constructor('Blue')
                             )
                         )
                     ))
@@ -163,18 +145,18 @@ enum Color = Red | Blue
 CODE;
 
                 expect(singleNamespace(enum())->run($testString)->head()->_1)->toEqual(
-                    new NamespaceType(
+                    new Type\NamespaceType(
                         'Foo',
                         ImmList(
                             Pair('Foo\Bar', null),
                             Pair('Foo\Baz', 'B')
                         ),
                         ImmList(
-                            new EnumType(
+                            new Type\EnumType(
                                 'Color',
                                 ImmList(
-                                    new Constructor('Red'),
-                                    new Constructor('Blue')
+                                    new Type\Enum\Constructor('Red'),
+                                    new Type\Enum\Constructor('Blue')
                                 )
                             )
                         )
@@ -186,13 +168,13 @@ CODE;
         describe('multipleNamespaces', function () {
             it('can parse empty namespace', function () {
                 expect(multipleNamespaces(enum())->run('namespace Foo { }')->head()->_1)->toEqual(
-                    new NamespaceType('Foo', Nil(), Nil())
+                    new Type\NamespaceType('Foo', Nil(), Nil())
                 );
             });
 
             it('can parse namespace with sub namespace', function () {
                 expect(multipleNamespaces(enum())->run('namespace Foo\Bar { }')->head()->_1)->toEqual(
-                    new NamespaceType('Foo\Bar', Nil(), Nil())
+                    new Type\NamespaceType('Foo\Bar', Nil(), Nil())
                 );
             });
 
@@ -207,13 +189,13 @@ namespace Foo {
 }
 FPP;
                 expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
-                    new NamespaceType('Foo', Nil(), ImmList(
-                        new EnumType(
+                    new Type\NamespaceType('Foo', Nil(), ImmList(
+                        new Type\EnumType(
                             'Color',
                             ImmList(
-                                new Constructor('Red'),
-                                new Constructor('Green'),
-                                new Constructor('Blue')
+                                new Type\Enum\Constructor('Red'),
+                                new Type\Enum\Constructor('Green'),
+                                new Type\Enum\Constructor('Blue')
                             )
                         )
                     ))
@@ -228,23 +210,42 @@ namespace Foo {
 }
 FPP;
                 expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
-                    new NamespaceType('Foo', Nil(), ImmList(
-                        new EnumType(
+                    new Type\NamespaceType('Foo', Nil(), ImmList(
+                        new Type\EnumType(
                             'Color',
                             ImmList(
-                                new Constructor('Red'),
-                                new Constructor('Green'),
-                                new Constructor('Blue')
+                                new Type\Enum\Constructor('Red'),
+                                new Type\Enum\Constructor('Green'),
+                                new Type\Enum\Constructor('Blue')
                             )
                         ),
-                        new EnumType(
+                        new Type\EnumType(
                             'Human',
                             ImmList(
-                                new Constructor('Man'),
-                                new Constructor('Woman')
+                                new Type\Enum\Constructor('Man'),
+                                new Type\Enum\Constructor('Woman')
                             )
                         )
                     ))
+                );
+            });
+        });
+
+        describe('data', function () {
+            it('can parse simple data types', function () {
+                $testString = <<<CODE
+data Person = { string \$name, int \$age}
+
+CODE;
+
+                expect(data()->run($testString)->head()->_1)->toEqual(
+                    new DataType(
+                        'Person',
+                        ImmList(
+                            new Type\Data\Argument('name', 'string', false, false, null),
+                            new Type\Data\Argument('age', 'int', false, false, null),
+                        )
+                    )
                 );
             });
         });
