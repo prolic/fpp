@@ -54,7 +54,7 @@ $locatePsrPath = function (string $classname) use ($prefixesPsr4, $prefixesPsr0)
 
 $config = [
     'use_strict_types' => true,
-    'printer' => PsrPrinter::class,
+    'printer' => fn () => new PsrPrinter(),
     'types' => [
         DataType::class => Pair(data, buildData),
         EnumType::class => Pair(enum, buildEnum),
@@ -73,7 +73,7 @@ use Nette\PhpGenerator\PsrPrinter;
 
 return [
     'use_strict_types' => true,
-    'printer' => PsrPrinter::class,
+    'printer' => fn () => new PsrPrinter(),
     'types' => [
         // key value pair with
         // key = class name of a type
@@ -96,7 +96,7 @@ if (\file_exists("$pwd/fpp-config.php")) {
 }
 
 $parser = zero();
-$printer = new $config['printer']();
+$printer = $config['printer']();
 
 foreach ($config['types'] as $type => $pair) {
     $parser = $parser->or(($pair->_1)());
