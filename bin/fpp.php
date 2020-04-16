@@ -55,6 +55,7 @@ $locatePsrPath = function (string $classname) use ($prefixesPsr4, $prefixesPsr0)
 $config = [
     'use_strict_types' => true,
     'printer' => fn () => new PsrPrinter(),
+    'file_parser' => parseFile,
     'types' => [
         DataType::class => Pair(data, buildData),
         EnumType::class => Pair(enum, buildEnum),
@@ -74,6 +75,7 @@ use Nette\PhpGenerator\PsrPrinter;
 return [
     'use_strict_types' => true,
     'printer' => fn () => new PsrPrinter(),
+    'file_parser' => parseFile,
     'types' => [
         // key value pair with
         // key = class name of a type
@@ -103,11 +105,7 @@ foreach ($config['types'] as $type => $pair) {
 }
 
 scan($path)->map(
-    fn ($f) => Pair(
-        singleNamespace($parser)->map(fn ($n) => ImmList($n))
-            ->or(manyList(multipleNamespaces($parser))
-        )->run(\file_get_contents($f)
-    ), $f)
+    fn ($f) => Pair($config['file_parser']($parser)->run(\file_get_contents($f)), $f)
 )->map(function (Pair $p) {
     $parsed = $p->_1;
     $filename = $p->_2;

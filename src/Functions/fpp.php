@@ -87,6 +87,14 @@ function mergeCustomConfig(array $config, array $customConfig): array
     return $config;
 }
 
+const parseFile = 'Fpp\parseFile';
+
+function parseFile(Parser $parser): Parser
+{
+    return singleNamespace($parser)->map(fn ($n) => ImmList($n))
+        ->or(manyList(multipleNamespaces($parser)));
+}
+
 function dump(Printer $printer, Type $type, NamespaceType $ns, array $config)
 {
     if (! isset($config['types'][\get_class($type)])) {
