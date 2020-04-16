@@ -18,6 +18,8 @@ use Fpp\Type\Enum\Constructor;
 use Fpp\Type\EnumType;
 use Fpp\Type\NamespaceType;
 
+const assignment = 'Fpp\assignment';
+
 function assignment(): Parser
 {
     return for_(
@@ -27,19 +29,21 @@ function assignment(): Parser
     )->yields($a);
 }
 
+const typeName = 'Fpp\typeName';
+
 function typeName(): Parser
 {
     return for_(
         __($_)->_(spaces()),
         __($x)->_(plus(letter(), char('_'))),
         __($xs)->_(many(plus(alphanum(), char('_')))),
-        __($c)->_(new Parser(function ($s) use (&$x, &$xs) {
-            $c = $x . $xs;
-
-            return isKeyword($c) ? ImmList(Pair('', $c . $s)) : ImmList(Pair($c, $s));
+        __($t)->_(new Parser(function (string $s) use (&$x, &$xs) {
+            return isKeyword($x . $xs) ? Nil() : ImmList(Pair($x . $xs, $s));
         })),
-    )->yields($c);
+    )->yields($t);
 }
+
+const constructorSeparator = 'Fpp\constructorSeparator';
 
 function constructorSeparator(): Parser
 {
@@ -49,6 +53,8 @@ function constructorSeparator(): Parser
         __($_)->_(spaces())
     )->yields($s);
 }
+
+const imports = 'Fpp\imports';
 
 function imports(): Parser
 {
@@ -74,6 +80,8 @@ function imports(): Parser
     );
 }
 
+const singleNamespace = 'Fpp\singleNamespace';
+
 function singleNamespace(Parser $parserComposite): Parser
 {
     return for_(
@@ -86,6 +94,8 @@ function singleNamespace(Parser $parserComposite): Parser
         __($cs)->_(manyList($parserComposite))
     )->call(fn ($n, $is, $cs) => new NamespaceType($n, $is, $cs), $n, $is, $cs);
 }
+
+const multipleNamespaces = 'Fpp\multipleNamespaces';
 
 function multipleNamespaces(Parser $parserComposite): Parser
 {
@@ -121,7 +131,7 @@ function enum(): Parser
         __($_)->_(spaces()),
         __($_)->_(string('enum')),
         __($_)->_(spaces1()),
-        __($t)->_(typeName()->map(fn ($c) => isKeyword($c) ? Nil() : $c)),
+        __($t)->_(typeName()),
         __($_)->_(assignment()),
         __($cs)->_(
             for_(
