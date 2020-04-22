@@ -26,17 +26,22 @@ function buildEnum(EnumType $enum): ClassType
     $lcClassName = \lcfirst($className);
 
     $class = new ClassType($className);
+    $class->setFinal(true);
 
     $options = [];
-    foreach ($enum->constructors() as $key => $constructor) {
-        $options[$key] = $constructor->name();
-    }
+    $i = 0;
+    $enum->constructors()->map(function ($c) use ($class, &$options, &$i, $className) {
+        $class->addConstant($c->name(), $i)->setPublic();
+
+        $options[] = $c->name();
+
+        $method = $class->addMethod(\lcfirst($c->name()))->setPublic()->setStatic()->setReturnType('self');
+        $method->setBody("return new self('{$c->name()}', $i);");
+
+        ++$i;
+    });
 
     $class->addConstant('Options', $options)->setPublic();
-
-    foreach ($enum->constructors() as $key => $constructor) {
-        $class->addConstant($constructor->name(), $key)->setPublic();
-    }
 
     $class->addProperty('name')->setType(Type::STRING)->setPrivate();
     $class->addProperty('value')->setType(Type::INT)->setPrivate();
@@ -45,11 +50,6 @@ function buildEnum(EnumType $enum): ClassType
     $constructor->addParameter('name')->setType(Type::STRING);
     $constructor->addParameter('value')->setType(Type::INT);
     $constructor->setBody("\$this->name = \$name;\n\$this->value = \$value;");
-
-    foreach ($enum->constructors() as $key => $constructor) {
-        $method = $class->addMethod(\lcfirst($constructor->name()))->setPublic()->setStatic()->setReturnType($className);
-        $method->setBody("return new self('{$constructor->name()}', $key);");
-    }
 
     $method = $class->addMethod('fromName')->setPublic()->setStatic()->setReturnType('self');
     $method->addParameter('name')->setType(Type::STRING);

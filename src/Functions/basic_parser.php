@@ -35,6 +35,7 @@ function el(): Parser
 
 function item(): Parser
 {
+    //return new Parser(function (string $s) { var_dump($s); return \strlen($s) === 0 ? Nil() : ImmList(Pair($s[0], \substr($s, 1))); });
     return new Parser(fn (string $s) => \strlen($s) === 0 ? Nil() : ImmList(Pair($s[0], \substr($s, 1))));
 }
 
@@ -236,6 +237,15 @@ function surrounded(Parser $open, Parser $p, Parser $close): Parser
         __($ns)->_($p),
         __($_)->_($close)
     )->yields($ns);
+}
+
+function surroundedWith(Parser $open, Parser $p, Parser $close): Parser
+{
+    return for_(
+        __($o)->_($open),
+        __($ns)->_($p),
+        __($c)->_($close)
+    )->call(fn ($o, $ns, $c) => $o . $ns . $c, $o, $ns, $c);
 }
 
 function ints(): Parser

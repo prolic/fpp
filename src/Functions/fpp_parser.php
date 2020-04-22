@@ -156,7 +156,6 @@ function data(): Parser
         __($_)->_(string('data')),
         __($_)->_(spaces1()),
         __($t)->_(typeName()),
-        __($_)->_(spaces()),
         __($_)->_(assignment()),
         __($as)->_(surrounded(
             for_(
@@ -166,16 +165,37 @@ function data(): Parser
             )->yields($o),
             sepBy1list(
                 for_(
-                    __($at)->_(typeName()->or(zero())),
+                    __($_)->_(spaces()),
+                    __($n)->_(char('?')->or(result(''))),
+                    __($at)->_(typeName()->or(result(''))),
+                    __($l)->_(string('[]')->or(result(''))),
                     __($_)->_(spaces()),
                     __($_)->_(char('$')),
                     __($x)->_(plus(letter(), char('_'))),
                     __($xs)->_(many(plus(alphanum(), char('_')))),
+                    __($_)->_(spaces()),
+                    __($e)->_(char('=')->or(result(''))),
+                    __($_)->_(spaces()),
+                    __($d)->_(
+                        many(int())
+                            ->or(string('null'))
+                            ->or(surroundedWith(char('\''), many(item()), char('\'')))->or(result(''))
+                    ),
                 )->call(
-                    fn ($at, $x, $xs) => new Argument($x . $xs, $at, false, false, null),
+                    fn ($at, $x, $xs, $n, $l, $e, $d) => new Argument(
+                        $x . $xs,
+                        '' === $at ? null : $at,
+                        $n === '?',
+                        '[]' === $l,
+                        '=' === $e ? $d : null
+                    ),
                     $at,
                     $x,
-                    $xs
+                    $xs,
+                    $n,
+                    $l,
+                    $e,
+                    $d
                 ),
                 char(',')
             ),
