@@ -53,6 +53,23 @@ CODE;
                 );
             });
 
+            it('can parse simple data types with types', function () {
+                $testString = <<<CODE
+data Person = { Name \$name, Age \$age}
+
+CODE;
+
+                expect(data()->run($testString)->head()->_1)->toEqual(
+                    new DataType(
+                        'Person',
+                        ImmList(
+                            new Type\Data\Argument('name', 'Name', false, false, null),
+                            new Type\Data\Argument('age', 'Age', false, false, null),
+                        )
+                    )
+                );
+            });
+
             it('can parse data types with nullable argument', function () {
                 $testString = <<<CODE
 data Person = { ?string \$name, int \$age}
