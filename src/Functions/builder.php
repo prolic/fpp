@@ -125,7 +125,7 @@ function buildData(DataType $data, ImmMap $builders): ClassType
                 $defaultValue = ('true' === $a->defaultValue());
                 break;
             default:
-                $defaultValue = $a->defaultValue() === '[]' ? [] : $a->defaultValue();
+                $defaultValue = $a->defaultValue() === "''" ? '' : ($a->defaultValue() === '[]' ? [] : $a->defaultValue());
                 break;
         }
 
