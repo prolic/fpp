@@ -12,10 +12,6 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Fpp\Type\DataType;
-use Fpp\Type\EnumType;
-use Fpp\Type\NamespaceType;
-use Fpp\Type\Type;
 use Nette\PhpGenerator\PsrPrinter;
 use function Pair;
 use Phunkie\Types\ImmList;
@@ -57,8 +53,12 @@ $config = [
     'printer' => fn () => new PsrPrinter(),
     'file_parser' => parseFile,
     'types' => [
-        DataType::class => Pair(data, buildData),
-        EnumType::class => Pair(enum, buildEnum),
+        Type\DataType::class => Pair(data, buildData),
+        Type\EnumType::class => Pair(enum, buildEnum),
+        Type\StringType::class => Pair(string_, buildString),
+        Type\IntType::class => Pair(int_, buildInt),
+        Type\FloatType::class => Pair(float_, buildFloat),
+        Type\BoolType::class => Pair(bool_, buildBool),
     ],
 ];
 
@@ -77,11 +77,12 @@ return [
     'printer' => fn () => new PsrPrinter(),
     'file_parser' => parseFile,
     'types' => [
-        // key value pair with
-        // key = class name of a type
-        // value = Pair(parser, builder)
-        // f.e.
-        // Type\EnumType::class => \Pair(enum, buildEnum),
+        Type\DataType::class => Pair(data, buildData),
+        Type\EnumType::class => Pair(enum, buildEnum),
+        Type\StringType::class => Pair(string_, buildString),
+        Type\IntType::class => Pair(int_, buildInt),
+        Type\FloatType::class => Pair(float_, buildFloat),
+        Type\BoolType::class => Pair(bool_, buildBool),
     ],
 ];
 
@@ -94,8 +95,10 @@ CODE;
 }
 
 if (\file_exists("$pwd/fpp-config.php")) {
-    $config = mergeCustomConfig($config, require "$pwd/fpp-config.php");
+    $config = require "$pwd/fpp-config.php";
 }
+
+$builders = ImmMap($config['types']);
 
 $parser = zero();
 $printer = $config['printer']();
@@ -120,18 +123,18 @@ scan($path)->map(
 
     return $p->_1;
 })->fold(Nil(), function (ImmList $types, ImmList $nsl) {
-    $nsl->map(function (NamespaceType $n) use (&$types) {
-        $n->types()->map(function (Type $t) use ($n, &$types) {
+    $nsl->map(function (Namespace_ $n) use (&$types) {
+        $n->types()->map(function (Type\Type $t) use ($n, &$types) {
             $types = $types->combine(\ImmList(Pair($t, $n)));
         });
     });
 
     return $types;
-})->map(function (Pair $p) use ($printer, $config) {
+})->map(function (Pair $p) use ($printer, $config, $builders) {
     $type = $p->_1;
     $namespace = $p->_2;
 
-    return Pair(dump($printer, $type, $namespace, $config), $namespace->name() . '\\' . $type->classname());
+    return Pair(dump($printer, $type, $namespace, $builders, $config), $namespace->name() . '\\' . $type->classname());
 })->map(function (Pair $p) use ($locatePsrPath) {
     $filename = $locatePsrPath($p->_2);
     $directory = \dirname($filename);

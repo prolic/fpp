@@ -12,11 +12,14 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Fpp\Type\BoolType;
 use Fpp\Type\Data\Argument;
 use Fpp\Type\DataType;
 use Fpp\Type\Enum\Constructor;
 use Fpp\Type\EnumType;
-use Fpp\Type\NamespaceType;
+use Fpp\Type\FloatType;
+use Fpp\Type\IntType;
+use Fpp\Type\StringType;
 
 const assignment = 'Fpp\assignment';
 
@@ -92,7 +95,7 @@ function singleNamespace(Parser $parserComposite): Parser
         __($_)->_(nl()),
         __($is)->_(manyList(imports())),
         __($cs)->_(manyList($parserComposite))
-    )->call(fn ($n, $is, $cs) => new NamespaceType($n, $is, $cs), $n, $is, $cs);
+    )->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
 }
 
 const multipleNamespaces = 'Fpp\multipleNamespaces';
@@ -120,7 +123,7 @@ function multipleNamespaces(Parser $parserComposite): Parser
                 __($_)->_(spaces())
             )->yields($c)
         )
-    )->call(fn ($n, $is, $cs) => new NamespaceType($n, $is, $cs), $n, $is, $cs);
+    )->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
 }
 
 const enum = 'Fpp\enum';
@@ -179,6 +182,7 @@ function data(): Parser
                     __($d)->_(
                         many(int())
                             ->or(string('null'))
+                            ->or(string('[]'))
                             ->or(surroundedWith(char('\''), many(item()), char('\'')))->or(result(''))
                     ),
                 )->call(
@@ -206,4 +210,53 @@ function data(): Parser
             )->yields($c)
         ))
     )->call(fn ($t, $as) => new DataType($t, $as), $t, $as);
+}
+
+const string_ = 'Fpp\string_';
+
+function string_(): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($_)->_(string('string')),
+        __($_)->_(spaces1()),
+        __($t)->_(typeName()),
+    )->call(fn ($t) => new StringType($t), $t);
+}
+
+const int_ = 'Fpp\int_';
+
+function int_(): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($_)->_(string('int')),
+        __($_)->_(spaces1()),
+        __($t)->_(typeName())
+    )->call(fn ($t) => new IntType($t), $t);
+}
+
+const float_ = 'Fpp\float_';
+
+function float_(): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($_)->_(string('float')),
+        __($_)->_(spaces1()),
+        __($t)->_(typeName())
+    )->call(fn ($t) => new FloatType($t), $t);
+}
+
+const bool_ = 'Fpp\bool_';
+
+function bool_(): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($_)->_(string('bool')),
+        __($_)->_(spaces1()),
+        __($t)->_(typeName()),
+        __($_)->_(nl())
+    )->call(fn ($t) => new BoolType($t), $t);
 }
