@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Fpp\Type\NamespaceType;
 use Fpp\Type\Type;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Printer;
+use Phunkie\Types\ImmMap;
 
 function isKeyword(string $string): bool
 {
@@ -68,25 +68,6 @@ function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, string $classna
     );
 }
 
-function mergeCustomConfig(array $config, array $customConfig): array
-{
-    if (isset($customConfig['use_strict_types'])) {
-        $config['use_strict_types'] = $customConfig['use_strict_types'];
-    }
-
-    if (isset($customConfig['printer'])) {
-        $config['printer'] = $customConfig['printer'];
-    }
-
-    if (isset($customConfig['types'])) {
-        foreach ($customConfig['types'] as $type => $pair) {
-            $config['types'][$type] = $pair;
-        }
-    }
-
-    return $config;
-}
-
 const parseFile = 'Fpp\parseFile';
 
 function parseFile(Parser $parser): Parser
@@ -95,7 +76,7 @@ function parseFile(Parser $parser): Parser
         ->or(manyList(multipleNamespaces($parser)));
 }
 
-function dump(Printer $printer, Type $type, NamespaceType $ns, array $config)
+function dump(Printer $printer, Type $type, Namespace_ $ns, ImmMap $builders, array $config)
 {
     if (! isset($config['types'][\get_class($type)])) {
         throw new \RuntimeException('No builder found for ' . \get_class($type));
@@ -107,7 +88,7 @@ function dump(Printer $printer, Type $type, NamespaceType $ns, array $config)
     $file->setStrictTypes($config['use_strict_types']);
 
     $namespace = $file->addNamespace($ns->name());
-    $namespace->add($builder($type));
+    $namespace->add($builder($type, $builders));
 
     $ns->imports()->map(fn ($i) => $namespace->addUse($i->_1, $i->_2));
 

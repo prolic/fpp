@@ -10,11 +10,11 @@
 
 declare(strict_types=1);
 
-namespace Fpp\Type;
+namespace Fpp;
 
 use Phunkie\Types\ImmList;
 
-class NamespaceType
+class Namespace_
 {
     private string $name;
     private ImmList $imports;

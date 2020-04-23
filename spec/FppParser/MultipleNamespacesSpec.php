@@ -14,6 +14,7 @@ namespace FppSpec\FppParser;
 
 use function Fpp\enum;
 use function Fpp\multipleNamespaces;
+use Fpp\Namespace_;
 use Fpp\Type;
 
 describe("Fpp\Parser", function () {
@@ -21,13 +22,13 @@ describe("Fpp\Parser", function () {
         describe('multipleNamespaces', function () {
             it('can parse empty namespace', function () {
                 expect(multipleNamespaces(enum())->run('namespace Foo { }')->head()->_1)->toEqual(
-                    new Type\NamespaceType('Foo', Nil(), Nil())
+                    new Namespace_('Foo', Nil(), Nil())
                 );
             });
 
             it('can parse namespace with sub namespace', function () {
                 expect(multipleNamespaces(enum())->run('namespace Foo\Bar { }')->head()->_1)->toEqual(
-                    new Type\NamespaceType('Foo\Bar', Nil(), Nil())
+                    new Namespace_('Foo\Bar', Nil(), Nil())
                 );
             });
 
@@ -42,7 +43,7 @@ namespace Foo {
 }
 FPP;
                 expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
-                    new Type\NamespaceType('Foo', Nil(), ImmList(
+                    new Namespace_('Foo', Nil(), ImmList(
                         new Type\EnumType(
                             'Color',
                             ImmList(
@@ -63,7 +64,7 @@ namespace Foo {
 }
 FPP;
                 expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
-                    new Type\NamespaceType('Foo', Nil(), ImmList(
+                    new Namespace_('Foo', Nil(), ImmList(
                         new Type\EnumType(
                             'Color',
                             ImmList(

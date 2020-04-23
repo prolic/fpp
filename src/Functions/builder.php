@@ -12,25 +12,30 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Fpp\Type\BoolType;
 use Fpp\Type\Data\Argument;
 use Fpp\Type\DataType;
 use Fpp\Type\EnumType;
+use Fpp\Type\FloatType;
+use Fpp\Type\IntType;
+use Fpp\Type\StringType;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
+use Phunkie\Types\ImmMap;
 
 const buildEnum = 'Fpp\buildEnum';
 
-function buildEnum(EnumType $enum): ClassType
+function buildEnum(EnumType $enum, ImmMap $builders): ClassType
 {
-    $className = $enum->classname();
-    $lcClassName = \lcfirst($className);
+    $classname = $enum->classname();
+    $lcClassName = \lcfirst($classname);
 
-    $class = new ClassType($className);
+    $class = new ClassType($classname);
     $class->setFinal(true);
 
     $options = [];
     $i = 0;
-    $enum->constructors()->map(function ($c) use ($class, &$options, &$i, $className) {
+    $enum->constructors()->map(function ($c) use ($class, &$options, &$i, $classname) {
         $class->addConstant($c->name(), $i)->setPublic();
 
         $options[] = $c->name();
@@ -76,7 +81,7 @@ CODE
     );
 
     $method = $class->addMethod('equals')->setPublic()->setReturnType(Type::BOOL);
-    $method->addParameter($lcClassName)->setType($className);
+    $method->addParameter($lcClassName)->setType($classname);
     $method->setBody("\get_class(\$this) === \get_class(\${$lcClassName}) && \$this->name === \${$lcClassName}->name;");
 
     $method = $class->addMethod('name')->setPublic()->setReturnType(Type::STRING);
@@ -96,24 +101,138 @@ CODE
 
 const buildData = 'Fpp\buildData';
 
-function buildData(DataType $data): ClassType
+function buildData(DataType $data, ImmMap $builders): ClassType
 {
-    $className = $data->classname();
+    $classname = $data->classname();
 
-    $class = new ClassType($className);
+    $class = new ClassType($classname);
+    $class->setFinal(true);
+
     $constructor = $class->addMethod('__construct');
 
     $body = '';
     $data->arguments()->map(function (Argument $a) use ($data, $class, $constructor, &$body) {
-        $class->addProperty($a->name())->setType($a->type())->setPrivate();
-        $constructor->addParameter($a->name())->setType($a->type());
-        $body .= "\$this->{$a->name()} = \${$a->name()};\n";
+        $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
 
-        $method = $class->addMethod($a->name())->setReturnType($a->type());
+        switch ($a->type()) {
+            case 'int':
+                $defaultValue = (int) $a->defaultValue();
+                break;
+            case 'float':
+                $defaultValue = (float) $a->defaultValue();
+                break;
+            case 'bool':
+                $defaultValue = ('true' === $a->defaultValue());
+                break;
+            default:
+                $defaultValue = $a->defaultValue() === '[]' ? [] : $a->defaultValue();
+                break;
+        }
+
+        $param = $constructor->addParameter($a->name(), $defaultValue);
+
+        $body .= "\$this->{$a->name()} = \${$a->name()};\n";
+        $method = $class->addMethod($a->name());
         $method->setBody("return \$this->{$a->name()};");
+
+        if ($a->isList()) {
+            $property->setType('array');
+            $param->setType('array');
+
+            if ($a->type()) {
+                $method->addComment('@return ' . $a->type() . '[]');
+            }
+            $method->setReturnType('array');
+        } else {
+            $property->setType($a->type());
+            $param->setType($a->type());
+            $method->setReturnType($a->type());
+            $method->setReturnNullable($a->nullable());
+        }
+
+        if (null !== $a->type() && $a->isList()) {
+            $property->setType('array');
+            $property->addComment('@return ' . $a->type() . '[]');
+        }
     });
 
     $constructor->setBody(\substr($body, 0, -1));
+
+    return $class;
+}
+
+const buildString = 'Fpp\buildString';
+
+function buildString(StringType $type, ImmMap $builders): ClassType
+{
+    $class = new ClassType($type->classname());
+    $class->setFinal(true);
+
+    $class->addProperty('value')->setType(Type::STRING)->setPrivate();
+
+    $constructor = $class->addMethod('__construct');
+    $constructor->addParameter('value')->setType(Type::STRING);
+    $constructor->setBody('$this->value = $value;');
+
+    $method = $class->addMethod('value')->setReturnType(Type::STRING);
+    $method->setBody('return $this->value;');
+
+    return $class;
+}
+
+const buildInt = 'Fpp\buildInt';
+
+function buildInt(IntType $type, ImmMap $builders): ClassType
+{
+    $class = new ClassType($type->classname());
+    $class->setFinal(true);
+
+    $class->addProperty('value')->setType(Type::INT)->setPrivate();
+
+    $constructor = $class->addMethod('__construct');
+    $constructor->addParameter('value')->setType(Type::INT);
+    $constructor->setBody('$this->value = $value;');
+
+    $method = $class->addMethod('value')->setReturnType(Type::INT);
+    $method->setBody('return $this->value;');
+
+    return $class;
+}
+
+const buildFloat = 'Fpp\buildFloat';
+
+function buildFloat(FloatType $type, ImmMap $builders): ClassType
+{
+    $class = new ClassType($type->classname());
+    $class->setFinal(true);
+
+    $class->addProperty('value')->setType(Type::FLOAT)->setPrivate();
+
+    $constructor = $class->addMethod('__construct');
+    $constructor->addParameter('value')->setType(Type::FLOAT);
+    $constructor->setBody('$this->value = $value;');
+
+    $method = $class->addMethod('value')->setReturnType(Type::FLOAT);
+    $method->setBody('return $this->value;');
+
+    return $class;
+}
+
+const buildBool = 'Fpp\buildBool';
+
+function buildBool(BoolType $type, ImmMap $builders): ClassType
+{
+    $class = new ClassType($type->classname());
+    $class->setFinal(true);
+
+    $class->addProperty('value')->setType(Type::BOOL)->setPrivate();
+
+    $constructor = $class->addMethod('__construct');
+    $constructor->addParameter('value')->setType(Type::BOOL);
+    $constructor->setBody('$this->value = $value;');
+
+    $method = $class->addMethod('value')->setReturnType(Type::BOOL);
+    $method->setBody('return $this->value;');
 
     return $class;
 }

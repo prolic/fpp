@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace FppSpec\FppParser;
 
 use function Fpp\enum;
+use Fpp\Namespace_;
 use function Fpp\singleNamespace;
 use Fpp\Type;
 
@@ -21,7 +22,7 @@ describe("Fpp\Parser", function () {
         describe('singleNamespace', function () {
             it('can parse one namespace when ending with ;', function () {
                 expect(singleNamespace(enum())->run("namespace Foo\n")->head()->_1)->toEqual(
-                    new Type\NamespaceType('Foo', Nil(), Nil())
+                    new Namespace_('Foo', Nil(), Nil())
                 );
             });
 
@@ -31,7 +32,7 @@ describe("Fpp\Parser", function () {
 
             it('can parse one namespace when ending with ; with an enum inside', function () {
                 expect(singleNamespace(enum())->run("namespace Foo\nenum Color = Red | Blue\n")->head()->_1)->toEqual(
-                    new Type\NamespaceType('Foo', Nil(), ImmList(
+                    new Namespace_('Foo', Nil(), ImmList(
                         new Type\EnumType(
                             'Color',
                             ImmList(
@@ -53,7 +54,7 @@ enum Color = Red | Blue
 CODE;
 
                 expect(singleNamespace(enum())->run($testString)->head()->_1)->toEqual(
-                    new Type\NamespaceType(
+                    new Namespace_(
                         'Foo',
                         ImmList(
                             Pair('Foo\Bar', null),
