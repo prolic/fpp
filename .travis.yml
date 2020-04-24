@@ -26,7 +26,7 @@ before_script:
 
 script:
   - if [[ $TEST_COVERAGE == 'true' ]]; then mkdir -p build/logs; fi
-  - if [[ $TEST_COVERAGE == 'true' ]]; then php -dzend_extension=xdebug.so -dxdebug.max_nesting_level=1000 ./vendor/bin/kahlan --coverage-text --clover ./build/logs/clover.xml; else ./vendor/bin/kahlan; fi
+  - if [[ $TEST_COVERAGE == 'true' ]]; then php -dzend_extension=xdebug.so -dxdebug.max_nesting_level=1000 -dmemory_limit=512M ./vendor/bin/kahlan --coverage-text --clover=./build/logs/clover.xml; else ./vendor/bin/kahlan; fi
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run; fi
 
 after_success:
