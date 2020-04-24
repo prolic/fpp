@@ -2,9 +2,9 @@
 
 ## Functional PHP Preprocessor - Immutable data type generator 
 
-### What it this?
-
 This library can generate immutable data types based on fpp definitions. The syntax is inspired by Haskell.
+
+[![Build Status](https://travis-ci.org/prolic/fpp.svg?branch=master)](https://travis-ci.org/prolic/fpp)
 
 ## Sponsor
 
