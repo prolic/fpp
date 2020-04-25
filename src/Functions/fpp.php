@@ -88,7 +88,13 @@ function dump(Printer $printer, Type $type, Namespace_ $ns, ImmMap $builders, ar
     $file->setStrictTypes($config['use_strict_types']);
 
     $namespace = $file->addNamespace($ns->name());
-    $namespace->add($builder($type, $builders));
+    $classType = $builder($type, $builders);
+
+    if (null !== $config['comment']) {
+        $classType->addComment($config['comment']);
+    }
+
+    $namespace->add($classType);
 
     $ns->imports()->map(fn ($i) => $namespace->addUse($i->_1, $i->_2));
 

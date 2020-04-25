@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use Fpp\Type\MarkerType;
 use function Fpp\marker;
+use Fpp\Type\MarkerType;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
