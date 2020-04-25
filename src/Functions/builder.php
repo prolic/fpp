@@ -18,6 +18,7 @@ use Fpp\Type\DataType;
 use Fpp\Type\EnumType;
 use Fpp\Type\FloatType;
 use Fpp\Type\IntType;
+use Fpp\Type\MarkerType;
 use Fpp\Type\StringType;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
@@ -233,6 +234,16 @@ function buildBool(BoolType $type, ImmMap $builders): ClassType
 
     $method = $class->addMethod('value')->setReturnType(Type::BOOL);
     $method->setBody('return $this->value;');
+
+    return $class;
+}
+
+const buildMarker = 'Fpp\buildMarker';
+
+function buildMarker(MarkerType $marker, ImmMap $builders): ClassType
+{
+    $class = new ClassType($marker->classname());
+    $class->setInterface();
 
     return $class;
 }

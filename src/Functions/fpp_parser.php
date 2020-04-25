@@ -19,6 +19,7 @@ use Fpp\Type\Enum\Constructor;
 use Fpp\Type\EnumType;
 use Fpp\Type\FloatType;
 use Fpp\Type\IntType;
+use Fpp\Type\MarkerType;
 use Fpp\Type\StringType;
 
 const assignment = 'Fpp\assignment';
@@ -257,6 +258,17 @@ function bool_(): Parser
         __($_)->_(string('bool')),
         __($_)->_(spaces1()),
         __($t)->_(typeName()),
-        __($_)->_(nl())
     )->call(fn ($t) => new BoolType($t), $t);
+}
+
+const marker = 'Fpp\marker';
+
+function marker(): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($_)->_(string('marker')),
+        __($_)->_(spaces1()),
+        __($m)->_(typeName()),
+    )->call(fn ($m) => new MarkerType($m, Nil()), $m);
 }

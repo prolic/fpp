@@ -7,4 +7,5 @@ namespace Foo\Bar {
     int Age
     bool Truth
     float Longtitude
+    marker Foo
 }

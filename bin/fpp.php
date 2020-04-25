@@ -59,6 +59,7 @@ $config = [
         Type\IntType::class => Pair(int_, buildInt),
         Type\FloatType::class => Pair(float_, buildFloat),
         Type\BoolType::class => Pair(bool_, buildBool),
+        Type\MarkerType::class => Pair(marker, buildMarker),
     ],
 ];
 
