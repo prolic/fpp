@@ -68,7 +68,8 @@ function imports(): Parser
             __($_)->_(string('use')),
             __($_)->_(spaces1()),
             __($i)->_(sepBy1With(typeName(), char('\\'))),
-            __($_)->_(nl())
+            __($_)->_(spaces()),
+            __($_)->_(char(';'))
         )->call(fn ($i) => Pair($i, null), $i),
         for_(
             __($_)->_(spaces()),
@@ -79,7 +80,8 @@ function imports(): Parser
             __($_)->_(string('as')),
             __($_)->_(spaces1()),
             __($a)->_(typeName()),
-            __($_)->_(nl())
+            __($_)->_(spaces()),
+            __($_)->_(char(';'))
         )->yields($i, $a)
     );
 }
@@ -93,9 +95,12 @@ function singleNamespace(Parser $parserComposite): Parser
         __($_)->_(string('namespace')),
         __($_)->_(spaces1()),
         __($n)->_(sepBy1With(typeName(), char('\\'))),
-        __($_)->_(nl()),
+        __($_)->_(spaces()),
+        __($_)->_(char(';')),
+        __($_)->_(spaces()),
         __($is)->_(manyList(imports())),
-        __($cs)->_(manyList($parserComposite))
+        __($_)->_(spaces()),
+        __($cs)->_(manyList($parserComposite)),
     )->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
 }
 
@@ -140,14 +145,15 @@ function enum(): Parser
         __($cs)->_(
             for_(
                 __($constructors)->_(sepBy1list(typeName(), constructorSeparator())),
-                __($_)->_(nl())
+                __($_)->_(spaces()),
+                __($_)->_(char(';'))
             )->call(
                 fn ($c) => $c->map(
                     fn ($c) => new Constructor($c)
                 ),
                 $constructors
             )
-        )
+        ),
     )->call(fn ($t, $cs) => new EnumType($t, $cs), $t, $cs);
 }
 
@@ -209,7 +215,9 @@ function data(): Parser
                 __($c)->_(char('}')),
                 __($_)->_(spaces())
             )->yields($c)
-        ))
+        )),
+        __($_)->_(spaces()),
+        __($_)->_(char(';'))
     )->call(fn ($t, $as) => new DataType($t, $as), $t, $as);
 }
 
@@ -222,6 +230,8 @@ function string_(): Parser
         __($_)->_(string('string')),
         __($_)->_(spaces1()),
         __($t)->_(typeName()),
+        __($_)->_(spaces()),
+        __($_)->_(char(';'))
     )->call(fn ($t) => new StringType($t), $t);
 }
 
@@ -233,7 +243,9 @@ function int_(): Parser
         __($_)->_(spaces()),
         __($_)->_(string('int')),
         __($_)->_(spaces1()),
-        __($t)->_(typeName())
+        __($t)->_(typeName()),
+        __($_)->_(spaces()),
+        __($_)->_(char(';'))
     )->call(fn ($t) => new IntType($t), $t);
 }
 
@@ -245,7 +257,9 @@ function float_(): Parser
         __($_)->_(spaces()),
         __($_)->_(string('float')),
         __($_)->_(spaces1()),
-        __($t)->_(typeName())
+        __($t)->_(typeName()),
+        __($_)->_(spaces()),
+        __($_)->_(char(';'))
     )->call(fn ($t) => new FloatType($t), $t);
 }
 
@@ -258,6 +272,8 @@ function bool_(): Parser
         __($_)->_(string('bool')),
         __($_)->_(spaces1()),
         __($t)->_(typeName()),
+        __($_)->_(spaces()),
+        __($_)->_(char(';'))
     )->call(fn ($t) => new BoolType($t), $t);
 }
 
@@ -265,10 +281,26 @@ const marker = 'Fpp\marker';
 
 function marker(): Parser
 {
-    return for_(
-        __($_)->_(spaces()),
-        __($_)->_(string('marker')),
-        __($_)->_(spaces1()),
-        __($m)->_(typeName()),
-    )->call(fn ($m) => new MarkerType($m, Nil()), $m);
+    return plus(
+        for_(
+            __($_)->_(spaces()),
+            __($_)->_(string('marker')),
+            __($_)->_(spaces1()),
+            __($m)->_(typeName()),
+            __($_)->_(spaces()),
+            __($_)->_(char(';'))
+        )->call(fn ($m) => new MarkerType($m, Nil()), $m),
+        for_(
+            __($_)->_(spaces()),
+            __($_)->_(string('marker')),
+            __($_)->_(spaces1()),
+            __($m)->_(typeName()),
+            __($_)->_(spaces()),
+            __($_)->_(char(':')),
+            __($_)->_(spaces()),
+            __($p)->_(sepByList(typeName(), comma())),
+            __($_)->_(spaces()),
+            __($_)->_(char(';'))
+        )->call(fn ($m, $p) => new MarkerType($m, $p), $m, $p),
+    );
 }

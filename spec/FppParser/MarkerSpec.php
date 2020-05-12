@@ -14,20 +14,34 @@ namespace FppSpec\FppParser;
 
 use function Fpp\marker;
 use Fpp\Type\MarkerType;
+use Phunkie\Types\ImmList;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('marker', function () {
             it('can parse marker types', function () {
-                $testString = <<<CODE
-marker Foo
-
-CODE;
-
-                expect(marker()->run($testString)->head()->_1)->toEqual(
+                expect(marker()->run('marker Foo;')->head()->_1)->toEqual(
                     new MarkerType(
                         'Foo',
                         Nil()
+                    )
+                );
+            });
+
+            it('can parse marker types extending another marker', function () {
+                expect(marker()->run('marker Foo : Bar;')->head()->_1)->toEqual(
+                    new MarkerType(
+                        'Foo',
+                        ImmList('Bar')
+                    )
+                );
+            });
+
+            it('can parse marker types extending multiple markers', function () {
+                expect(marker()->run('marker Foo : Bar, Baz, Bam;')->head()->_1)->toEqual(
+                    new MarkerType(
+                        'Foo',
+                        ImmList('Bar', 'Baz', 'Bam')
                     )
                 );
             });

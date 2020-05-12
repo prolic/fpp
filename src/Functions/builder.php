@@ -245,5 +245,11 @@ function buildMarker(MarkerType $marker, ImmMap $builders): ClassType
     $class = new ClassType($marker->classname());
     $class->setInterface();
 
+    $marker->parentMarkers()->map(
+        function ($i) use ($class) {
+            $class->setExtends($i);
+        }
+    );
+
     return $class;
 }

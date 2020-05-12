@@ -20,8 +20,7 @@ describe("Fpp\Parser", function () {
         describe('string_', function () {
             it('can parse string types', function () {
                 $testString = <<<CODE
-string Username
-
+string Username;
 CODE;
 
                 expect(string_()->run($testString)->head()->_1)->toEqual(

@@ -21,8 +21,7 @@ describe("Fpp\Parser", function () {
         describe('data', function () {
             it('can parse simple data types', function () {
                 $testString = <<<CODE
-data Person = { \$name, \$age}
-
+data Person = { \$name, \$age};
 CODE;
 
                 expect(data()->run($testString)->head()->_1)->toEqual(
@@ -38,8 +37,7 @@ CODE;
 
             it('can parse simple data types with scalar types', function () {
                 $testString = <<<CODE
-data Person = { string \$name, int \$age}
-
+data Person = { string \$name, int \$age};
 CODE;
 
                 expect(data()->run($testString)->head()->_1)->toEqual(
@@ -55,8 +53,7 @@ CODE;
 
             it('can parse simple data types with types', function () {
                 $testString = <<<CODE
-data Person = { Name \$name, Age \$age}
-
+data Person = { Name \$name, Age \$age};
 CODE;
 
                 expect(data()->run($testString)->head()->_1)->toEqual(
@@ -72,8 +69,7 @@ CODE;
 
             it('can parse data types with nullable argument', function () {
                 $testString = <<<CODE
-data Person = { ?string \$name, int \$age}
-
+data Person = { ?string \$name, int \$age};
 CODE;
 
                 expect(data()->run($testString)->head()->_1)->toEqual(
@@ -89,8 +85,7 @@ CODE;
 
             it('can parse data types with two nullable arguments', function () {
                 $testString = <<<CODE
-data Person = { ?string \$name, ?int \$age}
-
+data Person = { ?string \$name, ?int \$age};
 CODE;
 
                 expect(data()->run($testString)->head()->_1)->toEqual(
@@ -106,8 +101,7 @@ CODE;
 
             it('can parse data types with default value argument', function () {
                 $testString = <<<CODE
-data Person = { string \$name = 'prooph', int \$age = 18}
-
+data Person = { string \$name = 'prooph', int \$age = 18};
 CODE;
 
                 expect(data()->run($testString)->head()->_1)->toEqual(
@@ -123,8 +117,7 @@ CODE;
 
             it('can parse data types with default value argument and nullable', function () {
                 $testString = <<<CODE
-data Person = { string \$name, ?int \$age = null}
-
+data Person = { string \$name, ?int \$age = null};
 CODE;
 
                 expect(data()->run($testString)->head()->_1)->toEqual(

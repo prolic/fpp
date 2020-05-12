@@ -20,13 +20,12 @@ describe("Fpp\Parser", function () {
         describe('float_', function () {
             it('can parse float types', function () {
                 $testString = <<<CODE
-float Longitute
-
+float Longitude;
 CODE;
 
                 expect(float_()->run($testString)->head()->_1)->toEqual(
                     new FloatType(
-                        'Longitute'
+                        'Longitude'
                     )
                 );
             });

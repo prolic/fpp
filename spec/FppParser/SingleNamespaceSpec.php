@@ -21,17 +21,22 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('singleNamespace', function () {
             it('can parse one namespace when ending with ;', function () {
-                expect(singleNamespace(enum())->run("namespace Foo\n")->head()->_1)->toEqual(
+                expect(singleNamespace(enum())->run('namespace Foo;')->head()->_1)->toEqual(
                     new Namespace_('Foo', Nil(), Nil())
                 );
             });
 
             it('cannot parse second namespace when ending with ;', function () {
-                expect(singleNamespace(enum())->run("namespace Foo\nnamespace Bar\n")->head()->_2)->toBe("namespace Bar\n");
+                expect(singleNamespace(enum())->run('namespace Foo;namespace Bar;')->head()->_2)->toBe('namespace Bar;');
             });
 
             it('can parse one namespace when ending with ; with an enum inside', function () {
-                expect(singleNamespace(enum())->run("namespace Foo\nenum Color = Red | Blue\n")->head()->_1)->toEqual(
+                $testString = <<<CODE
+namespace Foo;
+enum Color = Red | Blue;
+CODE;
+
+                expect(singleNamespace(enum())->run($testString)->head()->_1)->toEqual(
                     new Namespace_('Foo', Nil(), ImmList(
                         new Type\EnumType(
                             'Color',
@@ -46,11 +51,10 @@ describe("Fpp\Parser", function () {
 
             it('can parse one namespace when ending with ; with use imports and an enum inside', function () {
                 $testString = <<<CODE
-namespace Foo
-use Foo\Bar
-use Foo\Baz as B
-enum Color = Red | Blue
-
+namespace Foo;
+use Foo\Bar;
+use Foo\Baz as B;
+enum Color = Red | Blue;
 CODE;
 
                 expect(singleNamespace(enum())->run($testString)->head()->_1)->toEqual(

@@ -20,8 +20,7 @@ describe("Fpp\Parser", function () {
         describe('int_', function () {
             it('can parse int types', function () {
                 $testString = <<<CODE
-int Age
-
+int Age;
 CODE;
 
                 expect(int_()->run($testString)->head()->_1)->toEqual(

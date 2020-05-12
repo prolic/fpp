@@ -19,7 +19,7 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('enum', function () {
             it('can parse enums', function () {
-                expect(enum()->run("enum Color = Red | Green | Blue\n")->head()->_1)->toEqual(
+                expect(enum()->run('enum Color = Red | Green | Blue;')->head()->_1)->toEqual(
                     new Type\EnumType(
                         'Color',
                         ImmList(
@@ -31,7 +31,7 @@ describe("Fpp\Parser", function () {
                 );
             });
 
-            it('cannot parse enum constructors without new line ending', function () {
+            it('cannot parse enum constructors without semicolon ending', function () {
                 expect(enum()->run('enum Color = Red | Green | Blue'))->toEqual(Nil());
             });
         });

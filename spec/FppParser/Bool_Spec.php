@@ -20,8 +20,7 @@ describe("Fpp\Parser", function () {
         describe('bool_', function () {
             it('can parse bool types', function () {
                 $testString = <<<CODE
-bool Truth
-
+bool Truth;
 CODE;
 
                 expect(bool_()->run($testString)->head()->_1)->toEqual(

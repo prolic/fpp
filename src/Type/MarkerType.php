@@ -17,13 +17,13 @@ use Phunkie\Types\ImmList;
 class MarkerType implements Type
 {
     private string $classname;
-    /** @var Immlist<MarkerType> */
-    private ImmList $arguments;
+    /** @var Immlist<string> */
+    private ImmList $parentMarkers;
 
-    public function __construct(string $classname, ImmList $markers)
+    public function __construct(string $classname, ImmList $parentMarkers)
     {
         $this->classname = $classname;
-        $this->arguments = $markers;
+        $this->parentMarkers = $parentMarkers;
     }
 
     public function classname(): string
@@ -32,10 +32,10 @@ class MarkerType implements Type
     }
 
     /**
-     * @return ImmList<MarkerType>
+     * @return ImmList<string>
      */
-    public function markers(): ImmList
+    public function parentMarkers(): ImmList
     {
-        return $this->arguments;
+        return $this->parentMarkers;
     }
 }

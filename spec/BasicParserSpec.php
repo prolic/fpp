@@ -14,6 +14,7 @@ namespace FppSpec;
 
 use function Fpp\alphanum;
 use function Fpp\char;
+use function Fpp\comma;
 use function Fpp\constructorSeparator;
 use function Fpp\digit;
 use function Fpp\el;
@@ -31,6 +32,7 @@ use function Fpp\nl;
 use function Fpp\result;
 use function Fpp\sat;
 use function Fpp\sepBy1list;
+use function Fpp\sepByList;
 use function Fpp\seq;
 use function Fpp\spaces;
 use function Fpp\spaces1;
@@ -238,6 +240,16 @@ describe("Fpp\Parser", function () {
                 expect(manyList1(char('a'))->run('b'))->toEqual(Nil());
             });
         });
+        describe('sepBylist', function () {
+            it('can separate by parser and return a list for single element', function () {
+                expect(sepByList(char('a'), constructorSeparator())->run('a')->head()->_1)
+                    ->toEqual(ImmList('a'));
+            });
+            it('can separate by parser and return a list', function () {
+                expect(sepByList(char('a'), constructorSeparator())->run('a|a|a')->head()->_1)
+                    ->toEqual(ImmList('a', 'a', 'a'));
+            });
+        });
         describe('sepBy1list', function () {
             it('can separate by parser and return a list', function () {
                 expect(sepBy1list(char('a'), constructorSeparator())->run('a|a|a')->head()->_1)
@@ -283,6 +295,12 @@ describe("Fpp\Parser", function () {
             });
             it('returns Nil for empty string', function () {
                 expect(spaces1()->run(''))->toEqual(Nil());
+            });
+        });
+        describe('comma', function () {
+            it('parses a comma', function () {
+                expect(comma()->run(',')->head()->_1)->toBe(',');
+                expect(comma()->run(' , ' . PHP_EOL)->head()->_1)->toBe(',');
             });
         });
     });

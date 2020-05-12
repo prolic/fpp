@@ -139,6 +139,15 @@ function spaces1(): Parser
     return many1(plus(char(' '), char("\n")));
 }
 
+function comma(): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($c)->_(char(',')),
+        __($_)->_(spaces()),
+    )->yields($c);
+}
+
 function word(): Parser
 {
     return plus(letter()->flatMap(
@@ -150,14 +159,12 @@ function word(): Parser
 
 function string($s): Parser
 {
-    return \strlen($s) ?
-
-        for_(
+    return \strlen($s)
+        ? for_(
             __($c)->_(char($s[0])),
             __($cs)->_(string(\substr($s, 1)))
-        )->call(concat, $c, $cs) :
-
-        result('');
+            )->call(concat, $c, $cs)
+        : result('');
 }
 
 function many(Parser $p): Parser
@@ -217,6 +224,17 @@ function sepBy1(Parser $p, Parser $sep): Parser
 function sepBy1With(Parser $p, Parser $sep): Parser
 {
     return $p->sepBy1With($sep);
+}
+
+function sepByList(Parser $p, Parser $sep): Parser
+{
+    return $p->flatMap(
+        fn ($x) => manyList($sep->flatMap(
+            fn ($_) => $p->map(fn ($y) => $y)
+        ))->map(
+            fn ($xs) => $xs instanceof Types\ImmList ? ImmList($x)->combine($xs) : ImmList($x, $xs)
+        )
+    );
 }
 
 function sepBy1list(Parser $p, Parser $sep): Parser

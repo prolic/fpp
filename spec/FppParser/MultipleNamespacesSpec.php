@@ -39,7 +39,7 @@ describe("Fpp\Parser", function () {
             it('can parse namespace containing an enum', function () {
                 $testString = <<<FPP
 namespace Foo {
-    enum Color = Red | Green | Blue
+    enum Color = Red | Green | Blue;
 }
 FPP;
                 expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
@@ -59,8 +59,8 @@ FPP;
             it('can parse namespace containing many enums', function () {
                 $testString = <<<FPP
 namespace Foo {
-    enum Color = Red | Green | Blue
-    enum Human = Man | Woman
+    enum Color = Red | Green | Blue;
+    enum Human = Man | Woman;
 }
 FPP;
                 expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
