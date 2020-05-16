@@ -10,19 +10,9 @@
 
 declare(strict_types=1);
 
-namespace Fpp\Type;
+namespace Fpp;
 
-class StringType implements Type
+interface Type
 {
-    private string $classname;
-
-    public function __construct(string $classname)
-    {
-        $this->classname = $classname;
-    }
-
-    public function classname(): string
-    {
-        return $this->classname;
-    }
+    public function classname(): string;
 }

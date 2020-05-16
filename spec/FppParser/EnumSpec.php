@@ -12,27 +12,28 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use function Fpp\enum;
-use Fpp\Type;
+use Fpp\Type\Enum\Constructor;
+use Fpp\Type\Enum\Enum;
+use function Fpp\Type\Enum\parse;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('enum', function () {
             it('can parse enums', function () {
-                expect(enum()->run('enum Color = Red | Green | Blue;')->head()->_1)->toEqual(
-                    new Type\EnumType(
+                expect(parse()->run('enum Color = Red | Green | Blue;')->head()->_1)->toEqual(
+                    new Enum(
                         'Color',
                         ImmList(
-                            new Type\Enum\Constructor('Red'),
-                            new Type\Enum\Constructor('Green'),
-                            new Type\Enum\Constructor('Blue')
+                            new Constructor('Red'),
+                            new Constructor('Green'),
+                            new Constructor('Blue')
                         )
                     )
                 );
             });
 
             it('cannot parse enum constructors without semicolon ending', function () {
-                expect(enum()->run('enum Color = Red | Green | Blue'))->toEqual(Nil());
+                expect(parse()->run('enum Color = Red | Green | Blue'))->toEqual(Nil());
             });
         });
     });

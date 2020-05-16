@@ -12,19 +12,15 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use function Fpp\float_;
-use Fpp\Type\FloatType;
+use Fpp\Type\Float_\Float_;
+use function Fpp\Type\Float_\parse;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('float_', function () {
             it('can parse float types', function () {
-                $testString = <<<CODE
-float Longitude;
-CODE;
-
-                expect(float_()->run($testString)->head()->_1)->toEqual(
-                    new FloatType(
+                expect(parse()->run('float Longitude;')->head()->_1)->toEqual(
+                    new Float_(
                         'Longitude'
                     )
                 );

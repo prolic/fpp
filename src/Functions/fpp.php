@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Fpp\Type\Type;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Printer;
 use Phunkie\Types\ImmMap;

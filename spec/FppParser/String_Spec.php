@@ -12,19 +12,15 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use function Fpp\string_;
-use Fpp\Type\StringType;
+use function Fpp\Type\String_\parse;
+use Fpp\Type\String_\String_;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('string_', function () {
             it('can parse string types', function () {
-                $testString = <<<CODE
-string Username;
-CODE;
-
-                expect(string_()->run($testString)->head()->_1)->toEqual(
-                    new StringType(
+                expect(parse()->run('string Username;')->head()->_1)->toEqual(
+                    new String_(
                         'Username'
                     )
                 );

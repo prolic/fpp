@@ -12,120 +12,92 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use function Fpp\data;
-use Fpp\Type;
-use Fpp\Type\DataType;
+use Fpp\Type\Data\Argument;
+use Fpp\Type\Data\Data;
+use function Fpp\Type\Data\parse;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('data', function () {
             it('can parse simple data types', function () {
-                $testString = <<<CODE
-data Person = { \$name, \$age};
-CODE;
-
-                expect(data()->run($testString)->head()->_1)->toEqual(
-                    new DataType(
+                expect(parse()->run('data Person = { $name, $age};')->head()->_1)->toEqual(
+                    new Data(
                         'Person',
                         ImmList(
-                            new Type\Data\Argument('name', null, false, false, null),
-                            new Type\Data\Argument('age', null, false, false, null),
+                            new Argument('name', null, false, false, null),
+                            new Argument('age', null, false, false, null),
                         )
                     )
                 );
             });
 
             it('can parse simple data types with scalar types', function () {
-                $testString = <<<CODE
-data Person = { string \$name, int \$age};
-CODE;
-
-                expect(data()->run($testString)->head()->_1)->toEqual(
-                    new DataType(
+                expect(parse()->run('data Person = { string $name, int $age};')->head()->_1)->toEqual(
+                    new Data(
                         'Person',
                         ImmList(
-                            new Type\Data\Argument('name', 'string', false, false, null),
-                            new Type\Data\Argument('age', 'int', false, false, null),
+                            new Argument('name', 'string', false, false, null),
+                            new Argument('age', 'int', false, false, null),
                         )
                     )
                 );
             });
 
             it('can parse simple data types with types', function () {
-                $testString = <<<CODE
-data Person = { Name \$name, Age \$age};
-CODE;
-
-                expect(data()->run($testString)->head()->_1)->toEqual(
-                    new DataType(
+                expect(parse()->run('data Person = { Name $name, Age $age};')->head()->_1)->toEqual(
+                    new Data(
                         'Person',
                         ImmList(
-                            new Type\Data\Argument('name', 'Name', false, false, null),
-                            new Type\Data\Argument('age', 'Age', false, false, null),
+                            new Argument('name', 'Name', false, false, null),
+                            new Argument('age', 'Age', false, false, null),
                         )
                     )
                 );
             });
 
             it('can parse data types with nullable argument', function () {
-                $testString = <<<CODE
-data Person = { ?string \$name, int \$age};
-CODE;
-
-                expect(data()->run($testString)->head()->_1)->toEqual(
-                    new DataType(
+                expect(parse()->run('data Person = { ?string $name, int $age};')->head()->_1)->toEqual(
+                    new Data(
                         'Person',
                         ImmList(
-                            new Type\Data\Argument('name', 'string', true, false, null),
-                            new Type\Data\Argument('age', 'int', false, false, null),
+                            new Argument('name', 'string', true, false, null),
+                            new Argument('age', 'int', false, false, null),
                         )
                     )
                 );
             });
 
             it('can parse data types with two nullable arguments', function () {
-                $testString = <<<CODE
-data Person = { ?string \$name, ?int \$age};
-CODE;
-
-                expect(data()->run($testString)->head()->_1)->toEqual(
-                    new DataType(
+                expect(parse()->run('data Person = { ?string $name, ?int $age};')->head()->_1)->toEqual(
+                    new Data(
                         'Person',
                         ImmList(
-                            new Type\Data\Argument('name', 'string', true, false, null),
-                            new Type\Data\Argument('age', 'int', true, false, null),
+                            new Argument('name', 'string', true, false, null),
+                            new Argument('age', 'int', true, false, null),
                         )
                     )
                 );
             });
 
             it('can parse data types with default value argument', function () {
-                $testString = <<<CODE
-data Person = { string \$name = 'prooph', int \$age = 18};
-CODE;
-
-                expect(data()->run($testString)->head()->_1)->toEqual(
-                    new DataType(
+                expect(parse()->run('data Person = { string $name = \'prooph\', int $age = 18};')->head()->_1)->toEqual(
+                    new Data(
                         'Person',
                         ImmList(
-                            new Type\Data\Argument('name', 'string', false, false, '\'prooph\''),
-                            new Type\Data\Argument('age', 'int', false, false, 18),
+                            new Argument('name', 'string', false, false, '\'prooph\''),
+                            new Argument('age', 'int', false, false, 18),
                         )
                     )
                 );
             });
 
             it('can parse data types with default value argument and nullable', function () {
-                $testString = <<<CODE
-data Person = { string \$name, ?int \$age = null};
-CODE;
-
-                expect(data()->run($testString)->head()->_1)->toEqual(
-                    new DataType(
+                expect(parse()->run('data Person = { string $name, ?int $age = null};')->head()->_1)->toEqual(
+                    new Data(
                         'Person',
                         ImmList(
-                            new Type\Data\Argument('name', 'string', false, false, null),
-                            new Type\Data\Argument('age', 'int', true, false, 'null'),
+                            new Argument('name', 'string', false, false, null),
+                            new Argument('age', 'int', true, false, 'null'),
                         )
                     )
                 );

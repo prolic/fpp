@@ -12,19 +12,15 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use function Fpp\int_;
-use Fpp\Type\IntType;
+use Fpp\Type\Int_\Int_;
+use function Fpp\Type\Int_\parse;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('int_', function () {
             it('can parse int types', function () {
-                $testString = <<<CODE
-int Age;
-CODE;
-
-                expect(int_()->run($testString)->head()->_1)->toEqual(
-                    new IntType(
+                expect(parse()->run('int Age;')->head()->_1)->toEqual(
+                    new Int_(
                         'Age'
                     )
                 );

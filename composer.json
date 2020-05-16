@@ -11,24 +11,13 @@
   "require": {
     "php": "^7.4",
     "phunkie/phunkie": "^0.11.1",
-    "nette/php-generator": "^3.3.4"
+    "nette/php-generator": "^3.3.4",
+    "vimeo/psalm": "^3.11.2"
   },
   "require-dev": {
     "kahlan/kahlan": "^4.7.4",
     "prooph/php-cs-fixer-config": "^0.3",
     "satooshi/php-coveralls": "^2.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "Fpp\\": "src/"
-    },
-    "files": [
-      "src/Functions/builder.php",
-      "src/Functions/basic_parser.php",
-      "src/Functions/fpp_parser.php",
-      "src/Functions/fpp.php",
-      "src/Functions/scan.php"
-    ]
   },
   "autoload-dev": {
     "psr-4": {

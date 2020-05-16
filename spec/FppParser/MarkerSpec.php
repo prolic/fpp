@@ -12,16 +12,16 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use function Fpp\marker;
-use Fpp\Type\MarkerType;
+use Fpp\Type\Marker\Marker;
+use function Fpp\Type\Marker\parse;
 use Phunkie\Types\ImmList;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('marker', function () {
             it('can parse marker types', function () {
-                expect(marker()->run('marker Foo;')->head()->_1)->toEqual(
-                    new MarkerType(
+                expect(parse()->run('marker Foo;')->head()->_1)->toEqual(
+                    new Marker(
                         'Foo',
                         Nil()
                     )
@@ -29,8 +29,8 @@ describe("Fpp\Parser", function () {
             });
 
             it('can parse marker types extending another marker', function () {
-                expect(marker()->run('marker Foo : Bar;')->head()->_1)->toEqual(
-                    new MarkerType(
+                expect(parse()->run('marker Foo : Bar;')->head()->_1)->toEqual(
+                    new Marker(
                         'Foo',
                         ImmList('Bar')
                     )
@@ -38,8 +38,8 @@ describe("Fpp\Parser", function () {
             });
 
             it('can parse marker types extending multiple markers', function () {
-                expect(marker()->run('marker Foo : Bar, Baz, Bam;')->head()->_1)->toEqual(
-                    new MarkerType(
+                expect(parse()->run('marker Foo : Bar, Baz, Bam;')->head()->_1)->toEqual(
+                    new Marker(
                         'Foo',
                         ImmList('Bar', 'Baz', 'Bam')
                     )

@@ -12,10 +12,11 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use function Fpp\enum;
 use Fpp\Namespace_;
 use function Fpp\singleNamespace;
-use Fpp\Type;
+use Fpp\Type\Enum\Constructor;
+use Fpp\Type\Enum\Enum;
+use function Fpp\Type\Enum\parse as enum;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
@@ -38,11 +39,11 @@ CODE;
 
                 expect(singleNamespace(enum())->run($testString)->head()->_1)->toEqual(
                     new Namespace_('Foo', Nil(), ImmList(
-                        new Type\EnumType(
+                        new Enum(
                             'Color',
                             ImmList(
-                                new Type\Enum\Constructor('Red'),
-                                new Type\Enum\Constructor('Blue')
+                                new Constructor('Red'),
+                                new Constructor('Blue')
                             )
                         )
                     ))
@@ -65,11 +66,11 @@ CODE;
                             Pair('Foo\Baz', 'B')
                         ),
                         ImmList(
-                            new Type\EnumType(
+                            new Enum(
                                 'Color',
                                 ImmList(
-                                    new Type\Enum\Constructor('Red'),
-                                    new Type\Enum\Constructor('Blue')
+                                    new Constructor('Red'),
+                                    new Constructor('Blue')
                                 )
                             )
                         )

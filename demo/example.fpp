@@ -5,8 +5,10 @@ namespace Foo {
 namespace Foo\Bar {
     enum Color = Red | Green | Blue;
     int Age;
-    bool Truth;
+    bool IstAlt;
+    bool Truth : BoolInterface, ScalarInterface;
     float Longitude;
+    string Name;
     marker Foo;
     marker Um : Foo;
 }

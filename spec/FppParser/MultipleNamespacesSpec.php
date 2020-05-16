@@ -12,10 +12,11 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use function Fpp\enum;
 use function Fpp\multipleNamespaces;
 use Fpp\Namespace_;
-use Fpp\Type;
+use Fpp\Type\Enum\Constructor;
+use Fpp\Type\Enum\Enum;
+use function Fpp\Type\Enum\parse as enum;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
@@ -44,12 +45,12 @@ namespace Foo {
 FPP;
                 expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
                     new Namespace_('Foo', Nil(), ImmList(
-                        new Type\EnumType(
+                        new Enum(
                             'Color',
                             ImmList(
-                                new Type\Enum\Constructor('Red'),
-                                new Type\Enum\Constructor('Green'),
-                                new Type\Enum\Constructor('Blue')
+                                new Constructor('Red'),
+                                new Constructor('Green'),
+                                new Constructor('Blue')
                             )
                         )
                     ))
@@ -65,19 +66,19 @@ namespace Foo {
 FPP;
                 expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
                     new Namespace_('Foo', Nil(), ImmList(
-                        new Type\EnumType(
+                        new Enum(
                             'Color',
                             ImmList(
-                                new Type\Enum\Constructor('Red'),
-                                new Type\Enum\Constructor('Green'),
-                                new Type\Enum\Constructor('Blue')
+                                new Constructor('Red'),
+                                new Constructor('Green'),
+                                new Constructor('Blue')
                             )
                         ),
-                        new Type\EnumType(
+                        new Enum(
                             'Human',
                             ImmList(
-                                new Type\Enum\Constructor('Man'),
-                                new Type\Enum\Constructor('Woman')
+                                new Constructor('Man'),
+                                new Constructor('Woman')
                             )
                         )
                     ))

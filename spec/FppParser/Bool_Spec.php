@@ -12,20 +12,26 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use function Fpp\bool_;
-use Fpp\Type\BoolType;
+use Fpp\Type\Bool_\Bool_;
+use function Fpp\Type\Bool_\parse;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('bool_', function () {
             it('can parse bool types', function () {
-                $testString = <<<CODE
-bool Truth;
-CODE;
+                expect(parse()->run('bool Truth;')->head()->_1)->toEqual(
+                    new Bool_(
+                        'Truth',
+                        Nil()
+                    )
+                );
+            });
 
-                expect(bool_()->run($testString)->head()->_1)->toEqual(
-                    new BoolType(
-                        'Truth'
+            it('can parse bool types with markers', function () {
+                expect(parse()->run('bool Truth : Foo, Bar;')->head()->_1)->toEqual(
+                    new Bool_(
+                        'Truth',
+                        ImmList('Foo', 'Bar')
                     )
                 );
             });
