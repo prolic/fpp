@@ -71,7 +71,7 @@ function markers(): Parser
     )->yields($ms);
 }
 
-const build = 'Fpp\Tye\Marker\build';
+const build = 'Fpp\Type\Marker\build';
 
 function build(Marker $marker, ImmMap $builders): ClassType
 {

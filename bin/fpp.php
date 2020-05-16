@@ -46,8 +46,6 @@ if (! \file_exists("$pwd/$vendorName/autoload.php")) {
     exit(1);
 }
 
-require_once "$pwd/autoload.php";
-
 $autoloader = require "$pwd/$vendorName/autoload.php";
 
 $prefixesPsr4 = $autoloader->getPrefixesPsr4();
@@ -56,6 +54,8 @@ $prefixesPsr0 = $autoloader->getPrefixes();
 $locatePsrPath = function (string $classname) use ($prefixesPsr4, $prefixesPsr0): string {
     return locatePsrPath($prefixesPsr4, $prefixesPsr0, $classname);
 };
+
+require_once "$pwd/autoload.php";
 
 $config = [
     'use_strict_types' => true,
@@ -138,7 +138,7 @@ scan($path)->map(
     return $p->_1;
 })->fold(Nil(), function (ImmList $types, ImmList $nsl) {
     $nsl->map(function (Namespace_ $n) use (&$types) {
-        $n->types()->map(function (Type\Type $t) use ($n, &$types) {
+        $n->types()->map(function (Type $t) use ($n, &$types) {
             $types = $types->combine(\ImmList(Pair($t, $n)));
         });
     });
