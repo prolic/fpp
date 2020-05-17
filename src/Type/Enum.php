@@ -16,13 +16,17 @@ use function Fpp\assignment;
 use function Fpp\char;
 use function Fpp\constructorSeparator;
 use Fpp\Parser;
+use function Fpp\plus;
+use function Fpp\result;
 use function Fpp\sepBy1list;
 use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
 use Fpp\Type as FppType;
 use Fpp\Type\Int_\Int_;
+use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
+use Fpp\TypeTrait;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
 use Phunkie\Types\ImmList;
@@ -43,6 +47,10 @@ function parse(): Parser
         __($_)->_(string('enum')),
         __($_)->_(spaces1()),
         __($t)->_(typeName()),
+        __($_)->_(spaces()),
+        __($ms)->_(
+            plus(markers(), result(Nil()))
+        ),
         __($_)->_(assignment()),
         __($cs)->_(
             for_(
@@ -56,7 +64,7 @@ function parse(): Parser
                 $constructors
             )
         ),
-    )->call(fn ($t, $cs) => new Enum($t, $cs), $t, $cs);
+    )->call(fn ($t, $ms, $cs) => new Enum($t, $ms, $cs), $t, $ms, $cs);
 }
 
 const build = 'Fpp\Type\Enum\build';
@@ -68,6 +76,7 @@ function build(Enum $enum, ImmMap $builders): ClassType
 
     $class = new ClassType($classname);
     $class->setFinal(true);
+    $class->setImplements($enum->markers()->toArray());
 
     $options = [];
     $i = 0;
@@ -151,20 +160,17 @@ function toPhpValue(Int_ $type, string $paramName): string
 
 class Enum implements FppType
 {
-    private string $classname;
+    use TypeTrait;
+
     /** @var Immlist<Constructor> */
     private ImmList $constructors;
 
     /** @param ImmList<Constructor> $constructors */
-    public function __construct(string $classname, ImmList $constructors)
+    public function __construct(string $classname, ImmList $markers, ImmList $constructors)
     {
         $this->classname = $classname;
+        $this->markers = $markers;
         $this->constructors = $constructors;
-    }
-
-    public function classname(): string
-    {
-        return $this->classname;
     }
 
     /**

@@ -25,6 +25,10 @@ class Namespace_
         $this->name = $namespaceName;
         $this->imports = $imports;
         $this->types = $types;
+
+        $types->map(function ($t) {
+            $t->setNamespace($this);
+        });
     }
 
     public function name(): string
@@ -35,6 +39,11 @@ class Namespace_
     public function imports(): ImmList
     {
         return $this->imports;
+    }
+
+    public function addImports(ImmList $imports): void
+    {
+        $this->imports = $this->imports->combine($imports);
     }
 
     public function types(): ImmList

@@ -14,6 +14,7 @@ namespace Fpp\Type\Marker;
 
 use function Fpp\char;
 use function Fpp\comma;
+use Fpp\Namespace_;
 use Fpp\Parser;
 use function Fpp\plus;
 use function Fpp\sepByList;
@@ -89,6 +90,7 @@ function build(Marker $marker, ImmMap $builders): ClassType
 
 class Marker implements FppType
 {
+    private ?Namespace_ $namespace = null;
     private string $classname;
     /** @var Immlist<string> */
     private ImmList $parentMarkers;
@@ -110,5 +112,15 @@ class Marker implements FppType
     public function parentMarkers(): ImmList
     {
         return $this->parentMarkers;
+    }
+
+    public function namespace(): Namespace_
+    {
+        return $this->namespace;
+    }
+
+    public function setNamespace(Namespace_ $namespace): void
+    {
+        $this->namespace = $namespace;
     }
 }

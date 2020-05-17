@@ -16,9 +16,11 @@ use Fpp\Type\Bool_;
 use Fpp\Type\Data;
 use Fpp\Type\Enum;
 use Fpp\Type\Float_;
+use Fpp\Type\Guid;
 use Fpp\Type\Int_;
 use Fpp\Type\Marker;
 use Fpp\Type\String_;
+use Fpp\Type\Uuid;
 use Nette\PhpGenerator\PsrPrinter;
 use function Pair;
 use Phunkie\Types\ImmList;
@@ -70,6 +72,8 @@ $config = [
         Float_\Float_::class => Float_\definition(),
         Bool_\Bool_::class => Bool_\definition(),
         Marker\Marker::class => Marker\definition(),
+        Uuid\Uuid::class => Uuid\definition(),
+        Guid\Guid::class => Guid\definition(),
     ],
 ];
 
@@ -96,6 +100,8 @@ return [
         Float_\Float_::class => Float_\definition(),
         Bool_\Bool_::class => Bool_\definition(),
         Marker\Marker::class => Marker\definition(),
+        Uuid\Uuid::class => Uuid\definition(),
+        Guid\Guid::class => Guid\definition(),
     ],
 ];
 

@@ -22,9 +22,9 @@ use function Fpp\string;
 use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
+use Fpp\TypeTrait;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
-use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
 
@@ -78,7 +78,7 @@ function fromPhpValue(Bool_ $type, bool $value): string
     return 'new ' . $type->classname() . '(' . $value . ')';
 }
 
-const toPhpValue = 'Fpp\Type\Build_\toPhpValue';
+const toPhpValue = 'Fpp\Type\Bool_\toPhpValue';
 
 function toPhpValue(Bool_ $type, string $paramName): string
 {
@@ -87,22 +87,5 @@ function toPhpValue(Bool_ $type, string $paramName): string
 
 class Bool_ implements FppType
 {
-    private string $classname;
-    private ImmList $markers;
-
-    public function __construct(string $classname, ImmList $markers)
-    {
-        $this->classname = $classname;
-        $this->markers = $markers;
-    }
-
-    public function classname(): string
-    {
-        return $this->classname;
-    }
-
-    public function markers(): ImmList
-    {
-        return $this->markers;
-    }
+    use TypeTrait;
 }

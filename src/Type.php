@@ -15,4 +15,8 @@ namespace Fpp;
 interface Type
 {
     public function classname(): string;
+
+    public function namespace(): ?Namespace_;
+
+    public function setNamespace(Namespace_ $namespace): void;
 }

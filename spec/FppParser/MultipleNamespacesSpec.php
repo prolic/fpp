@@ -14,7 +14,6 @@ namespace FppSpec\FppParser;
 
 use function Fpp\multipleNamespaces;
 use Fpp\Namespace_;
-use Fpp\Type\Enum\Constructor;
 use Fpp\Type\Enum\Enum;
 use function Fpp\Type\Enum\parse as enum;
 
@@ -43,18 +42,15 @@ namespace Foo {
     enum Color = Red | Green | Blue;
 }
 FPP;
-                expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
-                    new Namespace_('Foo', Nil(), ImmList(
-                        new Enum(
-                            'Color',
-                            ImmList(
-                                new Constructor('Red'),
-                                new Constructor('Green'),
-                                new Constructor('Blue')
-                            )
-                        )
-                    ))
-                );
+                /** @var Namespace_ $namespace */
+                $namespace = multipleNamespaces(enum())->run($testString)->head()->_1;
+                expect($namespace->name())->toBe('Foo');
+                expect($namespace->imports())->toEqual(Nil());
+                /** @var Enum $enum */
+                $enum = $namespace->types()->head();
+                expect($enum->classname())->toBe('Color');
+                expect($enum->markers()->isEmpty())->toBe(true);
+                expect($namespace->types()->isEmpty())->toBe(false);
             });
 
             it('can parse namespace containing many enums', function () {
@@ -64,25 +60,20 @@ namespace Foo {
     enum Human = Man | Woman;
 }
 FPP;
-                expect(multipleNamespaces(enum())->run($testString)->head()->_1)->toEqual(
-                    new Namespace_('Foo', Nil(), ImmList(
-                        new Enum(
-                            'Color',
-                            ImmList(
-                                new Constructor('Red'),
-                                new Constructor('Green'),
-                                new Constructor('Blue')
-                            )
-                        ),
-                        new Enum(
-                            'Human',
-                            ImmList(
-                                new Constructor('Man'),
-                                new Constructor('Woman')
-                            )
-                        )
-                    ))
-                );
+                /** @var Namespace_ $namespace */
+                $namespace = multipleNamespaces(enum())->run($testString)->head()->_1;
+                expect($namespace->name())->toBe('Foo');
+                expect($namespace->imports())->toEqual(Nil());
+                /** @var Enum $enum */
+                $enum = $namespace->types()->head();
+                expect($enum->classname())->toBe('Color');
+                expect($enum->markers()->isEmpty())->toBe(true);
+                expect($namespace->types()->isEmpty())->toBe(false);
+                /** @var Enum $enum */
+                $enum = $namespace->types()->last();
+                expect($enum->classname())->toBe('Human');
+                expect($enum->markers()->isEmpty())->toBe(true);
+                expect($namespace->types()->isEmpty())->toBe(false);
             });
         });
     });

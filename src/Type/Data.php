@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Data;
 
-use http\Exception\UnexpectedValueException;
 use function Fpp\alphanum;
 use function Fpp\assignment;
 use function Fpp\char;
@@ -32,6 +31,7 @@ use function Fpp\surroundedWith;
 use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
+use Fpp\TypeTrait;
 use Nette\PhpGenerator\ClassType;
 use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
@@ -188,8 +188,8 @@ function toPhpValue(Data $type, string $paramName): string
 
 class Data implements FppType
 {
-    private string $classname;
-    private ImmList $markers;
+    use TypeTrait;
+
     /** @var Immlist<Argument> */
     private ImmList $arguments;
 
@@ -199,16 +199,6 @@ class Data implements FppType
         $this->classname = $classname;
         $this->markers = $markers;
         $this->arguments = $arguments;
-    }
-
-    public function classname(): string
-    {
-        return $this->classname;
-    }
-
-    public function markers(): ImmList
-    {
-        return $this->markers;
     }
 
     /**

@@ -22,9 +22,9 @@ use function Fpp\string;
 use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
+use Fpp\TypeTrait;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
-use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
 
@@ -87,22 +87,5 @@ function toPhpValue(Float_ $type, string $paramName): string
 
 class Float_ implements FppType
 {
-    private string $classname;
-    private ImmList $markers;
-
-    public function __construct(string $classname, ImmList $markers)
-    {
-        $this->classname = $classname;
-        $this->markers = $markers;
-    }
-
-    public function classname(): string
-    {
-        return $this->classname;
-    }
-
-    public function markers(): ImmList
-    {
-        return $this->markers;
-    }
+    use TypeTrait;
 }

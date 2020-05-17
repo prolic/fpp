@@ -14,6 +14,7 @@ $autoloadFiles = [
     __DIR__ . '/src/Namespace_.php',
     __DIR__ . '/src/Parser.php',
     __DIR__ . '/src/Type.php',
+    __DIR__ . '/src/TypeTrait.php',
     __DIR__ . '/src/Functions/basic_parser.php',
     __DIR__ . '/src/Functions/fpp_parser.php',
     __DIR__ . '/src/Functions/fpp.php',
@@ -25,6 +26,8 @@ $autoloadFiles = [
     __DIR__ . '/src/Type/Int_.php',
     __DIR__ . '/src/Type/Marker.php',
     __DIR__ . '/src/Type/String_.php',
+    __DIR__ . '/src/Type/Uuid.php',
+    __DIR__ . '/src/Type/Guid.php',
 ];
 
 foreach ($autoloadFiles as $f) {

@@ -23,6 +23,21 @@ describe("Fpp\Parser", function () {
                 expect(parse()->run('enum Color = Red | Green | Blue;')->head()->_1)->toEqual(
                     new Enum(
                         'Color',
+                        Nil(),
+                        ImmList(
+                            new Constructor('Red'),
+                            new Constructor('Green'),
+                            new Constructor('Blue')
+                        )
+                    )
+                );
+            });
+
+            it('can parse enums with markers', function () {
+                expect(parse()->run('enum Color : Enum = Red | Green | Blue;')->head()->_1)->toEqual(
+                    new Enum(
+                        'Color',
+                        ImmList('Enum'),
                         ImmList(
                             new Constructor('Red'),
                             new Constructor('Green'),

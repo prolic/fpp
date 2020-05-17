@@ -14,7 +14,6 @@ namespace FppSpec\FppParser;
 
 use Fpp\Namespace_;
 use function Fpp\singleNamespace;
-use Fpp\Type\Enum\Constructor;
 use Fpp\Type\Enum\Enum;
 use function Fpp\Type\Enum\parse as enum;
 
@@ -37,17 +36,15 @@ namespace Foo;
 enum Color = Red | Blue;
 CODE;
 
-                expect(singleNamespace(enum())->run($testString)->head()->_1)->toEqual(
-                    new Namespace_('Foo', Nil(), ImmList(
-                        new Enum(
-                            'Color',
-                            ImmList(
-                                new Constructor('Red'),
-                                new Constructor('Blue')
-                            )
-                        )
-                    ))
-                );
+                /** @var Namespace_ $namespace */
+                $namespace = singleNamespace(enum())->run($testString)->head()->_1;
+                expect($namespace->name())->toBe('Foo');
+                expect($namespace->imports())->toEqual(Nil());
+                /** @var Enum $enum */
+                $enum = $namespace->types()->head();
+                expect($enum->classname())->toBe('Color');
+                expect($enum->markers()->isEmpty())->toBe(true);
+                expect($namespace->types()->isEmpty())->toBe(false);
             });
 
             it('can parse one namespace when ending with ; with use imports and an enum inside', function () {
@@ -58,24 +55,18 @@ use Foo\Baz as B;
 enum Color = Red | Blue;
 CODE;
 
-                expect(singleNamespace(enum())->run($testString)->head()->_1)->toEqual(
-                    new Namespace_(
-                        'Foo',
-                        ImmList(
-                            Pair('Foo\Bar', null),
-                            Pair('Foo\Baz', 'B')
-                        ),
-                        ImmList(
-                            new Enum(
-                                'Color',
-                                ImmList(
-                                    new Constructor('Red'),
-                                    new Constructor('Blue')
-                                )
-                            )
-                        )
-                    )
-                );
+                /** @var Namespace_ $namespace */
+                $namespace = singleNamespace(enum())->run($testString)->head()->_1;
+                expect($namespace->name())->toBe('Foo');
+                expect($namespace->imports())->toEqual(ImmList(
+                    Pair('Foo\Bar', null),
+                    Pair('Foo\Baz', 'B')
+                ));
+                /** @var Enum $enum */
+                $enum = $namespace->types()->head();
+                expect($enum->classname())->toBe('Color');
+                expect($enum->markers()->isEmpty())->toBe(true);
+                expect($namespace->types()->isEmpty())->toBe(false);
             });
         });
     });
