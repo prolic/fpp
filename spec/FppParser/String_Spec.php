@@ -21,7 +21,17 @@ describe("Fpp\Parser", function () {
             it('can parse string types', function () {
                 expect(parse()->run('string Username;')->head()->_1)->toEqual(
                     new String_(
-                        'Username'
+                        'Username',
+                        Nil()
+                    )
+                );
+            });
+
+            it('can parse string types with markers', function () {
+                expect(parse()->run('string Username : LetterCollection;')->head()->_1)->toEqual(
+                    new String_(
+                        'Username',
+                        ImmList('LetterCollection')
                     )
                 );
             });

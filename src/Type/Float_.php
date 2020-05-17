@@ -14,13 +14,17 @@ namespace Fpp\Type\Float_;
 
 use function Fpp\char;
 use Fpp\Parser;
+use function Fpp\plus;
+use function Fpp\result;
 use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
 use Fpp\Type as FppType;
+use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
+use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
 
@@ -39,8 +43,12 @@ function parse(): Parser
         __($_)->_(spaces1()),
         __($t)->_(typeName()),
         __($_)->_(spaces()),
+        __($ms)->_(
+            plus(markers(), result(Nil()))
+        ),
+        __($_)->_(spaces()),
         __($_)->_(char(';'))
-    )->call(fn ($t) => new Float_($t), $t);
+    )->call(fn ($t, $ms) => new Float_($t, $ms), $t, $ms);
 }
 
 const build = 'Fpp\Type\Float_\build';
@@ -49,6 +57,7 @@ function build(Float_ $type, ImmMap $builders): ClassType
 {
     $class = new ClassType($type->classname());
     $class->setFinal(true);
+    $class->setImplements($type->markers()->toArray());
 
     $class->addProperty('value')->setType(Type::FLOAT)->setPrivate();
 
@@ -79,14 +88,21 @@ function toPhpValue(Float_ $type, string $paramName): string
 class Float_ implements FppType
 {
     private string $classname;
+    private ImmList $markers;
 
-    public function __construct(string $classname)
+    public function __construct(string $classname, ImmList $markers)
     {
         $this->classname = $classname;
+        $this->markers = $markers;
     }
 
     public function classname(): string
     {
         return $this->classname;
+    }
+
+    public function markers(): ImmList
+    {
+        return $this->markers;
     }
 }

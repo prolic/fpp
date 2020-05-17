@@ -21,7 +21,17 @@ describe("Fpp\Parser", function () {
             it('can parse int types', function () {
                 expect(parse()->run('int Age;')->head()->_1)->toEqual(
                     new Int_(
-                        'Age'
+                        'Age',
+                        Nil()
+                    )
+                );
+            });
+
+            it('can parse int types with markers', function () {
+                expect(parse()->run('int Age : Number;')->head()->_1)->toEqual(
+                    new Int_(
+                        'Age',
+                        ImmList('Number')
                     )
                 );
             });

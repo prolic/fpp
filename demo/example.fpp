@@ -4,11 +4,9 @@ namespace Foo {
 
 namespace Foo\Bar {
     enum Color = Red | Green | Blue;
-    int Age;
-    bool IstAlt;
-    bool Truth : BoolInterface, ScalarInterface;
-    float Longitude;
-    string Name;
-    marker Foo;
-    marker Um : Foo;
+    int Age: ScalarThingy;
+    bool Truth: ScalarThingy;
+    float Longitude: ScalarThingy;
+    string Name: ScalarThingy;
+    marker ScalarThingy;
 }

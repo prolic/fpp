@@ -21,7 +21,17 @@ describe("Fpp\Parser", function () {
             it('can parse float types', function () {
                 expect(parse()->run('float Longitude;')->head()->_1)->toEqual(
                     new Float_(
-                        'Longitude'
+                        'Longitude',
+                        Nil()
+                    )
+                );
+            });
+
+            it('can parse float types with markers', function () {
+                expect(parse()->run('float Longitude : Distance;')->head()->_1)->toEqual(
+                    new Float_(
+                        'Longitude',
+                        ImmList('Distance')
                     )
                 );
             });
