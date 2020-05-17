@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Data;
 
+use http\Exception\UnexpectedValueException;
 use function Fpp\alphanum;
 use function Fpp\assignment;
 use function Fpp\char;
@@ -29,6 +30,7 @@ use function Fpp\string;
 use function Fpp\surrounded;
 use function Fpp\surroundedWith;
 use Fpp\Type as FppType;
+use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
 use Nette\PhpGenerator\ClassType;
 use Phunkie\Types\ImmList;
@@ -49,6 +51,10 @@ function parse(): Parser
         __($_)->_(string('data')),
         __($_)->_(spaces1()),
         __($t)->_(typeName()),
+        __($_)->_(spaces()),
+        __($ms)->_(
+            plus(markers(), result(Nil()))
+        ),
         __($_)->_(assignment()),
         __($as)->_(surrounded(
             for_(
@@ -101,7 +107,7 @@ function parse(): Parser
         )),
         __($_)->_(spaces()),
         __($_)->_(char(';'))
-    )->call(fn ($t, $as) => new Data($t, $as), $t, $as);
+    )->call(fn ($t, $ms, $as) => new Data($t, $ms, $as), $t, $ms, $as);
 }
 
 const build = 'Fpp\Type\Data\build';
@@ -183,19 +189,26 @@ function toPhpValue(Data $type, string $paramName): string
 class Data implements FppType
 {
     private string $classname;
+    private ImmList $markers;
     /** @var Immlist<Argument> */
     private ImmList $arguments;
 
     /** @param Immlist<Argument> $arguments */
-    public function __construct(string $classname, ImmList $arguments)
+    public function __construct(string $classname, ImmList $markers, ImmList $arguments)
     {
         $this->classname = $classname;
+        $this->markers = $markers;
         $this->arguments = $arguments;
     }
 
     public function classname(): string
     {
         return $this->classname;
+    }
+
+    public function markers(): ImmList
+    {
+        return $this->markers;
     }
 
     /**

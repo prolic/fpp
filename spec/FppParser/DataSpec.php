@@ -23,6 +23,7 @@ describe("Fpp\Parser", function () {
                 expect(parse()->run('data Person = { $name, $age};')->head()->_1)->toEqual(
                     new Data(
                         'Person',
+                        Nil(),
                         ImmList(
                             new Argument('name', null, false, false, null),
                             new Argument('age', null, false, false, null),
@@ -35,6 +36,7 @@ describe("Fpp\Parser", function () {
                 expect(parse()->run('data Person = { string $name, int $age};')->head()->_1)->toEqual(
                     new Data(
                         'Person',
+                        Nil(),
                         ImmList(
                             new Argument('name', 'string', false, false, null),
                             new Argument('age', 'int', false, false, null),
@@ -47,6 +49,7 @@ describe("Fpp\Parser", function () {
                 expect(parse()->run('data Person = { Name $name, Age $age};')->head()->_1)->toEqual(
                     new Data(
                         'Person',
+                        Nil(),
                         ImmList(
                             new Argument('name', 'Name', false, false, null),
                             new Argument('age', 'Age', false, false, null),
@@ -59,6 +62,7 @@ describe("Fpp\Parser", function () {
                 expect(parse()->run('data Person = { ?string $name, int $age};')->head()->_1)->toEqual(
                     new Data(
                         'Person',
+                        Nil(),
                         ImmList(
                             new Argument('name', 'string', true, false, null),
                             new Argument('age', 'int', false, false, null),
@@ -71,6 +75,7 @@ describe("Fpp\Parser", function () {
                 expect(parse()->run('data Person = { ?string $name, ?int $age};')->head()->_1)->toEqual(
                     new Data(
                         'Person',
+                        Nil(),
                         ImmList(
                             new Argument('name', 'string', true, false, null),
                             new Argument('age', 'int', true, false, null),
@@ -83,6 +88,7 @@ describe("Fpp\Parser", function () {
                 expect(parse()->run('data Person = { string $name = \'prooph\', int $age = 18};')->head()->_1)->toEqual(
                     new Data(
                         'Person',
+                        Nil(),
                         ImmList(
                             new Argument('name', 'string', false, false, '\'prooph\''),
                             new Argument('age', 'int', false, false, 18),
@@ -95,9 +101,23 @@ describe("Fpp\Parser", function () {
                 expect(parse()->run('data Person = { string $name, ?int $age = null};')->head()->_1)->toEqual(
                     new Data(
                         'Person',
+                        Nil(),
                         ImmList(
                             new Argument('name', 'string', false, false, null),
                             new Argument('age', 'int', true, false, 'null'),
+                        )
+                    )
+                );
+            });
+
+            it('can parse simple data types with markers', function () {
+                expect(parse()->run('data Person : Human = { Name $name, Age $age};')->head()->_1)->toEqual(
+                    new Data(
+                        'Person',
+                        ImmList('Human'),
+                        ImmList(
+                            new Argument('name', 'Name', false, false, null),
+                            new Argument('age', 'Age', false, false, null),
                         )
                     )
                 );
