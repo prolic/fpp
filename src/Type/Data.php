@@ -140,7 +140,13 @@ function build(Data $data, ImmMap $builders): ClassType
                 break;
         }
 
-        $param = $constructor->addParameter($a->name(), $defaultValue);
+        if ($defaultValue) {
+            $param = $constructor->addParameter($a->name(), $defaultValue);
+        } else {
+            $param = $constructor->addParameter($a->name());
+        }
+
+        $param->setNullable($a->nullable());
 
         $body .= "\$this->{$a->name()} = \${$a->name()};\n";
         $method = $class->addMethod($a->name());
