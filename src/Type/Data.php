@@ -14,7 +14,10 @@ namespace Fpp\Type\Data;
 
 use function Fpp\alphanum;
 use function Fpp\assignment;
+use function Fpp\buildDefaultPhpFile;
 use function Fpp\char;
+use Fpp\Configuration;
+use Fpp\Definition;
 use function Fpp\int;
 use function Fpp\item;
 use function Fpp\letter;
@@ -32,7 +35,7 @@ use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
-use Nette\PhpGenerator\ClassType;
+use Nette\PhpGenerator\Type;
 use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
@@ -112,31 +115,75 @@ function parse(): Parser
 
 const build = 'Fpp\Type\Data\build';
 
-function build(Data $data, ImmMap $builders): ClassType
+function build(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
 {
-    $classname = $data->classname();
+    $type = $definition->type();
 
-    $class = new ClassType($classname);
-    $class->setFinal(true);
+    if (! $type instanceof Data) {
+        throw new \InvalidArgumentException('Can only build definitions of ' . Data::class);
+    }
+
+    $fqcn = $definition->namespace() . '\\' . $type->classname();
+
+    $file = buildDefaultPhpFile($definition, $config);
+
+    $class = $file->addClass($fqcn)
+        ->setFinal()
+        ->setImplements($type->markers()->toArray());
 
     $constructor = $class->addMethod('__construct');
 
-    $body = '';
-    $data->arguments()->map(function (Argument $a) use ($data, $class, $constructor, &$body) {
+    $constructorBody = '';
+    $fromArrayBody = "return new self(\n";
+    $toArrayBody = "return [\n";
+
+    $type->arguments()->map(function (Argument $a) use (
+        $type,
+        $class,
+        $constructor,
+        $config,
+        &$constructorBody,
+        &$fromArrayBody,
+        &$toArrayBody
+    ) {
         $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
 
         switch ($a->type()) {
+            case null:
+                $defaultValue = $a->defaultValue();
+                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
+                break;
             case 'int':
                 $defaultValue = (int) $a->defaultValue();
+                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
                 break;
             case 'float':
                 $defaultValue = (float) $a->defaultValue();
+                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
                 break;
             case 'bool':
                 $defaultValue = ('true' === $a->defaultValue());
+                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
+                break;
+            case 'string':
+                $defaultValue = $a->defaultValue() === "''" ? '' : $a->defaultValue();
+                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
+                break;
+            case 'array':
+                $defaultValue = $a->defaultValue() === '[]' ? [] : $a->defaultValue();
+                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
                 break;
             default:
-                $defaultValue = $a->defaultValue() === "''" ? '' : ($a->defaultValue() === '[]' ? [] : $a->defaultValue());
+                $defaultValue = null;
+                //var_dump($builders);
+                //var_dump($data->namespace()->name() . '\\' . $a->type());
+                //var_dump( $data->namespace()->types()); die;
+                //$type = $data->namespace()->types()->takeWhile(fn (FppType $t) => $t->classname() === $a->type());
+
+                //die('ff');
+                //$builder = $builders->get($data->namespace()->name() . '\\' . $a->name());
+                //var_dump($builder);
+                $toArrayBody .= '';
                 break;
         }
 
@@ -148,7 +195,7 @@ function build(Data $data, ImmMap $builders): ClassType
 
         $param->setNullable($a->nullable());
 
-        $body .= "\$this->{$a->name()} = \${$a->name()};\n";
+        $constructorBody .= "\$this->{$a->name()} = \${$a->name()};\n";
         $method = $class->addMethod($a->name());
         $method->setBody("return \$this->{$a->name()};");
 
@@ -173,9 +220,19 @@ function build(Data $data, ImmMap $builders): ClassType
         }
     });
 
-    $constructor->setBody(\substr($body, 0, -1));
+    $constructor->setBody(\substr($constructorBody, 0, -1));
 
-    return $class;
+    $fromArrayBody .= ');';
+    $toArrayBody .= '];';
+
+    $fromArray = $class->addMethod('fromArray')->setStatic()->setReturnType('self');
+    $fromArray->addParameter('data')->setType(Type::ARRAY);
+    $fromArray->setBody($fromArrayBody);
+
+    $toArray = $class->addMethod('toArray')->setReturnType('array');
+    $toArray->setBody($toArrayBody);
+
+    return \ImmMap($fqcn, $file);
 }
 
 const fromPhpValue = 'Fpp\Type\Data\fromPhpValue';

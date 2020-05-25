@@ -16,7 +16,6 @@ use Phunkie\Types\ImmList;
 
 trait TypeTrait
 {
-    private ?Namespace_ $namespace = null;
     private string $classname;
     private ImmList $markers;
 
@@ -34,15 +33,5 @@ trait TypeTrait
     public function markers(): ImmList
     {
         return $this->markers;
-    }
-
-    public function namespace(): ?Namespace_
-    {
-        return $this->namespace;
-    }
-
-    public function setNamespace(Namespace_ $namespace): void
-    {
-        $this->namespace = $namespace;
     }
 }

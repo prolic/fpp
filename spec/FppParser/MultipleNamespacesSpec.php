@@ -13,44 +13,39 @@ declare(strict_types=1);
 namespace FppSpec\FppParser;
 
 use function Fpp\multipleNamespaces;
-use Fpp\Namespace_;
 use Fpp\Type\Enum\Enum;
 use function Fpp\Type\Enum\parse as enum;
+use Phunkie\Types\ImmMap;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('multipleNamespaces', function () {
-            it('can parse empty namespace', function () {
-                expect(multipleNamespaces(enum())->run('namespace Foo { }')->head()->_1)->toEqual(
-                    new Namespace_('Foo', Nil(), Nil())
-                );
-            });
-
-            it('can parse namespace with sub namespace', function () {
-                expect(multipleNamespaces(enum())->run('namespace Foo\Bar { }')->head()->_1)->toEqual(
-                    new Namespace_('Foo\Bar', Nil(), Nil())
-                );
-            });
-
             it('cannot parse default namespace', function () {
                 expect(multipleNamespaces(enum())->run('namespace { }'))->toEqual(Nil());
             });
 
-            it('can parse namespace containing an enum', function () {
+            it('can parse namespace', function () {
                 $testString = <<<FPP
 namespace Foo {
     enum Color = Red | Green | Blue;
 }
 FPP;
-                /** @var Namespace_ $namespace */
-                $namespace = multipleNamespaces(enum())->run($testString)->head()->_1;
-                expect($namespace->name())->toBe('Foo');
-                expect($namespace->imports())->toEqual(Nil());
-                /** @var Enum $enum */
-                $enum = $namespace->types()->head();
-                expect($enum->classname())->toBe('Color');
-                expect($enum->markers()->isEmpty())->toBe(true);
-                expect($namespace->types()->isEmpty())->toBe(false);
+                /** @var ImmMap $definition */
+                $definition = multipleNamespaces(enum())->run($testString)->head()->_1;
+                expect($definition->contains('Foo\Color'))->toBe(true);
+                expect($definition->get('Foo\Color')->get()->imports())->toEqual(Nil());
+            });
+
+            it('can parse namespace with subnamespace', function () {
+                $testString = <<<FPP
+namespace Foo\Bar {
+    enum Color = Red | Green | Blue;
+}
+FPP;
+                /** @var ImmMap $definition */
+                $definition = multipleNamespaces(enum())->run($testString)->head()->_1;
+                expect($definition->contains('Foo\Bar\Color'))->toBe(true);
+                expect($definition->get('Foo\Bar\Color')->get()->imports())->toEqual(Nil());
             });
 
             it('can parse namespace containing many enums', function () {
@@ -60,20 +55,13 @@ namespace Foo {
     enum Human = Man | Woman;
 }
 FPP;
-                /** @var Namespace_ $namespace */
-                $namespace = multipleNamespaces(enum())->run($testString)->head()->_1;
-                expect($namespace->name())->toBe('Foo');
-                expect($namespace->imports())->toEqual(Nil());
-                /** @var Enum $enum */
-                $enum = $namespace->types()->head();
-                expect($enum->classname())->toBe('Color');
-                expect($enum->markers()->isEmpty())->toBe(true);
-                expect($namespace->types()->isEmpty())->toBe(false);
-                /** @var Enum $enum */
-                $enum = $namespace->types()->last();
-                expect($enum->classname())->toBe('Human');
-                expect($enum->markers()->isEmpty())->toBe(true);
-                expect($namespace->types()->isEmpty())->toBe(false);
+                /** @var ImmMap $definitions */
+                $definitions = multipleNamespaces(enum())->run($testString)->head()->_1;
+                expect($definitions->contains('Foo\Color'))->toBe(true);
+                expect($definitions->contains('Foo\Human'))->toBe(true);
+
+                expect($definitions->get('Foo\Color')->get()->imports())->toEqual(Nil());
+                expect($definitions->get('Foo\Human')->get()->imports())->toEqual(Nil());
             });
         });
     });

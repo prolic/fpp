@@ -11,6 +11,8 @@
 declare(strict_types=1);
 
 $autoloadFiles = [
+    __DIR__ . '/src/Configuration.php',
+    __DIR__ . '/src/Definition.php',
     __DIR__ . '/src/Namespace_.php',
     __DIR__ . '/src/Parser.php',
     __DIR__ . '/src/Type.php',

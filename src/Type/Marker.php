@@ -12,9 +12,11 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Marker;
 
+use function Fpp\buildDefaultPhpFile;
 use function Fpp\char;
 use function Fpp\comma;
-use Fpp\Namespace_;
+use Fpp\Configuration;
+use Fpp\Definition;
 use Fpp\Parser;
 use function Fpp\plus;
 use function Fpp\sepByList;
@@ -23,8 +25,7 @@ use function Fpp\spaces1;
 use function Fpp\string;
 use Fpp\Type as FppType;
 use function Fpp\typeName;
-use Nette\PhpGenerator\ClassType;
-use Phunkie\Types\ImmList;
+use Fpp\TypeTrait;
 use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
 
@@ -74,53 +75,26 @@ function markers(): Parser
 
 const build = 'Fpp\Type\Marker\build';
 
-function build(Marker $marker, ImmMap $builders): ClassType
+function build(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
 {
-    $class = new ClassType($marker->classname());
-    $class->setInterface();
+    $type = $definition->type();
 
-    $marker->parentMarkers()->map(
-        function ($i) use ($class) {
-            $class->setExtends($i);
-        }
-    );
+    if (! $type instanceof Marker) {
+        throw new \InvalidArgumentException('Can only build definitions of ' . Marker::class);
+    }
 
-    return $class;
+    $fqcn = $definition->namespace() . '\\' . $type->classname();
+
+    $file = buildDefaultPhpFile($definition, $config);
+
+    $class = $file->addClass($fqcn)
+        ->setInterface()
+        ->setExtends($type->markers()->toArray());
+
+    return \ImmMap($fqcn, $file);
 }
 
 class Marker implements FppType
 {
-    private ?Namespace_ $namespace = null;
-    private string $classname;
-    /** @var Immlist<string> */
-    private ImmList $parentMarkers;
-
-    public function __construct(string $classname, ImmList $parentMarkers)
-    {
-        $this->classname = $classname;
-        $this->parentMarkers = $parentMarkers;
-    }
-
-    public function classname(): string
-    {
-        return $this->classname;
-    }
-
-    /**
-     * @return ImmList<string>
-     */
-    public function parentMarkers(): ImmList
-    {
-        return $this->parentMarkers;
-    }
-
-    public function namespace(): Namespace_
-    {
-        return $this->namespace;
-    }
-
-    public function setNamespace(Namespace_ $namespace): void
-    {
-        $this->namespace = $namespace;
-    }
+    use TypeTrait;
 }

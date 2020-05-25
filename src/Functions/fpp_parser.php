@@ -12,6 +12,9 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Phunkie\Types\ImmList;
+use Phunkie\Types\ImmMap;
+
 const assignment = 'Fpp\assignment';
 
 function assignment(): Parser
@@ -90,8 +93,17 @@ function singleNamespace(Parser $parserComposite): Parser
         __($_)->_(spaces()),
         __($is)->_(manyList(imports())),
         __($_)->_(spaces()),
-        __($cs)->_(manyList($parserComposite)),
-    )->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
+        __($ts)->_(manyList($parserComposite)),
+    //)->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
+    )->call(function (string $n, ImmList $ts, ImmList $is): ImmMap {
+        $ds = [];
+
+        $ts->map(function (Type $t) use (&$ds, $n, $is) {
+            $ds[$n . '\\' . $t->classname()] = new Definition($n, $t, $is);
+        });
+
+        return \ImmMap($ds);
+    }, $n, $ts, $is);
 }
 
 const multipleNamespaces = 'Fpp\multipleNamespaces';
@@ -111,7 +123,7 @@ function multipleNamespaces(Parser $parserComposite): Parser
             )->yields($o),
         ),
         __($is)->_(manyList(imports())),
-        __($cs)->_(manyList($parserComposite)),
+        __($ts)->_(manyList($parserComposite)),
         __($_)->_(
             for_(
                 __($_)->_(spaces()),
@@ -119,5 +131,14 @@ function multipleNamespaces(Parser $parserComposite): Parser
                 __($_)->_(spaces())
             )->yields($c)
         )
-    )->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
+    //)->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
+    )->call(function (string $n, ImmList $ts, ImmList $is): ImmMap {
+        $ds = [];
+
+        $ts->map(function (Type $t) use (&$ds, $n, $is) {
+            $ds[$n . '\\' . $t->classname()] = new Definition($n, $t, $is);
+        });
+
+        return \ImmMap($ds);
+    }, $n, $ts, $is);
 }

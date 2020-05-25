@@ -12,8 +12,10 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Uuid;
 
+use function Fpp\buildDefaultPhpFile;
 use function Fpp\char;
-use Fpp\Namespace_;
+use Fpp\Configuration;
+use Fpp\Definition;
 use Fpp\Parser;
 use function Fpp\plus;
 use function Fpp\result;
@@ -24,7 +26,6 @@ use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
-use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
 use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
@@ -54,11 +55,25 @@ function parse(): Parser
 
 const build = 'Fpp\Type\Uuid\build';
 
-function build(Uuid $type, ImmMap $builders): ClassType
+function build(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
 {
-    $class = new ClassType($type->classname());
-    $class->setFinal(true);
-    $class->setImplements($type->markers()->toArray());
+    $type = $definition->type();
+
+    if (! $type instanceof Uuid) {
+        throw new \InvalidArgumentException('Can only build definitions of ' . Uuid::class);
+    }
+
+    $fqcn = $definition->namespace() . '\\' . $type->classname();
+
+    $file = buildDefaultPhpFile($definition, $config);
+
+    $class = $file->addClass($fqcn)
+        ->setFinal()
+        ->setImplements($type->markers()->toArray());
+
+    $namespace = $file->getNamespaces()[$definition->namespace()];
+    $namespace->addUse('Ramsey\Uuid\Uuid');
+    $namespace->addUse('Ramsey\Uuid\UuidInterface');
 
     $class->addProperty('uuid')->setType('UuidInterface')->setPrivate();
 
@@ -94,7 +109,7 @@ function build(Uuid $type, ImmMap $builders): ClassType
     $equals->addParameter('other')->setType('self');
     $equals->setBody('return $this->uuid->equals($other->uuid);');
 
-    return $class;
+    return \ImmMap($fqcn, $file);
 }
 
 const fromPhpValue = 'Fpp\Type\Uuid\fromPhpValue';
@@ -114,14 +129,4 @@ function toPhpValue(Uuid $type, string $paramName): string
 class Uuid implements FppType
 {
     use TypeTrait;
-
-    public function setNamespace(Namespace_ $namespace): void
-    {
-        $namespace->addImports(ImmList(
-            Pair('Ramsey\Uuid\Uuid', null),
-            Pair('Ramsey\Uuid\UuidInterface', null)
-        ));
-
-        $this->namespace = $namespace;
-    }
 }

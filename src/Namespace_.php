@@ -25,10 +25,6 @@ class Namespace_
         $this->name = $namespaceName;
         $this->imports = $imports;
         $this->types = $types;
-
-        $types->map(function ($t) {
-            $t->setNamespace($this);
-        });
     }
 
     public function name(): string

@@ -12,7 +12,10 @@ declare(strict_types=1);
 
 namespace Fpp\Type\String_;
 
+use function Fpp\buildDefaultPhpFile;
 use function Fpp\char;
+use Fpp\Configuration;
+use Fpp\Definition;
 use Fpp\Parser;
 use function Fpp\plus;
 use function Fpp\result;
@@ -23,7 +26,6 @@ use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
-use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
 use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
@@ -53,11 +55,21 @@ function parse(): Parser
 
 const build = 'Fpp\Type\String_\build';
 
-function build(String_ $type, ImmMap $builders): ClassType
+function build(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
 {
-    $class = new ClassType($type->classname());
-    $class->setFinal(true);
-    $class->setImplements($type->markers()->toArray());
+    $type = $definition->type();
+
+    if (! $type instanceof String_) {
+        throw new \InvalidArgumentException('Can only build definitions of ' . String_::class);
+    }
+
+    $fqcn = $definition->namespace() . '\\' . $type->classname();
+
+    $file = buildDefaultPhpFile($definition, $config);
+
+    $class = $file->addClass($fqcn)
+        ->setFinal()
+        ->setImplements($type->markers()->toArray());
 
     $class->addProperty('value')->setType(Type::STRING)->setPrivate();
 
@@ -68,7 +80,7 @@ function build(String_ $type, ImmMap $builders): ClassType
     $method = $class->addMethod('value')->setReturnType(Type::STRING);
     $method->setBody('return $this->value;');
 
-    return $class;
+    return \ImmMap($fqcn, $file);
 }
 
 const fromPhpValue = 'Fpp\Type\String_\fromPhpValue';

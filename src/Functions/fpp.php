@@ -13,8 +13,9 @@ declare(strict_types=1);
 namespace Fpp;
 
 use Nette\PhpGenerator\PhpFile;
-use Nette\PhpGenerator\Printer;
+use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
+use Phunkie\Types\Pair;
 
 function isKeyword(string $string): bool
 {
@@ -75,27 +76,57 @@ function parseFile(Parser $parser): Parser
         ->or(manyList(multipleNamespaces($parser)));
 }
 
-function dump(Printer $printer, Type $type, Namespace_ $ns, ImmMap $builders, array $config)
+/**
+ * @param ImmMap<string, Definition> $definitions
+ *   An immutable map of parsed fqcn and its definitions
+ *
+ * @return ImmMap<string, string>
+ *   An immutable map of parsed fqcn and its printed file content
+ */
+function dump(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
 {
-    if (! isset($config['types'][\get_class($type)])) {
-        throw new \RuntimeException('No builder found for ' . \get_class($type));
-    }
+    $builder = $config->builderFor($definition->type());
 
-    $builder = $config['types'][\get_class($type)]->_2;
+    return addComment(
+        $builder($definition, $definitions, $config),
+        $config->comment()
+    )->map(
+        fn (Pair $p) => Pair(($config->printer())()->printFile($p->_2), $p->_1)
+    );
+}
 
+function buildDefaultPhpFile(Definition $definition, Configuration $config): PhpFile
+{
     $file = new PhpFile();
-    $file->setStrictTypes($config['use_strict_types']);
+    $file->setStrictTypes($config->useStrictTypes());
 
-    $namespace = $file->addNamespace($ns->name());
-    $classType = $builder($type, $builders);
+    $namespace = $file->addNamespace($definition->namespace());
 
-    if (null !== $config['comment']) {
-        $classType->addComment($config['comment']);
+    $definition->imports()->map(fn (Pair $i) => $namespace->addUse($i->_1, $i->_2));
+
+    return $file;
+}
+
+/**
+ * @param ImmMap<string, PhpFile> $files
+ * @return ImmList<PhpFile>
+ */
+function addComment(ImmMap $files, ?string $comment): ImmMap
+{
+    if (null === $comment) {
+        return $files;
     }
 
-    $namespace->add($classType);
+    return $files->map(function (Pair $p) use ($comment) {
+        /** @var PhpFile $file */
+        $file = $p->_2;
 
-    $ns->imports()->map(fn ($i) => $namespace->addUse($i->_1, $i->_2));
+        foreach ($file->getNamespaces() as $namespace) {
+            foreach ($namespace->getClasses() as $class) {
+                $class->addComment($comment);
+            }
+        }
 
-    return $printer->printFile($file);
+        return Pair($p->_1, $file);
+    });
 }

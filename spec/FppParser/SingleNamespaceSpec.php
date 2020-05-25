@@ -12,39 +12,28 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use Fpp\Namespace_;
 use function Fpp\singleNamespace;
 use Fpp\Type\Enum\Enum;
 use function Fpp\Type\Enum\parse as enum;
+use Phunkie\Types\ImmMap;
 
 describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('singleNamespace', function () {
-            it('can parse one namespace when ending with ;', function () {
-                expect(singleNamespace(enum())->run('namespace Foo;')->head()->_1)->toEqual(
-                    new Namespace_('Foo', Nil(), Nil())
-                );
-            });
-
             it('cannot parse second namespace when ending with ;', function () {
                 expect(singleNamespace(enum())->run('namespace Foo;namespace Bar;')->head()->_2)->toBe('namespace Bar;');
             });
 
-            it('can parse one namespace when ending with ; with an enum inside', function () {
+            it('can parse one namespace when ending with ;', function () {
                 $testString = <<<CODE
 namespace Foo;
 enum Color = Red | Blue;
 CODE;
 
-                /** @var Namespace_ $namespace */
-                $namespace = singleNamespace(enum())->run($testString)->head()->_1;
-                expect($namespace->name())->toBe('Foo');
-                expect($namespace->imports())->toEqual(Nil());
-                /** @var Enum $enum */
-                $enum = $namespace->types()->head();
-                expect($enum->classname())->toBe('Color');
-                expect($enum->markers()->isEmpty())->toBe(true);
-                expect($namespace->types()->isEmpty())->toBe(false);
+                /** @var ImmMap $definition */
+                $definition = singleNamespace(enum())->run($testString)->head()->_1;
+                expect($definition->contains('Foo\Color'))->toBe(true);
+                expect($definition->get('Foo\Color')->get()->imports())->toEqual(Nil());
             });
 
             it('can parse one namespace when ending with ; with use imports and an enum inside', function () {
@@ -55,18 +44,13 @@ use Foo\Baz as B;
 enum Color = Red | Blue;
 CODE;
 
-                /** @var Namespace_ $namespace */
-                $namespace = singleNamespace(enum())->run($testString)->head()->_1;
-                expect($namespace->name())->toBe('Foo');
-                expect($namespace->imports())->toEqual(ImmList(
+                /** @var ImmMap $definition */
+                $definition = singleNamespace(enum())->run($testString)->head()->_1;
+                expect($definition->contains('Foo\Color'))->toBe(true);
+                expect($definition->get('Foo\Color')->get()->imports())->toEqual(ImmList(
                     Pair('Foo\Bar', null),
                     Pair('Foo\Baz', 'B')
                 ));
-                /** @var Enum $enum */
-                $enum = $namespace->types()->head();
-                expect($enum->classname())->toBe('Color');
-                expect($enum->markers()->isEmpty())->toBe(true);
-                expect($namespace->types()->isEmpty())->toBe(false);
             });
         });
     });

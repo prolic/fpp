@@ -1,5 +1,6 @@
 namespace Foo {
-    data Person = { string $name = '', ?int $age = 18, string[] $emails = [] };
+    data Person = { ?UserId $userId, Name $name, ?int $age = 18, string[] $emails = [] };
+    string Name;
     uuid UserId;
     guid HumanId : Stringify;
 }

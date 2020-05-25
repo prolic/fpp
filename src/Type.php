@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Phunkie\Types\ImmList;
+
 interface Type
 {
     public function classname(): string;
 
-    public function namespace(): ?Namespace_;
-
-    public function setNamespace(Namespace_ $namespace): void;
+    public function markers(): ImmList;
 }

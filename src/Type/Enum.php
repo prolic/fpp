@@ -13,8 +13,11 @@ declare(strict_types=1);
 namespace Fpp\Type\Enum;
 
 use function Fpp\assignment;
+use function Fpp\buildDefaultPhpFile;
 use function Fpp\char;
+use Fpp\Configuration;
 use function Fpp\constructorSeparator;
+use Fpp\Definition;
 use Fpp\Parser;
 use function Fpp\plus;
 use function Fpp\result;
@@ -27,7 +30,6 @@ use Fpp\Type\Int_\Int_;
 use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
-use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Type;
 use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
@@ -69,18 +71,28 @@ function parse(): Parser
 
 const build = 'Fpp\Type\Enum\build';
 
-function build(Enum $enum, ImmMap $builders): ClassType
+function build(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
 {
-    $classname = $enum->classname();
+    $type = $definition->type();
+
+    if (! $type instanceof Enum) {
+        throw new \InvalidArgumentException('Can only build definitions of ' . Enum::class);
+    }
+
+    $fqcn = $definition->namespace() . '\\' . $type->classname();
+
+    $file = buildDefaultPhpFile($definition, $config);
+
+    $classname = $type->classname();
     $lcClassName = \lcfirst($classname);
 
-    $class = new ClassType($classname);
-    $class->setFinal(true);
-    $class->setImplements($enum->markers()->toArray());
+    $class = $file->addClass($fqcn)
+        ->setFinal()
+        ->setImplements($type->markers()->toArray());
 
     $options = [];
     $i = 0;
-    $enum->constructors()->map(function ($c) use ($class, &$options, &$i, $classname) {
+    $type->constructors()->map(function ($c) use ($class, &$options, &$i, $classname) {
         $class->addConstant($c->name(), $i)->setPublic();
 
         $options[] = $c->name();
@@ -141,7 +153,7 @@ CODE
     $method = $class->addMethod('toString')->setPublic()->setReturnType(Type::STRING);
     $method->setBody('return $this->name;');
 
-    return $class;
+    return \ImmMap($fqcn, $file);
 }
 
 const fromPhpValue = 'Fpp\Type\Enum\fromPhpValue';

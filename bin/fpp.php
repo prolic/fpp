@@ -24,6 +24,7 @@ use Fpp\Type\Uuid;
 use Nette\PhpGenerator\PsrPrinter;
 use function Pair;
 use Phunkie\Types\ImmList;
+use Phunkie\Types\ImmMap;
 use Phunkie\Types\Pair;
 
 if (! isset($argv[1])) {
@@ -117,54 +118,70 @@ if (\file_exists("$pwd/fpp-config.php")) {
     $config = require "$pwd/fpp-config.php";
 }
 
-$builders = ImmMap($config['types']);
+$config = Configuration::fromArray($config);
 
 $parser = zero();
-$printer = $config['printer']();
 
-foreach ($config['types'] as $type => $pair) {
-    $parser = $parser->or(($pair->_1)());
-}
+$config->types()->map(function (Pair $p) use (&$parser) {
+    $parser = $parser->or(($p->_2->_1)());
 
-scan($path)->map(
-    fn ($f) => Pair($config['file_parser']($parser)->run(\file_get_contents($f)), $f)
-)->map(function (Pair $p) {
-    $parsed = $p->_1;
-    $filename = $p->_2;
-
-    $p = $parsed->head();
-
-    if ($p->_2 !== '') {
-        echo "\033[1;31mSyntax error at file $filename at:\033[0m" . PHP_EOL . PHP_EOL;
-        \var_dump($p->_1);
-        echo \substr($p->_2, 0, 100) . PHP_EOL;
-        exit(1);
-    }
-
-    return $p->_1;
-})->fold(Nil(), function (ImmList $types, ImmList $nsl) {
-    $nsl->map(function (Namespace_ $n) use (&$types) {
-        $n->types()->map(function (Type $t) use ($n, &$types) {
-            $types = $types->combine(\ImmList(Pair($t, $n)));
-        });
-    });
-
-    return $types;
-})->map(function (Pair $p) use ($printer, $config, $builders) {
-    $type = $p->_1;
-    $namespace = $p->_2;
-
-    return Pair(dump($printer, $type, $namespace, $builders, $config), $namespace->name() . '\\' . $type->classname());
-})->map(function (Pair $p) use ($locatePsrPath) {
-    $filename = $locatePsrPath($p->_2);
-    $directory = \dirname($filename);
-
-    if (! \is_dir($directory)) {
-        \mkdir($directory, 0777, true);
-    }
-
-    \file_put_contents($filename, $p->_1);
+    return $p;
 });
+
+$definitions = scan(
+    $path
+)->map(
+    fn ($f) => Pair(($config->fileParser())($parser)->run(\file_get_contents($f)), $f)
+)->map(
+    function (Pair $p) {
+        $parsed = $p->_1;
+        $filename = $p->_2;
+
+        $p = $parsed->head();
+
+        if ($p->_2 !== '') {
+            echo "\033[1;31mSyntax error at file $filename at:\033[0m" . PHP_EOL . PHP_EOL;
+            //\var_dump($p->_1);
+            echo \substr($p->_2, 0, 100) . PHP_EOL;
+            exit(1);
+        }
+
+        return $p->_1;
+    }
+)->fold(
+    ImmList(),
+    fn (ImmList $l, ImmList $nds) => $l->combine($nds)
+)->fold(
+    ImmMap(),
+    function (ImmMap $ds, ImmMap $nds) {
+        foreach ($nds->iterator() as $n => $d) {
+            $ds = $ds->plus($n, $d);
+        }
+
+        return $ds;
+    }
+);
+
+$definitions->map(
+    fn (Pair $p) => Pair(dump($p->_2, $definitions, $config), $p->_1)
+)->map(
+    function (Pair $p) use ($locatePsrPath) {
+        $p->_1->map(function (Pair $p) use ($locatePsrPath) {
+            $filename = $locatePsrPath($p->_2);
+            $directory = \dirname($filename);
+
+            if (! \is_dir($directory)) {
+                \mkdir($directory, 0777, true);
+            }
+
+            \file_put_contents($filename, $p->_1);
+
+            return $p;
+        });
+
+        return $p;
+    }
+);
 
 echo "Successfully generated and written to disk\n";
 exit(0);
