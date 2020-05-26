@@ -207,16 +207,16 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
 const fromPhpValue = 'Fpp\Type\Data\fromPhpValue';
 
-function fromPhpValue(Data $type, bool $value): string
+function fromPhpValue(Data $type, array $value): string
 {
-    throw new \BadMethodCallException('Not implemented');
+    return $type->classname() . '::fromArray(' . $value . ')';
 }
 
 const toPhpValue = 'Fpp\Type\Data\toPhpValue';
 
 function toPhpValue(Data $type, string $paramName): string
 {
-    throw new \BadMethodCallException('Not implemented');
+    return $paramName . '->toArray()';
 }
 
 class Data implements FppType
@@ -383,7 +383,7 @@ function calculateToArrayBodyFor(Argument $a, string $resolvedType, ImmMap $defi
             $builder = $config->toPhpValueFor($definition->type());
 
             if ($a->isList()) {
-                $callback = "fn({$a->type()} \$_e) => {$builder($definition->type(), '$_e')}";
+                $callback = "fn({$a->type()} \$e) => {$builder($definition->type(), '$e')}";
                 return "    '{$a->name()}' => \array_map($callback, \$this->{$a->name()}) ,\n";
             }
 

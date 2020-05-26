@@ -85,8 +85,9 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
     $fqcn = $definition->namespace() . '\\' . $type->classname();
 
-    $file = buildDefaultPhpFile($definition, $config)
-        ->addClass($fqcn)
+    $file = buildDefaultPhpFile($definition, $config);
+
+    $file->addClass($fqcn)
         ->setInterface()
         ->setExtends($type->markers()->toArray());
 
