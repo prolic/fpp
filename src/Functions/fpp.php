@@ -81,7 +81,7 @@ function parseFile(Parser $parser): Parser
  *   An immutable map of parsed fqcn and its definitions
  *
  * @return ImmMap<string, string>
- *   An immutable map of parsed fqcn and its printed file content
+ *   An immutable map of printed file content, and its fqcn
  */
 function dump(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
 {
@@ -91,7 +91,7 @@ function dump(Definition $definition, ImmMap $definitions, Configuration $config
         $builder($definition, $definitions, $config),
         $config->comment()
     )->map(
-        fn (Pair $p) => Pair(($config->printer())()->printFile($p->_2), $p->_1)
+        fn (Pair $p) => Pair(($config->printer())()->printFile($p->_1), $p->_2)
     );
 }
 
@@ -119,7 +119,7 @@ function addComment(ImmMap $files, ?string $comment): ImmMap
 
     return $files->map(function (Pair $p) use ($comment) {
         /** @var PhpFile $file */
-        $file = $p->_2;
+        $file = $p->_1;
 
         foreach ($file->getNamespaces() as $namespace) {
             foreach ($namespace->getClasses() as $class) {
@@ -127,6 +127,6 @@ function addComment(ImmMap $files, ?string $comment): ImmMap
             }
         }
 
-        return Pair($p->_1, $file);
+        return Pair($file, $p->_2);
     });
 }

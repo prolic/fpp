@@ -141,7 +141,6 @@ $definitions = scan(
 
         if ($p->_2 !== '') {
             echo "\033[1;31mSyntax error at file $filename at:\033[0m" . PHP_EOL . PHP_EOL;
-            //\var_dump($p->_1);
             echo \substr($p->_2, 0, 100) . PHP_EOL;
             exit(1);
         }
@@ -154,6 +153,7 @@ $definitions = scan(
 )->fold(
     ImmMap(),
     function (ImmMap $ds, ImmMap $nds) {
+
         foreach ($nds->iterator() as $n => $d) {
             $ds = $ds->plus($n, $d);
         }
@@ -163,7 +163,7 @@ $definitions = scan(
 );
 
 $definitions->map(
-    fn (Pair $p) => Pair(dump($p->_2, $definitions, $config), $p->_1)
+    fn (Pair $p) => Pair(dump($p->_2, $definitions->copy(), $config), $p->_1)
 )->map(
     function (Pair $p) use ($locatePsrPath) {
         $p->_1->map(function (Pair $p) use ($locatePsrPath) {

@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Data;
 
+use Phunkie\Types\Pair;
 use function Fpp\alphanum;
 use function Fpp\assignment;
 use function Fpp\buildDefaultPhpFile;
@@ -141,6 +142,8 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
         $type,
         $class,
         $constructor,
+        $definition,
+        $definitions,
         $config,
         &$constructorBody,
         &$fromArrayBody,
@@ -148,46 +151,11 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
     ) {
         $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
 
-        switch ($a->type()) {
-            case null:
-                $defaultValue = $a->defaultValue();
-                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
-                break;
-            case 'int':
-                $defaultValue = (int) $a->defaultValue();
-                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
-                break;
-            case 'float':
-                $defaultValue = (float) $a->defaultValue();
-                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
-                break;
-            case 'bool':
-                $defaultValue = ('true' === $a->defaultValue());
-                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
-                break;
-            case 'string':
-                $defaultValue = $a->defaultValue() === "''" ? '' : $a->defaultValue();
-                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
-                break;
-            case 'array':
-                $defaultValue = $a->defaultValue() === '[]' ? [] : $a->defaultValue();
-                $toArrayBody .= "    '{$a->name()}' => \$this->{$a->name()},\n";
-                break;
-            default:
-                $defaultValue = null;
-                //var_dump($builders);
-                //var_dump($data->namespace()->name() . '\\' . $a->type());
-                //var_dump( $data->namespace()->types()); die;
-                //$type = $data->namespace()->types()->takeWhile(fn (FppType $t) => $t->classname() === $a->type());
+        $resolvedType = resolveType($a->type(), $definition);
+        $defaultValue = calculateDefaultValue($a);
+        $toArrayBody .= calculateToArrayBodyFor($a, $resolvedType, $definitions, $config);
 
-                //die('ff');
-                //$builder = $builders->get($data->namespace()->name() . '\\' . $a->name());
-                //var_dump($builder);
-                $toArrayBody .= '';
-                break;
-        }
-
-        if ($defaultValue) {
+        if (null !== $defaultValue) {
             $param = $constructor->addParameter($a->name(), $defaultValue);
         } else {
             $param = $constructor->addParameter($a->name());
@@ -204,6 +172,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
             $param->setType('array');
 
             if ($a->type()) {
+                $constructor->addComment('@param ' . $a->type() . '[] $' . $a->name());
                 $method->addComment('@return ' . $a->type() . '[]');
             }
             $method->setReturnType('array');
@@ -218,9 +187,10 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
             $property->setType('array');
             $property->addComment('@return ' . $a->type() . '[]');
         }
+
     });
 
-    $constructor->setBody(\substr($constructorBody, 0, -1));
+    $constructor->setBody((string) \substr($constructorBody, 0, -1)); // remove string cast
 
     $fromArrayBody .= ');';
     $toArrayBody .= '];';
@@ -232,7 +202,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
     $toArray = $class->addMethod('toArray')->setReturnType('array');
     $toArray->setBody($toArrayBody);
 
-    return \ImmMap($fqcn, $file);
+    return \ImmMap($file, $fqcn);
 }
 
 const fromPhpValue = 'Fpp\Type\Data\fromPhpValue';
@@ -318,6 +288,105 @@ class Argument
 
     public function isScalarTypeHint(): bool
     {
-        return \in_array($this->type, ['string', 'int', 'bool', 'float'], true);
+        return \in_array($this->type, ['string', 'int', 'bool', 'float', 'array'], true);
+    }
+}
+
+// helper functions for dump
+
+/**
+ * Resolves from class name to fully qualified class name,
+ * f.e. Bar => Foo\Bar
+ */
+function resolveType(string $type, Definition $definition): string
+{
+    if (\in_array($type, ['string', 'int', 'bool', 'float', 'array'], true)) {
+        return $type;
+    }
+
+    foreach ($definition->imports()->toArray() as $p) {
+        $import = $p->_1;
+        $alias  = $p->_2;
+
+        if ($alias === $type) {
+            return $import;
+        }
+
+        if (null === $alias && $type === $import) {
+            return $type;
+        }
+
+        $pos = \stripos($import, '.');
+
+        if (false !== $pos && $type === \substr($import, $pos + 1)) {
+            return $import;
+        }
+    }
+
+    return $definition->namespace() . '\\' . $type;
+}
+
+/** @return mixed */
+function calculateDefaultValue(Argument $a)
+{
+    if ($a->isList() && $a->defaultValue() === '[]') {
+        return [];
+    }
+
+    switch ($a->type()) {
+        case 'int':
+            return (int) $a->defaultValue();
+            break;
+        case 'float':
+            return (float) $a->defaultValue();
+        case 'bool':
+            return ('true' === $a->defaultValue());
+        case 'string':
+            return $a->defaultValue() === "''" ? '' : $a->defaultValue();
+        case 'array':
+            return $a->defaultValue() === '[]' ? [] : $a->defaultValue();
+        case null:
+        default:
+            // yes both cases
+            return $a->defaultValue();
+    }
+}
+
+function calculateToArrayBodyFor(Argument $a, string $resolvedType, ImmMap $definitions, Configuration $config): string
+{
+    switch ($a->type()) {
+        case null:
+        case 'int':
+        case 'float':
+        case 'bool':
+        case 'string':
+        case 'array':
+            // yes all above are treated the same
+            return "    '{$a->name()}' => \$this->{$a->name()},\n";
+        default:
+
+            $definition = $definitions->get($resolvedType);
+
+            if ($definition->isEmpty()) {
+                $definition = $config->types()->get($resolvedType);
+
+                if ($definition->isEmpty()) {
+                    return "    '{$a->name()}' => \$this->{$a->name()},\n";
+                }
+
+                return "    '{$a->name()}' => " . ($definition->get()->_4)($a) . ",\n";
+            }
+
+            /** @var Definition $definition */
+            $definition = $definition->get();
+
+            $builder = $config->toPhpValueFor($definition->type());
+
+            if ($a->isList()) {
+                $callback = "fn({$a->type()} \$_e) => {$builder($definition->type(), '$_e')}";
+                return "    '{$a->name()}' => \array_map($callback, \$this->{$a->name()}) ,\n";
+            }
+
+            return "    '{$a->name()}' => \$this->" . ($builder)($definition->type(), $a->name()) . ",\n";
     }
 }

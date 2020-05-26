@@ -85,13 +85,12 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
     $fqcn = $definition->namespace() . '\\' . $type->classname();
 
-    $file = buildDefaultPhpFile($definition, $config);
-
-    $class = $file->addClass($fqcn)
+    $file = buildDefaultPhpFile($definition, $config)
+        ->addClass($fqcn)
         ->setInterface()
         ->setExtends($type->markers()->toArray());
 
-    return \ImmMap($fqcn, $file);
+    return \ImmMap($file, $fqcn);
 }
 
 class Marker implements FppType

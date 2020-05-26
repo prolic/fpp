@@ -122,7 +122,7 @@ return self::\$factory;
 CODE
 );
 
-    return \ImmMap($fqcn, $file);
+    return \ImmMap($file, $fqcn);
 }
 
 const fromPhpValue = 'Fpp\Type\Guid\fromPhpValue';

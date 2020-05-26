@@ -109,7 +109,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
     $equals->addParameter('other')->setType('self');
     $equals->setBody('return $this->uuid->equals($other->uuid);');
 
-    return \ImmMap($fqcn, $file);
+    return \ImmMap($file, $fqcn);
 }
 
 const fromPhpValue = 'Fpp\Type\Uuid\fromPhpValue';
