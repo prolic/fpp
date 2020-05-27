@@ -140,8 +140,7 @@ $definitions = scan(
         $p = $parsed->head();
 
         if ($p->_2 !== '') {
-            echo "\033[1;31mSyntax error at file $filename at:\033[0m" . PHP_EOL . PHP_EOL;
-            echo \substr($p->_2, 0, 100) . PHP_EOL;
+            echo "\033[1;31mSyntax error at file: $filename\033[0m" . PHP_EOL;
             exit(1);
         }
 
