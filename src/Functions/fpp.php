@@ -119,7 +119,7 @@ function addComment(ImmMap $files, ?string $comment): ImmMap
 
     return $files->map(function (Pair $p) use ($comment) {
         /** @var PhpFile $file */
-        $file = $p->_1;
+        $file = $p->_2;
 
         foreach ($file->getNamespaces() as $namespace) {
             foreach ($namespace->getClasses() as $class) {
@@ -127,6 +127,6 @@ function addComment(ImmMap $files, ?string $comment): ImmMap
             }
         }
 
-        return Pair($file, $p->_2);
+        return Pair($file, $p->_1);
     });
 }

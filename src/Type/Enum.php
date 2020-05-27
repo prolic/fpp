@@ -153,7 +153,7 @@ CODE
     $method = $class->addMethod('toString')->setPublic()->setReturnType(Type::STRING);
     $method->setBody('return $this->name;');
 
-    return \ImmMap($file, $fqcn);
+    return \ImmMap($fqcn, $file);
 }
 
 const fromPhpValue = 'Fpp\Type\Enum\fromPhpValue';

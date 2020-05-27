@@ -136,7 +136,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
     $class->addMethod('toArray')->setReturnType('array')->setAbstract();
     $class->addMethod('equals')->setReturnType(Type::BOOL)->setAbstract();
 
-    $map = \ImmMap($file, $fqcn);
+    $map = \ImmMap($fqcn, $file);
 
     $constructors = $type->constructors()->toArray();
 
@@ -152,8 +152,8 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
         }
 
         $map = $map->plus(
-            buildType($definition, $constructor, $definitions, $config),
-            $definition->namespace() . '\\' . $constructor->classname()
+            $definition->namespace() . '\\' . $constructor->classname(),
+            buildType($definition, $constructor, $definitions, $config)
         );
     }
 

@@ -80,7 +80,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
     $method = $class->addMethod('value')->setReturnType(Type::INT);
     $method->setBody('return $this->value;');
 
-    return \ImmMap($file, $fqcn);
+    return \ImmMap($fqcn, $file);
 }
 
 const fromPhpValue = 'Fpp\Type\Int_\fromPhpValue';

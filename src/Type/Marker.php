@@ -91,7 +91,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
         ->setInterface()
         ->setExtends($type->markers()->toArray());
 
-    return \ImmMap($file, $fqcn);
+    return \ImmMap($fqcn, $file);
 }
 
 class Marker implements FppType
