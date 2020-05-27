@@ -32,7 +32,7 @@ use Phunkie\Types\Tuple;
 
 function definition(): Tuple
 {
-    return \Tuple(parse, build, fromPhpValue, toPhpValue);
+    return \Tuple(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
 }
 
 const parse = 'Fpp\Type\String_\parse';
@@ -95,6 +95,20 @@ const toPhpValue = 'Fpp\Type\String_\toPhpValue';
 function toPhpValue(String_ $type, string $paramName): string
 {
     return $paramName . '->value()';
+}
+
+const validator = 'Fpp\Type\String_\validator';
+
+function validator(string $paramName): string
+{
+    return "\is_string(\$$paramName)";
+}
+
+const validationErrorMessage = 'Fpp\Type\String_\validationErrorMessage';
+
+function validationErrorMessage($paramName): string
+{
+    return "Error on \"$paramName\", string expected";
 }
 
 class String_ implements FppType

@@ -37,7 +37,7 @@ use Phunkie\Types\Tuple;
 
 function definition(): Tuple
 {
-    return \Tuple(parse, build, fromPhpValue, toPhpValue);
+    return \Tuple(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
 }
 
 const parse = 'Fpp\Type\Enum\parse';
@@ -168,6 +168,20 @@ const toPhpValue = 'Fpp\Type\Enum\toPhpValue';
 function toPhpValue(Int_ $type, string $paramName): string
 {
     return $paramName . '->name()';
+}
+
+const validator = 'Fpp\Type\Enum\validator';
+
+function validator(string $paramName): string
+{
+    return "\is_string(\$$paramName)";
+}
+
+const validationErrorMessage = 'Fpp\Type\Enum\validationErrorMessage';
+
+function validationErrorMessage($paramName): string
+{
+    return "Error on \"$paramName\", string expected";
 }
 
 class Enum implements FppType

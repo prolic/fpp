@@ -32,7 +32,7 @@ use Phunkie\Types\Tuple;
 
 function definition(): Tuple
 {
-    return \Tuple(parse, build, fromPhpValue, toPhpValue);
+    return \Tuple(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
 }
 
 const parse = 'Fpp\Type\Guid\parse';
@@ -127,7 +127,7 @@ CODE
 
 const fromPhpValue = 'Fpp\Type\Guid\fromPhpValue';
 
-function fromPhpValue(Guid $type, bool $value): string
+function fromPhpValue(Guid $type, string $value): string
 {
     return $type->classname() . '::fromString(' . $value . ')';
 }
@@ -137,6 +137,20 @@ const toPhpValue = 'Fpp\Type\Guid\toPhpValue';
 function toPhpValue(Guid $type, string $paramName): string
 {
     return $paramName . '->toString()';
+}
+
+const validator = 'Fpp\Type\Guid\validator';
+
+function validator(string $paramName): string
+{
+    return "\is_string(\$$paramName)";
+}
+
+const validationErrorMessage = 'Fpp\Type\Guid\validationErrorMessage';
+
+function validationErrorMessage($paramName): string
+{
+    return "Error on \"$paramName\", string expected";
 }
 
 class Guid implements FppType

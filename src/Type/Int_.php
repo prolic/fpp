@@ -97,6 +97,20 @@ function toPhpValue(Int_ $type, string $paramName): string
     return $paramName . '->value()';
 }
 
+const validator = 'Fpp\Type\Int_\validator';
+
+function validator(string $paramName): string
+{
+    return "\is_numeric(\$$paramName)";
+}
+
+const validationErrorMessage = 'Fpp\Type\Int_\validationErrorMessage';
+
+function validationErrorMessage($paramName): string
+{
+    return "Error on \"$paramName\", int expected";
+}
+
 class Int_ implements FppType
 {
     use TypeTrait;

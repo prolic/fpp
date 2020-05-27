@@ -84,6 +84,28 @@ class Configuration
         return $option->get()->_4;
     }
 
+    public function validatorFor(Type $type): callable
+    {
+        $option = $this->types->get(\get_class($type));
+
+        if ($option->isEmpty()) {
+            throw new RuntimeException('No validator function for ' . \get_class($type) . ' found');
+        }
+
+        return $option->get()->_5;
+    }
+
+    public function validationErrorMessageFor(Type $type): callable
+    {
+        $option = $this->types->get(\get_class($type));
+
+        if ($option->isEmpty()) {
+            throw new RuntimeException('No validation error message function for ' . \get_class($type) . ' found');
+        }
+
+        return $option->get()->_6;
+    }
+
     public function useStrictTypes(): bool
     {
         return $this->useStrictTypes;

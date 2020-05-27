@@ -153,7 +153,6 @@ $definitions = scan(
 )->fold(
     ImmMap(),
     function (ImmMap $ds, ImmMap $nds) {
-
         foreach ($nds->iterator() as $n => $d) {
             $ds = $ds->plus($n, $d);
         }

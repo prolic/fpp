@@ -32,7 +32,7 @@ use Phunkie\Types\Tuple;
 
 function definition(): Tuple
 {
-    return \Tuple(parse, build, fromPhpValue, toPhpValue);
+    return \Tuple(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
 }
 
 const parse = 'Fpp\Type\Uuid\parse';
@@ -114,7 +114,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
 const fromPhpValue = 'Fpp\Type\Uuid\fromPhpValue';
 
-function fromPhpValue(Uuid $type, bool $value): string
+function fromPhpValue(Uuid $type, string $value): string
 {
     return $type->classname() . '::fromString(' . $value . ')';
 }
@@ -124,6 +124,20 @@ const toPhpValue = 'Fpp\Type\Uuid\toPhpValue';
 function toPhpValue(Uuid $type, string $paramName): string
 {
     return $paramName . '->toString()';
+}
+
+const validator = 'Fpp\Type\Uuid\validator';
+
+function validator(string $paramName): string
+{
+    return "\is_string(\$$paramName)";
+}
+
+const validationErrorMessage = 'Fpp\Type\Uuid\validationErrorMessage';
+
+function validationErrorMessage($paramName): string
+{
+    return "Error on \"$paramName\", string expected";
 }
 
 class Uuid implements FppType

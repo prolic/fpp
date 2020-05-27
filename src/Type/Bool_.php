@@ -32,7 +32,7 @@ use Phunkie\Types\Tuple;
 
 function definition(): Tuple
 {
-    return \Tuple(parse, build, fromPhpValue, toPhpValue);
+    return \Tuple(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
 }
 
 const parse = 'Fpp\Type\Bool_\parse';
@@ -95,6 +95,20 @@ const toPhpValue = 'Fpp\Type\Bool_\toPhpValue';
 function toPhpValue(Bool_ $type, string $paramName): string
 {
     return $paramName . '->value()';
+}
+
+const validator = 'Fpp\Type\Bool_\validator';
+
+function validator(string $paramName): string
+{
+    return "\is_bool(\$$paramName)";
+}
+
+const validationErrorMessage = 'Fpp\Type\Bool_\validationErrorMessage';
+
+function validationErrorMessage($paramName): string
+{
+    return "Error on \"$paramName\", bool expected";
 }
 
 class Bool_ implements FppType

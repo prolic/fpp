@@ -32,7 +32,7 @@ use Phunkie\Types\Tuple;
 
 function definition(): Tuple
 {
-    return \Tuple(parse, build, fromPhpValue, toPhpValue);
+    return \Tuple(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
 }
 
 const parse = 'Fpp\Type\Float_\parse';
@@ -95,6 +95,20 @@ const toPhpValue = 'Fpp\Type\Float_\toPhpValue';
 function toPhpValue(Float_ $type, string $paramName): string
 {
     return $paramName . '->value()';
+}
+
+const validator = 'Fpp\Type\Float_\validator';
+
+function validator(string $paramName): string
+{
+    return "\is_float(\$$paramName)";
+}
+
+const validationErrorMessage = 'Fpp\Type\Float_\validationErrorMessage';
+
+function validationErrorMessage($paramName): string
+{
+    return "Error on \"$paramName\", float expected";
 }
 
 class Float_ implements FppType
