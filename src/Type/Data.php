@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Data;
 
+use Nette\PhpGenerator\PhpFile;
+use Phunkie\Types\Pair;
 use function Fpp\alphanum;
 use function Fpp\assignment;
 use function Fpp\buildDefaultPhpFile;
@@ -110,7 +112,7 @@ function parse(): Parser
         )),
         __($_)->_(spaces()),
         __($_)->_(char(';'))
-    )->call(fn ($t, $ms, $as) => new Data($t, $ms, $as), $t, $ms, $as);
+    )->call(fn ($t, $ms, $as) => new Data($t, $ms, ImmList(new Constructor($t, $as))), $t, $ms, $as);
 }
 
 const build = 'Fpp\Type\Data\build';
@@ -128,8 +130,177 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
     $file = buildDefaultPhpFile($definition, $config);
 
     $class = $file->addClass($fqcn)
-        ->setFinal()
+        ->setAbstract()
         ->setImplements($type->markers()->toArray());
+
+    $class->addMethod('fromArray')->setStatic()->setReturnType('self')->setAbstract();
+    $class->addMethod('toArray')->setReturnType('array')->setAbstract();
+    $class->addMethod('equals')->setReturnType(Type::BOOL)->setAbstract();
+
+    $map = \ImmMap($file, $fqcn);
+
+    $constructors = $type->constructors()->toArray();
+
+    $singleConstructor = \count($constructors) === 1;
+
+    foreach ($constructors as $constructor) {
+        /** @var Constructor $constructor */
+        if ($constructor->classname() === $type->classname() && ! $singleConstructor) {
+            throw new \LogicException(\sprintf(
+                'Invalid data type: "%s" has a subtype defined with the same name',
+                $fqcn
+            ));
+        }
+
+        $map = $map->plus(
+            buildType($definition, $constructor, $definitions, $config),
+            $definition->namespace() . '\\' . $constructor->classname()
+        );
+    }
+
+    return $map;
+}
+
+const fromPhpValue = 'Fpp\Type\Data\fromPhpValue';
+
+function fromPhpValue(Data $type, string $value): string
+{
+    return $type->classname() . '::fromArray(' . $value . ')';
+}
+
+const toPhpValue = 'Fpp\Type\Data\toPhpValue';
+
+function toPhpValue(Data $type, string $paramName): string
+{
+    return $paramName . '->toArray()';
+}
+
+const validator = 'Fpp\Type\Data\validator';
+
+function validator(string $paramName): string
+{
+    return "\is_array(\$$paramName)";
+}
+
+const validationErrorMessage = 'Fpp\Type\Bool_\validationErrorMessage';
+
+function validationErrorMessage($paramName): string
+{
+    return "Error on \"$paramName\", array expected";
+}
+
+class Data implements FppType
+{
+    use TypeTrait;
+
+    /** @var ImmList<Constructor> */
+    private ImmList $constructors;
+
+    /** @param Immlist<Constructor> $constructors */
+    public function __construct(string $classname, ImmList $markers, ImmList $constructors)
+    {
+        $this->classname = $classname;
+        $this->markers = $markers;
+        $this->constructors = $constructors;
+    }
+
+    /** @return ImmList<Constructor> */
+    public function constructors(): ImmList
+    {
+        return $this->constructors;
+    }
+}
+
+class Constructor
+{
+    private string $classname;
+    /** @var Immlist<Argument> */
+    private ImmList $arguments;
+
+    /** @param ImmList<Argument> $arguments */
+    public function __construct(string $classname, ImmList $arguments)
+    {
+        $this->classname = $classname;
+        $this->arguments = $arguments;
+    }
+
+    public function classname(): string
+    {
+        return $this->classname;
+    }
+
+    /** @return ImmList<Argument> */
+    public function arguments(): ImmList
+    {
+        return $this->arguments;
+    }
+}
+
+class Argument
+{
+    private string $name;
+    private ?string $type;
+    private bool $nullable;
+    private bool $isList;
+    /** @var mixed */
+    private $defaultValue;
+
+    public function __construct(string $name, ?string $type, bool $nullable, bool $isList, $defaultValue)
+    {
+        $this->name = $name;
+        $this->type = $type;
+        $this->nullable = $nullable;
+        $this->isList = $isList;
+        $this->defaultValue = $defaultValue;
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function type(): ?string
+    {
+        return $this->type;
+    }
+
+    public function nullable(): bool
+    {
+        return $this->nullable;
+    }
+
+    public function isList(): bool
+    {
+        return $this->isList;
+    }
+
+    public function defaultValue()
+    {
+        return $this->defaultValue;
+    }
+}
+
+// helper functions for build
+
+function buildType(
+    Definition $definition,
+    Constructor $constr,
+    ImmMap $definitions,
+    Configuration $config
+): PhpFile
+{
+    $fqcn = $definition->namespace() . '\\' . $constr->classname();
+
+    $file = buildDefaultPhpFile($definition, $config);
+
+    $class = $file->addClass($fqcn)
+        ->setFinal();
+
+    if ($definition->type()->classname() === $constr->classname()) {
+        $class->setImplements($definition->type()->markers()->toArray());
+    } else {
+        $class->setExtends($definition->type()->classname());
+    }
 
     $constructor = $class->addMethod('__construct');
 
@@ -138,8 +309,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
     $fromArrayBody = "return new self(\n";
     $toArrayBody = "return [\n";
 
-    $type->arguments()->map(function (Argument $a) use (
-        $type,
+    $constr->arguments()->map(function (Argument $a) use (
         $class,
         $constructor,
         $definition,
@@ -192,7 +362,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
         }
     });
 
-    $constructor->setBody((string) \substr($constructorBody, 0, -1)); // remove string cast
+    $constructor->setBody(\substr($constructorBody, 0, -1));
 
     $fromArrayBody .= ');';
     $toArrayBody .= '];';
@@ -204,106 +374,8 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
     $toArray = $class->addMethod('toArray')->setReturnType('array');
     $toArray->setBody($toArrayBody);
 
-    return \ImmMap($file, $fqcn);
+    return $file;
 }
-
-const fromPhpValue = 'Fpp\Type\Data\fromPhpValue';
-
-function fromPhpValue(Data $type, string $value): string
-{
-    return $type->classname() . '::fromArray(' . $value . ')';
-}
-
-const toPhpValue = 'Fpp\Type\Data\toPhpValue';
-
-function toPhpValue(Data $type, string $paramName): string
-{
-    return $paramName . '->toArray()';
-}
-
-const validator = 'Fpp\Type\Data\validator';
-
-function validator(string $paramName): string
-{
-    return "\is_array(\$$paramName)";
-}
-
-const validationErrorMessage = 'Fpp\Type\Bool_\validationErrorMessage';
-
-function validationErrorMessage($paramName): string
-{
-    return "Error on \"$paramName\", array expected";
-}
-
-class Data implements FppType
-{
-    use TypeTrait;
-
-    /** @var Immlist<Argument> */
-    private ImmList $arguments;
-
-    /** @param Immlist<Argument> $arguments */
-    public function __construct(string $classname, ImmList $markers, ImmList $arguments)
-    {
-        $this->classname = $classname;
-        $this->markers = $markers;
-        $this->arguments = $arguments;
-    }
-
-    /**
-     * @return ImmList<Argument>
-     */
-    public function arguments(): ImmList
-    {
-        return $this->arguments;
-    }
-}
-
-class Argument
-{
-    private string $name;
-    private ?string $type;
-    private bool $nullable;
-    private bool $isList;
-    /** @var mixed */
-    private $defaultValue;
-
-    public function __construct(string $name, ?string $type, bool $nullable, bool $isList, $defaultValue)
-    {
-        $this->name = $name;
-        $this->type = $type;
-        $this->nullable = $nullable;
-        $this->isList = $isList;
-        $this->defaultValue = $defaultValue;
-    }
-
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    public function type(): ?string
-    {
-        return $this->type;
-    }
-
-    public function nullable(): bool
-    {
-        return $this->nullable;
-    }
-
-    public function isList(): bool
-    {
-        return $this->isList;
-    }
-
-    public function defaultValue()
-    {
-        return $this->defaultValue;
-    }
-}
-
-// helper functions for dump
 
 /**
  * Resolves from class name to fully qualified class name,
