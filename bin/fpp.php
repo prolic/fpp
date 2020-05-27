@@ -128,6 +128,7 @@ $config->types()->map(function (Pair $p) use (&$parser) {
     return $p;
 });
 
+echo 'parsing...' . PHP_EOL;
 $definitions = scan(
     $path
 )->map(
@@ -159,6 +160,8 @@ $definitions = scan(
         return $ds;
     }
 );
+
+echo 'dumping...' . PHP_EOL;
 
 $definitions->map(
     fn (Pair $p) => Pair(dump($p->_2, $definitions->copy(), $config), $p->_1)

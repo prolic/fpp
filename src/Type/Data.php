@@ -17,6 +17,7 @@ use function Fpp\assignment;
 use function Fpp\buildDefaultPhpFile;
 use function Fpp\char;
 use Fpp\Configuration;
+use function Fpp\constructorSeparator;
 use Fpp\Definition;
 use function Fpp\int;
 use function Fpp\item;
@@ -26,6 +27,7 @@ use Fpp\Parser;
 use function Fpp\plus;
 use function Fpp\result;
 use function Fpp\sepBy1list;
+use function Fpp\sepBy1With;
 use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
@@ -50,68 +52,7 @@ const parse = 'Fpp\Type\Data\parse';
 
 function parse(): Parser
 {
-    return for_(
-        __($_)->_(spaces()),
-        __($_)->_(string('data')),
-        __($_)->_(spaces1()),
-        __($t)->_(typeName()),
-        __($_)->_(spaces()),
-        __($ms)->_(
-            plus(markers(), result(Nil()))
-        ),
-        __($_)->_(assignment()),
-        __($as)->_(surrounded(
-            for_(
-                __($_)->_(spaces()),
-                __($o)->_(char('{')),
-                __($_)->_(spaces())
-            )->yields($o),
-            sepBy1list(
-                for_(
-                    __($_)->_(spaces()),
-                    __($n)->_(char('?')->or(result(''))),
-                    __($at)->_(typeName()->or(result(''))),
-                    __($l)->_(string('[]')->or(result(''))),
-                    __($_)->_(spaces()),
-                    __($_)->_(char('$')),
-                    __($x)->_(plus(letter(), char('_'))),
-                    __($xs)->_(many(plus(alphanum(), char('_')))),
-                    __($_)->_(spaces()),
-                    __($e)->_(char('=')->or(result(''))),
-                    __($_)->_(spaces()),
-                    __($d)->_(
-                        many(int())
-                            ->or(string('null'))
-                            ->or(string('[]'))
-                            ->or(surroundedWith(char('\''), many(item()), char('\'')))->or(result(''))
-                    ),
-                )->call(
-                    fn ($at, $x, $xs, $n, $l, $e, $d) => new Argument(
-                        $x . $xs,
-                        '' === $at ? null : $at,
-                        $n === '?',
-                        '[]' === $l,
-                        '=' === $e ? $d : null
-                    ),
-                    $at,
-                    $x,
-                    $xs,
-                    $n,
-                    $l,
-                    $e,
-                    $d
-                ),
-                char(',')
-            ),
-            for_(
-                __($_)->_(spaces()),
-                __($c)->_(char('}')),
-                __($_)->_(spaces())
-            )->yields($c)
-        )),
-        __($_)->_(spaces()),
-        __($_)->_(char(';'))
-    )->call(fn ($t, $ms, $as) => new Data($t, $ms, ImmList(new Constructor($t, $as))), $t, $ms, $as);
+    return parseSimplyfied()->or(parseWitSubTypes());
 }
 
 const build = 'Fpp\Type\Data\build';
@@ -279,6 +220,108 @@ class Argument
     }
 }
 
+// helper functions for parse
+
+function parseSimplyfied(): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($_)->_(string('data')),
+        __($_)->_(spaces1()),
+        __($t)->_(typeName()),
+        __($_)->_(spaces()),
+        __($ms)->_(
+            plus(markers(), result(Nil()))
+        ),
+        __($_)->_(assignment()),
+        __($as)->_(parseArguments()),
+        __($_)->_(spaces()),
+        __($_)->_(char(';'))
+    )->call(fn ($t, $ms, $as) => new Data($t, $ms, ImmList(new Constructor($t, $as))), $t, $ms, $as);
+}
+
+function parseWitSubTypes(): Parser
+{
+    return for_(
+        __($_)->_(spaces()),
+        __($_)->_(string('data')),
+        __($_)->_(spaces1()),
+        __($t)->_(typeName()),
+        __($_)->_(spaces()),
+        __($ms)->_(
+            plus(markers(), result(Nil()))
+        ),
+        __($_)->_(assignment()),
+        __($cs)->_(
+            sepBy1list(
+                for_(
+                    __($c)->_(sepBy1With(typeName(), char('\\'))),
+                    __($_)->_(spaces()),
+                    __($as)->_(
+                        parseArguments()
+                    )
+                )->call(fn ($c, $as) => new Constructor($c, $as), $c, $as),
+                constructorSeparator()
+            )
+        ),
+        __($_)->_(spaces()),
+        __($_)->_(char(';'))
+    )->call(fn ($t, $ms, $cs) => new Data($t, $ms, $cs), $t, $ms, $cs);
+}
+
+function parseArguments(): Parser
+{
+    return surrounded(
+        for_(
+            __($_)->_(spaces()),
+            __($o)->_(char('{')),
+            __($_)->_(spaces())
+        )->yields($o),
+        sepBy1list(
+            for_(
+                __($_)->_(spaces()),
+                __($n)->_(char('?')->or(result(''))),
+                __($at)->_(typeName()->or(result(''))),
+                __($l)->_(string('[]')->or(result(''))),
+                __($_)->_(spaces()),
+                __($_)->_(char('$')),
+                __($x)->_(plus(letter(), char('_'))),
+                __($xs)->_(many(plus(alphanum(), char('_')))),
+                __($_)->_(spaces()),
+                __($e)->_(char('=')->or(result(''))),
+                __($_)->_(spaces()),
+                __($d)->_(
+                    many(int())
+                        ->or(string('null'))
+                        ->or(string('[]'))
+                        ->or(surroundedWith(char('\''), many(item()), char('\'')))->or(result(''))
+                ),
+            )->call(
+                fn ($at, $x, $xs, $n, $l, $e, $d) => new Argument(
+                    $x . $xs,
+                    '' === $at ? null : $at,
+                    $n === '?',
+                    '[]' === $l,
+                    '=' === $e ? $d : null
+                ),
+                $at,
+                $x,
+                $xs,
+                $n,
+                $l,
+                $e,
+                $d
+            ),
+            char(',')
+        ),
+        for_(
+            __($_)->_(spaces()),
+            __($c)->_(char('}')),
+            __($_)->_(spaces())
+        )->yields($c)
+    );
+}
+
 // helper functions for build
 
 function buildType(
@@ -303,7 +346,7 @@ function buildType(
     $constructor = $class->addMethod('__construct');
 
     $constructorBody = '';
-    $fromArrayValidationBody = '';
+    $ValidationBody = '';
     $fromArrayBody = "return new self(\n";
     $toArrayBody = "return [\n";
 
@@ -416,14 +459,18 @@ function calculateDefaultValue(Argument $a)
 
     switch ($a->type()) {
         case 'int':
-            return (int) $a->defaultValue();
+            return null === $a->defaultValue() ? null : (int) $a->defaultValue();
             break;
         case 'float':
-            return (float) $a->defaultValue();
+            return null === $a->defaultValue() ? null : (float) $a->defaultValue();
         case 'bool':
-            return 'true' === $a->defaultValue();
+            return null === $a->defaultValue() ? null : 'true' === $a->defaultValue();
         case 'string':
-            return $a->defaultValue() === "''" ? '' : $a->defaultValue();
+            if (null === $a->defaultValue()) {
+                return null;
+            }
+
+            return $a->defaultValue() === "''" ? '' : \substr($a->defaultValue(), 1, -1);
         case 'array':
             return $a->defaultValue() === '[]' ? [] : $a->defaultValue();
         case null:
@@ -531,7 +578,7 @@ function calculateFromArrayBodyFor(Argument $a, string $resolvedType, ImmMap $de
                 $definition = $config->types()->get($resolvedType);
 
                 if ($definition->isEmpty()) {
-                    return "    '\$data['{$a->name()}'],\n";
+                    return "    \$data['{$a->name()}'],\n";
                 }
 
                 return '    ' . ($definition->get()->_3)("\$data['{$a->name()}']") . ",\n";

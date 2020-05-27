@@ -20,7 +20,7 @@ use Phunkie\Types\Pair;
 function isKeyword(string $string): bool
 {
     return \in_array(\strtolower($string), [
-        '__halt_compiler', 'abstract', 'and', 'array', 'as',
+        '__halt_compiler', 'abstract', 'and', 'as',
         'break', 'callable', 'case', 'catch', 'class',
         'clone', 'const', 'continue', 'declare', 'default',
         'die', 'do', 'echo', 'else', 'elseif',
