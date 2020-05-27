@@ -127,9 +127,9 @@ CODE
 
 const fromPhpValue = 'Fpp\Type\Guid\fromPhpValue';
 
-function fromPhpValue(Guid $type, string $value): string
+function fromPhpValue(Guid $type, string $paramName): string
 {
-    return $type->classname() . '::fromString(' . $value . ')';
+    return $type->classname() . '::fromString(' . $paramName . ')';
 }
 
 const toPhpValue = 'Fpp\Type\Guid\toPhpValue';

@@ -32,7 +32,7 @@ use Phunkie\Types\Tuple;
 
 function definition(): Tuple
 {
-    return \Tuple(parse, build, fromPhpValue, toPhpValue);
+    return \Tuple(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
 }
 
 const parse = 'Fpp\Type\Int_\parse';
@@ -85,9 +85,9 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
 const fromPhpValue = 'Fpp\Type\Int_\fromPhpValue';
 
-function fromPhpValue(Int_ $type, int $value): string
+function fromPhpValue(Int_ $type, string $paramName): string
 {
-    return 'new ' . $type->classname() . '(' . $value . ')';
+    return 'new ' . $type->classname() . '(' . $paramName . ')';
 }
 
 const toPhpValue = 'Fpp\Type\Int_\toPhpValue';

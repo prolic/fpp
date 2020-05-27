@@ -158,9 +158,9 @@ CODE
 
 const fromPhpValue = 'Fpp\Type\Enum\fromPhpValue';
 
-function fromPhpValue(Enum $type, string $value): string
+function fromPhpValue(Enum $type, string $paramName): string
 {
-    return $type->classname() . '::fromName(' . $value . ')';
+    return $type->classname() . '::fromName(' . $paramName . ')';
 }
 
 const toPhpValue = 'Fpp\Type\Enum\toPhpValue';

@@ -114,9 +114,9 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
 const fromPhpValue = 'Fpp\Type\Uuid\fromPhpValue';
 
-function fromPhpValue(Uuid $type, string $value): string
+function fromPhpValue(Uuid $type, string $paramName): string
 {
-    return $type->classname() . '::fromString(' . $value . ')';
+    return $type->classname() . '::fromString(' . $paramName . ')';
 }
 
 const toPhpValue = 'Fpp\Type\Uuid\toPhpValue';

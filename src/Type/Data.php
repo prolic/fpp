@@ -103,9 +103,9 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
 const fromPhpValue = 'Fpp\Type\Data\fromPhpValue';
 
-function fromPhpValue(Data $type, string $value): string
+function fromPhpValue(Data $type, string $paramName): string
 {
-    return $type->classname() . '::fromArray(' . $value . ')';
+    return $type->classname() . '::fromArray(' . $paramName . ')';
 }
 
 const toPhpValue = 'Fpp\Type\Data\toPhpValue';

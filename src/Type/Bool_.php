@@ -85,9 +85,9 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
 const fromPhpValue = 'Fpp\Type\Bool_\fromPhpValue';
 
-function fromPhpValue(Bool_ $type, bool $value): string
+function fromPhpValue(Bool_ $type, string $paramName): string
 {
-    return 'new ' . $type->classname() . '(' . $value . ')';
+    return 'new ' . $type->classname() . '(' . $paramName . ')';
 }
 
 const toPhpValue = 'Fpp\Type\Bool_\toPhpValue';

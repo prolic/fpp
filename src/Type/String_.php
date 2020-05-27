@@ -85,9 +85,9 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
 const fromPhpValue = 'Fpp\Type\String_\fromPhpValue';
 
-function fromPhpValue(String_ $type, string $value): string
+function fromPhpValue(String_ $type, string $paramName): string
 {
-    return 'new ' . $type->classname() . '(' . $value . ')';
+    return 'new ' . $type->classname() . '(' . $paramName . ')';
 }
 
 const toPhpValue = 'Fpp\Type\String_\toPhpValue';
