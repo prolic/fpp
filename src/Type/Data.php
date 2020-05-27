@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Data;
 
-use Nette\PhpGenerator\PhpFile;
-use Phunkie\Types\Pair;
 use function Fpp\alphanum;
 use function Fpp\assignment;
 use function Fpp\buildDefaultPhpFile;
@@ -37,6 +35,7 @@ use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
+use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Type;
 use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
@@ -287,8 +286,7 @@ function buildType(
     Constructor $constr,
     ImmMap $definitions,
     Configuration $config
-): PhpFile
-{
+): PhpFile {
     $fqcn = $definition->namespace() . '\\' . $constr->classname();
 
     $file = buildDefaultPhpFile($definition, $config);
