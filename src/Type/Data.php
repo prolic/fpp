@@ -273,9 +273,7 @@ function parseArguments(): Parser
 {
     return surrounded(
         for_(
-            __($_)->_(spaces()),
             __($o)->_(char('{')),
-            __($_)->_(spaces())
         )->yields($o),
         sepBy1list(
             for_(
@@ -317,7 +315,6 @@ function parseArguments(): Parser
         for_(
             __($_)->_(spaces()),
             __($c)->_(char('}')),
-            __($_)->_(spaces())
         )->yields($c)
     );
 }
