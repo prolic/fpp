@@ -31,7 +31,15 @@ use Nette\PhpGenerator\Type;
 
 function typeConfiguration(): TypeConfiguration
 {
-    return new TypeConfiguration(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
+    return new TypeConfiguration(
+        parse,
+        build,
+        fromPhpValue,
+        toPhpValue,
+        validator,
+        validationErrorMessage,
+        equals
+    );
 }
 
 const parse = 'Fpp\Type\String_\parse';
@@ -79,6 +87,10 @@ function build(Definition $definition, array $definitions, Configuration $config
     $method = $class->addMethod('value')->setReturnType(Type::STRING);
     $method->setBody('return $this->value;');
 
+    $method = $class->addMethod('equals')->setPublic()->setReturnType(Type::BOOL);
+    $method->addParameter('other')->setType(Type::SELF);
+    $method->setBody('return $this->value === $other->value;');
+
     return [$fqcn => $file];
 }
 
@@ -108,6 +120,13 @@ const validationErrorMessage = 'Fpp\Type\String_\validationErrorMessage';
 function validationErrorMessage($paramName): string
 {
     return "Error on \"$paramName\", string expected";
+}
+
+const equals = 'Fpp\Type\String_\equals';
+
+function equals(string $paramName, string $otherParamName): string
+{
+    return "{$paramName}->equals($otherParamName)";
 }
 
 class String_ implements FppType

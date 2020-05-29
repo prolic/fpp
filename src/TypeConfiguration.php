@@ -22,6 +22,7 @@ class TypeConfiguration
     private ?Closure $toPhpValue;
     private ?Closure $validator;
     private ?Closure $validationErrorMessage;
+    private ?Closure $equals;
 
     public function __construct(
         ?callable $parse,
@@ -29,7 +30,8 @@ class TypeConfiguration
         ?callable $fromPhpValue,
         ?callable $toPhpValue,
         ?callable $validator,
-        ?callable $validationErrorMessage
+        ?callable $validationErrorMessage,
+        ?callable $equals
     ) {
         $this->parse = $parse ? Closure::fromCallable($parse) : null;
         $this->build = $build ? Closure::fromCallable($build) : null;
@@ -37,6 +39,7 @@ class TypeConfiguration
         $this->toPhpValue = $toPhpValue ? Closure::fromCallable($toPhpValue) : null;
         $this->validator = $validator ? Closure::fromCallable($validator) : null;
         $this->validationErrorMessage = $validationErrorMessage ? Closure::fromCallable($validationErrorMessage) : null;
+        $this->equals = $equals ? Closure::fromCallable($equals) : null;
     }
 
     public function parse(): ?Closure
@@ -67,5 +70,10 @@ class TypeConfiguration
     public function validationErrorMessage(): ?Closure
     {
         return $this->validationErrorMessage;
+    }
+
+    public function equals(): ?Closure
+    {
+        return $this->equals;
     }
 }

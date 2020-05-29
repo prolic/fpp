@@ -44,7 +44,15 @@ use Nette\PhpGenerator\Type;
 
 function typeConfiguration(): TypeConfiguration
 {
-    return new TypeConfiguration(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
+    return new TypeConfiguration(
+        parse,
+        build,
+        fromPhpValue,
+        toPhpValue,
+        validator,
+        validationErrorMessage,
+        equals
+    );
 }
 
 const parse = 'Fpp\Type\Data\parse';
@@ -75,7 +83,8 @@ function build(Definition $definition, array $definitions, Configuration $config
     $fromArray = $class->addMethod('fromArray')->setStatic()->setReturnType(Type::SELF)->setAbstract();
     $fromArray->addParameter('data')->setType(Type::ARRAY);
     $class->addMethod('toArray')->setReturnType('array')->setAbstract();
-    $class->addMethod('equals')->setReturnType(Type::BOOL)->setAbstract();
+    $equals = $class->addMethod('equals')->setReturnType(Type::BOOL)->setAbstract();
+    $equals->addParameter('other')->setType(Type::SELF);
 
     $map = [$fqcn => $file];
 
@@ -120,11 +129,18 @@ function validator(string $paramName): string
     return "\is_array(\$$paramName)";
 }
 
-const validationErrorMessage = 'Fpp\Type\Bool_\validationErrorMessage';
+const validationErrorMessage = 'Fpp\Type\Data\validationErrorMessage';
 
-function validationErrorMessage($paramName): string
+function validationErrorMessage(string $paramName): string
 {
     return "Error on \"$paramName\", array expected";
+}
+
+const equals = 'Fpp\Type\Data\equals';
+
+function equals(string $paramName, string $otherParamName): string
+{
+    return "{$paramName}->equals($otherParamName)";
 }
 
 class Data implements FppType
@@ -345,6 +361,12 @@ function buildType(
     $fromArrayValidationBody = '';
     $fromArrayBody = "return new self(\n";
     $toArrayBody = "return [\n";
+    $equalsBody = <<<CODE
+if (\get_class(\$this) !== \get_class(\$other)) {
+    return false;
+}
+
+CODE;
 
     \array_map(
         function (Argument $a) use (
@@ -356,7 +378,8 @@ function buildType(
             &$constructorBody,
             &$fromArrayValidationBody,
             &$fromArrayBody,
-            &$toArrayBody
+            &$toArrayBody,
+            &$equalsBody
         ) {
             $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
 
@@ -365,6 +388,7 @@ function buildType(
             $fromArrayValidationBody .= calculateFromArrayValidationBodyFor($a, $resolvedType, $definitions, $config);
             $fromArrayBody .= calculateFromArrayBodyFor($a, $resolvedType, $definitions, $config);
             $toArrayBody .= calculateToArrayBodyFor($a, $resolvedType, $definitions, $config);
+            $equalsBody .= equalsBodyFor($a, $resolvedType, $definitions, $config);
 
             if (null !== $defaultValue) {
                 $param = $constructor->addParameter($a->name(), $defaultValue);
@@ -413,6 +437,14 @@ function buildType(
 
     $toArray = $class->addMethod('toArray')->setReturnType(Type::ARRAY);
     $toArray->setBody($toArrayBody);
+
+    $equals = $class->addMethod('equals')->setReturnType(Type::BOOL);
+    $equals->addParameter('other')->setType($definition->type()->classname());
+    $equals->setBody($equalsBody . <<<CODE
+
+return true;
+
+CODE);
 
     return $file;
 }
@@ -637,5 +669,76 @@ function calculateToArrayBodyFor(Argument $a, ?string $resolvedType, array $defi
             }
 
             return "    '{$a->name()}' => \$this->" . ($builder)($definition->type(), $a->name()) . ",\n";
+    }
+}
+
+function equalsBodyFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
+{
+    switch ($a->type()) {
+        case null:
+        case 'int':
+        case 'float':
+        case 'bool':
+        case 'string':
+        case 'array':
+            // yes all above are treated the same
+            return <<<CODE
+
+if (\$this->{$a->name()} !== \$other->{$a->name()}) {
+    return false;
+}
+
+CODE;
+        default:
+            $definition = $definitions[$resolvedType] ?? null;
+
+            if (null === $definition) {
+                /** @var TypeConfiguration|null $typeConfiguration */
+                $typeConfiguration = $config->types()[$resolvedType] ?? null;
+
+                if (null === $typeConfiguration) {
+                    return <<<CODE
+
+if (\$this->{$a->name()} !== \$other->{$a->name()}) {
+    return false;
+}
+
+CODE;
+                }
+
+                return <<<CODE
+
+if (! {$typeConfiguration->equals()('$this->' . $a->name(), '$other->' . $a->name())}) {
+    return false;
+}
+
+CODE;
+            }
+
+            $builder = $config->equalsFor($definition->type());
+
+            if ($a->isList()) {
+                return <<<CODE
+
+if (\count(\$this->{$a->name()}) !== \count(\$other->{$a->name()})) {
+    return false;
+}
+
+foreach (\$this->{$a->name()} as \$k => \$v) {
+    if (! {$builder('$v', '$other->' . $a->name() . '[$k]')}) {
+        return false;
+    }
+}
+
+CODE;
+            }
+
+            return <<<CODE
+
+if (! \$this->{$builder($a->name(), '$other->' . $a->name())}) {
+    return false;
+}
+
+CODE;
     }
 }

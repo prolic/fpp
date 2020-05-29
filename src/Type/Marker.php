@@ -30,7 +30,15 @@ use Fpp\TypeTrait;
 
 function typeConfiguration(): TypeConfiguration
 {
-    return new TypeConfiguration(parse, build, null, null, null, null);
+    return new TypeConfiguration(
+        parse,
+        build,
+        null,
+        null,
+        null,
+        null,
+        null
+    );
 }
 
 const parse = 'Fpp\Type\Marker\parse';

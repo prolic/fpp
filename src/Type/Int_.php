@@ -31,7 +31,15 @@ use Nette\PhpGenerator\Type;
 
 function typeConfiguration(): TypeConfiguration
 {
-    return new TypeConfiguration(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
+    return new TypeConfiguration(
+        parse,
+        build,
+        fromPhpValue,
+        toPhpValue,
+        validator,
+        validationErrorMessage,
+        null
+    );
 }
 
 const parse = 'Fpp\Type\Int_\parse';
@@ -79,6 +87,10 @@ function build(Definition $definition, array $definitions, Configuration $config
     $method = $class->addMethod('value')->setReturnType(Type::INT);
     $method->setBody('return $this->value;');
 
+    $method = $class->addMethod('equals')->setPublic()->setReturnType(Type::BOOL);
+    $method->addParameter('other')->setType(Type::SELF);
+    $method->setBody('return $this->value === $other->value;');
+
     return [$fqcn => $file];
 }
 
@@ -108,6 +120,13 @@ const validationErrorMessage = 'Fpp\Type\Int_\validationErrorMessage';
 function validationErrorMessage($paramName): string
 {
     return "Error on \"$paramName\", int expected";
+}
+
+const equals = 'Fpp\Type\Int_\equals';
+
+function equals(string $paramName, string $otherParamName): string
+{
+    return "{$paramName}->equals($otherParamName)";
 }
 
 class Int_ implements FppType

@@ -35,7 +35,15 @@ use Nette\PhpGenerator\Type;
 
 function typeConfiguration(): TypeConfiguration
 {
-    return new TypeConfiguration(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
+    return new TypeConfiguration(
+        parse,
+        build,
+        fromPhpValue,
+        toPhpValue,
+        validator,
+        validationErrorMessage,
+        equals
+    );
 }
 
 const parse = 'Fpp\Type\Enum\parse';
@@ -141,8 +149,8 @@ CODE
     );
 
     $method = $class->addMethod('equals')->setPublic()->setReturnType(Type::BOOL);
-    $method->addParameter($lcClassName)->setType($classname);
-    $method->setBody("\get_class(\$this) === \get_class(\${$lcClassName}) && \$this->name === \${$lcClassName}->name;");
+    $method->addParameter('other')->setType(Type::SELF);
+    $method->setBody('return $this->name === $other->name;');
 
     $method = $class->addMethod('name')->setPublic()->setReturnType(Type::STRING);
     $method->setBody('return $this->name;');
@@ -185,6 +193,13 @@ const validationErrorMessage = 'Fpp\Type\Enum\validationErrorMessage';
 function validationErrorMessage($paramName): string
 {
     return "Error on \"$paramName\", string expected";
+}
+
+const equals = 'Fpp\Type\Enum\equals';
+
+function equals(string $paramName, string $otherParamName): string
+{
+    return "{$paramName}->equals($otherParamName)";
 }
 
 class Enum implements FppType

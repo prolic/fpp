@@ -31,7 +31,15 @@ use Nette\PhpGenerator\Type;
 
 function typeConfiguration(): TypeConfiguration
 {
-    return new TypeConfiguration(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
+    return new TypeConfiguration(
+        parse,
+        build,
+        fromPhpValue,
+        toPhpValue,
+        validator,
+        validationErrorMessage,
+        equals
+    );
 }
 
 const parse = 'Fpp\Type\Uuid\parse';
@@ -137,6 +145,13 @@ const validationErrorMessage = 'Fpp\Type\Uuid\validationErrorMessage';
 function validationErrorMessage($paramName): string
 {
     return "Error on \"$paramName\", string expected";
+}
+
+const equals = 'Fpp\Type\Uuid\equals';
+
+function equals(string $paramName, string $otherParamName): string
+{
+    return "{$paramName}->equals($otherParamName)";
 }
 
 class Uuid implements FppType

@@ -31,7 +31,15 @@ use Nette\PhpGenerator\Type;
 
 function typeConfiguration(): TypeConfiguration
 {
-    return new TypeConfiguration(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
+    return new TypeConfiguration(
+        parse,
+        build,
+        fromPhpValue,
+        toPhpValue,
+        validator,
+        validationErrorMessage,
+        equals
+    );
 }
 
 const parse = 'Fpp\Type\Bool_\parse';
@@ -79,6 +87,10 @@ function build(Definition $definition, array $definitions, Configuration $config
     $method = $class->addMethod('value')->setReturnType(Type::BOOL);
     $method->setBody('return $this->value;');
 
+    $method = $class->addMethod('equals')->setPublic()->setReturnType(Type::BOOL);
+    $method->addParameter('other')->setType(Type::SELF);
+    $method->setBody('return $this->value === $other->value;');
+
     return [$fqcn => $file];
 }
 
@@ -105,9 +117,16 @@ function validator(string $paramName): string
 
 const validationErrorMessage = 'Fpp\Type\Bool_\validationErrorMessage';
 
-function validationErrorMessage($paramName): string
+function validationErrorMessage(string $paramName): string
 {
     return "Error on \"$paramName\", bool expected";
+}
+
+const equals = 'Fpp\Type\Bool_\equals';
+
+function equals(string $paramName, string $otherParamName): string
+{
+    return "{$paramName}->equals($otherParamName)";
 }
 
 class Bool_ implements FppType

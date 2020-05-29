@@ -52,7 +52,7 @@ class Configuration
         );
     }
 
-    public function builderFor(Type $type): Closure
+    public function builderFor(Type $type): ?Closure
     {
         $class = \get_class($type);
 
@@ -67,7 +67,7 @@ class Configuration
         return $this->types[$class]->build();
     }
 
-    public function fromPhpValueFor(Type $type): Closure
+    public function fromPhpValueFor(Type $type): ?Closure
     {
         $class = \get_class($type);
 
@@ -82,7 +82,7 @@ class Configuration
         return $this->types[$class]->fromPhpValue();
     }
 
-    public function toPhpValueFor(Type $type): Closure
+    public function toPhpValueFor(Type $type): ?Closure
     {
         $class = \get_class($type);
 
@@ -97,7 +97,7 @@ class Configuration
         return $this->types[$class]->toPhpValue();
     }
 
-    public function validatorFor(Type $type): Closure
+    public function validatorFor(Type $type): ?Closure
     {
         $class = \get_class($type);
 
@@ -112,7 +112,7 @@ class Configuration
         return $this->types[$class]->validator();
     }
 
-    public function validationErrorMessageFor(Type $type): Closure
+    public function validationErrorMessageFor(Type $type): ?Closure
     {
         $class = \get_class($type);
 
@@ -125,6 +125,21 @@ class Configuration
         }
 
         return $this->types[$class]->validationErrorMessage();
+    }
+
+    public function equalsFor(Type $type): ?Closure
+    {
+        $class = \get_class($type);
+
+        if (! isset($this->types[$class])) {
+            throw new RuntimeException(\sprintf(
+                'No %s for %s found',
+                'equals function',
+                $class
+            ));
+        }
+
+        return $this->types[$class]->equals();
     }
 
     public function useStrictTypes(): bool

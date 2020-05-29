@@ -18,7 +18,15 @@ use Fpp\TypeTrait;
 
 function typeConfiguration(): TypeConfiguration
 {
-    return new TypeConfiguration(null, null, fromPhpValue, toPhpValue, validator, validationErrorMessage);
+    return new TypeConfiguration(
+        null,
+        null,
+        fromPhpValue,
+        toPhpValue,
+        validator,
+        validationErrorMessage,
+        equals
+    );
 }
 
 const fromPhpValue = 'Fpp\Type\DateTimeImmutable\fromPhpValue';
@@ -53,6 +61,13 @@ const validationErrorMessage = 'Fpp\Type\DateTimeImmutable\validationErrorMessag
 function validationErrorMessage($paramName): string
 {
     return "Error on \"$paramName\", datetime string expected";
+}
+
+const equals = 'Fpp\Type\DateTimeImmutable\equals';
+
+function equals(string $paramName, string $otherParamName): string
+{
+    return "$paramName == $otherParamName";
 }
 
 class DateTimeImmutable implements FppType
