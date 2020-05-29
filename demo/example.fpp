@@ -1,8 +1,8 @@
 namespace Foo\Bar {
-
+    use DateTimeImmutable;
     marker Event;
     marker Human;
-    data Person = NonPerson { ?UserId $userId, Name $name, ?int $age = 18, string[] $emails = [], HumanId[] $humanIds,
+    data Person = NonPerson { DateTimeImmutable $registered, ?UserId $userId, Name $name, ?int $age = 18, string[] $emails = [], HumanId[] $humanIds,
         Address[] $addresses
     } | GoodPerson { UserId $userId, ?int $age = 18 };
     data Address = { string $street, int $no };

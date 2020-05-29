@@ -24,13 +24,13 @@ use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
 use Fpp\Type as FppType;
+use Fpp\TypeConfiguration;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
-use Phunkie\Types\Tuple;
 
-function definition(): Tuple
+function typeConfiguration(): TypeConfiguration
 {
-    return \Tuple(parse, build, null, null);
+    return new TypeConfiguration(parse, build, null, null, null, null);
 }
 
 const parse = 'Fpp\Type\Marker\parse';

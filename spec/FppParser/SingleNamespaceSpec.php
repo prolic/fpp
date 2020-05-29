@@ -32,8 +32,8 @@ CODE;
 
                 /** @var ImmMap $definition */
                 $definition = singleNamespace(enum())->run($testString)[0]->_1;
-                expect($definition->contains('Foo\Color'))->toBe(true);
-                expect($definition->get('Foo\Color')->get()->imports())->toEqual([]);
+                expect(isset($definition['Foo\Color']))->toBe(true);
+                expect($definition['Foo\Color']->imports())->toEqual([]);
             });
 
             it('can parse one namespace when ending with ; with use imports and an enum inside', function () {
@@ -44,10 +44,9 @@ use Foo\Baz as B;
 enum Color = Red | Blue;
 CODE;
 
-                /** @var ImmMap $definition */
                 $definition = singleNamespace(enum())->run($testString)[0]->_1;
-                expect($definition->contains('Foo\Color'))->toBe(true);
-                expect($definition->get('Foo\Color')->get()->imports())->toEqual([
+                expect(isset($definition['Foo\Color']))->toBe(true);
+                expect($definition['Foo\Color']->imports())->toEqual([
                     Pair('Foo\Bar', null),
                     Pair('Foo\Baz', 'B'),
                 ]);

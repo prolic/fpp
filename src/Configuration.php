@@ -14,7 +14,6 @@ namespace Fpp;
 
 use Closure;
 use InvalidArgumentException;
-use Phunkie\Types\ImmMap;
 use RuntimeException;
 
 class Configuration
@@ -23,9 +22,11 @@ class Configuration
     private Closure $printer;
     private Closure $fileParser;
     private ?string $comment;
-    private ImmMap $types;
+    /** @var array<class-string,TypeConfiguration> */
+    private array $types;
 
-    public function __construct(bool $useStrictTypes, callable $printer, callable $fileParser, ?string $comment, ImmMap $types)
+    /** @param array<class-string,TypeConfiguration> $types */
+    public function __construct(bool $useStrictTypes, callable $printer, callable $fileParser, ?string $comment, array $types)
     {
         $this->useStrictTypes = $useStrictTypes;
         $this->printer = Closure::fromCallable($printer);
@@ -47,63 +48,83 @@ class Configuration
             $data['printer'],
             $data['file_parser'],
             $data['comment'],
-            \ImmMap($data['types'])
+            $data['types']
         );
     }
 
-    public function builderFor(Type $type): callable
+    public function builderFor(Type $type): Closure
     {
-        $option = $this->types->get(\get_class($type));
+        $class = \get_class($type);
 
-        if ($option->isEmpty()) {
-            throw new RuntimeException('No builder for ' . \get_class($type) . ' found');
+        if (! isset($this->types[$class])) {
+            throw new RuntimeException(\sprintf(
+                'No %s for %s found',
+                'builder function',
+                $class
+            ));
         }
 
-        return $option->get()->_2;
+        return $this->types[$class]->build();
     }
 
-    public function fromPhpValueFor(Type $type): callable
+    public function fromPhpValueFor(Type $type): Closure
     {
-        $option = $this->types->get(\get_class($type));
+        $class = \get_class($type);
 
-        if ($option->isEmpty()) {
-            throw new RuntimeException('No fromPhpValue function for ' . \get_class($type) . ' found');
+        if (! isset($this->types[$class])) {
+            throw new RuntimeException(\sprintf(
+                'No %s for %s found',
+                'fromPhpValue function',
+                $class
+            ));
         }
 
-        return $option->get()->_3;
+        return $this->types[$class]->fromPhpValue();
     }
 
-    public function toPhpValueFor(Type $type): callable
+    public function toPhpValueFor(Type $type): Closure
     {
-        $option = $this->types->get(\get_class($type));
+        $class = \get_class($type);
 
-        if ($option->isEmpty()) {
-            throw new RuntimeException('No toPhpValue function for ' . \get_class($type) . ' found');
+        if (! isset($this->types[$class])) {
+            throw new RuntimeException(\sprintf(
+                'No %s for %s found',
+                'toPhpValue function',
+                $class
+            ));
         }
 
-        return $option->get()->_4;
+        return $this->types[$class]->toPhpValue();
     }
 
-    public function validatorFor(Type $type): callable
+    public function validatorFor(Type $type): Closure
     {
-        $option = $this->types->get(\get_class($type));
+        $class = \get_class($type);
 
-        if ($option->isEmpty()) {
-            throw new RuntimeException('No validator function for ' . \get_class($type) . ' found');
+        if (! isset($this->types[$class])) {
+            throw new RuntimeException(\sprintf(
+                'No %s for %s found',
+                'validator function',
+                $class
+            ));
         }
 
-        return $option->get()->_5;
+        return $this->types[$class]->validator();
     }
 
-    public function validationErrorMessageFor(Type $type): callable
+    public function validationErrorMessageFor(Type $type): Closure
     {
-        $option = $this->types->get(\get_class($type));
+        $class = \get_class($type);
 
-        if ($option->isEmpty()) {
-            throw new RuntimeException('No validation error message function for ' . \get_class($type) . ' found');
+        if (! isset($this->types[$class])) {
+            throw new RuntimeException(\sprintf(
+                'No %s for %s found',
+                'validation error message function',
+                $class
+            ));
         }
 
-        return $option->get()->_6;
+        return $this->types[$class]->validationErrorMessage();
     }
 
     public function useStrictTypes(): bool
@@ -126,7 +147,8 @@ class Configuration
         return $this->comment;
     }
 
-    public function types(): ImmMap
+    /** @return array<string,Type|array> */
+    public function types(): array
     {
         return $this->types;
     }

@@ -36,15 +36,15 @@ use function Fpp\surrounded;
 use function Fpp\surroundedWith;
 use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
+use Fpp\TypeConfiguration;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Type;
-use Phunkie\Types\Tuple;
 
-function definition(): Tuple
+function typeConfiguration(): TypeConfiguration
 {
-    return \Tuple(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
+    return new TypeConfiguration(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
 }
 
 const parse = 'Fpp\Type\Data\parse';
@@ -72,7 +72,8 @@ function build(Definition $definition, array $definitions, Configuration $config
         ->setAbstract()
         ->setImplements($type->markers());
 
-    $class->addMethod('fromArray')->setStatic()->setReturnType('self')->setAbstract();
+    $fromArray = $class->addMethod('fromArray')->setStatic()->setReturnType(Type::SELF)->setAbstract();
+    $fromArray->addParameter('data')->setType(Type::ARRAY);
     $class->addMethod('toArray')->setReturnType('array')->setAbstract();
     $class->addMethod('equals')->setReturnType(Type::BOOL)->setAbstract();
 
@@ -406,11 +407,11 @@ function buildType(
     $fromArrayBody .= ');';
     $toArrayBody .= '];';
 
-    $fromArray = $class->addMethod('fromArray')->setStatic()->setReturnType('self');
+    $fromArray = $class->addMethod('fromArray')->setStatic()->setReturnType(Type::SELF);
     $fromArray->addParameter('data')->setType(Type::ARRAY);
     $fromArray->setBody($fromArrayValidationBody . $fromArrayBody);
 
-    $toArray = $class->addMethod('toArray')->setReturnType('array');
+    $toArray = $class->addMethod('toArray')->setReturnType(Type::ARRAY);
     $toArray->setBody($toArrayBody);
 
     return $file;
@@ -525,17 +526,21 @@ function calculateFromArrayValidationBodyFor(Argument $a, ?string $resolvedType,
             $definition = $definitions[$resolvedType] ?? null;
 
             if (null === $definition) {
-                $definition = $config->types()[$resolvedType] ?? null;
+                /** @var TypeConfiguration|null $typeConfig */
+                $typeConfig = $config->types()[$resolvedType] ?? null;
 
-                if (null === $definition) {
+                if (null === $typeConfig) {
                     return '';
                 }
+
+                $validator = $typeConfig->validator()("data['{$a->name()}']");
+                $validationErrorMessage = $typeConfig->validationErrorMessage()("\$data[\'{$a->name()}\']");
+            } else {
+                $type = $definition->type();
+
+                $validator = $config->validatorFor($type)("data['{$a->name()}']");
+                $validationErrorMessage = $config->validationErrorMessageFor($type)("\$data[\'{$a->name()}\']");
             }
-
-            $type = $definition->type();
-
-            $validator = $config->validatorFor($type)("data['{$a->name()}']");
-            $validationErrorMessage = $config->validationErrorMessageFor($type)("\$data[\'{$a->name()}\']");
 
             break;
     }
@@ -572,13 +577,14 @@ function calculateFromArrayBodyFor(Argument $a, ?string $resolvedType, array $de
             $definition = $definitions[$resolvedType] ?? null;
 
             if (null === $definition) {
-                $definition = $config->types()[$resolvedType] ?? null;
+                /** @var TypeConfiguration|null $typeConfig */
+                $typeConfig = $config->types()[$resolvedType] ?? null;
 
-                if (null === $definition) {
+                if (null === $typeConfig) {
                     return "    \$data['{$a->name()}'],\n";
                 }
 
-                return '    ' . ($definition->get()->_3)("\$data['{$a->name()}']") . ",\n";
+                return '    ' . $typeConfig->fromPhpValue()("data['{$a->name()}']");
             }
 
             $builder = $config->fromPhpValueFor($definition->type());
@@ -612,13 +618,14 @@ function calculateToArrayBodyFor(Argument $a, ?string $resolvedType, array $defi
             $definition = $definitions[$resolvedType] ?? null;
 
             if (null === $definition) {
-                $definition = $config->types()[$resolvedType] ?? null;
+                /** @var TypeConfiguration|null $typeConfiguration */
+                $typeConfiguration = $config->types()[$resolvedType] ?? null;
 
-                if (null === $definition) {
+                if (null === $typeConfiguration) {
                     return "    '{$a->name()}' => \$this->{$a->name()},\n";
                 }
 
-                return "    '{$a->name()}' => " . ($definition->get()->_4)($a) . ",\n";
+                return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . ",\n";
             }
 
             $builder = $config->toPhpValueFor($definition->type());

@@ -24,14 +24,14 @@ use function Fpp\spaces1;
 use function Fpp\string;
 use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
+use Fpp\TypeConfiguration;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
 use Nette\PhpGenerator\Type;
-use Phunkie\Types\Tuple;
 
-function definition(): Tuple
+function typeConfiguration(): TypeConfiguration
 {
-    return \Tuple(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
+    return new TypeConfiguration(parse, build, fromPhpValue, toPhpValue, validator, validationErrorMessage);
 }
 
 const parse = 'Fpp\Type\Float_\parse';

@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Phunkie\Types\ImmMap;
-
 const assignment = 'Fpp\assignment';
 
 function assignment(): Parser
@@ -93,8 +91,7 @@ function singleNamespace(Parser $parserComposite): Parser
         __($is)->_(manyList(imports())),
         __($_)->_(spaces()),
         __($ts)->_(manyList($parserComposite)),
-    //)->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
-    )->call(function (string $n, array $ts, array $is): ImmMap {
+    )->call(function (string $n, array $ts, array $is): array {
         $ds = [];
 
         \array_map(
@@ -104,7 +101,7 @@ function singleNamespace(Parser $parserComposite): Parser
             $ts
         );
 
-        return \ImmMap($ds);
+        return $ds;
     }, $n, $ts, $is);
 }
 
@@ -133,8 +130,7 @@ function multipleNamespaces(Parser $parserComposite): Parser
                 __($_)->_(spaces())
             )->yields($c)
         )
-    //)->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
-    )->call(function (string $n, array $ts, array $is): ImmMap {
+    )->call(function (string $n, array $ts, array $is): array {
         $ds = [];
 
         \array_map(
@@ -144,6 +140,6 @@ function multipleNamespaces(Parser $parserComposite): Parser
             $ts
         );
 
-        return \ImmMap($ds);
+        return $ds;
     }, $n, $ts, $is);
 }

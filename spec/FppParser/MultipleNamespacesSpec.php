@@ -32,8 +32,8 @@ namespace Foo {
 FPP;
                 /** @var ImmMap $definition */
                 $definition = multipleNamespaces(enum())->run($testString)[0]->_1;
-                expect($definition->contains('Foo\Color'))->toBe(true);
-                expect($definition->get('Foo\Color')->get()->imports())->toEqual([]);
+                expect(isset($definition['Foo\Color']))->toBe(true);
+                expect($definition['Foo\Color']->imports())->toEqual([]);
             });
 
             it('can parse namespace with subnamespace', function () {
@@ -44,8 +44,8 @@ namespace Foo\Bar {
 FPP;
                 /** @var ImmMap $definition */
                 $definition = multipleNamespaces(enum())->run($testString)[0]->_1;
-                expect($definition->contains('Foo\Bar\Color'))->toBe(true);
-                expect($definition->get('Foo\Bar\Color')->get()->imports())->toEqual([]);
+                expect(isset($definition['Foo\Bar\Color']))->toBe(true);
+                expect($definition['Foo\Bar\Color']->imports())->toEqual([]);
             });
 
             it('can parse namespace containing many enums', function () {
@@ -57,11 +57,11 @@ namespace Foo {
 FPP;
                 /** @var ImmMap $definitions */
                 $definitions = multipleNamespaces(enum())->run($testString)[0]->_1;
-                expect($definitions->contains('Foo\Color'))->toBe(true);
-                expect($definitions->contains('Foo\Human'))->toBe(true);
+                expect(isset($definitions['Foo\Color']))->toBe(true);
+                expect(isset($definitions['Foo\Human']))->toBe(true);
 
-                expect($definitions->get('Foo\Color')->get()->imports())->toEqual([]);
-                expect($definitions->get('Foo\Human')->get()->imports())->toEqual([]);
+                expect($definitions['Foo\Color']->imports())->toEqual([]);
+                expect($definitions['Foo\Human']->imports())->toEqual([]);
             });
         });
     });
