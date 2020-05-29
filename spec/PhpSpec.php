@@ -34,47 +34,32 @@ describe("Fpp\Php", function () {
         describe('typeName', function () {
             it('recognises type names out of a string', function () {
                 expect(typeName()->run('Yes!'))
-                    ->toEqual(ImmList(
+                    ->toEqual([
                         Pair('Yes', '!'),
-                        Pair('Ye', 's!'),
-                        Pair('Y', 'es!')
-                    ));
+                    ]);
 
                 expect(typeName()->run('Yes2!'))
-                    ->toEqual(ImmList(
+                    ->toEqual([
                         Pair('Yes2', '!'),
-                        Pair('Yes', '2!'),
-                        Pair('Ye', 's2!'),
-                        Pair('Y', 'es2!')
-                    ));
+                    ]);
 
                 expect(typeName()->run('Ye2s2!'))
-                    ->toEqual(ImmList(
+                    ->toEqual([
                         Pair('Ye2s2', '!'),
-                        Pair('Ye2s', '2!'),
-                        Pair('Ye2', 's2!'),
-                        Pair('Ye', '2s2!'),
-                        Pair('Y', 'e2s2!')
-                    ));
+                    ]);
 
                 expect(typeName()->run('Ye_s2_!'))
-                    ->toEqual(ImmList(
+                    ->toEqual([
                         Pair('Ye_s2_', '!'),
-                        Pair('Ye_s2', '_!'),
-                        Pair('Ye_s', '2_!'),
-                        Pair('Ye_', 's2_!'),
-                        Pair('Ye', '_s2_!'),
-                        Pair('Y', 'e_s2_!')
-                    ));
+                    ]);
 
                 expect(typeName()->run('_Y!'))
-                    ->toEqual(ImmList(
+                    ->toEqual([
                         Pair('_Y', '!'),
-                        Pair('_', 'Y!'),
-                    ));
+                    ]);
 
                 expect(typeName()->run('2Yes!'))
-                    ->toEqual(Nil());
+                    ->toEqual([]);
             });
         });
     });

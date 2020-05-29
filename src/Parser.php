@@ -13,10 +13,7 @@ declare(strict_types=1);
 namespace Fpp;
 
 use Phunkie\Cats\Monad;
-use function Phunkie\Functions\immlist\concat;
-use const Phunkie\Functions\immlist\concat as concatenate;
 use function Phunkie\Functions\show\showType;
-use Phunkie\Types\ImmList;
 use Phunkie\Types\Kind;
 use Phunkie\Types\Pair;
 
@@ -38,9 +35,9 @@ class Parser implements Monad, Kind
     }
 
     /**
-     * string -> List<Pair(A, string)>
+     * string -> array<Pair(A, string)>
      */
-    public function run(string $input): ImmList
+    public function run(string $input): array
     {
         return ($this->run)($input);
     }
@@ -50,6 +47,13 @@ class Parser implements Monad, Kind
      */
     public function flatMap(callable $f): Kind
     {
+        return new Parser(function (string $s) use ($f) {
+            return flatMap(
+                fn (Pair $result) => $f($result->_1)->run($result->_2),
+                $this->run($s)
+            );
+        });
+
         return new Parser(fn (string $s) => $this->run($s)->flatMap(
             fn (Pair $result) => $f($result->_1)->run($result->_2)
         ));
@@ -60,8 +64,9 @@ class Parser implements Monad, Kind
      */
     public function map(callable $f): Kind
     {
-        return new Parser(fn (string $s) => $this->run($s)->map(
-            fn (Pair $result) => \Pair($f($result->_1), $result->_2)
+        return new Parser(fn (string $s) => \array_map(
+            fn (Pair $result) => \Pair($f($result->_1), $result->_2),
+            $this->run($s)
         ));
     }
 
@@ -94,7 +99,7 @@ class Parser implements Monad, Kind
      */
     public function zipWith($f): Kind
     {
-        return new Parser(fn ($x) => ImmList(Pair(Pair($x, $f($x))), ''));
+        return new Parser(fn ($x) => [Pair(Pair($x, $f($x))), '']);
     }
 
     public function imap(callable $f, callable $g): Kind
@@ -112,7 +117,7 @@ class Parser implements Monad, Kind
 
     public function or(Parser $another): Parser
     {
-        return new Parser(fn (string $s) => concat($this->run($s), $another->run($s)));
+        return new Parser(fn (string $s) => \array_merge($this->run($s), $another->run($s)));
     }
 
     // @todo do we need this?
@@ -124,7 +129,7 @@ class Parser implements Monad, Kind
                 __($_)->_($sep),
                 __($y)->_($this)
             )->yields($y)))
-        )->call(concatenate, $x, $xs);
+        )->call(fn ($x, $xs) => $x . $xs, $x, $xs);
     }
 
     public function sepBy1With(Parser $sep)
@@ -134,8 +139,8 @@ class Parser implements Monad, Kind
             __($xs)->_(many(for_(
                 __($s)->_($sep),
                 __($y)->_($this)
-            )->call(concatenate, $s, $y)))
-        )->call(concatenate, $x, $xs);
+            )->call(fn ($x, $y) => $x . $y, $s, $y)))
+        )->call(fn ($x, $xs) => $x . $xs, $x, $xs);
     }
 
     public function getTypeArity(): int

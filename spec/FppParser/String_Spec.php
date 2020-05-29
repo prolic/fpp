@@ -19,19 +19,19 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('string_', function () {
             it('can parse string types', function () {
-                expect(parse()->run('string Username;')->head()->_1)->toEqual(
+                expect(parse()->run('string Username;')[0]->_1)->toEqual(
                     new String_(
                         'Username',
-                        Nil()
+                        []
                     )
                 );
             });
 
             it('can parse string types with markers', function () {
-                expect(parse()->run('string Username : LetterCollection;')->head()->_1)->toEqual(
+                expect(parse()->run('string Username : LetterCollection;')[0]->_1)->toEqual(
                     new String_(
                         'Username',
-                        ImmList('LetterCollection')
+                        ['LetterCollection']
                     )
                 );
             });

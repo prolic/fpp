@@ -21,7 +21,7 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('singleNamespace', function () {
             it('cannot parse second namespace when ending with ;', function () {
-                expect(singleNamespace(enum())->run('namespace Foo;namespace Bar;')->head()->_2)->toBe('namespace Bar;');
+                expect(singleNamespace(enum())->run('namespace Foo;namespace Bar;')[0]->_2)->toBe('namespace Bar;');
             });
 
             it('can parse one namespace when ending with ;', function () {
@@ -31,9 +31,9 @@ enum Color = Red | Blue;
 CODE;
 
                 /** @var ImmMap $definition */
-                $definition = singleNamespace(enum())->run($testString)->head()->_1;
+                $definition = singleNamespace(enum())->run($testString)[0]->_1;
                 expect($definition->contains('Foo\Color'))->toBe(true);
-                expect($definition->get('Foo\Color')->get()->imports())->toEqual(Nil());
+                expect($definition->get('Foo\Color')->get()->imports())->toEqual([]);
             });
 
             it('can parse one namespace when ending with ; with use imports and an enum inside', function () {
@@ -45,12 +45,12 @@ enum Color = Red | Blue;
 CODE;
 
                 /** @var ImmMap $definition */
-                $definition = singleNamespace(enum())->run($testString)->head()->_1;
+                $definition = singleNamespace(enum())->run($testString)[0]->_1;
                 expect($definition->contains('Foo\Color'))->toBe(true);
-                expect($definition->get('Foo\Color')->get()->imports())->toEqual(ImmList(
+                expect($definition->get('Foo\Color')->get()->imports())->toEqual([
                     Pair('Foo\Bar', null),
-                    Pair('Foo\Baz', 'B')
-                ));
+                    Pair('Foo\Baz', 'B'),
+                ]);
             });
         });
     });

@@ -26,7 +26,6 @@ use function Fpp\string;
 use Fpp\Type as FppType;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
-use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
 
 function definition(): Tuple
@@ -46,7 +45,7 @@ function parse(): Parser
             __($m)->_(typeName()),
             __($_)->_(spaces()),
             __($_)->_(char(';'))
-        )->call(fn ($m) => new Marker($m, Nil()), $m),
+        )->call(fn ($m) => new Marker($m, []), $m),
         for_(
             __($_)->_(spaces()),
             __($_)->_(string('marker')),
@@ -75,7 +74,7 @@ function markers(): Parser
 
 const build = 'Fpp\Type\Marker\build';
 
-function build(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
+function build(Definition $definition, array $definitions, Configuration $config): array
 {
     $type = $definition->type();
 
@@ -89,9 +88,9 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
     $file->addClass($fqcn)
         ->setInterface()
-        ->setExtends($type->markers()->toArray());
+        ->setExtends($type->markers());
 
-    return \ImmMap($fqcn, $file);
+    return [$fqcn => $file];
 }
 
 class Marker implements FppType

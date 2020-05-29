@@ -27,7 +27,6 @@ use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
 use Nette\PhpGenerator\Type;
-use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
 
 function definition(): Tuple
@@ -46,7 +45,7 @@ function parse(): Parser
         __($t)->_(typeName()),
         __($_)->_(spaces()),
         __($ms)->_(
-            plus(markers(), result(Nil()))
+            plus(markers(), result([]))
         ),
         __($_)->_(spaces()),
         __($_)->_(char(';'))
@@ -55,7 +54,7 @@ function parse(): Parser
 
 const build = 'Fpp\Type\Int_\build';
 
-function build(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
+function build(Definition $definition, array $definitions, Configuration $config): array
 {
     $type = $definition->type();
 
@@ -69,7 +68,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
     $class = $file->addClass($fqcn)
         ->setFinal()
-        ->setImplements($type->markers()->toArray());
+        ->setImplements($type->markers());
 
     $class->addProperty('value')->setType(Type::INT)->setPrivate();
 
@@ -80,7 +79,7 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
     $method = $class->addMethod('value')->setReturnType(Type::INT);
     $method->setBody('return $this->value;');
 
-    return \ImmMap($fqcn, $file);
+    return [$fqcn => $file];
 }
 
 const fromPhpValue = 'Fpp\Type\Int_\fromPhpValue';

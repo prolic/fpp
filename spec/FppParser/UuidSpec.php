@@ -19,14 +19,14 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('uuid', function () {
             it('can parse uuid types', function () {
-                expect(parse()->run('uuid UserId;')->head()->_1)->toEqual(
-                    new Uuid('UserId', Nil())
+                expect(parse()->run('uuid UserId;')[0]->_1)->toEqual(
+                    new Uuid('UserId', [])
                 );
             });
 
             it('can parse guid types with markers', function () {
-                expect(parse()->run('uuid UserId : Stringify;')->head()->_1)->toEqual(
-                    new Uuid('UserId', ImmList('Stringify'))
+                expect(parse()->run('uuid UserId : Stringify;')[0]->_1)->toEqual(
+                    new Uuid('UserId', ['Stringify'])
                 );
             });
         });

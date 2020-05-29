@@ -19,19 +19,19 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('bool_', function () {
             it('can parse bool types', function () {
-                expect(parse()->run('bool Truth;')->head()->_1)->toEqual(
+                expect(parse()->run('bool Truth;')[0]->_1)->toEqual(
                     new Bool_(
                         'Truth',
-                        Nil()
+                        []
                     )
                 );
             });
 
             it('can parse bool types with markers', function () {
-                expect(parse()->run('bool Truth : Foo, Bar;')->head()->_1)->toEqual(
+                expect(parse()->run('bool Truth : Foo, Bar;')[0]->_1)->toEqual(
                     new Bool_(
                         'Truth',
-                        ImmList('Foo', 'Bar')
+                        ['Foo', 'Bar']
                     )
                 );
             });

@@ -31,8 +31,6 @@ use function Fpp\Type\Marker\markers;
 use function Fpp\typeName;
 use Fpp\TypeTrait;
 use Nette\PhpGenerator\Type;
-use Phunkie\Types\ImmList;
-use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
 
 function definition(): Tuple
@@ -51,7 +49,7 @@ function parse(): Parser
         __($t)->_(typeName()),
         __($_)->_(spaces()),
         __($ms)->_(
-            plus(markers(), result(Nil()))
+            plus(markers(), result([]))
         ),
         __($_)->_(assignment()),
         __($cs)->_(
@@ -60,8 +58,9 @@ function parse(): Parser
                 __($_)->_(spaces()),
                 __($_)->_(char(';'))
             )->call(
-                fn ($c) => $c->map(
-                    fn ($c) => new Constructor($c)
+                fn ($c) => \array_map(
+                    fn ($c) => new Constructor($c),
+                    $c
                 ),
                 $constructors
             )
@@ -71,7 +70,7 @@ function parse(): Parser
 
 const build = 'Fpp\Type\Enum\build';
 
-function build(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
+function build(Definition $definition, array $definitions, Configuration $config): array
 {
     $type = $definition->type();
 
@@ -88,20 +87,24 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
     $class = $file->addClass($fqcn)
         ->setFinal()
-        ->setImplements($type->markers()->toArray());
+        ->setImplements($type->markers());
 
     $options = [];
     $i = 0;
-    $type->constructors()->map(function ($c) use ($class, &$options, &$i, $classname) {
-        $class->addConstant($c->name(), $i)->setPublic();
 
-        $options[] = $c->name();
+    \array_map(
+        function ($c) use ($class, &$options, &$i, $classname) {
+            $class->addConstant($c->name(), $i)->setPublic();
 
-        $method = $class->addMethod(\lcfirst($c->name()))->setPublic()->setStatic()->setReturnType('self');
-        $method->setBody("return new self('{$c->name()}', $i);");
+            $options[] = $c->name();
 
-        ++$i;
-    });
+            $method = $class->addMethod(\lcfirst($c->name()))->setPublic()->setStatic()->setReturnType('self');
+            $method->setBody("return new self('{$c->name()}', $i);");
+
+            ++$i;
+        },
+        $type->constructors()
+    );
 
     $class->addConstant('Options', $options)->setPublic();
 
@@ -153,7 +156,7 @@ CODE
     $method = $class->addMethod('toString')->setPublic()->setReturnType(Type::STRING);
     $method->setBody('return $this->name;');
 
-    return \ImmMap($fqcn, $file);
+    return [$fqcn => $file];
 }
 
 const fromPhpValue = 'Fpp\Type\Enum\fromPhpValue';
@@ -188,11 +191,11 @@ class Enum implements FppType
 {
     use TypeTrait;
 
-    /** @var Immlist<Constructor> */
-    private ImmList $constructors;
+    /** @var list<Constructor> */
+    private array $constructors;
 
-    /** @param ImmList<Constructor> $constructors */
-    public function __construct(string $classname, ImmList $markers, ImmList $constructors)
+    /** @param list<Constructor> $constructors */
+    public function __construct(string $classname, array $markers, array $constructors)
     {
         $this->classname = $classname;
         $this->markers = $markers;
@@ -200,9 +203,9 @@ class Enum implements FppType
     }
 
     /**
-     * @return ImmList<Constructor>
+     * @return list<Constructor>
      */
-    public function constructors(): ImmList
+    public function constructors(): array
     {
         return $this->constructors;
     }

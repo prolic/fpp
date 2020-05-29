@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
 
 const assignment = 'Fpp\assignment';
@@ -35,7 +34,7 @@ function typeName(): Parser
         __($x)->_(plus(letter(), char('_'))),
         __($xs)->_(many(plus(alphanum(), char('_')))),
         __($t)->_(new Parser(function (string $s) use (&$x, &$xs) {
-            return isKeyword($x . $xs) ? Nil() : ImmList(Pair($x . $xs, $s));
+            return isKeyword($x . $xs) ? [] : [Pair($x . $xs, $s)];
         })),
     )->yields($t);
 }
@@ -95,12 +94,15 @@ function singleNamespace(Parser $parserComposite): Parser
         __($_)->_(spaces()),
         __($ts)->_(manyList($parserComposite)),
     //)->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
-    )->call(function (string $n, ImmList $ts, ImmList $is): ImmMap {
+    )->call(function (string $n, array $ts, array $is): ImmMap {
         $ds = [];
 
-        $ts->map(function (Type $t) use (&$ds, $n, $is) {
-            $ds[$n . '\\' . $t->classname()] = new Definition($n, $t, $is);
-        });
+        \array_map(
+            function (Type $t) use (&$ds, $n, $is) {
+                $ds[$n . '\\' . $t->classname()] = new Definition($n, $t, $is);
+            },
+            $ts
+        );
 
         return \ImmMap($ds);
     }, $n, $ts, $is);
@@ -132,12 +134,15 @@ function multipleNamespaces(Parser $parserComposite): Parser
             )->yields($c)
         )
     //)->call(fn ($n, $is, $cs) => new Namespace_($n, $is, $cs), $n, $is, $cs);
-    )->call(function (string $n, ImmList $ts, ImmList $is): ImmMap {
+    )->call(function (string $n, array $ts, array $is): ImmMap {
         $ds = [];
 
-        $ts->map(function (Type $t) use (&$ds, $n, $is) {
-            $ds[$n . '\\' . $t->classname()] = new Definition($n, $t, $is);
-        });
+        \array_map(
+            function (Type $t) use (&$ds, $n, $is) {
+                $ds[$n . '\\' . $t->classname()] = new Definition($n, $t, $is);
+            },
+            $ts
+        );
 
         return \ImmMap($ds);
     }, $n, $ts, $is);

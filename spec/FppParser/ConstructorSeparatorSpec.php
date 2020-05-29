@@ -18,9 +18,9 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('constructorSeparator', function () {
             it('can parse constructor separators', function () {
-                expect(constructorSeparator()->run('|')->head()->_1)->toBe('|');
-                expect(constructorSeparator()->run(' | ')->head()->_1)->toBe('|');
-                expect(constructorSeparator()->run('  |   ')->head()->_1)->toBe('|');
+                expect(constructorSeparator()->run('|')[0]->_1)->toBe('|');
+                expect(constructorSeparator()->run(' | ')[0]->_1)->toBe('|');
+                expect(constructorSeparator()->run('  |   ')[0]->_1)->toBe('|');
             });
         });
     });

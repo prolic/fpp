@@ -18,13 +18,13 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('imports', function () {
             it('can parse use imports', function () {
-                expect(imports()->run('use Foo;')->head()->_1)->toEqual(Pair('Foo', null));
-                expect(imports()->run("use Foo\Bar;")->head()->_1)->toEqual(Pair('Foo\Bar', null));
+                expect(imports()->run('use Foo;')[0]->_1)->toEqual(Pair('Foo', null));
+                expect(imports()->run("use Foo\Bar;")[0]->_1)->toEqual(Pair('Foo\Bar', null));
             });
 
             it('can parse aliased use imports', function () {
-                expect(imports()->run('use Foo as F;')->head()->_1)->toEqual(Pair('Foo', 'F'));
-                expect(imports()->run("use Foo\Bar as Baz;")->head()->_1)->toEqual(Pair('Foo\Bar', 'Baz'));
+                expect(imports()->run('use Foo as F;')[0]->_1)->toEqual(Pair('Foo', 'F'));
+                expect(imports()->run("use Foo\Bar as Baz;")[0]->_1)->toEqual(Pair('Foo\Bar', 'Baz'));
             });
         });
     });

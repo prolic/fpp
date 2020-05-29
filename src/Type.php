@@ -12,11 +12,9 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Phunkie\Types\ImmList;
-
 interface Type
 {
     public function classname(): string;
 
-    public function markers(): ImmList;
+    public function markers(): array;
 }

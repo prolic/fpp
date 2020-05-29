@@ -23,7 +23,6 @@ use Fpp\Type\String_;
 use Fpp\Type\Uuid;
 use Nette\PhpGenerator\PsrPrinter;
 use function Pair;
-use Phunkie\Types\ImmList;
 use Phunkie\Types\ImmMap;
 use Phunkie\Types\Pair;
 
@@ -128,61 +127,65 @@ $config->types()->map(function (Pair $p) use (&$parser) {
     return $p;
 });
 
-echo 'parsing...' . PHP_EOL;
-$definitions = scan(
-    $path
-)->map(
-    fn ($f) => Pair(($config->fileParser())($parser)->run(\file_get_contents($f)), $f)
-)->map(
+$definitions = \array_map(
+    fn ($f) => Pair(($config->fileParser())($parser)->run(\file_get_contents($f)), $f),
+    scan(
+        $path
+    )
+);
+
+$definitions = \array_map(
     function (Pair $p) {
         $parsed = $p->_1;
         $filename = $p->_2;
 
-        $p = $parsed->head();
+        $p = $parsed[0];
 
         if ($p->_2 !== '') {
             echo "\033[1;31mSyntax error at file: $filename\033[0m" . PHP_EOL;
+            echo $p->_2;
             exit(1);
         }
 
         return $p->_1;
-    }
-)->fold(
-    ImmList(),
-    fn (ImmList $l, ImmList $nds) => $l->combine($nds)
-)->fold(
-    ImmMap(),
-    function (ImmMap $ds, ImmMap $nds) {
+    },
+    $definitions
+);
+
+$definitions = \array_reduce(
+    $definitions,
+    fn (array $l, array $nds) => \array_merge($l, $nds),
+    []
+);
+
+$definitions = \array_reduce(
+    $definitions,
+    function (array $ds, ImmMap $nds) {
         foreach ($nds->iterator() as $n => $d) {
-            $ds = $ds->plus($n, $d);
+            $ds[$n] = $d;
         }
 
         return $ds;
-    }
+    },
+    [],
 );
 
-echo 'dumping...' . PHP_EOL;
+foreach ($definitions as $name => $definition) {
+    $definitions[$name] = dump($definition, $definitions, $config);
+}
 
-$definitions->map(
-    fn (Pair $p) => Pair(dump($p->_2, $definitions->copy(), $config), $p->_1)
-)->map(
-    function (Pair $p) use ($locatePsrPath) {
-        $p->_1->map(function (Pair $p) use ($locatePsrPath) {
-            $filename = $locatePsrPath($p->_2);
-            $directory = \dirname($filename);
+foreach ($definitions as $name => $files) {
+    foreach ($files as $fqcn => $code) {
+        $filename = $locatePsrPath($fqcn);
+        $directory = \dirname($filename);
 
-            if (! \is_dir($directory)) {
-                \mkdir($directory, 0777, true);
-            }
+        if (! \is_dir($directory)) {
+            \mkdir($directory, 0777, true);
+        }
 
-            \file_put_contents($filename, $p->_1);
-
-            return $p;
-        });
-
-        return $p;
+        \file_put_contents($filename, $code);
     }
-);
+}
 
 echo "Successfully generated and written to disk\n";
 exit(0);

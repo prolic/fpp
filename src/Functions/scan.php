@@ -13,9 +13,6 @@ declare(strict_types=1);
 namespace Fpp;
 
 use FilterIterator;
-use function ImmList;
-use function Nil;
-use Phunkie\Types;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -24,16 +21,16 @@ const scan = '\Fpp\scan';
 /**
  * @param string $directoryOrFile
  *
- * @return Types\ImmList<string>
+ * @return list<string>
  */
-function scan(string $directoryOrFile): Types\ImmList
+function scan(string $directoryOrFile): array
 {
     if (! \is_readable($directoryOrFile)) {
-        return Nil();
+        return [];
     }
 
     if (\is_file($directoryOrFile)) {
-        return ImmList($directoryOrFile);
+        return [$directoryOrFile];
     }
 
     $iterator = new class(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directoryOrFile))) extends FilterIterator {
@@ -64,5 +61,5 @@ function scan(string $directoryOrFile): Types\ImmList
         $files[] = $f;
     }
 
-    return ImmList(...$files);
+    return $files;
 }

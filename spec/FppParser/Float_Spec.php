@@ -19,19 +19,19 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('float_', function () {
             it('can parse float types', function () {
-                expect(parse()->run('float Longitude;')->head()->_1)->toEqual(
+                expect(parse()->run('float Longitude;')[0]->_1)->toEqual(
                     new Float_(
                         'Longitude',
-                        Nil()
+                        []
                     )
                 );
             });
 
             it('can parse float types with markers', function () {
-                expect(parse()->run('float Longitude : Distance;')->head()->_1)->toEqual(
+                expect(parse()->run('float Longitude : Distance;')[0]->_1)->toEqual(
                     new Float_(
                         'Longitude',
-                        ImmList('Distance')
+                        ['Distance']
                     )
                 );
             });

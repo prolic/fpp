@@ -19,19 +19,19 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('int_', function () {
             it('can parse int types', function () {
-                expect(parse()->run('int Age;')->head()->_1)->toEqual(
+                expect(parse()->run('int Age;')[0]->_1)->toEqual(
                     new Int_(
                         'Age',
-                        Nil()
+                        []
                     )
                 );
             });
 
             it('can parse int types with markers', function () {
-                expect(parse()->run('int Age : Number;')->head()->_1)->toEqual(
+                expect(parse()->run('int Age : Number;')[0]->_1)->toEqual(
                     new Int_(
                         'Age',
-                        ImmList('Number')
+                        ['Number']
                     )
                 );
             });

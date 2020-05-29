@@ -19,14 +19,14 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('guid', function () {
             it('can parse guid types', function () {
-                expect(parse()->run('guid UserId;')->head()->_1)->toEqual(
-                    new Guid('UserId', Nil())
+                expect(parse()->run('guid UserId;')[0]->_1)->toEqual(
+                    new Guid('UserId', [])
                 );
             });
 
             it('can parse guid types with markers', function () {
-                expect(parse()->run('guid UserId : Stringify;')->head()->_1)->toEqual(
-                    new Guid('UserId', ImmList('Stringify'))
+                expect(parse()->run('guid UserId : Stringify;')[0]->_1)->toEqual(
+                    new Guid('UserId', ['Stringify'])
                 );
             });
         });

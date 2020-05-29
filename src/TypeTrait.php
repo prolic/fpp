@@ -12,14 +12,12 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Phunkie\Types\ImmList;
-
 trait TypeTrait
 {
     private string $classname;
-    private ImmList $markers;
+    private array $markers;
 
-    public function __construct(string $classname, ImmList $markers)
+    public function __construct(string $classname, array $markers)
     {
         $this->classname = $classname;
         $this->markers = $markers;
@@ -30,7 +28,7 @@ trait TypeTrait
         return $this->classname;
     }
 
-    public function markers(): ImmList
+    public function markers(): array
     {
         return $this->markers;
     }

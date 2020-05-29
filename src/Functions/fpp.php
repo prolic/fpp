@@ -13,9 +13,31 @@ declare(strict_types=1);
 namespace Fpp;
 
 use Nette\PhpGenerator\PhpFile;
-use Phunkie\Types\ImmList;
-use Phunkie\Types\ImmMap;
 use Phunkie\Types\Pair;
+
+function flatMap(callable $f, array $arr): array
+{
+    $b = [];
+
+    foreach ($arr as $a) {
+        $tmp = $f($a);
+
+        if (null === $tmp) {
+            break;
+        }
+
+        if (\is_array($tmp)) {
+            foreach ($tmp as $v) {
+                $b[] = $v;
+            }
+            break;
+        }
+
+        $b[] = $tmp;
+    }
+
+    return $b;
+}
 
 function isKeyword(string $string): bool
 {
@@ -72,27 +94,31 @@ const parseFile = 'Fpp\parseFile';
 
 function parseFile(Parser $parser): Parser
 {
-    return singleNamespace($parser)->map(fn ($n) => ImmList($n))
+    return singleNamespace($parser)->map(fn ($n) => [$n])
         ->or(manyList(multipleNamespaces($parser)));
 }
 
 /**
- * @param ImmMap<string, Definition> $definitions
+ * @param array<string, Definition> $definitions
  *   An immutable map of parsed fqcn and its definitions
  *
- * @return ImmMap<string, string>
+ * @return array<string, string>
  *   An immutable map of printed file content, and its fqcn
  */
-function dump(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
+function dump(Definition $definition, array $definitions, Configuration $config): array
 {
     $builder = $config->builderFor($definition->type());
 
-    return addComment(
+    $files = addComment(
         $builder($definition, $definitions, $config),
         $config->comment()
-    )->map(
-        fn (Pair $p) => Pair(($config->printer())()->printFile($p->_1), $p->_2)
     );
+
+    foreach ($files as $fqcn => $file) {
+        $files[$fqcn] = ($config->printer())()->printFile($file);
+    }
+
+    return $files;
 }
 
 function buildDefaultPhpFile(Definition $definition, Configuration $config): PhpFile
@@ -102,31 +128,33 @@ function buildDefaultPhpFile(Definition $definition, Configuration $config): Php
 
     $namespace = $file->addNamespace($definition->namespace());
 
-    $definition->imports()->map(fn (Pair $i) => $namespace->addUse($i->_1, $i->_2));
+    \array_map(
+        fn (Pair $i) => $namespace->addUse($i->_1, $i->_2),
+        $definition->imports()
+    );
 
     return $file;
 }
 
 /**
- * @param ImmMap<string, PhpFile> $files
- * @return ImmList<PhpFile>
+ * @param array<string, PhpFile> $files
+ * @return array<PhpFile>
  */
-function addComment(ImmMap $files, ?string $comment): ImmMap
+function addComment(array $files, ?string $comment): array
 {
     if (null === $comment) {
         return $files;
     }
 
-    return $files->map(function (Pair $p) use ($comment) {
+    foreach ($files as $fqcn => $file) {
         /** @var PhpFile $file */
-        $file = $p->_2;
 
         foreach ($file->getNamespaces() as $namespace) {
             foreach ($namespace->getClasses() as $class) {
                 $class->addComment($comment);
             }
         }
+    }
 
-        return Pair($file, $p->_1);
-    });
+    return $files;
 }

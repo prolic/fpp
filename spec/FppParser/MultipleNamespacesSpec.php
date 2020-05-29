@@ -21,7 +21,7 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('multipleNamespaces', function () {
             it('cannot parse default namespace', function () {
-                expect(multipleNamespaces(enum())->run('namespace { }'))->toEqual(Nil());
+                expect(multipleNamespaces(enum())->run('namespace { }'))->toEqual([]);
             });
 
             it('can parse namespace', function () {
@@ -31,9 +31,9 @@ namespace Foo {
 }
 FPP;
                 /** @var ImmMap $definition */
-                $definition = multipleNamespaces(enum())->run($testString)->head()->_1;
+                $definition = multipleNamespaces(enum())->run($testString)[0]->_1;
                 expect($definition->contains('Foo\Color'))->toBe(true);
-                expect($definition->get('Foo\Color')->get()->imports())->toEqual(Nil());
+                expect($definition->get('Foo\Color')->get()->imports())->toEqual([]);
             });
 
             it('can parse namespace with subnamespace', function () {
@@ -43,9 +43,9 @@ namespace Foo\Bar {
 }
 FPP;
                 /** @var ImmMap $definition */
-                $definition = multipleNamespaces(enum())->run($testString)->head()->_1;
+                $definition = multipleNamespaces(enum())->run($testString)[0]->_1;
                 expect($definition->contains('Foo\Bar\Color'))->toBe(true);
-                expect($definition->get('Foo\Bar\Color')->get()->imports())->toEqual(Nil());
+                expect($definition->get('Foo\Bar\Color')->get()->imports())->toEqual([]);
             });
 
             it('can parse namespace containing many enums', function () {
@@ -56,12 +56,12 @@ namespace Foo {
 }
 FPP;
                 /** @var ImmMap $definitions */
-                $definitions = multipleNamespaces(enum())->run($testString)->head()->_1;
+                $definitions = multipleNamespaces(enum())->run($testString)[0]->_1;
                 expect($definitions->contains('Foo\Color'))->toBe(true);
                 expect($definitions->contains('Foo\Human'))->toBe(true);
 
-                expect($definitions->get('Foo\Color')->get()->imports())->toEqual(Nil());
-                expect($definitions->get('Foo\Human')->get()->imports())->toEqual(Nil());
+                expect($definitions->get('Foo\Color')->get()->imports())->toEqual([]);
+                expect($definitions->get('Foo\Human')->get()->imports())->toEqual([]);
             });
         });
     });

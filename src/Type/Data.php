@@ -20,14 +20,15 @@ use Fpp\Configuration;
 use function Fpp\constructorSeparator;
 use Fpp\Definition;
 use function Fpp\int;
-use function Fpp\item;
 use function Fpp\letter;
 use function Fpp\many;
+use function Fpp\not;
 use Fpp\Parser;
 use function Fpp\plus;
 use function Fpp\result;
 use function Fpp\sepBy1list;
 use function Fpp\sepBy1With;
+use function Fpp\sepByList;
 use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
@@ -39,8 +40,6 @@ use function Fpp\typeName;
 use Fpp\TypeTrait;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Type;
-use Phunkie\Types\ImmList;
-use Phunkie\Types\ImmMap;
 use Phunkie\Types\Tuple;
 
 function definition(): Tuple
@@ -52,12 +51,12 @@ const parse = 'Fpp\Type\Data\parse';
 
 function parse(): Parser
 {
-    return parseSimplyfied()->or(parseWitSubTypes());
+    return parseSimplified()->or(parseWitSubTypes());
 }
 
 const build = 'Fpp\Type\Data\build';
 
-function build(Definition $definition, ImmMap $definitions, Configuration $config): ImmMap
+function build(Definition $definition, array $definitions, Configuration $config): array
 {
     $type = $definition->type();
 
@@ -71,15 +70,15 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
 
     $class = $file->addClass($fqcn)
         ->setAbstract()
-        ->setImplements($type->markers()->toArray());
+        ->setImplements($type->markers());
 
     $class->addMethod('fromArray')->setStatic()->setReturnType('self')->setAbstract();
     $class->addMethod('toArray')->setReturnType('array')->setAbstract();
     $class->addMethod('equals')->setReturnType(Type::BOOL)->setAbstract();
 
-    $map = \ImmMap($fqcn, $file);
+    $map = [$fqcn => $file];
 
-    $constructors = $type->constructors()->toArray();
+    $constructors = $type->constructors();
 
     $singleConstructor = \count($constructors) === 1;
 
@@ -92,10 +91,8 @@ function build(Definition $definition, ImmMap $definitions, Configuration $confi
             ));
         }
 
-        $map = $map->plus(
-            $definition->namespace() . '\\' . $constructor->classname(),
-            buildType($definition, $constructor, $definitions, $config)
-        );
+        $fqcn = $definition->namespace() . '\\' . $constructor->classname();
+        $map[$fqcn] = buildType($definition, $constructor, $definitions, $config);
     }
 
     return $map;
@@ -133,19 +130,19 @@ class Data implements FppType
 {
     use TypeTrait;
 
-    /** @var ImmList<Constructor> */
-    private ImmList $constructors;
+    /** @var list<Constructor> */
+    private array $constructors;
 
-    /** @param Immlist<Constructor> $constructors */
-    public function __construct(string $classname, ImmList $markers, ImmList $constructors)
+    /** @param list<Constructor> $constructors */
+    public function __construct(string $classname, array $markers, array $constructors)
     {
         $this->classname = $classname;
         $this->markers = $markers;
         $this->constructors = $constructors;
     }
 
-    /** @return ImmList<Constructor> */
-    public function constructors(): ImmList
+    /** @return list<Constructor> */
+    public function constructors(): array
     {
         return $this->constructors;
     }
@@ -154,11 +151,11 @@ class Data implements FppType
 class Constructor
 {
     private string $classname;
-    /** @var Immlist<Argument> */
-    private ImmList $arguments;
+    /** @var list<Argument> */
+    private array $arguments;
 
-    /** @param ImmList<Argument> $arguments */
-    public function __construct(string $classname, ImmList $arguments)
+    /** @param list<Argument> $arguments */
+    public function __construct(string $classname, array $arguments)
     {
         $this->classname = $classname;
         $this->arguments = $arguments;
@@ -169,8 +166,8 @@ class Constructor
         return $this->classname;
     }
 
-    /** @return ImmList<Argument> */
-    public function arguments(): ImmList
+    /** @return list<Argument> */
+    public function arguments(): array
     {
         return $this->arguments;
     }
@@ -222,7 +219,7 @@ class Argument
 
 // helper functions for parse
 
-function parseSimplyfied(): Parser
+function parseSimplified(): Parser
 {
     return for_(
         __($_)->_(spaces()),
@@ -231,13 +228,13 @@ function parseSimplyfied(): Parser
         __($t)->_(typeName()),
         __($_)->_(spaces()),
         __($ms)->_(
-            plus(markers(), result(Nil()))
+            plus(markers(), result([]))
         ),
         __($_)->_(assignment()),
         __($as)->_(parseArguments()),
         __($_)->_(spaces()),
         __($_)->_(char(';'))
-    )->call(fn ($t, $ms, $as) => new Data($t, $ms, ImmList(new Constructor($t, $as))), $t, $ms, $as);
+    )->call(fn ($t, $ms, $as) => new Data($t, $ms, [new Constructor($t, $as)]), $t, $ms, $as);
 }
 
 function parseWitSubTypes(): Parser
@@ -249,7 +246,7 @@ function parseWitSubTypes(): Parser
         __($t)->_(typeName()),
         __($_)->_(spaces()),
         __($ms)->_(
-            plus(markers(), result(Nil()))
+            plus(markers(), result([]))
         ),
         __($_)->_(assignment()),
         __($cs)->_(
@@ -275,7 +272,7 @@ function parseArguments(): Parser
         for_(
             __($o)->_(char('{')),
         )->yields($o),
-        sepBy1list(
+        sepByList(
             for_(
                 __($_)->_(spaces()),
                 __($n)->_(char('?')->or(result(''))),
@@ -289,10 +286,11 @@ function parseArguments(): Parser
                 __($e)->_(char('=')->or(result(''))),
                 __($_)->_(spaces()),
                 __($d)->_(
-                    many(int())
+                    int()
                         ->or(string('null'))
                         ->or(string('[]'))
-                        ->or(surroundedWith(char('\''), many(item()), char('\'')))->or(result(''))
+                        ->or(string('\'\''))
+                        ->or(surroundedWith(char('\''), many(not('\'')), char('\'')))->or(result(''))
                 ),
             )->call(
                 fn ($at, $x, $xs, $n, $l, $e, $d) => new Argument(
@@ -324,7 +322,7 @@ function parseArguments(): Parser
 function buildType(
     Definition $definition,
     Constructor $constr,
-    ImmMap $definitions,
+    array $definitions,
     Configuration $config
 ): PhpFile {
     $fqcn = $definition->namespace() . '\\' . $constr->classname();
@@ -335,7 +333,7 @@ function buildType(
         ->setFinal();
 
     if ($definition->type()->classname() === $constr->classname()) {
-        $class->setImplements($definition->type()->markers()->toArray());
+        $class->setImplements($definition->type()->markers());
     } else {
         $class->setExtends($definition->type()->classname());
     }
@@ -343,62 +341,65 @@ function buildType(
     $constructor = $class->addMethod('__construct');
 
     $constructorBody = '';
-    $ValidationBody = '';
+    $fromArrayValidationBody = '';
     $fromArrayBody = "return new self(\n";
     $toArrayBody = "return [\n";
 
-    $constr->arguments()->map(function (Argument $a) use (
-        $class,
-        $constructor,
-        $definition,
-        $definitions,
-        $config,
-        &$constructorBody,
-        &$fromArrayValidationBody,
-        &$fromArrayBody,
-        &$toArrayBody
-    ) {
-        $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
+    \array_map(
+        function (Argument $a) use (
+            $class,
+            $constructor,
+            $definition,
+            $definitions,
+            $config,
+            &$constructorBody,
+            &$fromArrayValidationBody,
+            &$fromArrayBody,
+            &$toArrayBody
+        ) {
+            $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
 
-        $resolvedType = resolveType($a->type(), $definition);
-        $defaultValue = calculateDefaultValue($a);
-        $fromArrayValidationBody .= calculateFromArrayValidationBodyFor($a, $resolvedType, $definitions, $config);
-        $fromArrayBody .= calculateFromArrayBodyFor($a, $resolvedType, $definitions, $config);
-        $toArrayBody .= calculateToArrayBodyFor($a, $resolvedType, $definitions, $config);
+            $resolvedType = resolveType($a->type(), $definition);
+            $defaultValue = calculateDefaultValue($a);
+            $fromArrayValidationBody .= calculateFromArrayValidationBodyFor($a, $resolvedType, $definitions, $config);
+            $fromArrayBody .= calculateFromArrayBodyFor($a, $resolvedType, $definitions, $config);
+            $toArrayBody .= calculateToArrayBodyFor($a, $resolvedType, $definitions, $config);
 
-        if (null !== $defaultValue) {
-            $param = $constructor->addParameter($a->name(), $defaultValue);
-        } else {
-            $param = $constructor->addParameter($a->name());
-        }
-
-        $param->setNullable($a->nullable());
-
-        $constructorBody .= "\$this->{$a->name()} = \${$a->name()};\n";
-        $method = $class->addMethod($a->name());
-        $method->setBody("return \$this->{$a->name()};");
-
-        if ($a->isList()) {
-            $property->setType('array');
-            $param->setType('array');
-
-            if ($a->type()) {
-                $constructor->addComment('@param ' . $a->type() . '[] $' . $a->name());
-                $method->addComment('@return ' . $a->type() . '[]');
+            if (null !== $defaultValue) {
+                $param = $constructor->addParameter($a->name(), $defaultValue);
+            } else {
+                $param = $constructor->addParameter($a->name());
             }
-            $method->setReturnType('array');
-        } else {
-            $property->setType($a->type());
-            $param->setType($a->type());
-            $method->setReturnType($a->type());
-            $method->setReturnNullable($a->nullable());
-        }
 
-        if (null !== $a->type() && $a->isList()) {
-            $property->setType('array');
-            $property->addComment('@return ' . $a->type() . '[]');
-        }
-    });
+            $param->setNullable($a->nullable());
+
+            $constructorBody .= "\$this->{$a->name()} = \${$a->name()};\n";
+            $method = $class->addMethod($a->name());
+            $method->setBody("return \$this->{$a->name()};");
+
+            if ($a->isList()) {
+                $property->setType('array');
+                $param->setType('array');
+
+                if ($a->type()) {
+                    $constructor->addComment('@param ' . $a->type() . '[] $' . $a->name());
+                    $method->addComment('@return ' . $a->type() . '[]');
+                }
+                $method->setReturnType('array');
+            } else {
+                $property->setType($a->type());
+                $param->setType($a->type());
+                $method->setReturnType($a->type());
+                $method->setReturnNullable($a->nullable());
+            }
+
+            if (null !== $a->type() && $a->isList()) {
+                $property->setType('array');
+                $property->addComment('@return ' . $a->type() . '[]');
+            }
+        },
+        $constr->arguments()
+    );
 
     $constructor->setBody(\substr($constructorBody, 0, -1));
 
@@ -419,13 +420,13 @@ function buildType(
  * Resolves from class name to fully qualified class name,
  * f.e. Bar => Foo\Bar
  */
-function resolveType(string $type, Definition $definition): string
+function resolveType(?string $type, Definition $definition): ?string
 {
-    if (\in_array($type, ['string', 'int', 'bool', 'float', 'array'], true)) {
+    if (\in_array($type, [null, 'string', 'int', 'bool', 'float', 'array'], true)) {
         return $type;
     }
 
-    foreach ($definition->imports()->toArray() as $p) {
+    foreach ($definition->imports() as $p) {
         $import = $p->_1;
         $alias = $p->_2;
 
@@ -477,7 +478,7 @@ function calculateDefaultValue(Argument $a)
     }
 }
 
-function calculateFromArrayValidationBodyFor(Argument $a, string $resolvedType, ImmMap $definitions, Configuration $config): string
+function calculateFromArrayValidationBodyFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
 {
     if ($a->isList()) {
         $code = "if (! isset(\$data['{$a->name()}']) || ! \is_array(\$data['{$a->name()}'])) {\n";
@@ -521,18 +522,17 @@ function calculateFromArrayValidationBodyFor(Argument $a, string $resolvedType, 
             $validationErrorMessage = "Error on \"{$a->name()}\", array expected";
             break;
         default:
-            $definition = $definitions->get($resolvedType);
+            $definition = $definitions[$resolvedType] ?? null;
 
-            if ($definition->isEmpty()) {
-                $definition = $config->types()->get($resolvedType);
+            if (null === $definition) {
+                $definition = $config->types()[$resolvedType] ?? null;
 
-                if ($definition->isEmpty()) {
+                if (null === $definition) {
                     return '';
                 }
             }
 
-            /** @var \Fpp\Type $type */
-            $type = $definition->get()->type();
+            $type = $definition->type();
 
             $validator = $config->validatorFor($type)("data['{$a->name()}']");
             $validationErrorMessage = $config->validationErrorMessageFor($type)("\$data[\'{$a->name()}\']");
@@ -553,7 +553,7 @@ function calculateFromArrayValidationBodyFor(Argument $a, string $resolvedType, 
     );
 }
 
-function calculateFromArrayBodyFor(Argument $a, string $resolvedType, ImmMap $definitions, Configuration $config): string
+function calculateFromArrayBodyFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
 {
     switch ($a->type()) {
         case null:
@@ -569,20 +569,17 @@ function calculateFromArrayBodyFor(Argument $a, string $resolvedType, ImmMap $de
 
             return "    \$data['{$a->name()}'],\n";
         default:
-            $definition = $definitions->get($resolvedType);
+            $definition = $definitions[$resolvedType] ?? null;
 
-            if ($definition->isEmpty()) {
-                $definition = $config->types()->get($resolvedType);
+            if (null === $definition) {
+                $definition = $config->types()[$resolvedType] ?? null;
 
-                if ($definition->isEmpty()) {
+                if (null === $definition) {
                     return "    \$data['{$a->name()}'],\n";
                 }
 
                 return '    ' . ($definition->get()->_3)("\$data['{$a->name()}']") . ",\n";
             }
-
-            /** @var Definition $definition */
-            $definition = $definition->get();
 
             $builder = $config->fromPhpValueFor($definition->type());
 
@@ -600,7 +597,7 @@ function calculateFromArrayBodyFor(Argument $a, string $resolvedType, ImmMap $de
     }
 }
 
-function calculateToArrayBodyFor(Argument $a, string $resolvedType, ImmMap $definitions, Configuration $config): string
+function calculateToArrayBodyFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
 {
     switch ($a->type()) {
         case null:
@@ -612,20 +609,17 @@ function calculateToArrayBodyFor(Argument $a, string $resolvedType, ImmMap $defi
             // yes all above are treated the same
             return "    '{$a->name()}' => \$this->{$a->name()},\n";
         default:
-            $definition = $definitions->get($resolvedType);
+            $definition = $definitions[$resolvedType] ?? null;
 
-            if ($definition->isEmpty()) {
-                $definition = $config->types()->get($resolvedType);
+            if (null === $definition) {
+                $definition = $config->types()[$resolvedType] ?? null;
 
-                if ($definition->isEmpty()) {
+                if (null === $definition) {
                     return "    '{$a->name()}' => \$this->{$a->name()},\n";
                 }
 
                 return "    '{$a->name()}' => " . ($definition->get()->_4)($a) . ",\n";
             }
-
-            /** @var Definition $definition */
-            $definition = $definition->get();
 
             $builder = $config->toPhpValueFor($definition->type());
 

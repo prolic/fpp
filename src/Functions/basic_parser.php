@@ -12,20 +12,16 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use function ImmList;
-use function Nil;
-use const Phunkie\Functions\immlist\concat;
 use const Phunkie\Functions\numbers\negate;
-use Phunkie\Types;
 
 function result($a): Parser
 {
-    return new Parser(fn (string $s) => ImmList(Pair($a, $s)));
+    return new Parser(fn (string $s) => [Pair($a, $s)]);
 }
 
 function zero(): Parser
 {
-    return new Parser(fn (string $s) => Nil());
+    return new Parser(fn (string $s) => []);
 }
 
 function el(): Parser
@@ -35,8 +31,8 @@ function el(): Parser
 
 function item(): Parser
 {
-    //return new Parser(function (string $s) { var_dump($s); return \strlen($s) === 0 ? Nil() : ImmList(Pair($s[0], \substr($s, 1))); });
-    return new Parser(fn (string $s) => \strlen($s) === 0 ? Nil() : ImmList(Pair($s[0], \substr($s, 1))));
+    //return new Parser(function (string $s) { var_dump($s); return \strlen($s) === 0 ? [] : array(Pair($s[0], \substr($s, 1))); });
+    return new Parser(fn (string $s) => \strlen($s) === 0 ? [] : [Pair($s[0], \substr($s, 1))]);
 }
 
 function seq(Parser $p, Parser $q): Parser
@@ -79,10 +75,10 @@ function char($c): Parser
     */
     return new Parser(function (string $s) use ($c) {
         if (\strlen($s) === 0 || $s[0] !== $c) {
-            return Nil();
+            return [];
         }
 
-        return ImmList(Pair($c, \substr($s, 1)));
+        return [Pair($c, \substr($s, 1))];
     });
 }
 
@@ -101,10 +97,10 @@ function digit(): Parser
     */
     return new Parser(function (string $s) {
         if (\strlen($s) === 0 || ! \is_numeric($s[0])) {
-            return Nil();
+            return [];
         }
 
-        return ImmList(Pair($s[0], \substr($s, 1)));
+        return [Pair($s[0], \substr($s, 1))];
     });
 }
 
@@ -123,10 +119,10 @@ function lower(): Parser
     */
     return new Parser(function (string $s) {
         if (\strlen($s) === 0 || ! \ctype_lower($s[0])) {
-            return Nil();
+            return [];
         }
 
-        return ImmList(Pair($s[0], \substr($s, 1)));
+        return [Pair($s[0], \substr($s, 1))];
     });
 }
 
@@ -145,10 +141,10 @@ function upper(): Parser
     */
     return new Parser(function (string $s) {
         if (\strlen($s) === 0 || ! \ctype_upper($s[0])) {
-            return Nil();
+            return [];
         }
 
-        return ImmList(Pair($s[0], \substr($s, 1)));
+        return [Pair($s[0], \substr($s, 1))];
     });
 }
 
@@ -172,10 +168,10 @@ function letter(): Parser
     */
     return new Parser(function (string $s) {
         if (\strlen($s) === 0 || ! \ctype_alpha($s[0])) {
-            return Nil();
+            return [];
         }
 
-        return ImmList(Pair($s[0], \substr($s, 1)));
+        return [Pair($s[0], \substr($s, 1))];
     });
 }
 
@@ -202,10 +198,10 @@ function alphanum(): Parser
     */
     return new Parser(function (string $s) {
         if (\strlen($s) === 0 || ! \ctype_alnum($s[0])) {
-            return Nil();
+            return [];
         }
 
-        return ImmList(Pair($s[0], \substr($s, 1)));
+        return [Pair($s[0], \substr($s, 1))];
     });
 }
 
@@ -224,15 +220,15 @@ function spaces(): Parser
     */
     return new Parser(function ($s) {
         if (\strlen($s) === 0) {
-            return ImmList(Pair('', $s));
+            return [Pair('', $s)];
         }
 
         $m = [];
         if (\preg_match('/^(\s+)/', $s, $m)) {
-            return ImmList(Pair($m[0], \substr($s, \strlen($m[0]))));
+            return [Pair($m[0], \substr($s, \strlen($m[0])))];
         }
 
-        return ImmList(Pair('', $s));
+        return [Pair('', $s)];
     });
 }
 
@@ -282,10 +278,10 @@ function string($str): Parser
         $value = \substr($s, 0, $length);
 
         if ($value === $str) {
-            return ImmList(Pair($value, \substr($s, $length)));
+            return [Pair($value, \substr($s, $length))];
         }
 
-        return Nil();
+        return [];
     });
 }
 
@@ -304,23 +300,23 @@ function many1(Parser $p): Parser
     return for_(
         __($x)->_($p),
         __($xs)->_(many($p))
-    )->call(concat, $x, $xs);
+    )->call(fn ($x, $xs) => $x . $xs, $x, $xs);
 }
 
 function manyList(Parser $p): Parser
 {
     return plus($p->flatMap(
         fn ($x) => manyList($p)->map(
-            fn ($xs) => $xs instanceof Types\ImmList ? ImmList($x)->combine($xs) : ImmList($x, $xs)
+            fn ($xs) => \is_array($xs) ? \array_merge([$x], $xs) : [$x, $xs]
         )
-    ), result(Nil()));
+    ), result([]));
 }
 
 function manyList1(Parser $p): Parser
 {
     return $p->flatMap(
         fn ($x) => manyList($p)->map(
-            fn ($xs) => $xs instanceof Types\ImmList ? ImmList($x)->combine($xs) : ImmList($x, $xs)
+            fn ($xs) => \is_array($xs) ? \array_merge([$x], $xs) : [$x, $xs]
         )
     );
 }
@@ -354,7 +350,7 @@ function sepByList(Parser $p, Parser $sep): Parser
         fn ($x) => manyList($sep->flatMap(
             fn ($_) => $p->map(fn ($y) => $y)
         ))->map(
-            fn ($xs) => $xs instanceof Types\ImmList ? ImmList($x)->combine($xs) : ImmList($x, $xs)
+            fn ($xs) => \is_array($xs) ? \array_merge([$x], $xs) : [$x, $xs]
         )
     );
 }
@@ -365,7 +361,7 @@ function sepBy1list(Parser $p, Parser $sep): Parser
         fn ($x) => manyList1($sep->flatMap(
             fn ($_) => $p->map(fn ($y) => $y)
         ))->map(
-            fn ($xs) => $xs instanceof Types\ImmList ? ImmList($x)->combine($xs) : ImmList($x, $xs)
+            fn ($xs) => \is_array($xs) ? \array_merge([$x], $xs) : [$x, $xs]
         )
     );
 }

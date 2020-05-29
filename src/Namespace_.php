@@ -12,15 +12,13 @@ declare(strict_types=1);
 
 namespace Fpp;
 
-use Phunkie\Types\ImmList;
-
 class Namespace_
 {
     private string $name;
-    private ImmList $imports;
-    private ImmList $types;
+    private array $imports;
+    private array $types;
 
-    public function __construct(string $namespaceName, ImmList $imports, ImmList $types)
+    public function __construct(string $namespaceName, array $imports, array $types)
     {
         $this->name = $namespaceName;
         $this->imports = $imports;
@@ -32,17 +30,12 @@ class Namespace_
         return $this->name;
     }
 
-    public function imports(): ImmList
+    public function imports(): array
     {
         return $this->imports;
     }
 
-    public function addImports(ImmList $imports): void
-    {
-        $this->imports = $this->imports->combine($imports);
-    }
-
-    public function types(): ImmList
+    public function types(): array
     {
         return $this->types;
     }

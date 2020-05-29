@@ -20,35 +20,35 @@ describe("Fpp\Parser", function () {
     context('FPP parsers', function () {
         describe('enum', function () {
             it('can parse enums', function () {
-                expect(parse()->run('enum Color = Red | Green | Blue;')->head()->_1)->toEqual(
+                expect(parse()->run('enum Color = Red | Green | Blue;')[0]->_1)->toEqual(
                     new Enum(
                         'Color',
-                        Nil(),
-                        ImmList(
+                        [],
+                        [
                             new Constructor('Red'),
                             new Constructor('Green'),
-                            new Constructor('Blue')
-                        )
+                            new Constructor('Blue'),
+                        ]
                     )
                 );
             });
 
             it('can parse enums with markers', function () {
-                expect(parse()->run('enum Color : Enum = Red | Green | Blue;')->head()->_1)->toEqual(
+                expect(parse()->run('enum Color : Enum = Red | Green | Blue;')[0]->_1)->toEqual(
                     new Enum(
                         'Color',
-                        ImmList('Enum'),
-                        ImmList(
+                        ['Enum'],
+                        [
                             new Constructor('Red'),
                             new Constructor('Green'),
-                            new Constructor('Blue')
-                        )
+                            new Constructor('Blue'),
+                        ]
                     )
                 );
             });
 
             it('cannot parse enum constructors without semicolon ending', function () {
-                expect(parse()->run('enum Color = Red | Green | Blue'))->toEqual(Nil());
+                expect(parse()->run('enum Color = Red | Green | Blue'))->toEqual([]);
             });
         });
     });
