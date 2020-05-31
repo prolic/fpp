@@ -564,7 +564,6 @@ if (! {$typeConfiguration->equals()('$this->' . $a->name(), '$other->' . $a->nam
 
 CODE;
             }
-
             $builder = $config->equalsFor($definition->type());
 
             if ($a->isList()) {

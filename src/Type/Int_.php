@@ -38,7 +38,7 @@ function typeConfiguration(): TypeConfiguration
         toPhpValue,
         validator,
         validationErrorMessage,
-        null
+        equals
     );
 }
 

@@ -123,9 +123,6 @@ function build(Definition $definition, array $definitions, Configuration $config
 
     $file = buildDefaultPhpFile($definition, $config);
 
-    $lcEventId = \lcfirst($type->eventIdType());
-    $lcAggregateId = \lcfirst($type->aggregateIdType());
-
     $class = $file->addClass($fqcn)
         ->setAbstract()
         ->setImplements($type->markers());
@@ -163,12 +160,12 @@ CODE
         ->setAbstract()
         ->setReturnType(Type::STRING);
 
-    $class->addMethod($lcEventId)
-        ->setBody("return \$this->$lcEventId;")
+    $class->addMethod('eventId')
+        ->setBody('return $this->eventId;')
         ->setReturnType($type->eventIdType());
 
-    $class->addMethod($lcAggregateId)
-        ->setBody("return \$this->$lcAggregateId;")
+    $class->addMethod('aggregateId')
+        ->setBody('return $this->aggregateId;')
         ->setReturnType($type->aggregateIdType());
 
     $class->addProperty('payload')
@@ -226,8 +223,8 @@ CODE;
         ->setBody(<<<CODE
 return [
     'event_type' => \$this->eventType,
-    'event_id' => \$this->{$lcEventId}->toString(),
-    'aggregate_id' => \$this->{$lcAggregateId}->toString(),
+    'event_id' => \$this->eventId->toString(),
+    'aggregate_id' => \$this->aggregateId->toString(),
     'payload' => \$this->payload,
     'metadata' => \$this->metadata,
 ];
@@ -242,7 +239,7 @@ if (\get_class(\$this) !== \get_class(\$other)) {
     return false;
 }
 
-return \$this->{$lcEventId}->equals(\$other->$lcEventId);
+return \$this->eventId->equals(\$other->eventId);
 
 CODE
     );
@@ -425,15 +422,13 @@ function buildSubType(
     /** @var Event $event */
     $event = $definition->type();
 
-    $lcAggregateId = \lcfirst($event->aggregateIdType());
-
-    $occur->addParameter($lcAggregateId)
+    $occur->addParameter('eventId')
         ->setType($event->aggregateIdType());
 
     $occurBody = <<<CODE
 \$_event = new self(
     null,
-    \$$lcAggregateId,
+    \$eventId,
     [
 
 CODE;

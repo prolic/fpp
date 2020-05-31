@@ -325,5 +325,5 @@ function renameDuplicateArgumentNames(array $names, array $arguments): array
         }
     }
 
-    return $arguments;
+    return $result;
 }

@@ -15,7 +15,6 @@ namespace Fpp\Type\Command;
 use Fpp\Argument;
 use function Fpp\assignment;
 use function Fpp\buildDefaultPhpFile;
-use function Fpp\calculateDefaultValue;
 use function Fpp\char;
 use Fpp\Configuration;
 use function Fpp\constructorSeparator;
@@ -149,7 +148,7 @@ CODE
         ->setReturnType(Type::STRING);
 
     $class->addMethod('commandId')
-        ->setBody("return \$this->commandId;")
+        ->setBody('return $this->commandId;')
         ->setReturnType($type->commandIdType());
 
     $class->addProperty('payload')
@@ -399,9 +398,7 @@ function buildSubType(
             $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
 
             $resolvedType = resolveType($a->type(), $definition);
-            $defaultValue = calculateDefaultValue($a);
             $fromPhpValue = calculateFromPhpValueFor($a, $resolvedType, $definitions, $config);
-            $toPhpValue = calculateToPhpValueFor($a, $resolvedType, $definitions, $config);
 
             $method = $class->addMethod($a->name());
             $method->setBody("return $fromPhpValue;");
@@ -472,43 +469,6 @@ function calculateFromPhpValueFor(Argument $a, ?string $resolvedType, array $def
             }
 
             return $builder($definition->type(), "\$this->payload['{$a->name()}']") . '';
-    }
-}
-
-function calculateToPhpValueFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
-{
-    switch ($a->type()) {
-        case null:
-        case 'int':
-        case 'float':
-        case 'bool':
-        case 'string':
-        case 'array':
-            // yes all above are treated the same
-            return "    '{$a->name()}' => \${$a->name()},\n";
-        default:
-            $definition = $definitions[$resolvedType] ?? null;
-
-            if (null === $definition) {
-                /** @var TypeConfiguration|null $typeConfiguration */
-                $typeConfiguration = $config->types()[$resolvedType] ?? null;
-
-                if (null === $typeConfiguration) {
-                    return "    '{$a->name()}' => \${$a->name()},\n";
-                }
-
-                return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$' . $a->name())) . ",\n";
-            }
-
-            $builder = $config->toPhpValueFor($definition->type());
-
-            if ($a->isList()) {
-                $callback = "fn({$a->type()} \$e) => {$builder($definition->type(), '$e')}";
-
-                return "    '{$a->name()}' => \array_map($callback, \${$a->name()}),\n";
-            }
-
-            return "    '{$a->name()}' => \$" . ($builder)($definition->type(), $a->name()) . ",\n";
     }
 }
 
