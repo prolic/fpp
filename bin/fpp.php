@@ -47,7 +47,13 @@ $locatePsrPath = function (string $classname) use ($prefixesPsr4, $prefixesPsr0)
     return locatePsrPath($prefixesPsr4, $prefixesPsr0, $classname);
 };
 
-require_once "$pwd/autoload.php";
+if (\file_exists("$pwd/$vendorName/prolic/fpp/autoload.php")) {
+    $fppAutoloader = "$pwd/$vendorName/prolic/fpp/autoload.php";
+} else {
+    $fppAutoloader = "$pwd/autoload.php";
+}
+
+require_once $fppAutoloader;
 
 $config = [
     'use_strict_types' => true,
