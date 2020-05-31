@@ -164,12 +164,10 @@ CODE
         ->setReturnType(Type::STRING);
 
     $class->addMethod($lcEventId)
-        ->setFinal()
         ->setBody("return \$this->$lcEventId;")
         ->setReturnType($type->eventIdType());
 
     $class->addMethod($lcAggregateId)
-        ->setFinal()
         ->setBody("return \$this->$lcAggregateId;")
         ->setReturnType($type->aggregateIdType());
 

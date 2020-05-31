@@ -62,90 +62,22 @@ function manyNot($c): Parser
 
 function char($c): Parser
 {
-    /*
-     * Because PHP's compiler is too stupid to work in a FP manner,
-     * we need to speed things up and hack a little into this function.
-     * We parse spaces a lot, so this really speeds things up.
-     *
-     * This is the real implementation:
-     *
-     * return sat(fn ($input) => $input === $c);
-     *
-     * Now to our hacky implementation, which is way faster.
-    */
-    return new Parser(function (string $s) use ($c) {
-        if (\strlen($s) === 0 || $s[0] !== $c) {
-            return [];
-        }
-
-        return [Pair($c, \substr($s, 1))];
-    });
+    return sat(fn ($input) => $input === $c);
 }
 
 function digit(): Parser
 {
-    /*
-     * Because PHP's compiler is too stupid to work in a FP manner,
-     * we need to speed things up and hack a little into this function.
-     * We parse spaces a lot, so this really speeds things up.
-     *
-     * This is the real implementation:
-     *
-     * return sat('is_numeric');
-     *
-     * Now to our hacky implementation, which is way faster.
-    */
-    return new Parser(function (string $s) {
-        if (\strlen($s) === 0 || ! \is_numeric($s[0])) {
-            return [];
-        }
-
-        return [Pair($s[0], \substr($s, 1))];
-    });
+    return sat('is_numeric');
 }
 
 function lower(): Parser
 {
-    /*
-     * Because PHP's compiler is too stupid to work in a FP manner,
-     * we need to speed things up and hack a little into this function.
-     * We parse spaces a lot, so this really speeds things up.
-     *
-     * This is the real implementation:
-     *
-     * return sat('ctype_lower');
-     *
-     * Now to our hacky implementation, which is way faster.
-    */
-    return new Parser(function (string $s) {
-        if (\strlen($s) === 0 || ! \ctype_lower($s[0])) {
-            return [];
-        }
-
-        return [Pair($s[0], \substr($s, 1))];
-    });
+    return sat('ctype_lower');
 }
 
 function upper(): Parser
 {
-    /*
-     * Because PHP's compiler is too stupid to work in a FP manner,
-     * we need to speed things up and hack a little into this function.
-     * We parse spaces a lot, so this really speeds things up.
-     *
-     * This is the real implementation:
-     *
-     * return sat('ctype_upper');
-     *
-     * Now to our hacky implementation, which is way faster.
-    */
-    return new Parser(function (string $s) {
-        if (\strlen($s) === 0 || ! \ctype_upper($s[0])) {
-            return [];
-        }
-
-        return [Pair($s[0], \substr($s, 1))];
-    });
+    return sat('ctype_upper');
 }
 
 function plus(Parser $p, Parser $q): Parser
@@ -155,24 +87,7 @@ function plus(Parser $p, Parser $q): Parser
 
 function letter(): Parser
 {
-    /*
-     * Because PHP's compiler is too stupid to work in a FP manner,
-     * we need to speed things up and hack a little into this function.
-     * We parse spaces a lot, so this really speeds things up.
-     *
-     * This is the real implementation:
-     *
-     * return plus(lower(), upper());
-     *
-     * Now to our hacky implementation, which is way faster.
-    */
-    return new Parser(function (string $s) {
-        if (\strlen($s) === 0 || ! \ctype_alpha($s[0])) {
-            return [];
-        }
-
-        return [Pair($s[0], \substr($s, 1))];
-    });
+    return plus(lower(), upper());
 }
 
 function nl(): Parser
@@ -185,51 +100,12 @@ function nl(): Parser
 
 function alphanum(): Parser
 {
-    /*
-     * Because PHP's compiler is too stupid to work in a FP manner,
-     * we need to speed things up and hack a little into this function.
-     * We parse spaces a lot, so this really speeds things up.
-     *
-     * This is the real implementation:
-     *
-     * return plus(letter(), digit());
-     *
-     * Now to our hacky implementation, which is way faster.
-    */
-    return new Parser(function (string $s) {
-        if (\strlen($s) === 0 || ! \ctype_alnum($s[0])) {
-            return [];
-        }
-
-        return [Pair($s[0], \substr($s, 1))];
-    });
+    return plus(letter(), digit());
 }
 
 function spaces(): Parser
 {
-    /*
-     * Because PHP's compiler is too stupid to work in a FP manner,
-     * we need to speed things up and hack a little into this function.
-     * We parse spaces a lot, so this really speeds things up.
-     *
-     * This is the real implementation:
-     *
-     * return many(plus(char(' '), char("\n")));
-     *
-     * Now to our hacky implementation, which is way faster.
-    */
-    return new Parser(function ($s) {
-        if (\strlen($s) === 0) {
-            return [Pair('', $s)];
-        }
-
-        $m = [];
-        if (\preg_match('/^(\s+)/', $s, $m)) {
-            return [Pair($m[0], \substr($s, \strlen($m[0])))];
-        }
-
-        return [Pair('', $s)];
-    });
+    return many(plus(char(' '), char("\n")));
 }
 
 function spaces1(): Parser
@@ -255,34 +131,14 @@ function word(): Parser
     ), result(''));
 }
 
-function string($str): Parser
+function string($s): Parser
 {
-    /*
-     * Because PHP's compiler is too stupid to work in a FP manner,
-     * we need to speed things up and hack a little into this function.
-     * We parse spaces a lot, so this really speeds things up.
-     *
-     * This is the real implementation:
-     *
-     * return \strlen($s)
-     *   ? for_(
-     *       __($c)->_(char($s[0])),
-     *       __($cs)->_(string(\substr($s, 1)))
-     *       )->call(concat, $c, $cs)
-     *   : result('');
-     *
-     * Now to our hacky implementation, which is way faster.
-     */
-    return new Parser(function ($s) use ($str) {
-        $length = \strlen($str);
-        $value = \substr($s, 0, $length);
-
-        if ($value === $str) {
-            return [Pair($value, \substr($s, $length))];
-        }
-
-        return [];
-    });
+    return \strlen($s)
+        ? for_(
+            __($c)->_(char($s[0])),
+            __($cs)->_(string(\substr($s, 1)))
+        )->call(fn ($x, $xs) => $x . $xs, $c, $cs)
+        : result('');
 }
 
 function many(Parser $p): Parser

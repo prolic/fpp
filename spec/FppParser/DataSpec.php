@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace FppSpec\FppParser;
 
-use Fpp\Type\Data\Argument;
+use Fpp\Argument;
 use Fpp\Type\Data\Constructor;
 use Fpp\Type\Data\Data;
 use function Fpp\Type\Data\parse;
