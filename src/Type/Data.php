@@ -12,28 +12,23 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Data;
 
-use function Fpp\alphanum;
+use Fpp\Argument;
 use function Fpp\assignment;
 use function Fpp\buildDefaultPhpFile;
+use function Fpp\calculateDefaultValue;
 use function Fpp\char;
 use Fpp\Configuration;
 use function Fpp\constructorSeparator;
 use Fpp\Definition;
-use function Fpp\int;
-use function Fpp\letter;
-use function Fpp\many;
-use function Fpp\not;
+use function Fpp\parseArguments;
 use Fpp\Parser;
 use function Fpp\plus;
+use function Fpp\resolveType;
 use function Fpp\result;
 use function Fpp\sepBy1list;
-use function Fpp\sepBy1With;
-use function Fpp\sepByList;
 use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
-use function Fpp\surrounded;
-use function Fpp\surroundedWith;
 use Fpp\Type as FppType;
 use function Fpp\Type\Marker\markers;
 use Fpp\TypeConfiguration;
@@ -80,11 +75,22 @@ function build(Definition $definition, array $definitions, Configuration $config
         ->setAbstract()
         ->setImplements($type->markers());
 
-    $fromArray = $class->addMethod('fromArray')->setStatic()->setReturnType(Type::SELF)->setAbstract();
-    $fromArray->addParameter('data')->setType(Type::ARRAY);
-    $class->addMethod('toArray')->setReturnType('array')->setAbstract();
-    $equals = $class->addMethod('equals')->setReturnType(Type::BOOL)->setAbstract();
-    $equals->addParameter('other')->setType(Type::SELF);
+    $class->addMethod('fromArray')
+        ->setStatic()
+        ->setReturnType(Type::SELF)
+        ->setAbstract()
+        ->addParameter('data')
+        ->setType(Type::ARRAY);
+
+    $class->addMethod('toArray')
+        ->setReturnType('array')
+        ->setAbstract();
+
+    $class->addMethod('equals')
+        ->setReturnType(Type::BOOL)
+        ->setAbstract()
+        ->addParameter('other')
+        ->setType(Type::SELF);
 
     $map = [$fqcn => $file];
 
@@ -102,7 +108,7 @@ function build(Definition $definition, array $definitions, Configuration $config
         }
 
         $fqcn = $definition->namespace() . '\\' . $constructor->classname();
-        $map[$fqcn] = buildType($definition, $constructor, $definitions, $config);
+        $map[$fqcn] = buildSubType($definition, $constructor, $definitions, $config);
     }
 
     return $map;
@@ -190,50 +196,6 @@ class Constructor
     }
 }
 
-class Argument
-{
-    private string $name;
-    private ?string $type;
-    private bool $nullable;
-    private bool $isList;
-    /** @var mixed */
-    private $defaultValue;
-
-    public function __construct(string $name, ?string $type, bool $nullable, bool $isList, $defaultValue)
-    {
-        $this->name = $name;
-        $this->type = $type;
-        $this->nullable = $nullable;
-        $this->isList = $isList;
-        $this->defaultValue = $defaultValue;
-    }
-
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    public function type(): ?string
-    {
-        return $this->type;
-    }
-
-    public function nullable(): bool
-    {
-        return $this->nullable;
-    }
-
-    public function isList(): bool
-    {
-        return $this->isList;
-    }
-
-    public function defaultValue()
-    {
-        return $this->defaultValue;
-    }
-}
-
 // helper functions for parse
 
 function parseSimplified(): Parser
@@ -269,7 +231,7 @@ function parseWitSubTypes(): Parser
         __($cs)->_(
             sepBy1list(
                 for_(
-                    __($c)->_(sepBy1With(typeName(), char('\\'))),
+                    __($c)->_(typeName()),
                     __($_)->_(spaces()),
                     __($as)->_(
                         parseArguments()
@@ -283,60 +245,9 @@ function parseWitSubTypes(): Parser
     )->call(fn ($t, $ms, $cs) => new Data($t, $ms, $cs), $t, $ms, $cs);
 }
 
-function parseArguments(): Parser
-{
-    return surrounded(
-        for_(
-            __($o)->_(char('{')),
-        )->yields($o),
-        sepByList(
-            for_(
-                __($_)->_(spaces()),
-                __($n)->_(char('?')->or(result(''))),
-                __($at)->_(typeName()->or(result(''))),
-                __($l)->_(string('[]')->or(result(''))),
-                __($_)->_(spaces()),
-                __($_)->_(char('$')),
-                __($x)->_(plus(letter(), char('_'))),
-                __($xs)->_(many(plus(alphanum(), char('_')))),
-                __($_)->_(spaces()),
-                __($e)->_(char('=')->or(result(''))),
-                __($_)->_(spaces()),
-                __($d)->_(
-                    int()
-                        ->or(string('null'))
-                        ->or(string('[]'))
-                        ->or(string('\'\''))
-                        ->or(surroundedWith(char('\''), many(not('\'')), char('\'')))->or(result(''))
-                ),
-            )->call(
-                fn ($at, $x, $xs, $n, $l, $e, $d) => new Argument(
-                    $x . $xs,
-                    '' === $at ? null : $at,
-                    $n === '?',
-                    '[]' === $l,
-                    '=' === $e ? $d : null
-                ),
-                $at,
-                $x,
-                $xs,
-                $n,
-                $l,
-                $e,
-                $d
-            ),
-            char(',')
-        ),
-        for_(
-            __($_)->_(spaces()),
-            __($c)->_(char('}')),
-        )->yields($c)
-    );
-}
-
 // helper functions for build
 
-function buildType(
+function buildSubType(
     Definition $definition,
     Constructor $constr,
     array $definitions,
@@ -447,68 +358,6 @@ return true;
 CODE);
 
     return $file;
-}
-
-/**
- * Resolves from class name to fully qualified class name,
- * f.e. Bar => Foo\Bar
- */
-function resolveType(?string $type, Definition $definition): ?string
-{
-    if (\in_array($type, [null, 'string', 'int', 'bool', 'float', 'array'], true)) {
-        return $type;
-    }
-
-    foreach ($definition->imports() as $p) {
-        $import = $p->_1;
-        $alias = $p->_2;
-
-        if ($alias === $type) {
-            return $import;
-        }
-
-        if (null === $alias && $type === $import) {
-            return $type;
-        }
-
-        $pos = \stripos($import, '.');
-
-        if (false !== $pos && $type === \substr($import, $pos + 1)) {
-            return $import;
-        }
-    }
-
-    return $definition->namespace() . '\\' . $type;
-}
-
-/** @return mixed */
-function calculateDefaultValue(Argument $a)
-{
-    if ($a->isList() && $a->defaultValue() === '[]') {
-        return [];
-    }
-
-    switch ($a->type()) {
-        case 'int':
-            return null === $a->defaultValue() ? null : (int) $a->defaultValue();
-            break;
-        case 'float':
-            return null === $a->defaultValue() ? null : (float) $a->defaultValue();
-        case 'bool':
-            return null === $a->defaultValue() ? null : 'true' === $a->defaultValue();
-        case 'string':
-            if (null === $a->defaultValue()) {
-                return null;
-            }
-
-            return $a->defaultValue() === "''" ? '' : \substr($a->defaultValue(), 1, -1);
-        case 'array':
-            return $a->defaultValue() === '[]' ? [] : $a->defaultValue();
-        case null:
-        default:
-            // yes both cases
-            return $a->defaultValue();
-    }
 }
 
 function calculateFromArrayValidationBodyFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string

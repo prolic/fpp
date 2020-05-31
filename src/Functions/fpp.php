@@ -15,6 +15,8 @@ namespace Fpp;
 use Nette\PhpGenerator\PhpFile;
 use Phunkie\Types\Pair;
 
+const flatMap = 'Fpp\flatMap';
+
 function flatMap(callable $f, array $arr): array
 {
     $b = [];
@@ -39,6 +41,8 @@ function flatMap(callable $f, array $arr): array
     return $b;
 }
 
+const isKeyword = 'Fpp\isKeyword';
+
 function isKeyword(string $string): bool
 {
     return \in_array(\strtolower($string), [
@@ -58,6 +62,8 @@ function isKeyword(string $string): bool
         'xor', 'yield', 'yield from',
     ], true);
 }
+
+const locatePsrPath = 'Fpp\locatePsrPath';
 
 function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, string $classname): string
 {
@@ -98,6 +104,8 @@ function parseFile(Parser $parser): Parser
         ->or(manyList(multipleNamespaces($parser)));
 }
 
+const dump = 'Fpp\dump';
+
 /**
  * @param array<string, Definition> $definitions
  *   An immutable map of parsed fqcn and its definitions
@@ -121,6 +129,8 @@ function dump(Definition $definition, array $definitions, Configuration $config)
     return $files;
 }
 
+const buildDefaultPhpFile = 'Fpp\buildDefaultPhpFile';
+
 function buildDefaultPhpFile(Definition $definition, Configuration $config): PhpFile
 {
     $file = new PhpFile();
@@ -135,6 +145,8 @@ function buildDefaultPhpFile(Definition $definition, Configuration $config): Php
 
     return $file;
 }
+
+const addComment = 'Fpp\addComment';
 
 /**
  * @param array<string, PhpFile> $files
@@ -157,4 +169,123 @@ function addComment(array $files, ?string $comment): array
     }
 
     return $files;
+}
+
+const parseArguments = 'Fpp\parseArguments';
+
+function parseArguments(): Parser
+{
+    return surrounded(
+        for_(
+            __($o)->_(char('{')),
+        )->yields($o),
+        sepByList(
+            for_(
+                __($_)->_(spaces()),
+                __($n)->_(char('?')->or(result(''))),
+                __($at)->_(typeName()->or(result(''))),
+                __($l)->_(string('[]')->or(result(''))),
+                __($_)->_(spaces()),
+                __($_)->_(char('$')),
+                __($x)->_(plus(letter(), char('_'))),
+                __($xs)->_(many(plus(alphanum(), char('_')))),
+                __($_)->_(spaces()),
+                __($e)->_(char('=')->or(result(''))),
+                __($_)->_(spaces()),
+                __($d)->_(
+                    int()
+                        ->or(string('null'))
+                        ->or(string('[]'))
+                        ->or(string('\'\''))
+                        ->or(surroundedWith(char('\''), many(not('\'')), char('\'')))->or(result(''))
+                ),
+            )->call(
+                fn ($at, $x, $xs, $n, $l, $e, $d) => new Argument(
+                    $x . $xs,
+                    '' === $at ? null : $at,
+                    $n === '?',
+                    '[]' === $l,
+                    '=' === $e ? $d : null
+                ),
+                $at,
+                $x,
+                $xs,
+                $n,
+                $l,
+                $e,
+                $d
+            ),
+            char(',')
+        ),
+        for_(
+            __($_)->_(spaces()),
+            __($c)->_(char('}')),
+        )->yields($c)
+    );
+}
+
+const resolveType = 'Fpp\resolveType';
+
+/**
+ * Resolves from class name to fully qualified class name,
+ * f.e. Bar => Foo\Bar
+ */
+function resolveType(?string $type, Definition $definition): ?string
+{
+    if (\in_array($type, [null, 'string', 'int', 'bool', 'float', 'array'], true)) {
+        return $type;
+    }
+
+    foreach ($definition->imports() as $p) {
+        $import = $p->_1;
+        $alias = $p->_2;
+
+        if ($alias === $type) {
+            return $import;
+        }
+
+        if (null === $alias && $type === $import) {
+            return $type;
+        }
+
+        $pos = \strrpos($import, '\\');
+
+        if (false !== $pos && $type === \substr($import, $pos + 1)) {
+            return $import;
+        }
+    }
+
+    return $definition->namespace() . '\\' . $type;
+}
+
+const calculateDefaultValue = 'Fpp\calculateDefaultValue';
+
+/** @return mixed */
+function calculateDefaultValue(Argument $a)
+{
+    if ($a->isList() && $a->defaultValue() === '[]') {
+        return [];
+    }
+
+    switch ($a->type()) {
+        case 'int':
+            return null === $a->defaultValue() ? null : (int) $a->defaultValue();
+            break;
+        case 'float':
+            return null === $a->defaultValue() ? null : (float) $a->defaultValue();
+        case 'bool':
+            return null === $a->defaultValue() ? null : 'true' === $a->defaultValue();
+        case 'string':
+            if (null === $a->defaultValue()) {
+                return null;
+            }
+
+            return $a->defaultValue() === "''" ? '' : \substr($a->defaultValue(), 1, -1);
+        case 'array':
+            return $a->defaultValue() === '[]' ? [] : $a->defaultValue();
+        case null:
+        default:
+            // yes both cases
+            return $a->defaultValue();
+    }
 }

@@ -57,6 +57,7 @@ $config = [
     'types' => [
         Type\Data\Data::class => Type\Data\typeConfiguration(),
         Type\Enum\Enum::class => Type\Enum\typeConfiguration(),
+        Type\Event\Event::class => Type\Event\typeConfiguration(),
         Type\String_\String_::class => Type\String_\typeConfiguration(),
         Type\Int_\Int_::class => Type\Int_\typeConfiguration(),
         Type\Float_\Float_::class => Type\Float_\typeConfiguration(),
@@ -86,6 +87,7 @@ return [
     'types' => [
         Type\Data\Data::class => Type\Data\typeConfiguration(),
         Type\Enum\Enum::class => Type\Enum\typeConfiguration(),
+        Type\Event\Event::class => Type\Event\typeConfiguration(),
         Type\String_\String_::class => Type\String_\typeConfiguration(),
         Type\Int_\Int_::class => Type\Int_\typeConfiguration(),
         Type\Float_\Float_::class => Type\Float_\typeConfiguration(),

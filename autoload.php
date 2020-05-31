@@ -11,6 +11,7 @@
 declare(strict_types=1);
 
 $autoloadFiles = [
+    __DIR__ . '/src/Argument.php',
     __DIR__ . '/src/Configuration.php',
     __DIR__ . '/src/Definition.php',
     __DIR__ . '/src/Namespace_.php',
@@ -26,6 +27,7 @@ $autoloadFiles = [
     __DIR__ . '/src/Type/Data.php',
     __DIR__ . '/src/Type/DateTimeImmutable.php',
     __DIR__ . '/src/Type/Enum.php',
+    __DIR__ . '/src/Type/Event.php',
     __DIR__ . '/src/Type/Float_.php',
     __DIR__ . '/src/Type/Int_.php',
     __DIR__ . '/src/Type/Marker.php',
