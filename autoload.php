@@ -24,6 +24,7 @@ $autoloadFiles = [
     __DIR__ . '/src/Functions/fpp.php',
     __DIR__ . '/src/Functions/scan.php',
     __DIR__ . '/src/Type/Bool_.php',
+    __DIR__ . '/src/Type/Command.php',
     __DIR__ . '/src/Type/Data.php',
     __DIR__ . '/src/Type/DateTimeImmutable.php',
     __DIR__ . '/src/Type/Enum.php',

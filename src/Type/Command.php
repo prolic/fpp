@@ -10,14 +10,13 @@
 
 declare(strict_types=1);
 
-namespace Fpp\Type\Event;
+namespace Fpp\Type\Command;
 
 use Fpp\Argument;
 use function Fpp\assignment;
 use function Fpp\buildDefaultPhpFile;
 use function Fpp\calculateDefaultValue;
 use function Fpp\char;
-use function Fpp\comma;
 use Fpp\Configuration;
 use function Fpp\constructorSeparator;
 use Fpp\Definition;
@@ -53,13 +52,13 @@ function typeConfiguration(): TypeConfiguration
     );
 }
 
-const parse = 'Fpp\Type\Event\parse';
+const parse = 'Fpp\Type\Command\parse';
 
 function parse(): Parser
 {
     return for_(
         __($_)->_(spaces()),
-        __($_)->_(string('event')),
+        __($_)->_(string('command')),
         __($_)->_(spaces1()),
         __($t)->_(typeName()),
         __($_)->_(spaces()),
@@ -69,9 +68,7 @@ function parse(): Parser
         __($_)->_(spaces()),
         __($_)->_(char('(')),
         __($_)->_(spaces()),
-        __($eid)->_(typeName()),
-        __($_)->_(comma()),
-        __($aid)->_(typeName()),
+        __($cid)->_(typeName()),
         __($_)->_(spaces()),
         __($_)->_(char(')')),
         __($_)->_(assignment()),
@@ -99,76 +96,62 @@ function parse(): Parser
         __($_)->_(spaces()),
         __($_)->_(char(';'))
     )->call(
-        fn ($t, $ms, $eid, $aid, $cs) => new Event($t, $ms, $eid, $aid, $cs),
+        fn ($t, $ms, $cid, $cs) => new Command($t, $ms, $cid, $cs),
         $t,
         $ms,
-        $eid,
-        $aid,
+        $cid,
         $cs
     );
 }
 
-const build = 'Fpp\Type\Event\build';
+const build = 'Fpp\Type\Command\build';
 
 function build(Definition $definition, array $definitions, Configuration $config): array
 {
     $type = $definition->type();
 
-    if (! $type instanceof Event) {
-        throw new \InvalidArgumentException('Can only build definitions of ' . Event::class);
+    if (! $type instanceof Command) {
+        throw new \InvalidArgumentException('Can only build definitions of ' . Command::class);
     }
 
     $fqcn = $definition->namespace() . '\\' . $type->classname();
 
     $file = buildDefaultPhpFile($definition, $config);
 
-    $lcEventId = \lcfirst($type->eventIdType());
-    $lcAggregateId = \lcfirst($type->aggregateIdType());
+    $lcCommandId = \lcfirst($type->commandIdType());
 
     $class = $file->addClass($fqcn)
         ->setAbstract()
         ->setImplements($type->markers());
 
-    $class->addProperty($lcEventId)
+    $class->addProperty($lcCommandId)
         ->setProtected()
-        ->setType($type->eventIdType());
+        ->setType($type->commandIdType());
 
-    $class->addProperty($lcAggregateId)
-        ->setProtected()
-        ->setType($type->aggregateIdType());
+    $constructor = $class->addMethod('__construct');
 
-    $constructor = $class->addMethod('__construct')
-        ->setProtected();
-
-    $constructor->addParameter($lcEventId)
-        ->setType($type->eventIdType())
+    $constructor->addParameter($lcCommandId)
+        ->setType($type->commandIdType())
         ->setNullable();
-    $constructor->addParameter($lcAggregateId)
-        ->setType($type->aggregateIdType());
     $constructor->addParameter('payload')
         ->setType(Type::ARRAY);
     $constructor->addParameter('metadata')
         ->setType(Type::ARRAY)
         ->setDefaultValue([]);
     $constructor->setBody(<<<CODE
-\$this->$lcEventId = $$lcEventId ?? {$type->eventIdType()}::generate();
-\$this->$lcAggregateId = $$lcAggregateId;
+\$this->$lcCommandId = $$lcCommandId ?? {$type->commandIdType()}::generate();
 \$this->payload = \$payload;
 \$this->metadata = \$metadata;
 CODE
     );
 
-    $class->addMethod('eventType')
+    $class->addMethod('commandType')
         ->setAbstract()
         ->setReturnType(Type::STRING);
 
-    $class->addMethod($lcEventId)
-        ->setBody("return \$this->$lcEventId;")
-        ->setReturnType($type->eventIdType());
-
-    $class->addMethod($lcAggregateId)
-        ->setBody("return \$this->$lcAggregateId;")
-        ->setReturnType($type->aggregateIdType());
+    $class->addMethod($lcCommandId)
+        ->setBody("return \$this->$lcCommandId;")
+        ->setReturnType($type->commandIdType());
 
     $class->addProperty('payload')
         ->setProtected()
@@ -194,10 +177,10 @@ CODE
         ->addParameter('data')
         ->setType(Type::ARRAY);
 
-    $fromArrayBody = "switch(\$data['event_type']) {\n";
+    $fromArrayBody = "switch(\$data['command_type']) {\n";
 
     foreach ($type->constructors() as $constructor) {
-        $fromArrayBody .= "    case '" . eventType($constructor, $definition->namespace()) . "':\n";
+        $fromArrayBody .= "    case '" . commandType($constructor, $definition->namespace()) . "':\n";
         $fromArrayBody .= "        \$classname = '{$constructor->classname()}';\n";
         $fromArrayBody .= "        break;\n";
     }
@@ -205,13 +188,12 @@ CODE
     $fromArrayBody .= <<<CODE
     default:
         throw new \InvalidArgumentException(
-            'Unknown event type "' . \$data['event_type'] . '" given'
+            'Unknown command type "' . \$data['command_type'] . '" given'
         );
 }
 
 return new \$classname(
-    {$type->eventIdType()}::fromString(\$data['event_id']),
-    {$type->aggregateIdType()}::fromString(\$data['aggregate_id']),
+    {$type->commandIdType()}::fromString(\$data['command_id']),
     \$data['payload'],
     \$data['metadata']
 );
@@ -224,9 +206,8 @@ CODE;
         ->setReturnType('array')
         ->setBody(<<<CODE
 return [
-    'event_type' => \$this->eventType,
-    'event_id' => \$this->{$lcEventId}->toString(),
-    'aggregate_id' => \$this->{$lcAggregateId}->toString(),
+    'command_type' => \$this->commandType,
+    'command_id' => \$this->{$lcCommandId}->toString(),
     'payload' => \$this->payload,
     'metadata' => \$this->metadata,
 ];
@@ -241,7 +222,7 @@ if (\get_class(\$this) !== \get_class(\$other)) {
     return false;
 }
 
-return \$this->{$lcEventId}->equals(\$other->$lcEventId);
+return \$this->{$lcCommandId}->equals(\$other->$lcCommandId);
 
 CODE
     );
@@ -259,7 +240,7 @@ CODE
         /** @var Constructor $constructor */
         if ($constructor->classname() === $type->classname() && ! $singleConstructor) {
             throw new \LogicException(\sprintf(
-                'Invalid event type: "%s" has a subtype defined with the same name',
+                'Invalid command type: "%s" has a subtype defined with the same name',
                 $fqcn
             ));
         }
@@ -271,49 +252,49 @@ CODE
     return $map;
 }
 
-const fromPhpValue = 'Fpp\Type\Event\fromPhpValue';
+const fromPhpValue = 'Fpp\Type\Command\fromPhpValue';
 
-function fromPhpValue(Event $type, string $paramName): string
+function fromPhpValue(Command $type, string $paramName): string
 {
     return $type->classname() . '::fromArray(' . $paramName . ')';
 }
 
-const toPhpValue = 'Fpp\Type\Event\toPhpValue';
+const toPhpValue = 'Fpp\Type\Command\toPhpValue';
 
-function toPhpValue(Event $type, string $paramName): string
+function toPhpValue(Command $type, string $paramName): string
 {
     return $paramName . '->toArray()';
 }
 
-const validator = 'Fpp\Type\Event\validator';
+const validator = 'Fpp\Type\Command\validator';
 
 function validator(string $paramName): string
 {
     return "\is_array(\$$paramName)";
 }
 
-const validationErrorMessage = 'Fpp\Type\Event\validationErrorMessage';
+const validationErrorMessage = 'Fpp\Type\Command\validationErrorMessage';
 
 function validationErrorMessage(string $paramName): string
 {
     return "Error on \"$paramName\", array expected";
 }
 
-const equals = 'Fpp\Type\Event\equals';
+const equals = 'Fpp\Type\Command\equals';
 
 function equals(string $paramName, string $otherParamName): string
 {
     return "{$paramName}->equals($otherParamName)";
 }
 
-class Event implements FppType
+class Command implements FppType
 {
     use TypeTrait;
 
     /** @var list<Constructor> */
     private array $constructors;
 
-    private string $eventIdType;
+    private string $commandIdType;
 
     private string $aggregateIdType;
 
@@ -321,14 +302,12 @@ class Event implements FppType
     public function __construct(
         string $classname,
         array $markers,
-        string $eventIdType,
-        string $aggregateIdType,
+        string $commandIdType,
         array $constructors
     ) {
         $this->classname = $classname;
         $this->markers = $markers;
-        $this->eventIdType = $eventIdType;
-        $this->aggregateIdType = $aggregateIdType;
+        $this->commandIdType = $commandIdType;
         $this->constructors = $constructors;
     }
 
@@ -338,29 +317,24 @@ class Event implements FppType
         return $this->constructors;
     }
 
-    public function eventIdType(): string
+    public function commandIdType(): string
     {
-        return $this->eventIdType;
-    }
-
-    public function aggregateIdType(): string
-    {
-        return $this->aggregateIdType;
+        return $this->commandIdType;
     }
 }
 
 class Constructor
 {
     private string $classname;
-    private string $eventType;
+    private string $commandType;
     /** @var list<Argument> */
     private array $arguments;
 
     /** @param list<Argument> $arguments */
-    public function __construct(string $classname, string $eventType, array $arguments)
+    public function __construct(string $classname, string $commandType, array $arguments)
     {
         $this->classname = $classname;
-        $this->eventType = $eventType;
+        $this->commandType = $commandType;
         $this->arguments = $arguments;
     }
 
@@ -369,9 +343,9 @@ class Constructor
         return $this->classname;
     }
 
-    public function eventType(): string
+    public function commandType(): string
     {
-        return $this->eventType;
+        return $this->commandType;
     }
 
     /** @return list<Argument> */
@@ -402,45 +376,21 @@ function buildSubType(
         $class->setExtends($definition->type()->classname());
     }
 
-    $class->addProperty('eventType')
+    $class->addProperty('commandType')
         ->setType(Type::STRING)
         ->setPrivate()
-        ->setValue(eventType($constructor, $definition->namespace()));
+        ->setValue(commandType($constructor, $definition->namespace()));
 
-    $class->addMethod('eventType')
+    $class->addMethod('commandType')
         ->setReturnType(Type::STRING)
-        ->setBody('return $this->eventType;');
-
-    $occur = $class->addMethod('occur')
-        ->setStatic()
-        ->setReturnType(Type::SELF);
-
-    /** @var Event $event */
-    $event = $definition->type();
-
-    $lcAggregateId = \lcfirst($event->aggregateIdType());
-
-    $occur->addParameter($lcAggregateId)
-        ->setType($event->aggregateIdType());
-
-    $occurBody = <<<CODE
-\$_event = new self(
-    null,
-    \$$lcAggregateId,
-    [
-
-CODE;
-    $occurBody2 = '';
+        ->setBody('return $this->commandType;');
 
     \array_map(
         function (Argument $a) use (
             $class,
-            $occur,
             $definition,
             $definitions,
-            $config,
-            &$occurBody,
-            &$occurBody2
+            $config
         ) {
             $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
 
@@ -449,39 +399,18 @@ CODE;
             $fromPhpValue = calculateFromPhpValueFor($a, $resolvedType, $definitions, $config);
             $toPhpValue = calculateToPhpValueFor($a, $resolvedType, $definitions, $config);
 
-            if (null !== $defaultValue) {
-                $param = $occur->addParameter($a->name(), $defaultValue);
-            } else {
-                $param = $occur->addParameter($a->name());
-            }
-
-            $param->setNullable($a->nullable());
-
-            $occurBody .= "    $toPhpValue";
-            $occurBody2 .= "\$_event->{$a->name()} = \${$a->name()};\n";
             $method = $class->addMethod($a->name());
-            $method->setBody(<<<CODE
-if (null === \$this->{$a->name()}) {
-    \$this->{$a->name()} = $fromPhpValue;
-}
-
-return \$this->{$a->name()};
-
-CODE
-);
+            $method->setBody("return $fromPhpValue;");
 
             if ($a->isList()) {
                 $property->setType('array');
-                $param->setType('array');
 
                 if ($a->type()) {
-                    $occur->addComment('@param ' . $a->type() . '[] $' . $a->name());
                     $method->addComment('@return ' . $a->type() . '[]');
                 }
                 $method->setReturnType('array');
             } else {
                 $property->setType($a->type());
-                $param->setType($a->type());
                 $method->setReturnType($a->type());
                 $method->setReturnNullable($a->nullable());
             }
@@ -493,16 +422,6 @@ CODE
         },
         $constructor->arguments()
     );
-
-    $occurBody .= "    ]\n);\n";
-
-    if ($occurBody2 !== '') {
-        $occurBody .= "\n$occurBody2";
-    }
-
-    $occurBody .= "\nreturn \$_event;";
-
-    $occur->setBody($occurBody);
 
     return $file;
 }
@@ -589,9 +508,9 @@ function calculateToPhpValueFor(Argument $a, ?string $resolvedType, array $defin
     }
 }
 
-function eventType(Constructor $constructor, string $namespace): string
+function commandType(Constructor $constructor, string $namespace): string
 {
-    return empty($constructor->eventType())
+    return empty($constructor->commandType())
         ? $namespace . '\\' . $constructor->classname()
-        : $constructor->eventType();
+        : $constructor->commandType();
 }
