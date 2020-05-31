@@ -23,6 +23,7 @@ use Fpp\Definition;
 use function Fpp\parseArguments;
 use Fpp\Parser;
 use function Fpp\plus;
+use function Fpp\renameDuplicateArgumentNames;
 use function Fpp\resolveType;
 use function Fpp\result;
 use function Fpp\sepBy1list;
@@ -181,7 +182,7 @@ class Constructor
     public function __construct(string $classname, array $arguments)
     {
         $this->classname = $classname;
-        $this->arguments = $arguments;
+        $this->arguments = renameDuplicateArgumentNames([], $arguments);
     }
 
     public function classname(): string

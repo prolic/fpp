@@ -186,10 +186,15 @@ function parseArguments(): Parser
                 __($at)->_(typeName()->or(result(''))),
                 __($l)->_(string('[]')->or(result(''))),
                 __($_)->_(spaces()),
-                __($_)->_(char('$')),
-                __($x)->_(plus(letter(), char('_'))),
-                __($xs)->_(many(plus(alphanum(), char('_')))),
-                __($_)->_(spaces()),
+                __($x)->_(
+                    for_(
+                        __($_)->_(char('$')),
+                        __($x)->_(plus(letter(), char('_'))),
+                        __($xs)->_(many(plus(alphanum(), char('_')))),
+                        __($_)->_(spaces()),
+                    )->call(fn ($x, $xs) => $x . $xs, $x, $xs)
+                    ->or(result(''))
+                ),
                 __($e)->_(char('=')->or(result(''))),
                 __($_)->_(spaces()),
                 __($d)->_(
@@ -200,8 +205,8 @@ function parseArguments(): Parser
                         ->or(surroundedWith(char('\''), many(not('\'')), char('\'')))->or(result(''))
                 ),
             )->call(
-                fn ($at, $x, $xs, $n, $l, $e, $d) => new Argument(
-                    $x . $xs,
+                fn ($at, $x, $n, $l, $e, $d) => new Argument(
+                    $x,
                     '' === $at ? null : $at,
                     $n === '?',
                     '[]' === $l,
@@ -209,7 +214,6 @@ function parseArguments(): Parser
                 ),
                 $at,
                 $x,
-                $xs,
                 $n,
                 $l,
                 $e,
@@ -288,4 +292,38 @@ function calculateDefaultValue(Argument $a)
             // yes both cases
             return $a->defaultValue();
     }
+}
+
+const renameDuplicateArgumentNames = 'Fpp\renameDuplicateArgumentNames';
+
+/**
+ * @param array<string, int> $names
+ * @param list<Argument> $arguments
+ *
+ * @return list<Argument>
+ */
+function renameDuplicateArgumentNames(array $names, array $arguments): array
+{
+    $result = [];
+
+    foreach ($arguments as $argument) {
+        /** @var Argument $argument */
+        $name = $argument->name();
+
+        if (! isset($names[$name])) {
+            $names[$name] = 1;
+            $result[] = $argument;
+        } else {
+            $names[$name]++;
+            $result[] = new Argument(
+                $name . (string) $names[$name],
+                $argument->type(),
+                $argument->nullable(),
+                $argument->isList(),
+                $argument->defaultValue()
+            );
+        }
+    }
+
+    return $arguments;
 }

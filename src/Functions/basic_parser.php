@@ -31,7 +31,6 @@ function el(): Parser
 
 function item(): Parser
 {
-    //return new Parser(function (string $s) { var_dump($s); return \strlen($s) === 0 ? [] : array(Pair($s[0], \substr($s, 1))); });
     return new Parser(fn (string $s) => \strlen($s) === 0 ? [] : [Pair($s[0], \substr($s, 1))]);
 }
 

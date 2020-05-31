@@ -25,6 +25,7 @@ use function Fpp\not;
 use function Fpp\parseArguments;
 use Fpp\Parser;
 use function Fpp\plus;
+use function Fpp\renameDuplicateArgumentNames;
 use function Fpp\resolveType;
 use function Fpp\result;
 use function Fpp\sepBy1list;
@@ -118,19 +119,17 @@ function build(Definition $definition, array $definitions, Configuration $config
 
     $file = buildDefaultPhpFile($definition, $config);
 
-    $lcCommandId = \lcfirst($type->commandIdType());
-
     $class = $file->addClass($fqcn)
         ->setAbstract()
         ->setImplements($type->markers());
 
-    $class->addProperty($lcCommandId)
+    $class->addProperty('commandId')
         ->setProtected()
         ->setType($type->commandIdType());
 
     $constructor = $class->addMethod('__construct');
 
-    $constructor->addParameter($lcCommandId)
+    $constructor->addParameter('commandId')
         ->setType($type->commandIdType())
         ->setNullable();
     $constructor->addParameter('payload')
@@ -139,7 +138,7 @@ function build(Definition $definition, array $definitions, Configuration $config
         ->setType(Type::ARRAY)
         ->setDefaultValue([]);
     $constructor->setBody(<<<CODE
-\$this->$lcCommandId = $$lcCommandId ?? {$type->commandIdType()}::generate();
+\$this->commandId = \$commandId ?? {$type->commandIdType()}::generate();
 \$this->payload = \$payload;
 \$this->metadata = \$metadata;
 CODE
@@ -149,8 +148,8 @@ CODE
         ->setAbstract()
         ->setReturnType(Type::STRING);
 
-    $class->addMethod($lcCommandId)
-        ->setBody("return \$this->$lcCommandId;")
+    $class->addMethod('commandId')
+        ->setBody("return \$this->commandId;")
         ->setReturnType($type->commandIdType());
 
     $class->addProperty('payload')
@@ -207,7 +206,7 @@ CODE;
         ->setBody(<<<CODE
 return [
     'command_type' => \$this->commandType,
-    'command_id' => \$this->{$lcCommandId}->toString(),
+    'command_id' => \$this->commandId->toString(),
     'payload' => \$this->payload,
     'metadata' => \$this->metadata,
 ];
@@ -222,7 +221,7 @@ if (\get_class(\$this) !== \get_class(\$other)) {
     return false;
 }
 
-return \$this->{$lcCommandId}->equals(\$other->$lcCommandId);
+return \$this->commandId->equals(\$other->commandId);
 
 CODE
     );
@@ -335,7 +334,12 @@ class Constructor
     {
         $this->classname = $classname;
         $this->commandType = $commandType;
-        $this->arguments = $arguments;
+        $this->arguments = renameDuplicateArgumentNames(
+            [
+                $commandType => 1,
+            ],
+            $arguments
+        );
     }
 
     public function classname(): string

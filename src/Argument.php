@@ -23,6 +23,18 @@ class Argument
 
     public function __construct(string $name, ?string $type, bool $nullable, bool $isList, $defaultValue)
     {
+        if (empty($name)) {
+            $name = \lcfirst($type);
+
+            if ($isList) {
+                if (\substr($name, -1) === 's') {
+                    $name .= 'es';
+                } else {
+                    $name .= 's';
+                }
+            }
+        }
+
         $this->name = $name;
         $this->type = $type;
         $this->nullable = $nullable;

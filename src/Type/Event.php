@@ -26,6 +26,7 @@ use function Fpp\not;
 use function Fpp\parseArguments;
 use Fpp\Parser;
 use function Fpp\plus;
+use function Fpp\renameDuplicateArgumentNames;
 use function Fpp\resolveType;
 use function Fpp\result;
 use function Fpp\sepBy1list;
@@ -129,21 +130,21 @@ function build(Definition $definition, array $definitions, Configuration $config
         ->setAbstract()
         ->setImplements($type->markers());
 
-    $class->addProperty($lcEventId)
+    $class->addProperty('eventId')
         ->setProtected()
         ->setType($type->eventIdType());
 
-    $class->addProperty($lcAggregateId)
+    $class->addProperty('aggregateId')
         ->setProtected()
         ->setType($type->aggregateIdType());
 
     $constructor = $class->addMethod('__construct')
         ->setProtected();
 
-    $constructor->addParameter($lcEventId)
+    $constructor->addParameter('eventId')
         ->setType($type->eventIdType())
         ->setNullable();
-    $constructor->addParameter($lcAggregateId)
+    $constructor->addParameter('aggregateId')
         ->setType($type->aggregateIdType());
     $constructor->addParameter('payload')
         ->setType(Type::ARRAY);
@@ -151,8 +152,8 @@ function build(Definition $definition, array $definitions, Configuration $config
         ->setType(Type::ARRAY)
         ->setDefaultValue([]);
     $constructor->setBody(<<<CODE
-\$this->$lcEventId = $$lcEventId ?? {$type->eventIdType()}::generate();
-\$this->$lcAggregateId = $$lcAggregateId;
+\$this->eventId = \$eventId ?? {$type->eventIdType()}::generate();
+\$this->aggregateId = \$aggregateId;
 \$this->payload = \$payload;
 \$this->metadata = \$metadata;
 CODE
@@ -361,7 +362,13 @@ class Constructor
     {
         $this->classname = $classname;
         $this->eventType = $eventType;
-        $this->arguments = $arguments;
+
+        $this->arguments = renameDuplicateArgumentNames(
+            [
+                $eventType => 1,
+            ],
+            $arguments
+        );
     }
 
     public function classname(): string
