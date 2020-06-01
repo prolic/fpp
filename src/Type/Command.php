@@ -395,8 +395,6 @@ function buildSubType(
             $definitions,
             $config
         ) {
-            $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
-
             $resolvedType = resolveType($a->type(), $definition);
             $fromPhpValue = calculateFromPhpValueFor($a, $resolvedType, $definitions, $config);
 
@@ -404,21 +402,13 @@ function buildSubType(
             $method->setBody("return $fromPhpValue;");
 
             if ($a->isList()) {
-                $property->setType('array');
-
                 if ($a->type()) {
                     $method->addComment('@return ' . $a->type() . '[]');
                 }
                 $method->setReturnType('array');
             } else {
-                $property->setType($a->type());
                 $method->setReturnType($a->type());
                 $method->setReturnNullable($a->nullable());
-            }
-
-            if (null !== $a->type() && $a->isList()) {
-                $property->setType('array');
-                $property->addComment('@return ' . $a->type() . '[]');
             }
         },
         $constructor->arguments()
@@ -461,7 +451,7 @@ function calculateFromPhpValueFor(Argument $a, ?string $resolvedType, array $def
             if ($a->isList()) {
                 $callback = "fn(\$e) => {$builder($definition->type(), '$e')}";
 
-                return "    \array_map($callback, \$this->payload['{$a->name()}'])";
+                return "\array_map($callback, \$this->payload['{$a->name()}'])";
             }
 
             if ($a->nullable()) {

@@ -444,7 +444,7 @@ CODE;
             &$occurBody,
             &$occurBody2
         ) {
-            $property = $class->addProperty($a->name())->setPrivate()->setNullable($a->nullable());
+            $property = $class->addProperty($a->name())->setPrivate()->setNullable()->setInitialized();
 
             $resolvedType = resolveType($a->type(), $definition);
             $defaultValue = calculateDefaultValue($a);
