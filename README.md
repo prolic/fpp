@@ -27,6 +27,8 @@ composer require prolic/fpp dev-master
 
 ## Usage
 
+Disable xdebug or increase xdebug.max_nesting_level in your php.ini file.
+
 ```php
 php vendor/bin/fpp.php <source dir or file>
 ```
