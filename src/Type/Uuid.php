@@ -142,7 +142,7 @@ function validator(string $paramName): string
 
 const validationErrorMessage = 'Fpp\Type\Uuid\validationErrorMessage';
 
-function validationErrorMessage($paramName): string
+function validationErrorMessage(string $paramName): string
 {
     return "Error on \"$paramName\", string expected";
 }

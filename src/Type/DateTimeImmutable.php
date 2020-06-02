@@ -58,7 +58,7 @@ CODE;
 
 const validationErrorMessage = 'Fpp\Type\DateTimeImmutable\validationErrorMessage';
 
-function validationErrorMessage($paramName): string
+function validationErrorMessage(string $paramName): string
 {
     return "Error on \"$paramName\", datetime string expected";
 }
