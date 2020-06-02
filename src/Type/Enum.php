@@ -26,7 +26,6 @@ use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
 use Fpp\Type as FppType;
-use Fpp\Type\Int_\Int_;
 use function Fpp\Type\Marker\markers;
 use Fpp\TypeConfiguration;
 use function Fpp\typeName;
@@ -90,9 +89,6 @@ function build(Definition $definition, array $definitions, Configuration $config
 
     $file = buildDefaultPhpFile($definition, $config);
 
-    $classname = $type->classname();
-    $lcClassName = \lcfirst($classname);
-
     $class = $file->addClass($fqcn)
         ->setFinal()
         ->setImplements($type->markers());
@@ -101,7 +97,7 @@ function build(Definition $definition, array $definitions, Configuration $config
     $i = 0;
 
     \array_map(
-        function ($c) use ($class, &$options, &$i, $classname) {
+        function ($c) use ($class, &$options, &$i) {
             $class->addConstant($c->name(), $i)->setPublic();
 
             $options[] = $c->name();
@@ -176,7 +172,7 @@ function fromPhpValue(Enum $type, string $paramName): string
 
 const toPhpValue = 'Fpp\Type\Enum\toPhpValue';
 
-function toPhpValue(Int_ $type, string $paramName): string
+function toPhpValue(Enum $type, string $paramName): string
 {
     return $paramName . '->name()';
 }
