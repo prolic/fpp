@@ -169,7 +169,8 @@ CODE
 
     $fromArrayMethod = $class->addMethod('fromArray')
         ->setStatic()
-        ->setReturnType(Type::SELF);
+        ->setReturnType(Type::SELF)
+        ->setComment('@psalm-suppress MoreSpecificReturnType');
 
     $fromArrayMethod->setReturnType(Type::SELF)
         ->addParameter('data')
@@ -190,6 +191,10 @@ CODE
         );
 }
 
+/**
+ * @psalm-suppress LessSpecificReturnStatement
+ * @psalm-suppress InvalidStringClass
+ */
 return new \$classname(
     {$type->commandIdType()}::fromString(\$data['command_id']),
     \$data['payload'],
@@ -204,7 +209,7 @@ CODE;
         ->setReturnType('array')
         ->setBody(<<<CODE
 return [
-    'command_type' => \$this->commandType,
+    'command_type' => \$this->commandType(),
     'command_id' => \$this->commandId->toString(),
     'payload' => \$this->payload,
     'metadata' => \$this->metadata,
@@ -398,8 +403,14 @@ function buildSubType(
             $resolvedType = resolveType($a->type(), $definition);
             $fromPhpValue = calculateFromPhpValueFor($a, $resolvedType, $definitions, $config);
 
+            $psalmAnnotation = '';
+
+            if ($a->isList()) {
+                $psalmAnnotation = "    /** @psalm-suppress MissingClosureParamType */\n";
+            }
+
             $method = $class->addMethod($a->name());
-            $method->setBody("return $fromPhpValue;");
+            $method->setBody($psalmAnnotation . "return $fromPhpValue;");
 
             if ($a->isList()) {
                 if ($a->type()) {

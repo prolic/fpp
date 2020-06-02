@@ -186,7 +186,8 @@ CODE
 
     $fromArrayMethod = $class->addMethod('fromArray')
         ->setStatic()
-        ->setReturnType(Type::SELF);
+        ->setReturnType(Type::SELF)
+        ->setComment('@psalm-suppress MoreSpecificReturnType');
 
     $fromArrayMethod->setReturnType(Type::SELF)
         ->addParameter('data')
@@ -207,6 +208,10 @@ CODE
         );
 }
 
+/**
+ * @psalm-suppress LessSpecificReturnStatement
+ * @psalm-suppress InvalidStringClass
+ */
 return new \$classname(
     {$type->eventIdType()}::fromString(\$data['event_id']),
     {$type->aggregateIdType()}::fromString(\$data['aggregate_id']),
@@ -222,7 +227,7 @@ CODE;
         ->setReturnType('array')
         ->setBody(<<<CODE
 return [
-    'event_type' => \$this->eventType,
+    'event_type' => \$this->eventType(),
     'event_id' => \$this->eventId->toString(),
     'aggregate_id' => \$this->aggregateId->toString(),
     'payload' => \$this->payload,
@@ -461,9 +466,17 @@ CODE;
 
             $occurBody .= "    $toPhpValue";
             $occurBody2 .= "\$_event->{$a->name()} = \${$a->name()};\n";
+
+            $psalmAnnotation = '';
+
+            if ($a->isList()) {
+                $psalmAnnotation = '    /** @psalm-suppress MissingClosureParamType */';
+            }
+
             $method = $class->addMethod($a->name());
             $method->setBody(<<<CODE
 if (null === \$this->{$a->name()}) {
+$psalmAnnotation
     \$this->{$a->name()} = $fromPhpValue;
 }
 
