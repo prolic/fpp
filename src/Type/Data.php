@@ -319,8 +319,8 @@ CODE;
                 $param->setType('array');
 
                 if ($a->type()) {
-                    $constructor->addComment('@param ' . $a->type() . '[] $' . $a->name());
-                    $method->addComment('@return ' . $a->type() . '[]');
+                    $constructor->addComment('@param list<' . $a->type() . '> $' . $a->name());
+                    $method->addComment('@return list<' . $a->type() . '>');
                 }
                 $method->setReturnType('array');
             } else {
@@ -332,7 +332,7 @@ CODE;
 
             if (null !== $a->type() && $a->isList()) {
                 $property->setType('array');
-                $property->addComment('@return ' . $a->type() . '[]');
+                $property->addComment('@return list<' . $a->type() . '>');
             }
         },
         $constr->arguments()
@@ -466,7 +466,14 @@ function calculateFromArrayBodyFor(Argument $a, ?string $resolvedType, array $de
                     return "    \$data['{$a->name()}'],\n";
                 }
 
-                return '    ' . $typeConfig->fromPhpValue()("data['{$a->name()}']");
+                if ($a->isList()) {
+                    return <<<CODE
+    \array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), 'e')}, \$data['{$a->name()}']),
+
+CODE;
+                }
+
+                return '    ' . $typeConfig->fromPhpValue()($a->type(), "data['{$a->name()}']") . ",\n";
             }
 
             $builder = $config->fromPhpValueFor($definition->type());
@@ -505,6 +512,15 @@ function calculateToArrayBodyFor(Argument $a, ?string $resolvedType, array $defi
 
                 if (null === $typeConfiguration) {
                     return "    '{$a->name()}' => \$this->{$a->name()},\n";
+                }
+
+                if ($a->isList()) {
+                    $callback = "fn({$a->type()} \$e) => {$typeConfiguration->toPhpValue()('$this->' . $a->name())}";
+
+                    return <<<CODE
+    '{$a->name()}' => \array_map($callback, \$this->{$a->name()}),
+
+CODE;
                 }
 
                 return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . ",\n";
@@ -551,6 +567,24 @@ CODE;
 
 if (\$this->{$a->name()} !== \$other->{$a->name()}) {
     return false;
+}
+
+CODE;
+                }
+
+                if ($a->isList()) {
+                    $equals = "{$typeConfiguration->equals()('$v', '$other->' . $a->name() . '[$k]')}";
+
+                    return <<<CODE
+
+if (\count(\$this->{$a->name()}) !== \count(\$other->{$a->name()})) {
+    return false;
+}
+
+foreach (\$this->{$a->name()} as \$k => \$v) {
+    if (! $equals) {
+        return false;
+    }
 }
 
 CODE;
