@@ -84,7 +84,7 @@ function build(Definition $definition, array $definitions, Configuration $config
     $namespace->addUse('Ramsey\Uuid\UuidInterface');
 
     $class->addProperty('uuid')->setType('UuidInterface')->setPrivate();
-    $class->addProperty('factory')->setType('UuidFactory')->setNullable()->setStatic()->setPrivate();
+    $class->addProperty('factory')->setType('UuidFactory')->setNullable()->setStatic()->setPrivate()->setInitialized();
 
     $constructor = $class->addMethod('__construct');
     $constructor->addParameter('uuid')->setType('UuidInterface');
