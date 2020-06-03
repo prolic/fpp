@@ -572,6 +572,24 @@ if (\$this->{$a->name()} !== \$other->{$a->name()}) {
 CODE;
                 }
 
+                if ($a->isList()) {
+                    $equals = "{$typeConfiguration->equals()('$v', '$other->' . $a->name() . '[$k]')}";
+
+                    return <<<CODE
+
+if (\count(\$this->{$a->name()}) !== \count(\$other->{$a->name()})) {
+    return false;
+}
+
+foreach (\$this->{$a->name()} as \$k => \$v) {
+    if (! $equals) {
+        return false;
+    }
+}
+
+CODE;
+                }
+
                 return <<<CODE
 
 if (! {$typeConfiguration->equals()('$this->' . $a->name(), '$other->' . $a->name())}) {
