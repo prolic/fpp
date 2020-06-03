@@ -466,7 +466,14 @@ function calculateFromArrayBodyFor(Argument $a, ?string $resolvedType, array $de
                     return "    \$data['{$a->name()}'],\n";
                 }
 
-                return '    ' . $typeConfig->fromPhpValue()("data['{$a->name()}']");
+                if ($a->isList()) {
+                    return <<<CODE
+    \array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), 'e')}, \$data['{$a->name()}']),
+
+CODE;
+                }
+
+                return '    ' . $typeConfig->fromPhpValue()($a->type(), "data['{$a->name()}']") . ",\n";
             }
 
             $builder = $config->fromPhpValueFor($definition->type());
@@ -505,6 +512,15 @@ function calculateToArrayBodyFor(Argument $a, ?string $resolvedType, array $defi
 
                 if (null === $typeConfiguration) {
                     return "    '{$a->name()}' => \$this->{$a->name()},\n";
+                }
+
+                if ($a->isList()) {
+                    $callback = "fn({$a->type()} \$e) => {$typeConfiguration->toPhpValue()('$this->' . $a->name())}";
+
+                    return <<<CODE
+    '{$a->name()}' => \array_map($callback, \$this->{$a->name()}),
+
+CODE;
                 }
 
                 return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . ",\n";
