@@ -515,7 +515,7 @@ function calculateToArrayBodyFor(Argument $a, ?string $resolvedType, array $defi
                 }
 
                 if ($a->isList()) {
-                    $callback = "fn({$a->type()} \$e) => {$typeConfiguration->toPhpValue()('$this->' . $a->name())}";
+                    $callback = "fn({$a->type()} \$e) => {$typeConfiguration->toPhpValue()('$e')}";
 
                     return <<<CODE
     '{$a->name()}' => \array_map($callback, \$this->{$a->name()}),
