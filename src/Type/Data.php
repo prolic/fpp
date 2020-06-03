@@ -319,8 +319,8 @@ CODE;
                 $param->setType('array');
 
                 if ($a->type()) {
-                    $constructor->addComment('@param ' . $a->type() . '[] $' . $a->name());
-                    $method->addComment('@return ' . $a->type() . '[]');
+                    $constructor->addComment('@param list<' . $a->type() . '> $' . $a->name());
+                    $method->addComment('@return list<' . $a->type() . '>');
                 }
                 $method->setReturnType('array');
             } else {
@@ -332,7 +332,7 @@ CODE;
 
             if (null !== $a->type() && $a->isList()) {
                 $property->setType('array');
-                $property->addComment('@return ' . $a->type() . '[]');
+                $property->addComment('@return list<' . $a->type() . '>');
             }
         },
         $constr->arguments()

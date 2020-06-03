@@ -414,7 +414,7 @@ function buildSubType(
 
             if ($a->isList()) {
                 if ($a->type()) {
-                    $method->addComment('@return ' . $a->type() . '[]');
+                    $method->addComment('@return list<' . $a->type() . '>');
                 }
                 $method->setReturnType('array');
             } else {
