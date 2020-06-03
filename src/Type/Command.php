@@ -454,7 +454,13 @@ function calculateFromPhpValueFor(Argument $a, ?string $resolvedType, array $def
                     return "\$this->payload['{$a->name()}']";
                 }
 
-                return $typeConfig->fromPhpValue()("data['{$a->name()}']");
+                if ($a->isList()) {
+                    return <<<CODE
+\array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), 'e')}, \$this->payload['{$a->name()}'])
+CODE;
+                }
+
+                return $typeConfig->fromPhpValue()($a->type(), "data['{$a->name()}']");
             }
 
             $builder = $config->fromPhpValueFor($definition->type());

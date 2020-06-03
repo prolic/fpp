@@ -503,7 +503,7 @@ CODE
 
             if (null !== $a->type() && $a->isList()) {
                 $property->setType('array');
-                $property->addComment('@return list<' . $a->type() . '>');
+                $property->addComment('@var null|list<' . $a->type() . '>');
             }
         },
         $constructor->arguments()
@@ -548,7 +548,13 @@ function calculateFromPhpValueFor(Argument $a, ?string $resolvedType, array $def
                     return "\$this->payload['{$a->name()}']";
                 }
 
-                return $typeConfig->fromPhpValue()("data['{$a->name()}']");
+                if ($a->isList()) {
+                    return <<<CODE
+\array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), 'e')}, \$this->payload['{$a->name()}'])
+CODE;
+                }
+
+                return $typeConfig->fromPhpValue()($a->type(), "\$this->payload['{$a->name()}']");
             }
 
             $builder = $config->fromPhpValueFor($definition->type());
@@ -587,6 +593,13 @@ function calculateToPhpValueFor(Argument $a, ?string $resolvedType, array $defin
 
                 if (null === $typeConfiguration) {
                     return "    '{$a->name()}' => \${$a->name()},\n";
+                }
+
+                if ($a->isList()) {
+                    return <<<CODE
+    '{$a->name()}' => \array_map(fn ({$a->type()} \$e) => {$typeConfiguration->toPhpValue()('$e')}, \${$a->name()}),
+
+CODE;
                 }
 
                 return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$' . $a->name())) . ",\n";
