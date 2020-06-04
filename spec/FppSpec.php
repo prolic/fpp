@@ -14,6 +14,7 @@ namespace FppSpec;
 
 use function Fpp\flatMap;
 use function Fpp\isKeyword;
+use function Fpp\locatePsrPath;
 
 describe('Fpp', function () {
     context('Basic FPP helper functions', function () {
@@ -50,6 +51,24 @@ describe('Fpp', function () {
                 $input = [1, 2, [3, 4]];
 
                 expect(flatMap($fn, $input))->toBe([2, 3, 4, 5]);
+            });
+        });
+
+        describe('locatePsrPath', function () {
+            it('can locate filename for psr4-autoloaded class', function () {
+                $psr4 = [
+                    'Foo\\' => ['src'],
+                ];
+
+                expect(locatePsrPath($psr4, [], 'Foo\\Bar'))->toBe('src/Bar.php');
+            });
+
+            it('can locate filename for psr0-autoloaded class', function () {
+                $psr0 = [
+                    'Foo\\' => ['src/Foo'],
+                ];
+
+                expect(locatePsrPath([], $psr0, 'Foo\\Bar'))->toBe('src/Foo/Bar.php');
             });
         });
     });

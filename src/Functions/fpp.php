@@ -68,26 +68,24 @@ const locatePsrPath = 'Fpp\locatePsrPath';
 function locatePsrPath(array $prefixesPsr4, array $prefixesPsr0, string $classname): string
 {
     // PSR-4 lookup
-    $logicalPathPsr4 = \strtr($classname, '\\', DIRECTORY_SEPARATOR);
+    $logicalPath = \strtr($classname, '\\', DIRECTORY_SEPARATOR);
 
     foreach ($prefixesPsr4 as $prefix => $dirs) {
         if (0 === \strpos($classname, $prefix)) {
             $dir = $dirs[0];
 
-            return $dir . DIRECTORY_SEPARATOR . \substr($logicalPathPsr4, \strlen($prefix)) . '.php';
+            return $dir . DIRECTORY_SEPARATOR . \substr($logicalPath, \strlen($prefix)) . '.php';
         }
     }
 
     // PSR-0 lookup
     $pos = \strrpos($classname, '\\');
-    $logicalPathPsr0 = \substr($logicalPathPsr4, 0, $pos + 1)
-        . \strtr(\substr($logicalPathPsr4, $pos + 1), '_', DIRECTORY_SEPARATOR);
 
     foreach ($prefixesPsr0 as $prefix => $dirs) {
         if (0 === \strpos($classname, $prefix)) {
             $dir = $dirs[0];
 
-            return $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0 . '.php';
+            return $dir . DIRECTORY_SEPARATOR . \substr($classname, $pos + 1) . '.php';
         }
     }
 
