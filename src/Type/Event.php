@@ -29,7 +29,7 @@ use function Fpp\plus;
 use function Fpp\renameDuplicateArgumentNames;
 use function Fpp\resolveType;
 use function Fpp\result;
-use function Fpp\sepBy1list;
+use function Fpp\sepByList;
 use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
@@ -77,7 +77,7 @@ function parse(): Parser
         __($_)->_(char(')')),
         __($_)->_(assignment()),
         __($cs)->_(
-            sepBy1list(
+            sepByList(
                 for_(
                     __($c)->_(typeName()),
                     __($_)->_(spaces()),
