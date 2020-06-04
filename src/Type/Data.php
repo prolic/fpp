@@ -563,7 +563,7 @@ CODE;
                 $typeConfiguration = $config->types()[$resolvedType] ?? null;
 
                 if (null === $typeConfiguration) {
-                    $equalsBuilder = fn(string $paramName, string $otherParamName) => "$paramName === $otherParamName->{$a->name()}";
+                    $equalsBuilder = fn (string $paramName, string $otherParamName) => "$paramName === $otherParamName->{$a->name()}";
                 } else {
                     $equalsBuilder = $typeConfiguration->equals();
                 }
@@ -598,6 +598,5 @@ if (! $equals) {
 }
 
 CODE;
-            break;
     }
 }
