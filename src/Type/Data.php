@@ -563,19 +563,18 @@ CODE;
                 $typeConfiguration = $config->types()[$resolvedType] ?? null;
 
                 if (null === $typeConfiguration) {
-                    return <<<CODE
-
-if (\$this->{$a->name()} !== \$other->{$a->name()}) {
-    return false;
-}
-
-CODE;
+                    $equalsBuilder = fn(string $paramName, string $otherParamName) => "$paramName === $otherParamName->{$a->name()}";
+                } else {
+                    $equalsBuilder = $typeConfiguration->equals();
                 }
+            } else {
+                $equalsBuilder = $config->equalsFor($definition->type());
+            }
 
-                if ($a->isList()) {
-                    $equals = "{$typeConfiguration->equals()('$v', '$other->' . $a->name() . '[$k]')}";
+            if ($a->isList()) {
+                $equals = $equalsBuilder('$v', '$other->' . $a->name() . '[$k]');
 
-                    return <<<CODE
+                return <<<CODE
 
 if (\count(\$this->{$a->name()}) !== \count(\$other->{$a->name()})) {
     return false;
@@ -588,40 +587,17 @@ foreach (\$this->{$a->name()} as \$k => \$v) {
 }
 
 CODE;
-                }
-
-                return <<<CODE
-
-if (! {$typeConfiguration->equals()('$this->' . $a->name(), '$other->' . $a->name())}) {
-    return false;
-}
-
-CODE;
             }
-            $builder = $config->equalsFor($definition->type());
 
-            if ($a->isList()) {
-                return <<<CODE
-
-if (\count(\$this->{$a->name()}) !== \count(\$other->{$a->name()})) {
-    return false;
-}
-
-foreach (\$this->{$a->name()} as \$k => \$v) {
-    if (! {$builder('$v', '$other->' . $a->name() . '[$k]')}) {
-        return false;
-    }
-}
-
-CODE;
-            }
+            $equals = $equalsBuilder('$this->' . $a->name(), '$other->' . $a->name());
 
             return <<<CODE
 
-if (! \$this->{$builder($a->name(), '$other->' . $a->name())}) {
+if (! $equals) {
     return false;
 }
 
 CODE;
+            break;
     }
 }
