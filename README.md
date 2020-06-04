@@ -5,6 +5,7 @@
 This library can generate immutable data types based on fpp definitions. The syntax is inspired by Haskell.
 
 [![Build Status](https://travis-ci.org/prolic/fpp.svg?branch=master)](https://travis-ci.org/prolic/fpp)
+[![Coverage Status](https://coveralls.io/repos/github/prolic/fpp/badge.svg?branch=master)](https://coveralls.io/github/prolic/fpp?branch=master)
 
 ## Sponsor
 
