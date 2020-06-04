@@ -139,6 +139,36 @@ describe("Fpp\Parser", function () {
                     )
                 );
             });
+
+            it('can parse data types without variable names', function () {
+                expect(parse()->run('data Person : Human = { Name, Age };')[0]->_1)->toEqual(
+                    new Data(
+                        'Person',
+                        ['Human'],
+                        [
+                            new Constructor('Person', [
+                                new Argument('name', 'Name', false, false, null),
+                                new Argument('age', 'Age', false, false, null),
+                            ]),
+                        ]
+                    )
+                );
+            });
+
+            it('can parse data types without variable names and repeating types', function () {
+                expect(parse()->run('data Person : Human = { Name, Name };')[0]->_1)->toEqual(
+                    new Data(
+                        'Person',
+                        ['Human'],
+                        [
+                            new Constructor('Person', [
+                                new Argument('name', 'Name', false, false, null),
+                                new Argument('name2', 'Name', false, false, null),
+                            ]),
+                        ]
+                    )
+                );
+            });
         });
     });
 });
