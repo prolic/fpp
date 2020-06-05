@@ -123,24 +123,24 @@ function build(Definition $definition, array $definitions, Configuration $config
     $method = $class->addMethod('fromName')->setPublic()->setStatic()->setReturnType('self');
     $method->addParameter('name')->setType(Type::STRING);
     $method->setBody(<<<CODE
-if (! isset(self::Options[\$name])) {
-    throw new \InvalidArgumentException('Unknown enum name given');
+foreach (self::Options as \$i => \$n) {
+    if (\$n === \$name) {
+        return new self(\$n, \$i);
+    }
 }
 
-return self::{\$name}();
+throw new \InvalidArgumentException('Unknown enum name given');
 CODE
     );
 
     $method = $class->addMethod('fromValue')->setPublic()->setStatic()->setReturnType('self');
     $method->addParameter('value')->setType(Type::INT);
     $method->setBody(<<<CODE
-foreach (self::Options as \$n => \$v) {
-    if (\$v === \$value) {
-        return self::{\$n}();
-    }
+if (! isset(self::Options[\$value])) {
+    throw new \InvalidArgumentException('Unknown enum value given');
 }
 
-throw new \InvalidArgumentException('Unknown enum value given');
+return new self(self::Options[\$value], \$value);
 CODE
     );
 
