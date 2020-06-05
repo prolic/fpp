@@ -591,6 +591,20 @@ CODE;
 
             $equals = $equalsBuilder('$this->' . $a->name(), '$other->' . $a->name());
 
+            if ($a->nullable()) {
+                return <<<CODE
+
+if (null === \$this->{$a->name()}) {
+    if (null !== \$other->{$a->name()}) {
+        return false;
+    }
+} elseif (null === \$other->{$a->name()} || ! $equals) {
+    return false;
+}
+
+CODE;
+            }
+
             return <<<CODE
 
 if (! $equals) {
