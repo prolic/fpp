@@ -427,13 +427,13 @@ function buildSubType(
     /** @var Event $event */
     $event = $definition->type();
 
-    $occur->addParameter('eventId')
+    $occur->addParameter('aggregateId')
         ->setType($event->aggregateIdType());
 
     $occurBody = <<<CODE
 \$_event = new self(
     null,
-    \$eventId,
+    \$aggregateId,
     [
 
 CODE;
