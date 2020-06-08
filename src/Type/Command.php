@@ -191,6 +191,8 @@ CODE
         );
 }
 
+\$classname = __NAMESPACE__ . '\\' . \$classname;
+
 /**
  * @psalm-suppress LessSpecificReturnStatement
  * @psalm-suppress InvalidStringClass
