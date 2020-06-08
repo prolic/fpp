@@ -208,7 +208,7 @@ CODE
         );
 }
 
-\$classname = __NAMESPACE__ . '\\' . \$classname;
+\$classname = __NAMESPACE__ . '\\\\' . \$classname;
 
 /**
  * @psalm-suppress LessSpecificReturnStatement
