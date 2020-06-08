@@ -523,6 +523,11 @@ function calculateToArrayBodyFor(Argument $a, ?string $resolvedType, array $defi
 CODE;
                 }
 
+                if ($a->nullable()) {
+                    return "    '{$a->name()}' => \$this->{$a->name()} !=== null ? "
+                        . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . " : null,\n";
+                }
+
                 return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . ",\n";
             }
 
@@ -534,7 +539,13 @@ CODE;
                 return "    '{$a->name()}' => \array_map($callback, \$this->{$a->name()}),\n";
             }
 
+            if ($a->nullable()) {
+                return "    '{$a->name()}' => \$this->{$a->name()} !== null ? \$this->"
+                    . ($builder)($definition->type(), $a->name()) . " : null,\n";
+            }
+
             return "    '{$a->name()}' => \$this->" . ($builder)($definition->type(), $a->name()) . ",\n";
+
     }
 }
 
