@@ -84,10 +84,16 @@ function build(Definition $definition, array $definitions, Configuration $config
     $constructor->addParameter('value')->setType(Type::BOOL);
     $constructor->setBody('$this->value = $value;');
 
+    $boolConstructor = $class->addMethod('true')->setReturnType(Type::SELF)->setStatic();
+    $boolConstructor->setBody('return new self(true);');
+
+    $falseConstructor = $class->addMethod('false')->setReturnType(Type::SELF)->setStatic();
+    $falseConstructor->setBody('return new self(false);');
+
     $method = $class->addMethod('value')->setReturnType(Type::BOOL);
     $method->setBody('return $this->value;');
 
-    $method = $class->addMethod('equals')->setPublic()->setReturnType(Type::BOOL);
+    $method = $class->addMethod('equals')->setReturnType(Type::BOOL);
     $method->addParameter('other')->setType(Type::SELF);
     $method->setBody('return $this->value === $other->value;');
 
