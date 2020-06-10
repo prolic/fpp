@@ -237,7 +237,7 @@ return [
 ];
 
 CODE
-    );
+        );
 
     $equalsMethod = $class->addMethod('equals')
         ->setReturnType(Type::BOOL);
@@ -485,7 +485,7 @@ $psalmAnnotation
 return \$this->{$a->name()};
 
 CODE
-);
+            );
 
             if ($a->isList()) {
                 $property->setType('array');
@@ -604,7 +604,13 @@ function calculateToPhpValueFor(Argument $a, ?string $resolvedType, array $defin
 CODE;
                 }
 
-                return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$' . $a->name())) . ",\n";
+                $nullableCheck = '';
+
+                if ($a->nullable()) {
+                    $nullableCheck = "null === \${$a->name()} ? null : ";
+                }
+
+                return "    '{$a->name()}' => $nullableCheck" . ($typeConfiguration->toPhpValue()('$' . $a->name())) . ",\n";
             }
 
             $builder = $config->toPhpValueFor($definition->type());
@@ -615,7 +621,13 @@ CODE;
                 return "    '{$a->name()}' => \array_map($callback, \${$a->name()}),\n";
             }
 
-            return "    '{$a->name()}' => \$" . ($builder)($definition->type(), $a->name()) . ",\n";
+            $nullableCheck = '';
+
+            if ($a->nullable()) {
+                $nullableCheck = "null === \${$a->name()} ? null : ";
+            }
+
+            return "    '{$a->name()}' => $nullableCheck\$" . ($builder)($definition->type(), $a->name()) . ",\n";
     }
 }
 
