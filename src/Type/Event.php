@@ -21,6 +21,8 @@ use function Fpp\comma;
 use Fpp\Configuration;
 use function Fpp\constructorSeparator;
 use Fpp\Definition;
+use function Fpp\generateFromPhpValueFor;
+use function Fpp\generateToArrayBodyFor;
 use function Fpp\many1;
 use function Fpp\not;
 use function Fpp\parseArguments;
@@ -455,8 +457,8 @@ CODE;
 
             $resolvedType = resolveType($a->type(), $definition);
             $defaultValue = calculateDefaultValue($a);
-            $fromPhpValue = calculateFromPhpValueFor($a, $resolvedType, $definitions, $config);
-            $toPhpValue = calculateToPhpValueFor($a, $resolvedType, $definitions, $config);
+            $fromPhpValue = generateFromPhpValueFor($a, '$this->payload', 0, $resolvedType, $definitions, $config);
+            $toPhpValue = generateToArrayBodyFor($a, '$', $resolvedType, $definitions, $config);
 
             if (null !== $defaultValue) {
                 $param = $occur->addParameter($a->name(), $defaultValue);
@@ -522,113 +524,6 @@ CODE
     $occur->setBody($occurBody);
 
     return $file;
-}
-
-function calculateFromPhpValueFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
-{
-    switch ($a->type()) {
-        case null:
-        case 'int':
-        case 'float':
-        case 'bool':
-        case 'string':
-        case 'array':
-            // yes all above are treated the same
-            if ($a->nullable()) {
-                return "\$this->payload['{$a->name()}'] ?? null";
-            }
-
-            return "\$this->payload['{$a->name()}']";
-        default:
-            $definition = $definitions[$resolvedType] ?? null;
-
-            if (null === $definition) {
-                /** @var TypeConfiguration|null $typeConfig */
-                $typeConfig = $config->types()[$resolvedType] ?? null;
-
-                if (null === $typeConfig) {
-                    return "\$this->payload['{$a->name()}']";
-                }
-
-                if ($a->isList()) {
-                    return <<<CODE
-\array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), 'e')}, \$this->payload['{$a->name()}'])
-CODE;
-                }
-
-                return $typeConfig->fromPhpValue()($a->type(), "\$this->payload['{$a->name()}']");
-            }
-
-            $builder = $config->fromPhpValueFor($definition->type());
-
-            if ($a->isList()) {
-                $callback = "fn(\$e) => {$builder($definition->type(), '$e')}";
-
-                return "    \array_map($callback, \$this->payload['{$a->name()}'])";
-            }
-
-            if ($a->nullable()) {
-                return "isset(\$this->payload['{$a->name()}']) ? " . $builder($definition->type(), "\$this->payload['{$a->name()}']") . ' : null';
-            }
-
-            return $builder($definition->type(), "\$this->payload['{$a->name()}']") . '';
-    }
-}
-
-function calculateToPhpValueFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
-{
-    switch ($a->type()) {
-        case null:
-        case 'int':
-        case 'float':
-        case 'bool':
-        case 'string':
-        case 'array':
-            // yes all above are treated the same
-            return "    '{$a->name()}' => \${$a->name()},\n";
-        default:
-            $definition = $definitions[$resolvedType] ?? null;
-
-            if (null === $definition) {
-                /** @var TypeConfiguration|null $typeConfiguration */
-                $typeConfiguration = $config->types()[$resolvedType] ?? null;
-
-                if (null === $typeConfiguration) {
-                    return "    '{$a->name()}' => \${$a->name()},\n";
-                }
-
-                if ($a->isList()) {
-                    return <<<CODE
-    '{$a->name()}' => \array_map(fn ({$a->type()} \$e) => {$typeConfiguration->toPhpValue()('$e')}, \${$a->name()}),
-
-CODE;
-                }
-
-                $nullableCheck = '';
-
-                if ($a->nullable()) {
-                    $nullableCheck = "null === \${$a->name()} ? null : ";
-                }
-
-                return "    '{$a->name()}' => $nullableCheck" . ($typeConfiguration->toPhpValue()('$' . $a->name())) . ",\n";
-            }
-
-            $builder = $config->toPhpValueFor($definition->type());
-
-            if ($a->isList()) {
-                $callback = "fn({$a->type()} \$e) => {$builder($definition->type(), '$e')}";
-
-                return "    '{$a->name()}' => \array_map($callback, \${$a->name()}),\n";
-            }
-
-            $nullableCheck = '';
-
-            if ($a->nullable()) {
-                $nullableCheck = "null === \${$a->name()} ? null : ";
-            }
-
-            return "    '{$a->name()}' => $nullableCheck\$" . ($builder)($definition->type(), $a->name()) . ",\n";
-    }
 }
 
 function eventType(Constructor $constructor, string $namespace): string

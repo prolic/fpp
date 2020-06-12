@@ -145,8 +145,8 @@ CODE
     );
 
     $method = $class->addMethod('equals')->setPublic()->setReturnType(Type::BOOL);
-    $method->addParameter('other')->setType(Type::SELF);
-    $method->setBody('return $this->name === $other->name;');
+    $method->addParameter('other')->setType(Type::SELF)->setNullable();
+    $method->setBody('return null !== $other && $this->name === $other->name;');
 
     $method = $class->addMethod('name')->setPublic()->setReturnType(Type::STRING);
     $method->setBody('return $this->name;');

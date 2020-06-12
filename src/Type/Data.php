@@ -20,6 +20,9 @@ use function Fpp\char;
 use Fpp\Configuration;
 use function Fpp\constructorSeparator;
 use Fpp\Definition;
+use function Fpp\generateFromPhpValueFor;
+use function Fpp\generateToArrayBodyFor;
+use function Fpp\generateValidationFor;
 use function Fpp\parseArguments;
 use Fpp\Parser;
 use function Fpp\plus;
@@ -274,7 +277,7 @@ function buildSubType(
     $fromArrayBody = "return new self(\n";
     $toArrayBody = "return [\n";
     $equalsBody = <<<CODE
-if (\get_class(\$this) !== \get_class(\$other)) {
+if (null === \$other || \get_class(\$this) !== \get_class(\$other)) {
     return false;
 }
 
@@ -297,9 +300,9 @@ CODE;
 
             $resolvedType = resolveType($a->type(), $definition);
             $defaultValue = calculateDefaultValue($a);
-            $fromArrayValidationBody .= calculateFromArrayValidationBodyFor($a, $resolvedType, $definitions, $config);
-            $fromArrayBody .= calculateFromArrayBodyFor($a, $resolvedType, $definitions, $config);
-            $toArrayBody .= calculateToArrayBodyFor($a, $resolvedType, $definitions, $config);
+            $fromArrayValidationBody .= generateValidationFor($a, 'data', $resolvedType, $definitions, $config);
+            $fromArrayBody .= generateFromPhpValueFor($a, '$data', 1, $resolvedType, $definitions, $config) . ",\n";
+            $toArrayBody .= generateToArrayBodyFor($a, '$this->', $resolvedType, $definitions, $config);
             $equalsBody .= equalsBodyFor($a, $resolvedType, $definitions, $config);
 
             if (null !== $defaultValue) {
@@ -351,7 +354,7 @@ CODE;
     $toArray->setBody($toArrayBody);
 
     $equals = $class->addMethod('equals')->setReturnType(Type::BOOL);
-    $equals->addParameter('other')->setType($definition->type()->classname());
+    $equals->addParameter('other')->setType($definition->type()->classname())->setNullable();
     $equals->setBody($equalsBody . <<<CODE
 
 return true;
@@ -359,194 +362,6 @@ return true;
 CODE);
 
     return $file;
-}
-
-function calculateFromArrayValidationBodyFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
-{
-    if ($a->isList()) {
-        $code = "if (! isset(\$data['{$a->name()}']) || ! \is_array(\$data['{$a->name()}'])) {\n";
-        $code .= "    throw new \InvalidArgumentException('Error on \"{$a->name()}\": array expected');\n";
-        $code .= "}\n\n";
-
-        return $code;
-    }
-
-    if ($a->nullable()) {
-        $code = "if (isset(\$data['{$a->name()}']) && ! {%validator%}) {\n";
-        $code .= "    throw new \InvalidArgumentException('{%validationErrorMessage%}');\n";
-        $code .= "}\n\n";
-    } else {
-        $code = "if (! {%validator%}) {\n";
-        $code .= "    throw new \InvalidArgumentException('{%validationErrorMessage%}');\n";
-        $code .= "}\n\n";
-    }
-
-    switch ($a->type()) {
-        case null:
-            return '';
-        case 'int':
-            $validator = "\is_int(\$data['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", int expected";
-            break;
-        case 'float':
-            $validator = "\is_float(\$data['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", float expected";
-            break;
-        case 'bool':
-            $validator = "\is_bool(\$data['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", bool expected";
-            break;
-        case 'string':
-            $validator = "\is_string(\$data['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", string expected";
-            break;
-        case 'array':
-            $validator = "\is_array(\$data['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", array expected";
-            break;
-        default:
-            $definition = $definitions[$resolvedType] ?? null;
-
-            if (null === $definition) {
-                /** @var TypeConfiguration|null $typeConfig */
-                $typeConfig = $config->types()[$resolvedType] ?? null;
-
-                if (null === $typeConfig) {
-                    return '';
-                }
-
-                $validator = $typeConfig->validator()("data['{$a->name()}']");
-                $validationErrorMessage = $typeConfig->validationErrorMessage()("\$data[\'{$a->name()}\']");
-            } else {
-                $type = $definition->type();
-
-                $validator = $config->validatorFor($type)("data['{$a->name()}']");
-                $validationErrorMessage = $config->validationErrorMessageFor($type)("\$data[\'{$a->name()}\']");
-            }
-
-            break;
-    }
-
-    return \str_replace(
-        [
-            '{%validator%}',
-            '{%validationErrorMessage%}',
-        ],
-        [
-            $validator,
-            $validationErrorMessage,
-        ],
-        $code
-    );
-}
-
-function calculateFromArrayBodyFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
-{
-    switch ($a->type()) {
-        case null:
-        case 'int':
-        case 'float':
-        case 'bool':
-        case 'string':
-        case 'array':
-            // yes all above are treated the same
-            if ($a->nullable()) {
-                return "    \$data['{$a->name()}'] ?? null,\n";
-            }
-
-            return "    \$data['{$a->name()}'],\n";
-        default:
-            $definition = $definitions[$resolvedType] ?? null;
-
-            if (null === $definition) {
-                /** @var TypeConfiguration|null $typeConfig */
-                $typeConfig = $config->types()[$resolvedType] ?? null;
-
-                if (null === $typeConfig) {
-                    return "    \$data['{$a->name()}'],\n";
-                }
-
-                if ($a->isList()) {
-                    return <<<CODE
-    \array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), 'e')}, \$data['{$a->name()}']),
-
-CODE;
-                }
-
-                return '    ' . $typeConfig->fromPhpValue()($a->type(), "data['{$a->name()}']") . ",\n";
-            }
-
-            $builder = $config->fromPhpValueFor($definition->type());
-
-            if ($a->isList()) {
-                $callback = "fn(\$e) => {$builder($definition->type(), '$e')}";
-
-                return "    \array_map($callback, \$data['{$a->name()}']),\n";
-            }
-
-            if ($a->nullable()) {
-                return "    isset(\$data['{$a->name()}']) ? " . $builder($definition->type(), "\$data['{$a->name()}']") . " : null,\n";
-            }
-
-            return '    ' . $builder($definition->type(), "\$data['{$a->name()}']") . ",\n";
-    }
-}
-
-function calculateToArrayBodyFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
-{
-    switch ($a->type()) {
-        case null:
-        case 'int':
-        case 'float':
-        case 'bool':
-        case 'string':
-        case 'array':
-            // yes all above are treated the same
-            return "    '{$a->name()}' => \$this->{$a->name()},\n";
-        default:
-            $definition = $definitions[$resolvedType] ?? null;
-
-            if (null === $definition) {
-                /** @var TypeConfiguration|null $typeConfiguration */
-                $typeConfiguration = $config->types()[$resolvedType] ?? null;
-
-                if (null === $typeConfiguration) {
-                    return "    '{$a->name()}' => \$this->{$a->name()},\n";
-                }
-
-                if ($a->isList()) {
-                    $callback = "fn({$a->type()} \$e) => {$typeConfiguration->toPhpValue()('$e')}";
-
-                    return <<<CODE
-    '{$a->name()}' => \array_map($callback, \$this->{$a->name()}),
-
-CODE;
-                }
-
-                if ($a->nullable()) {
-                    return "    '{$a->name()}' => \$this->{$a->name()} !=== null ? "
-                        . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . " : null,\n";
-                }
-
-                return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . ",\n";
-            }
-
-            $builder = $config->toPhpValueFor($definition->type());
-
-            if ($a->isList()) {
-                $callback = "fn({$a->type()} \$e) => {$builder($definition->type(), '$e')}";
-
-                return "    '{$a->name()}' => \array_map($callback, \$this->{$a->name()}),\n";
-            }
-
-            if ($a->nullable()) {
-                return "    '{$a->name()}' => \$this->{$a->name()} !== null ? \$this->"
-                    . ($builder)($definition->type(), $a->name()) . " : null,\n";
-            }
-
-            return "    '{$a->name()}' => \$this->" . ($builder)($definition->type(), $a->name()) . ",\n";
-
-    }
 }
 
 function equalsBodyFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
@@ -605,11 +420,9 @@ CODE;
             if ($a->nullable()) {
                 return <<<CODE
 
-if (null === \$this->{$a->name()}) {
-    if (null !== \$other->{$a->name()}) {
-        return false;
-    }
-} elseif (null === \$other->{$a->name()} || ! $equals) {
+if ((null === \$this->{$a->name()} && null !== \$other->{$a->name()})
+    || ! $equals
+) {
     return false;
 }
 

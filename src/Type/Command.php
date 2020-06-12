@@ -19,6 +19,8 @@ use function Fpp\char;
 use Fpp\Configuration;
 use function Fpp\constructorSeparator;
 use Fpp\Definition;
+use function Fpp\generateFromPhpValueFor;
+use function Fpp\generateValidationFor;
 use function Fpp\many1;
 use function Fpp\not;
 use function Fpp\parseArguments;
@@ -138,14 +140,20 @@ function build(Definition $definition, array $definitions, Configuration $config
         ->setDefaultValue([]);
     $constructor->setBody(<<<CODE
 \$this->commandId = \$commandId ?? {$type->commandIdType()}::generate();
-\$this->payload = \$payload;
 \$this->metadata = \$metadata;
+\$this->setPayload(\$payload);
 CODE
     );
 
     $class->addMethod('commandType')
         ->setAbstract()
         ->setReturnType(Type::STRING);
+
+    $class->addMethod('setPayload')
+        ->setProtected()
+        ->setReturnType(Type::VOID)
+        ->setBody('$this->payload = $payload;')
+        ->addParameter('payload')->setType(Type::ARRAY);
 
     $class->addMethod('commandId')
         ->setBody('return $this->commandId;')
@@ -395,15 +403,24 @@ function buildSubType(
         ->setReturnType(Type::STRING)
         ->setBody('return $this->commandType;');
 
+    $setPayloadMethod = $class->addMethod('setPayload')
+        ->setProtected()
+        ->setReturnType(Type::VOID);
+
+    $setPayloadMethod->addParameter('payload')->setType(Type::ARRAY);
+    $setPayloadMethodBody = '';
+
     \array_map(
         function (Argument $a) use (
             $class,
             $definition,
             $definitions,
-            $config
+            $config,
+            &$setPayloadMethodBody
         ) {
             $resolvedType = resolveType($a->type(), $definition);
-            $fromPhpValue = calculateFromPhpValueFor($a, $resolvedType, $definitions, $config);
+            $fromPhpValue = generateFromPhpValueFor($a, '$this->payload', 0, $resolvedType, $definitions, $config);
+            $setPayloadMethodBody .= generateValidationFor($a, 'payload', $resolvedType, $definitions, $config);
 
             $psalmAnnotation = '';
 
@@ -427,58 +444,10 @@ function buildSubType(
         $constructor->arguments()
     );
 
+    $setPayloadMethodBody .= 'parent::setPayload($payload);';
+    $setPayloadMethod->setBody($setPayloadMethodBody);
+
     return $file;
-}
-
-function calculateFromPhpValueFor(Argument $a, ?string $resolvedType, array $definitions, Configuration $config): string
-{
-    switch ($a->type()) {
-        case null:
-        case 'int':
-        case 'float':
-        case 'bool':
-        case 'string':
-        case 'array':
-            // yes all above are treated the same
-            if ($a->nullable()) {
-                return "\$this->payload['{$a->name()}'] ?? null";
-            }
-
-            return "\$this->payload['{$a->name()}']";
-        default:
-            $definition = $definitions[$resolvedType] ?? null;
-
-            if (null === $definition) {
-                /** @var TypeConfiguration|null $typeConfig */
-                $typeConfig = $config->types()[$resolvedType] ?? null;
-
-                if (null === $typeConfig) {
-                    return "\$this->payload['{$a->name()}']";
-                }
-
-                if ($a->isList()) {
-                    return <<<CODE
-\array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), 'e')}, \$this->payload['{$a->name()}'])
-CODE;
-                }
-
-                return $typeConfig->fromPhpValue()($a->type(), "this->payload['{$a->name()}']");
-            }
-
-            $builder = $config->fromPhpValueFor($definition->type());
-
-            if ($a->isList()) {
-                $callback = "fn(\$e) => {$builder($definition->type(), '$e')}";
-
-                return "\array_map($callback, \$this->payload['{$a->name()}'])";
-            }
-
-            if ($a->nullable()) {
-                return "isset(\$this->payload['{$a->name()}']) ? " . $builder($definition->type(), "\$this->payload['{$a->name()}']") . ' : null';
-            }
-
-            return $builder($definition->type(), "\$this->payload['{$a->name()}']") . '';
-    }
 }
 
 function commandType(Constructor $constructor, string $namespace): string

@@ -115,8 +115,8 @@ function build(Definition $definition, array $definitions, Configuration $config
     $toBinary->setBody('return $this->uuid->getBytes();');
 
     $equals = $class->addMethod('equals')->setReturnType(Type::BOOL);
-    $equals->addParameter('other')->setType('self');
-    $equals->setBody('return $this->uuid->equals($other->uuid);');
+    $equals->addParameter('other')->setType('self')->setNullable();
+    $equals->setBody('return null !== $other && $this->uuid->equals($other->uuid);');
 
     $factory = $class->addMethod('factory')->setReturnType('UuidFactory');
     $factory->setPrivate()->setStatic();

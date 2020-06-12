@@ -325,3 +325,209 @@ function renameDuplicateArgumentNames(array $names, array $arguments): array
 
     return $result;
 }
+
+const generateValidationFor = 'Fpp\generateValidationFor';
+
+function generateValidationFor(
+    Argument $a,
+    string $paramName,
+    ?string $resolvedType,
+    array $definitions,
+    Configuration $config
+): string {
+    if ($a->isList()) {
+        $code = "if (! isset(\$data['{$a->name()}']) || ! \is_array(\${$paramName}['{$a->name()}'])) {\n";
+        $code .= "    throw new \InvalidArgumentException('Error on \"{$a->name()}\": array expected');\n";
+        $code .= "}\n\n";
+
+        return $code;
+    }
+
+    if ($a->nullable()) {
+        $code = "if (isset(\${$paramName}['{$a->name()}']) && ! {%validation%}) {\n";
+        $code .= "    throw new \InvalidArgumentException('{%validationErrorMessage%}');\n";
+        $code .= "}\n\n";
+    } else {
+        $code = "if (! isset(\${$paramName}['{$a->name()}']) || ! {%validation%}) {\n";
+        $code .= "    throw new \InvalidArgumentException('{%validationErrorMessage%}');\n";
+        $code .= "}\n\n";
+    }
+
+    switch ($a->type()) {
+        case null:
+            return '';
+        case 'int':
+            $validation = "\is_int(\${$paramName}['{$a->name()}'])";
+            $validationErrorMessage = "Error on \"{$a->name()}\", int expected";
+            break;
+        case 'float':
+            $validation = "\is_float(\${$paramName}['{$a->name()}'])";
+            $validationErrorMessage = "Error on \"{$a->name()}\", float expected";
+            break;
+        case 'bool':
+            $validation = "\is_bool(\${$paramName}['{$a->name()}'])";
+            $validationErrorMessage = "Error on \"{$a->name()}\", bool expected";
+            break;
+        case 'string':
+            $validation = "\is_string(\${$paramName}['{$a->name()}'])";
+            $validationErrorMessage = "Error on \"{$a->name()}\", string expected";
+            break;
+        case 'array':
+            $validation = "\is_array(\${$paramName}['{$a->name()}'])";
+            $validationErrorMessage = "Error on \"{$a->name()}\", array expected";
+            break;
+        default:
+            $definition = $definitions[$resolvedType] ?? null;
+
+            if (null === $definition) {
+                /** @var TypeConfiguration|null $typeConfig */
+                $typeConfig = $config->types()[$resolvedType] ?? null;
+
+                if (null === $typeConfig) {
+                    return '';
+                }
+
+                $validator = $typeConfig->validator();
+                $validatorErrorMessage = $typeConfig->validationErrorMessage();
+            } else {
+                $type = $definition->type();
+
+                $validator = $config->validatorFor($type);
+                $validatorErrorMessage = $config->validationErrorMessageFor($type);
+            }
+
+            $validation = $validator("{$paramName}['{$a->name()}']");
+            $validationErrorMessage = $validatorErrorMessage("\$data[\'{$a->name()}\']");
+
+            break;
+    }
+
+    return \str_replace(
+        [
+            '{%validation%}',
+            '{%validationErrorMessage%}',
+        ],
+        [
+            $validation,
+            $validationErrorMessage,
+        ],
+        $code
+    );
+}
+
+const generateFromPhpValueFor = 'Fpp\generateFromPhpValueFor';
+
+function generateFromPhpValueFor(
+    Argument $a,
+    string $paramName,
+    int $intentLevel,
+    ?string $resolvedType,
+    array $definitions,
+    Configuration $config
+): string {
+    $intent = \str_repeat(' ', $intentLevel * 4);
+
+    switch ($a->type()) {
+        case null:
+        case 'int':
+        case 'float':
+        case 'bool':
+        case 'string':
+        case 'array':
+            // yes all above are treated the same
+            if ($a->nullable()) {
+                return "{$intent}{$paramName}['{$a->name()}'] ?? null";
+            }
+
+            return "{$intent}{$paramName}['{$a->name()}']";
+        default:
+            $definition = $definitions[$resolvedType] ?? null;
+
+            if (null === $definition) {
+                /** @var TypeConfiguration|null $typeConfig */
+                $typeConfig = $config->types()[$resolvedType] ?? null;
+
+                if (null === $typeConfig) {
+                    return "{$intent}{$paramName}['{$a->name()}']";
+                }
+
+                if ($a->isList()) {
+                    return <<<CODE
+{$intent}\array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), 'e')}, {$paramName}['{$a->name()}'])
+CODE;
+                }
+
+                return $intent . $typeConfig->fromPhpValue()($a->type(), "this->payload['{$a->name()}']");
+            }
+
+            $builder = $config->fromPhpValueFor($definition->type());
+
+            if ($a->isList()) {
+                $callback = "fn(\$e) => {$builder($definition->type(), '$e')}";
+
+                return "{$intent}\array_map($callback, {$paramName}['{$a->name()}'])";
+            }
+
+            if ($a->nullable()) {
+                return "{$intent}isset({$paramName}['{$a->name()}']) ? " . $builder($definition->type(), "{$paramName}['{$a->name()}']") . ' : null';
+            }
+
+            return $intent . $builder($definition->type(), "{$paramName}['{$a->name()}']") . '';
+    }
+}
+
+function generateToArrayBodyFor(Argument $a, $prefix, ?string $resolvedType, array $definitions, Configuration $config): string
+{
+    switch ($a->type()) {
+        case null:
+        case 'int':
+        case 'float':
+        case 'bool':
+        case 'string':
+        case 'array':
+            // yes all above are treated the same
+            return "    '{$a->name()}' => {$prefix}{$a->name()},\n";
+        default:
+            $definition = $definitions[$resolvedType] ?? null;
+
+            if (null === $definition) {
+                /** @var TypeConfiguration|null $typeConfiguration */
+                $typeConfiguration = $config->types()[$resolvedType] ?? null;
+
+                if (null === $typeConfiguration) {
+                    return "    '{$a->name()}' => {$prefix}{$a->name()},\n";
+                }
+
+                if ($a->isList()) {
+                    $callback = "fn({$a->type()} \$e) => {$typeConfiguration->toPhpValue()('$e')}";
+
+                    return <<<CODE
+    '{$a->name()}' => \array_map($callback, {$prefix}{$a->name()}),
+
+CODE;
+                }
+
+                if ($a->nullable()) {
+                    return "    '{$a->name()}' => {$prefix}{$a->name()} !=== null ? "
+                        . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . " : null,\n";
+                }
+
+                return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . ",\n";
+            }
+
+            $builder = $config->toPhpValueFor($definition->type());
+
+            if ($a->isList()) {
+                $callback = "fn({$a->type()} \$e) => {$builder($definition->type(), '$e')}";
+
+                return "    '{$a->name()}' => \array_map($callback, {$prefix}{$a->name()}),\n";
+            }
+
+            if ($a->nullable()) {
+                return "    '{$a->name()}' => {$prefix}{$a->name()} !== null ? {$prefix}"
+                    . ($builder)($definition->type(), $a->name()) . " : null,\n";
+            }
+
+            return "    '{$a->name()}' => {$prefix}" . ($builder)($definition->type(), $a->name()) . ",\n";
+    }
+}

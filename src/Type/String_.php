@@ -88,8 +88,8 @@ function build(Definition $definition, array $definitions, Configuration $config
     $method->setBody('return $this->value;');
 
     $method = $class->addMethod('equals')->setPublic()->setReturnType(Type::BOOL);
-    $method->addParameter('other')->setType(Type::SELF);
-    $method->setBody('return $this->value === $other->value;');
+    $method->addParameter('other')->setType(Type::SELF)->setNullable();
+    $method->setBody('return null !== $other && $this->value === $other->value;');
 
     return [$fqcn => $file];
 }
