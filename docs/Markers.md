@@ -63,6 +63,6 @@ marker MyMarkerD;
 data MyData : MyMarkerC, MyMarkerD = MyData;
 ```
 
-Wanna see more? check [Derivings](Derivings.md)
+Wanna see more? check [Derivings](Configuration.md)
 
 Wanna have [prooph components](http://getprooph.org/) integration? See the [prooph integration](prooph.md)

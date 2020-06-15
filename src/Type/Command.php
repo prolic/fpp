@@ -309,8 +309,6 @@ class Command implements FppType
 
     private string $commandIdType;
 
-    private string $aggregateIdType;
-
     /** @param list<Constructor> $constructors */
     public function __construct(
         string $classname,

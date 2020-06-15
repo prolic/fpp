@@ -12,9 +12,20 @@ declare(strict_types=1);
 
 namespace FppSpec;
 
+use function describe;
+use function expect;
+use Fpp\Argument;
+use function Fpp\buildDefaultPhpFile;
+use function Fpp\calculateDefaultValue;
+use Fpp\Configuration;
+use Fpp\Definition;
 use function Fpp\flatMap;
 use function Fpp\isKeyword;
 use function Fpp\locatePsrPath;
+use Fpp\Type\Enum\Constructor;
+use Fpp\Type\Enum\Enum;
+use Nette\PhpGenerator\PsrPrinter;
+use function Pair;
 
 describe('Fpp', function () {
     context('Basic FPP helper functions', function () {
@@ -69,6 +80,75 @@ describe('Fpp', function () {
                 ];
 
                 expect(locatePsrPath([], $psr0, 'Foo\\Bar'))->toBe('src/Foo/Bar.php');
+            });
+        });
+
+        describe('buildDefaultPhpFile', function () {
+            it('can build default php file structure', function () {
+                $definition = new Definition(
+                    'Foo',
+                    new Enum('Color', [], [
+                        new Constructor('Blue'),
+                        new Constructor('Red'),
+                    ]),
+                    [
+                        Pair('LongName', 'LN'),
+                    ]
+                );
+                $config = new Configuration(
+                    true,
+                    fn () => new PsrPrinter(),
+                    fn () => null,
+                    null,
+                    []
+                );
+
+                $phpFile = buildDefaultPhpFile($definition, $config);
+
+                expect($phpFile->hasStrictTypes())->toBe(true);
+                expect($phpFile->getNamespaces())->not->toBeEmpty();
+                expect($phpFile->getNamespaces()['Foo']->getName())->toBe('Foo');
+                expect($phpFile->getNamespaces()['Foo']->getUses())->toEqual(['LN' => 'LongName']);
+            });
+        });
+
+        describe('calculateDefaultValue', function () {
+            it('can calculate default php values for a given argument', function () {
+                $arg1 = new Argument('foo', null, false, false, null);
+
+                expect(calculateDefaultValue($arg1))->toBe(null);
+
+                $arg2 = new Argument('foo', 'string', false, false, '\'\'');
+
+                expect(calculateDefaultValue($arg2))->toBe('');
+
+                $arg3 = new Argument('foo', 'int', false, false, '12');
+
+                expect(calculateDefaultValue($arg3))->toBe(12);
+
+                $arg4 = new Argument('foo', null, false, true, '[]');
+
+                expect(calculateDefaultValue($arg4))->toBe([]);
+
+                $arg5 = new Argument('foo', 'float', false, false, '12.3');
+
+                expect(calculateDefaultValue($arg5))->toBe(12.3);
+
+                $arg6 = new Argument('foo', 'string', false, false, '\'foo\'');
+
+                expect(calculateDefaultValue($arg6))->toBe('foo');
+
+                $arg7 = new Argument('foo', null, false, false, null);
+
+                expect(calculateDefaultValue($arg7))->toBe(null);
+
+                $arg8 = new Argument('foo', 'array', false, true, '[]');
+
+                expect(calculateDefaultValue($arg8))->toBe([]);
+
+                $arg9 = new Argument('foo', 'string', true, false, null);
+
+                expect(calculateDefaultValue($arg9))->toBe(null);
             });
         });
     });

@@ -18,7 +18,7 @@ The rewrite of this library is heavily inspired by it and reuses some of its bas
 
 ## Docs
 
-Coming soon...
+[See the docs here](https://github.com/prolic/fpp/tree/master/docs/Home.md)
 
 ## Install
 
