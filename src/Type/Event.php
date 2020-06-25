@@ -244,6 +244,10 @@ CODE
     $equalsMethod = $class->addMethod('equals')
         ->setReturnType(Type::BOOL);
     $equalsMethod->setBody(<<<CODE
+if (null === \$other) {
+    return false;
+}
+
 if (\get_class(\$this) !== \get_class(\$other)) {
     return false;
 }
@@ -254,7 +258,8 @@ CODE
     );
 
     $equalsMethod->addParameter('other')
-        ->setType(Type::SELF);
+        ->setType(Type::SELF)
+        ->setNullable();
 
     $map = [$fqcn => $file];
 

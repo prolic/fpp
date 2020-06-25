@@ -67,7 +67,9 @@ function build(Definition $definition, array $definitions, Configuration $config
     $type = $definition->type();
 
     if (! $type instanceof Bool_) {
-        throw new \InvalidArgumentException('Can only build definitions of ' . Bool_::class);
+        throw new \InvalidArgumentException(
+            'Can only build definitions of ' . Bool_::class
+        );
     }
 
     $fqcn = $definition->namespace() . '\\' . $type->classname();

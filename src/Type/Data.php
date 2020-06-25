@@ -94,7 +94,8 @@ function build(Definition $definition, array $definitions, Configuration $config
         ->setReturnType(Type::BOOL)
         ->setAbstract()
         ->addParameter('other')
-        ->setType(Type::SELF);
+        ->setType(Type::SELF)
+        ->setNullable();
 
     $map = [$fqcn => $file];
 
