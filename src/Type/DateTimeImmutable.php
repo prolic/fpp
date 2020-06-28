@@ -31,27 +31,24 @@ function typeConfiguration(): TypeConfiguration
 
 const fromPhpValue = 'Fpp\Type\DateTimeImmutable\fromPhpValue';
 
-function fromPhpValue(string $paramName): string
+function fromPhpValue(string $type, string $paramName): string
 {
-    return "$$paramName,\n";
+    return "$type::createFromFormat('Y-m-d\TH:i:s.uP', $paramName, new \DateTimeZone('UTC'))";
 }
 
 const toPhpValue = 'Fpp\Type\DateTimeImmutable\toPhpValue';
 
-function toPhpValue(string $paramName): string
+function toPhpValue(string $type, string $paramName): string
 {
     return $paramName . '->format(\'Y-m-d\TH:i:s.uP\')';
 }
 
 const validator = 'Fpp\Type\DateTimeImmutable\validator';
 
-function validator(string $paramName): string
+function validator(string $type, string $paramName): string
 {
     return <<<CODE
-$$paramName = \DateTimeImmutable::createFromFormat(
-    'Y-m-d\TH:i:s.uP',
-    $$paramName,
-    new \DateTimeZone('UTC'))
+$$paramName = $type::createFromFormat('Y-m-d\TH:i:s.uP', $$paramName, new \DateTimeZone('UTC'))
 
 CODE;
 }

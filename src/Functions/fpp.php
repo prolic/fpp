@@ -336,7 +336,7 @@ function generateValidationFor(
     Configuration $config
 ): string {
     if ($a->isList()) {
-        $code = "if (! isset(\$data['{$a->name()}']) || ! \is_array(\${$paramName}['{$a->name()}'])) {\n";
+        $code = "if (! isset(\${$paramName}['{$a->name()}']) || ! \is_array(\${$paramName}['{$a->name()}'])) {\n";
         $code .= "    throw new \InvalidArgumentException('Error on \"{$a->name()}\": array expected');\n";
         $code .= "}\n\n";
 
@@ -396,7 +396,7 @@ function generateValidationFor(
                 $validatorErrorMessage = $config->validationErrorMessageFor($type);
             }
 
-            $validation = $validator("{$paramName}['{$a->name()}']");
+            $validation = $validator($a->type(), "{$paramName}['{$a->name()}']");
             $validationErrorMessage = $validatorErrorMessage("\$data[\'{$a->name()}\']");
 
             break;
@@ -457,7 +457,7 @@ function generateFromPhpValueFor(
 CODE;
                 }
 
-                return $intent . $typeConfig->fromPhpValue()($a->type(), "this->payload['{$a->name()}']");
+                return $intent . $typeConfig->fromPhpValue()($a->type(), "{$paramName}['{$a->name()}']");
             }
 
             $builder = $config->fromPhpValueFor($definition->type());
@@ -512,7 +512,7 @@ CODE;
                         . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . " : null,\n";
                 }
 
-                return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . ",\n";
+                return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()($a->type(), '$this->' . $a->name())) . ",\n";
             }
 
             $builder = $config->toPhpValueFor($definition->type());

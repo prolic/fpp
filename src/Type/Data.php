@@ -40,6 +40,9 @@ use function Fpp\typeName;
 use Fpp\TypeTrait;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Type;
+use function substr;
+use function ucfirst;
+use const PHP_EOL;
 
 function typeConfiguration(): TypeConfiguration
 {
@@ -135,7 +138,7 @@ function toPhpValue(Data $type, string $paramName): string
 
 const validator = 'Fpp\Type\Data\validator';
 
-function validator(string $paramName): string
+function validator(string $type, string $paramName): string
 {
     return "\is_array(\$$paramName)";
 }
@@ -287,6 +290,7 @@ CODE;
     \array_map(
         function (Argument $a) use (
             $class,
+            $constr,
             $constructor,
             $definition,
             $definitions,
@@ -315,8 +319,32 @@ CODE;
             $param->setNullable($a->nullable());
 
             $constructorBody .= "\$this->{$a->name()} = \${$a->name()};\n";
-            $method = $class->addMethod($a->name());
-            $method->setBody("return \$this->{$a->name()};");
+
+            $getter = $class->addMethod($a->name());
+            $getter->setBody("return \$this->{$a->name()};");
+
+            $setter = $class->addMethod('with' . ucfirst($a->name()));
+            $setter->setReturnType(Type::SELF)
+                ->addParameter($a->name())
+                ->setType($a->isList() ? 'array' : $a->type())
+                ->setNullable($a->nullable());
+
+            $setterBody = "return new self(\n";
+
+            foreach ($constr->arguments() as $arg) {
+                /** @var Argument $arg */
+                if ($arg->name() === $a->name()) {
+                    $setterBody .= "    \${$arg->name()},\n";
+                } else {
+                    $setterBody .= "    \$this->{$arg->name()},\n";
+                }
+
+                if ($arg->isList() && $arg->type()) {
+                    $setter->addComment('@param list<' . $arg->type() . '> $' . $arg->name());
+                }
+            }
+
+            $setter->setBody(substr($setterBody, 0, -2) . "\n);");
 
             if ($a->isList()) {
                 $property->setType('array');
@@ -324,14 +352,15 @@ CODE;
 
                 if ($a->type()) {
                     $constructor->addComment('@param list<' . $a->type() . '> $' . $a->name());
-                    $method->addComment('@return list<' . $a->type() . '>');
+                    $setter->addComment('@param list<' . $a->type() . '> $' . $a->name());
+                    $getter->addComment('@return list<' . $a->type() . '>');
                 }
-                $method->setReturnType('array');
+                $getter->setReturnType('array');
             } else {
                 $property->setType($a->type());
                 $param->setType($a->type());
-                $method->setReturnType($a->type());
-                $method->setReturnNullable($a->nullable());
+                $getter->setReturnType($a->type());
+                $getter->setReturnNullable($a->nullable());
             }
 
             if (null !== $a->type() && $a->isList()) {

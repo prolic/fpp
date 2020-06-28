@@ -179,7 +179,7 @@ function toPhpValue(Enum $type, string $paramName): string
 
 const validator = 'Fpp\Type\Enum\validator';
 
-function validator(string $paramName): string
+function validator(string $type, string $paramName): string
 {
     return "\is_string(\$$paramName)";
 }

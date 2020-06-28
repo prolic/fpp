@@ -118,7 +118,7 @@ function toPhpValue(Bool_ $type, string $paramName): string
 
 const validator = 'Fpp\Type\Bool_\validator';
 
-function validator(string $paramName): string
+function validator(string $type, string $paramName): string
 {
     return "\is_bool(\$$paramName)";
 }

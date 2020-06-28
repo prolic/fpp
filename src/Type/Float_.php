@@ -110,7 +110,7 @@ function toPhpValue(Float_ $type, string $paramName): string
 
 const validator = 'Fpp\Type\Float_\validator';
 
-function validator(string $paramName): string
+function validator(string $type, string $paramName): string
 {
     return "\is_float(\$$paramName)";
 }

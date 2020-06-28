@@ -299,7 +299,7 @@ function toPhpValue(Event $type, string $paramName): string
 
 const validator = 'Fpp\Type\Event\validator';
 
-function validator(string $paramName): string
+function validator(string $type, string $paramName): string
 {
     return "\is_array(\$$paramName)";
 }

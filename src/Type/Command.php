@@ -286,7 +286,7 @@ function toPhpValue(Command $type, string $paramName): string
 
 const validator = 'Fpp\Type\Command\validator';
 
-function validator(string $paramName): string
+function validator(string $type, string $paramName): string
 {
     return "\is_array(\$$paramName)";
 }
