@@ -48,7 +48,7 @@ const validator = 'Fpp\Type\DateTimeImmutable\validator';
 function validator(string $type, string $paramName): string
 {
     return <<<CODE
-$$paramName = $type::createFromFormat('Y-m-d\TH:i:s.uP', $$paramName, new \DateTimeZone('UTC'))
+$paramName = $type::createFromFormat('Y-m-d\TH:i:s.uP', $paramName, new \DateTimeZone('UTC'))
 
 CODE;
 }

@@ -112,7 +112,7 @@ const validator = 'Fpp\Type\Int_\validator';
 
 function validator(string $type, string $paramName): string
 {
-    return "\is_int(\$$paramName)";
+    return "\is_int($paramName)";
 }
 
 const validationErrorMessage = 'Fpp\Type\Int_\validationErrorMessage';

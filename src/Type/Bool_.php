@@ -120,7 +120,7 @@ const validator = 'Fpp\Type\Bool_\validator';
 
 function validator(string $type, string $paramName): string
 {
-    return "\is_bool(\$$paramName)";
+    return "\is_bool($paramName)";
 }
 
 const validationErrorMessage = 'Fpp\Type\Bool_\validationErrorMessage';

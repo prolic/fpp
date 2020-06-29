@@ -112,7 +112,7 @@ const validator = 'Fpp\Type\String_\validator';
 
 function validator(string $type, string $paramName): string
 {
-    return "\is_string(\$$paramName)";
+    return "\is_string($paramName)";
 }
 
 const validationErrorMessage = 'Fpp\Type\String_\validationErrorMessage';

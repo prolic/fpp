@@ -137,7 +137,7 @@ const validator = 'Fpp\Type\Data\validator';
 
 function validator(string $type, string $paramName): string
 {
-    return "\is_array(\$$paramName)";
+    return "\is_array($paramName)";
 }
 
 const validationErrorMessage = 'Fpp\Type\Data\validationErrorMessage';
@@ -302,7 +302,7 @@ CODE;
 
             $resolvedType = resolveType($a->type(), $definition);
             $defaultValue = calculateDefaultValue($a);
-            $fromArrayValidationBody .= generateValidationFor($a, 'data', $resolvedType, $definitions, $config);
+            $fromArrayValidationBody .= generateValidationFor($a, '$data', $resolvedType, $definitions, $config);
             $fromArrayBody .= generateFromPhpValueFor($a, '$data', 1, $resolvedType, $definitions, $config) . ",\n";
             $toArrayBody .= generateToArrayBodyFor($a, '$this->', $resolvedType, $definitions, $config);
             $equalsBody .= equalsBodyFor($a, $resolvedType, $definitions, $config);

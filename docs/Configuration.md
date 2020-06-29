@@ -83,9 +83,9 @@ Let's have an example here real quick:
 Role::class => new TypeConfiguration(
     null,
     null,
-    fn (string $type, string $paramName) => "$type::fromName($$paramName)",
-    fn (string $paramName) => $paramName . '->getName()',
-    fn (string $paramName) => "\is_string(\$$paramName)",
+    fn (string $type, string $paramName) => "$type::fromName($paramName)",
+    fn (string $type, string $paramName) => $paramName . '->getName()',
+    fn (string $type, string $paramName) => "\is_string($paramName)",
     fn (string $paramName) => "Error on \"$paramName\", string expected",
     fn (string $paramName, string $otherParamName) => "{$paramName}->equals($otherParamName)"
 ),

@@ -336,7 +336,7 @@ function generateValidationFor(
     Configuration $config
 ): string {
     if ($a->isList()) {
-        $code = "if (! isset(\${$paramName}['{$a->name()}']) || ! \is_array(\${$paramName}['{$a->name()}'])) {\n";
+        $code = "if (! isset({$paramName}['{$a->name()}']) || ! \is_array({$paramName}['{$a->name()}'])) {\n";
         $code .= "    throw new \InvalidArgumentException('Error on \"{$a->name()}\": array expected');\n";
         $code .= "}\n\n";
 
@@ -344,11 +344,11 @@ function generateValidationFor(
     }
 
     if ($a->nullable()) {
-        $code = "if (isset(\${$paramName}['{$a->name()}']) && ! {%validation%}) {\n";
+        $code = "if (isset({$paramName}['{$a->name()}']) && ! {%validation%}) {\n";
         $code .= "    throw new \InvalidArgumentException('{%validationErrorMessage%}');\n";
         $code .= "}\n\n";
     } else {
-        $code = "if (! isset(\${$paramName}['{$a->name()}']) || ! {%validation%}) {\n";
+        $code = "if (! isset({$paramName}['{$a->name()}']) || ! {%validation%}) {\n";
         $code .= "    throw new \InvalidArgumentException('{%validationErrorMessage%}');\n";
         $code .= "}\n\n";
     }
@@ -357,23 +357,23 @@ function generateValidationFor(
         case null:
             return '';
         case 'int':
-            $validation = "\is_int(\${$paramName}['{$a->name()}'])";
+            $validation = "\is_int({$paramName}['{$a->name()}'])";
             $validationErrorMessage = "Error on \"{$a->name()}\": int expected";
             break;
         case 'float':
-            $validation = "\is_float(\${$paramName}['{$a->name()}'])";
+            $validation = "\is_float({$paramName}['{$a->name()}'])";
             $validationErrorMessage = "Error on \"{$a->name()}\": float expected";
             break;
         case 'bool':
-            $validation = "\is_bool(\${$paramName}['{$a->name()}'])";
+            $validation = "\is_bool({$paramName}['{$a->name()}'])";
             $validationErrorMessage = "Error on \"{$a->name()}\": bool expected";
             break;
         case 'string':
-            $validation = "\is_string(\${$paramName}['{$a->name()}'])";
+            $validation = "\is_string({$paramName}['{$a->name()}'])";
             $validationErrorMessage = "Error on \"{$a->name()}\": string expected";
             break;
         case 'array':
-            $validation = "\is_array(\${$paramName}['{$a->name()}'])";
+            $validation = "\is_array({$paramName}['{$a->name()}'])";
             $validationErrorMessage = "Error on \"{$a->name()}\": array expected";
             break;
         default:

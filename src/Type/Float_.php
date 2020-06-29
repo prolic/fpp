@@ -112,7 +112,7 @@ const validator = 'Fpp\Type\Float_\validator';
 
 function validator(string $type, string $paramName): string
 {
-    return "\is_float(\$$paramName)";
+    return "\is_float($paramName)";
 }
 
 const validationErrorMessage = 'Fpp\Type\Float_\validationErrorMessage';

@@ -301,7 +301,7 @@ const validator = 'Fpp\Type\Event\validator';
 
 function validator(string $type, string $paramName): string
 {
-    return "\is_array(\$$paramName)";
+    return "\is_array($paramName)";
 }
 
 const validationErrorMessage = 'Fpp\Type\Event\validationErrorMessage';
