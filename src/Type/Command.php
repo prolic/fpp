@@ -423,7 +423,7 @@ function buildSubType(
         ) {
             $resolvedType = resolveType($a->type(), $definition);
             $fromPhpValue = generateFromPhpValueFor($a, '$this->payload', 0, $resolvedType, $definitions, $config);
-            $setPayloadMethodBody .= generateValidationFor($a, 'payload', $resolvedType, $definitions, $config);
+            $setPayloadMethodBody .= generateValidationFor($a, '$payload', $resolvedType, $definitions, $config);
 
             $psalmAnnotation = '';
 
