@@ -453,7 +453,7 @@ function generateFromPhpValueFor(
 
                 if ($a->isList()) {
                     return <<<CODE
-{$intent}\array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), 'e')}, {$paramName}['{$a->name()}'])
+{$intent}\array_map(fn (\$e) => {$typeConfig->fromPhpValue()($a->type(), '$e')}, {$paramName}['{$a->name()}'])
 CODE;
                 }
 
