@@ -40,9 +40,6 @@ use function Fpp\typeName;
 use Fpp\TypeTrait;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\Type;
-use function substr;
-use function ucfirst;
-use const PHP_EOL;
 
 function typeConfiguration(): TypeConfiguration
 {
@@ -323,7 +320,7 @@ CODE;
             $getter = $class->addMethod($a->name());
             $getter->setBody("return \$this->{$a->name()};");
 
-            $setter = $class->addMethod('with' . ucfirst($a->name()));
+            $setter = $class->addMethod('with' . \ucfirst($a->name()));
             $setter->setReturnType(Type::SELF)
                 ->addParameter($a->name())
                 ->setType($a->isList() ? 'array' : $a->type())
@@ -344,7 +341,7 @@ CODE;
                 }
             }
 
-            $setter->setBody(substr($setterBody, 0, -2) . "\n);");
+            $setter->setBody(\substr($setterBody, 0, -2) . "\n);");
 
             if ($a->isList()) {
                 $property->setType('array');
