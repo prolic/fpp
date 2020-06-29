@@ -358,23 +358,23 @@ function generateValidationFor(
             return '';
         case 'int':
             $validation = "\is_int(\${$paramName}['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", int expected";
+            $validationErrorMessage = "Error on \"{$a->name()}\": int expected";
             break;
         case 'float':
             $validation = "\is_float(\${$paramName}['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", float expected";
+            $validationErrorMessage = "Error on \"{$a->name()}\": float expected";
             break;
         case 'bool':
             $validation = "\is_bool(\${$paramName}['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", bool expected";
+            $validationErrorMessage = "Error on \"{$a->name()}\": bool expected";
             break;
         case 'string':
             $validation = "\is_string(\${$paramName}['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", string expected";
+            $validationErrorMessage = "Error on \"{$a->name()}\": string expected";
             break;
         case 'array':
             $validation = "\is_array(\${$paramName}['{$a->name()}'])";
-            $validationErrorMessage = "Error on \"{$a->name()}\", array expected";
+            $validationErrorMessage = "Error on \"{$a->name()}\": array expected";
             break;
         default:
             $definition = $definitions[$resolvedType] ?? null;
@@ -397,7 +397,7 @@ function generateValidationFor(
             }
 
             $validation = $validator($a->type(), "{$paramName}['{$a->name()}']");
-            $validationErrorMessage = $validatorErrorMessage("\$data[\'{$a->name()}\']");
+            $validationErrorMessage = $validatorErrorMessage("{$a->name()}");
 
             break;
     }
@@ -499,7 +499,7 @@ function generateToArrayBodyFor(Argument $a, $prefix, ?string $resolvedType, arr
                 }
 
                 if ($a->isList()) {
-                    $callback = "fn({$a->type()} \$e) => {$typeConfiguration->toPhpValue()('$e')}";
+                    $callback = "fn({$a->type()} \$e) => {$typeConfiguration->toPhpValue()($a->type(), '$e')}";
 
                     return <<<CODE
     '{$a->name()}' => \array_map($callback, {$prefix}{$a->name()}),
@@ -512,7 +512,7 @@ CODE;
                         . ($typeConfiguration->toPhpValue()('$this->' . $a->name())) . " : null,\n";
                 }
 
-                return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()($a->type(), '$this->' . $a->name())) . ",\n";
+                return "    '{$a->name()}' => " . ($typeConfiguration->toPhpValue()($a->type(), $prefix . $a->name())) . ",\n";
             }
 
             $builder = $config->toPhpValueFor($definition->type());
