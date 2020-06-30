@@ -34,6 +34,7 @@ use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
 use Fpp\Type as FppType;
+use function Fpp\Type\Command\commandType;
 use function Fpp\Type\Marker\markers;
 use Fpp\TypeConfiguration;
 use function Fpp\typeName;
@@ -79,10 +80,44 @@ function build(Definition $definition, array $definitions, Configuration $config
         ->setAbstract()
         ->setImplements($type->markers());
 
+    $fromArrayBody = <<<CODE
+if (! isset(\$data['_type'])) {
+    throw new \InvalidArgumentException(
+        'Missing "_type" key'
+    );
+}
+
+switch(\$data['_type']) {
+
+CODE;
+
+    foreach ($type->constructors() as $constructor) {
+        $fromArrayBody .= "    case '" . $constructor->className() . "':\n";
+        $fromArrayBody .= "        \$classname = '{$constructor->classname()}';\n";
+        $fromArrayBody .= "        break;\n";
+    }
+
+    $fromArrayBody .= <<<CODE
+    default:
+        throw new \InvalidArgumentException(
+            'Unknown command type "' . \$data['_type'] . '" given'
+        );
+}
+
+\$classname = __NAMESPACE__ . '\\\\' . \$classname;
+
+/**
+ * @psalm-suppress LessSpecificReturnStatement
+ * @psalm-suppress InvalidStringClass
+ */
+return \$classname::fromArray(\$data);
+
+CODE;
+
     $class->addMethod('fromArray')
         ->setStatic()
         ->setReturnType(Type::SELF)
-        ->setAbstract()
+        ->setBody($fromArrayBody)
         ->addParameter('data')
         ->setType(Type::ARRAY);
 
@@ -277,6 +312,11 @@ function buildSubType(
     $fromArrayValidationBody = '';
     $fromArrayBody = "return new self(\n";
     $toArrayBody = "return [\n";
+
+    if (\count($definition->type()->constructors()) > 1) {
+        $toArrayBody .= "    '_type' => '{$constr->classname()}',\n";
+    }
+
     $equalsBody = <<<CODE
 if (null === \$other || \get_class(\$this) !== \get_class(\$other)) {
     return false;
