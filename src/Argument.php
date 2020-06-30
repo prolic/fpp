@@ -26,12 +26,15 @@ class Argument
         if (empty($name)) {
             $name = \lcfirst($type);
 
-            if ($isList) {
-                if (\substr($name, -1) === 's') {
+            switch (true) {
+                case $isList && \substr($name, -1) === 's':
                     $name .= 'es';
-                } else {
+                    break;
+                case $isList && \substr($name, -1) === 'y':
+                    $name = \substr($name, 0, -1) . 'ies';
+                    break;
+                case $isList:
                     $name .= 's';
-                }
             }
         }
 
