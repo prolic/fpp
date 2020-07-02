@@ -152,16 +152,14 @@ const addComment = 'Fpp\addComment';
  */
 function addComment(array $files, ?string $comment): array
 {
-    if (null === $comment) {
-        return $files;
-    }
-
     foreach ($files as $fqcn => $file) {
         /** @var PhpFile $file */
-
         foreach ($file->getNamespaces() as $namespace) {
             foreach ($namespace->getClasses() as $class) {
-                $class->addComment($comment);
+                if (null !== $comment) {
+                    $class->addComment($comment);
+                }
+                $class->addComment('@codeCoverageIgnore');
             }
         }
     }
