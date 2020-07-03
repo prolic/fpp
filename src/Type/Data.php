@@ -483,9 +483,11 @@ CODE;
             if ($a->nullable()) {
                 return <<<CODE
 
-if ((null === \$this->{$a->name()} && null !== \$other->{$a->name()})
-    || ! $equals
-) {
+if (null === \$this->{$a->name()}) {
+    if (null !== \$other->{$a->name()}) {
+        return false;
+    }
+} elseif (! $equals) {
     return false;
 }
 
