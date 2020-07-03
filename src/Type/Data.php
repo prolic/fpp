@@ -375,10 +375,6 @@ CODE;
                 } else {
                     $setterBody .= "    \$this->{$arg->name()},\n";
                 }
-
-                if ($arg->isList() && $arg->type()) {
-                    $setter->addComment('@param list<' . $arg->type() . '> $' . $arg->name());
-                }
             }
 
             $setter->setBody(\substr($setterBody, 0, -2) . "\n);");
