@@ -102,7 +102,7 @@ function build(Definition $definition, array $definitions, Configuration $config
 
             $options[] = $c->name();
 
-            $method = $class->addMethod(\lcfirst($c->name()))->setPublic()->setStatic()->setReturnType('self');
+            $method = $class->addMethod($c->name())->setPublic()->setStatic()->setReturnType('self');
             $method->setBody("return new self('{$c->name()}', $i);");
 
             ++$i;
