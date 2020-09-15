@@ -506,7 +506,7 @@ CODE;
                 }
 
                 if ($a->nullable()) {
-                    return "    '{$a->name()}' => {$prefix}{$a->name()} !=== null ? "
+                    return "    '{$a->name()}' => {$prefix}{$a->name()} !== null ? "
                         . ($typeConfiguration->toPhpValue()($a->type(), '$this->' . $a->name())) . " : null,\n";
                 }
 
