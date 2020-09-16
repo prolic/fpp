@@ -34,7 +34,6 @@ use function Fpp\spaces;
 use function Fpp\spaces1;
 use function Fpp\string;
 use Fpp\Type as FppType;
-use function Fpp\Type\Command\commandType;
 use function Fpp\Type\Marker\markers;
 use Fpp\TypeConfiguration;
 use function Fpp\typeName;
