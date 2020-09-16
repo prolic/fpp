@@ -455,6 +455,12 @@ function generateFromPhpValueFor(
 CODE;
                 }
 
+                if ($a->nullable()) {
+                    return "{$intent}isset({$paramName}['{$a->name()}']) ? "
+                        . $typeConfig->fromPhpValue()($a->type(), "{$paramName}['{$a->name()}']")
+                        . ' : null';
+                }
+
                 return $intent . $typeConfig->fromPhpValue()($a->type(), "{$paramName}['{$a->name()}']");
             }
 
