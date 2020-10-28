@@ -242,7 +242,7 @@ CODE;
 return [
     'event_type' => \$this->eventType(),
     'event_id' => {$eventIdToPhpValue($eventIdType->type(), '$this->eventId')},
-    'aggregate_id' => {$aggregateIdToPhpValue($aggregateIdType->type(), '/$this->aggregateId')},
+    'aggregate_id' => {$aggregateIdToPhpValue($aggregateIdType->type(), '$this->aggregateId')},
     'payload' => \$this->payload,
     'metadata' => \$this->metadata,
 ];
