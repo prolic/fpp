@@ -253,11 +253,7 @@ CODE
     $equalsMethod = $class->addMethod('equals')
         ->setReturnType(Type::BOOL);
     $equalsMethod->setBody(<<<CODE
-if (null === \$other) {
-    return false;
-}
-
-if (\get_class(\$this) !== \get_class(\$other)) {
+if (! \$other instanceof self) {
     return false;
 }
 

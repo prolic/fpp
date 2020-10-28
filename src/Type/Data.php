@@ -317,7 +317,7 @@ function buildSubType(
     }
 
     $equalsBody = <<<CODE
-if (null === \$other || \get_class(\$this) !== \get_class(\$other)) {
+if (! \$other instanceof self) {
     return false;
 }
 
