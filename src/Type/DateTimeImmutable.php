@@ -33,7 +33,33 @@ const fromPhpValue = 'Fpp\Type\DateTimeImmutable\fromPhpValue';
 
 function fromPhpValue(string $type, string $paramName): string
 {
-    return "$type::createFromFormat('Y-m-d\TH:i:s.uP', $paramName, new \DateTimeZone('UTC'))";
+    if (0 === \strncmp($paramName, '$this->', 7)) {
+        $import = '';
+    } else {
+        $m = [];
+
+        preg_match('/^(\$\w+)\[.+$/', $paramName, $m);
+
+        if (empty($m)) {
+            $shortParamName = $paramName;
+        } else {
+            $shortParamName = $m[1];
+        }
+
+        $import = " use ($shortParamName) ";
+    }
+
+    return <<<CODE
+(function ()$import {
+        \$_x = $type::createFromFormat('Y-m-d\TH:i:s.uP', $paramName, new \DateTimeZone('UTC'));
+        
+        if (false === \$_x) {
+            throw new \UnexpectedValueException('Expected a date time string');
+        }
+    
+        return \$_x;
+    })()
+CODE;
 }
 
 const toPhpValue = 'Fpp\Type\DateTimeImmutable\toPhpValue';
@@ -48,7 +74,7 @@ const validator = 'Fpp\Type\DateTimeImmutable\validator';
 function validator(string $type, string $paramName): string
 {
     return <<<CODE
-$paramName = $type::createFromFormat('Y-m-d\TH:i:s.uP', $paramName, new \DateTimeZone('UTC'))
+$type::createFromFormat('Y-m-d\TH:i:s.uP', $paramName, new \DateTimeZone('UTC'))
 
 CODE;
 }
