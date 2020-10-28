@@ -203,6 +203,12 @@ CODE
         $fromArrayBody .= "        break;\n";
     }
 
+    $eventIdType = $definitions[resolveType($type->eventIdType(), $definition)] ?? null;
+    $aggregateIdType = $definitions[resolveType($type->aggregateIdType(), $definition)] ?? null;
+
+    $eventIdFromPhpValue = $config->fromPhpValueFor($eventIdType->type());
+    $aggregateIdFromPhpValue = $config->fromPhpValueFor($aggregateIdType->type());
+
     $fromArrayBody .= <<<CODE
     default:
         throw new \InvalidArgumentException(
@@ -217,13 +223,16 @@ CODE
  * @psalm-suppress InvalidStringClass
  */
 return new \$classname(
-    {$type->eventIdType()}::fromString(\$data['event_id']),
-    {$type->aggregateIdType()}::fromString(\$data['aggregate_id']),
+    {$eventIdFromPhpValue($eventIdType->type(), '$data[\'event_id\']')},
+    {$aggregateIdFromPhpValue($aggregateIdType->type(), '$data[\'aggregate_id\']')},
     \$data['payload'],
     \$data['metadata']
 );
 
 CODE;
+
+    $eventIdToPhpValue = $config->toPhpValueFor($eventIdType->type());
+    $aggregateIdToPhpValue = $config->toPhpValueFor($aggregateIdType->type());
 
     $fromArrayMethod->setBody($fromArrayBody);
 
@@ -232,8 +241,8 @@ CODE;
         ->setBody(<<<CODE
 return [
     'event_type' => \$this->eventType(),
-    'event_id' => \$this->eventId->toString(),
-    'aggregate_id' => \$this->aggregateId->toString(),
+    'event_id' => {$eventIdToPhpValue($eventIdType->type(), '$this->eventId')},
+    'aggregate_id' => {$aggregateIdToPhpValue($aggregateIdType->type(), '/$this->aggregateId')},
     'payload' => \$this->payload,
     'metadata' => \$this->metadata,
 ];
