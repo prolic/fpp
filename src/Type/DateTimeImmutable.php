@@ -38,7 +38,7 @@ function fromPhpValue(string $type, string $paramName): string
     } else {
         $m = [];
 
-        preg_match('/^(\$\w+)\[.+$/', $paramName, $m);
+        \preg_match('/^(\$\w+)\[.+$/', $paramName, $m);
 
         if (empty($m)) {
             $shortParamName = $paramName;
