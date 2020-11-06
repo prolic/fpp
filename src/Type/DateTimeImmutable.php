@@ -90,7 +90,7 @@ const equals = 'Fpp\Type\DateTimeImmutable\equals';
 
 function equals(string $paramName, string $otherParamName): string
 {
-    return "$paramName == $otherParamName";
+    return "($paramName === $otherParamName)";
 }
 
 class DateTimeImmutable implements FppType
