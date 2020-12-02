@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Fpp\Type\Command;
 
+use function Fpp\alphanum;
 use Fpp\Argument;
 use function Fpp\assignment;
 use function Fpp\buildDefaultPhpFile;
@@ -22,7 +23,6 @@ use Fpp\Definition;
 use function Fpp\generateFromPhpValueFor;
 use function Fpp\generateValidationFor;
 use function Fpp\many1;
-use function Fpp\not;
 use function Fpp\parseArguments;
 use Fpp\Parser;
 use function Fpp\plus;
@@ -83,7 +83,16 @@ function parse(): Parser
                         for_(
                             __($_)->_(string('as')),
                             __($_)->_(spaces1()),
-                            __($en)->_(many1(not(' '))),
+                            __($en)->_(
+                                many1(
+                                    alphanum()
+                                        ->or(char('\\'))
+                                        ->or(char('-'))
+                                        ->or(char('.'))
+                                        ->or(char(':'))
+                                        ->or(char('_'))
+                                )
+                            ),
                             __($_)->_(spaces1()),
                         )->yields($en)
                             ->or(result(''))
