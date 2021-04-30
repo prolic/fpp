@@ -1,0 +1,21 @@
+version: 2
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "09:00"
+  open-pull-requests-limit: 10
+  reviewers:
+  - prolic
+  assignees:
+  - prolic
+  labels:
+  - enhancement
+  ignore:
+  - dependency-name: kahlan/kahlan
+    versions:
+    - 5.0.6
+    - 5.0.7
+    - 5.0.8
+    - 5.0.9
