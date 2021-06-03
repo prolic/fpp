@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Fpp\Type\Data\Data;
+use Fpp\Type\Enum\Enum;
 use Nette\PhpGenerator\PhpFile;
 use Phunkie\Types\Pair;
 
@@ -499,6 +501,26 @@ function generateToArrayBodyFor(Argument $a, $prefix, ?string $resolvedType, arr
                 $typeConfiguration = $config->types()[$resolvedType] ?? null;
 
                 if (null === $typeConfiguration) {
+                    foreach ($definitions as $definition) {
+                        /** @var Definition $definition */
+
+                        if ($definition->type() instanceof Data) {
+                            foreach ($definition->type()->constructors() as $constructor) {
+                                if (($definition->namespace() . '\\' . $constructor->classname()) === $resolvedType) {
+                                    return "    '{$a->name()}' => {$prefix}{$a->name()}->toArray(),\n";
+                                }
+                            }
+                        }
+
+                        if ($definition->type() instanceof Enum) {
+                            foreach ($definition->type()->constructors() as $constructor) {
+                                if (($definition->namespace() . '\\' . $constructor->classname()) === $resolvedType) {
+                                    return "    '{$a->name()}' => {$prefix}{$a->name()}->name(),\n";
+                                }
+                            }
+                        }
+                    }
+
                     return "    '{$a->name()}' => {$prefix}{$a->name()},\n";
                 }
 
