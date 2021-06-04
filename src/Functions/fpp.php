@@ -447,7 +447,81 @@ function generateFromPhpValueFor(
                 /** @var TypeConfiguration|null $typeConfig */
                 $typeConfig = $config->types()[$resolvedType] ?? null;
 
-                if (null === $typeConfig) {
+                if (null === $typeConfig && ! $a->isList()) {
+                    foreach ($definitions as $definition) {
+                        /** @var Definition $definition */
+                        $type = $definition->type();
+
+                        if ($type instanceof Data) {
+                            foreach ($type->constructors() as $constructor) {
+                                if (($definition->namespace() . '\\' . $constructor->classname()) === $resolvedType) {
+                                    return $config->types()[Data::class]->fromPhpValue()(
+                                        new Type\Data\Data(
+                                            $constructor->classname(),
+                                            $type->markers(),
+                                            $type->constructors()
+                                        ),
+                                        $paramName . '[\'' . $a->name() . '\']'
+                                    );
+                                }
+                            }
+                        }
+
+                        if ($type instanceof Enum) {
+                            foreach ($type->constructors() as $constructor) {
+                                if (($definition->namespace() . '\\' . $constructor->name()) === $resolvedType) {
+                                    return $config->types()[Enum::class]->fromPhpValue()(
+                                        new Type\Enum\Enum(
+                                            $constructor->classname(),
+                                            $type->markers(),
+                                            $type->constructors()
+                                        ),
+                                        $paramName . '[\'' . $a->name() . '\']'
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    return "{$intent}{$paramName}['{$a->name()}']";
+                }
+
+                if (null === $typeConfig && $a->isList()) {
+                    foreach ($definitions as $definition) {
+                        /** @var Definition $definition */
+                        $type = $definition->type();
+
+                        if ($type instanceof Data) {
+                            foreach ($type->constructors() as $constructor) {
+                                if (($definition->namespace() . '\\' . $constructor->classname()) === $resolvedType) {
+                                    return "{$intent}\array_map(fn (\$e) => " . $config->types()[Data::class]->fromPhpValue()(
+                                            new Type\Data\Data(
+                                                $constructor->classname(),
+                                                $type->markers(),
+                                                $type->constructors()
+                                            ),
+                                            '$e'
+                                        ) . ', ' . $paramName . '[\'' . $a->name() . '\'])';
+                                }
+                            }
+                        }
+
+                        if ($type instanceof Enum) {
+                            foreach ($type->constructors() as $constructor) {
+                                if (($definition->namespace() . '\\' . $constructor->name()) === $resolvedType) {
+                                    return "{$intent}\array_map(fn (\$e) => " . $config->types()[Enum::class]->fromPhpValue()(
+                                            new Type\Enum\Enum(
+                                                $constructor->classname(),
+                                                $type->markers(),
+                                                $type->constructors()
+                                            ),
+                                            '$e'
+                                        ) . ', ' . $paramName . '[\'' . $a->name() . '\'])';
+                                }
+                            }
+                        }
+                    }
+
                     return "{$intent}{$paramName}['{$a->name()}']";
                 }
 
