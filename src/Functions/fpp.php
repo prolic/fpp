@@ -503,18 +503,19 @@ function generateToArrayBodyFor(Argument $a, $prefix, ?string $resolvedType, arr
                 if (null === $typeConfiguration) {
                     foreach ($definitions as $definition) {
                         /** @var Definition $definition */
+                        $type = $definition->type();
 
-                        if ($definition->type() instanceof Data) {
-                            foreach ($definition->type()->constructors() as $constructor) {
+                        if ($type instanceof Data) {
+                            foreach ($type->constructors() as $constructor) {
                                 if (($definition->namespace() . '\\' . $constructor->classname()) === $resolvedType) {
                                     return "    '{$a->name()}' => {$prefix}{$a->name()}->toArray(),\n";
                                 }
                             }
                         }
 
-                        if ($definition->type() instanceof Enum) {
-                            foreach ($definition->type()->constructors() as $constructor) {
-                                if (($definition->namespace() . '\\' . $constructor->classname()) === $resolvedType) {
+                        if ($type instanceof Enum) {
+                            foreach ($type->constructors() as $constructor) {
+                                if (($definition->namespace() . '\\' . $constructor->name()) === $resolvedType) {
                                     return "    '{$a->name()}' => {$prefix}{$a->name()}->name(),\n";
                                 }
                             }
