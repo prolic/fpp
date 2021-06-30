@@ -15,7 +15,99 @@ namespace Fpp;
 use Fpp\Type\Data\Data;
 use Fpp\Type\Enum\Enum;
 use Nette\PhpGenerator\PhpFile;
+use org\bovigo\vfs\vfsStreamDirectory;
 use Phunkie\Types\Pair;
+
+const runFpp = 'Fpp\runFpp';
+
+function runFpp(Configuration $config, string $path, \Closure $locatePath)
+{
+    $parser = \array_reduce(
+        \array_filter(
+            $config->types(),
+            fn (TypeConfiguration $c) => $c->parse() !== null
+        ),
+        fn (Parser $p, TypeConfiguration $c) => $p->or($c->parse()()),
+        zero()
+    );
+
+    $definitions = \array_map(
+        fn ($f) => Pair(($config->fileParser())($parser)->run(\file_get_contents($f)), $f),
+        scan(
+            $path
+        )
+    );
+
+    $definitions = \array_map(
+        function (Pair $p) {
+            $parsed = $p->_1;
+            $filename = $p->_2;
+
+            $p = $parsed[0];
+
+            if ($p->_2 !== '') {
+                echo "\033[1;31mSyntax error at file: $filename\033[0m" . PHP_EOL;
+                echo $p->_2;
+                exit(1);
+            }
+
+            return $p->_1;
+        },
+        $definitions
+    );
+
+    $definitions = \array_reduce(
+        $definitions,
+        fn (array $l, array $nds) => \array_merge($l, $nds),
+        []
+    );
+
+    $definitions = \array_reduce(
+        $definitions,
+        function (array $ds, array $nds) {
+            foreach ($nds as $n => $d) {
+                $ds[$n] = $d;
+            }
+
+            return $ds;
+        },
+        [],
+    );
+
+    $dumpedDefinitions = [];
+
+    foreach ($definitions as $name => $definition) {
+        $dumpedDefinitions[$name] = dump($definition, $definitions, $config);
+    }
+
+    foreach ($dumpedDefinitions as $name => $files) {
+        foreach ($files as $fqcn => $code) {
+            $filename = $locatePath($fqcn);
+            $directory = \dirname($filename);
+
+            if (! \is_dir($directory)) {
+                \mkdir($directory, 0777, true);
+            }
+
+            \file_put_contents($filename, $code);
+        }
+    }
+}
+
+const registerVfsAutoloader = 'Fpp\registerVfsAutoloader';
+
+function registerVfsAutoloader(vfsStreamDirectory $vfs)
+{
+    \spl_autoload_register(
+        function (string $className) use ($vfs) {
+            $file = $vfs->url() . DIRECTORY_SEPARATOR . \strtr($className, '\\', DIRECTORY_SEPARATOR) . '.php';
+
+            if (\file_exists($file)) {
+                require_once $file;
+            }
+        }
+    );
+}
 
 const flatMap = 'Fpp\flatMap';
 
