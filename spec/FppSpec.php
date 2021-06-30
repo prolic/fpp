@@ -97,6 +97,9 @@ describe('Fpp', function () {
                 );
                 $config = new Configuration(
                     true,
+                    '.',
+                    '.',
+                    'OK',
                     fn () => new PsrPrinter(),
                     fn () => null,
                     null,

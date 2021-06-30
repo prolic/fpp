@@ -15,7 +15,7 @@
     "nette/utils": "^3.1.2"
   },
   "require-dev": {
-    "kahlan/kahlan": "^4.7.5",
+    "kahlan/kahlan": "^5.1.3",
     "prooph/php-cs-fixer-config": "^0.4.0",
     "satooshi/php-coveralls": "^2.2",
     "vimeo/psalm": "^4.0.1"
