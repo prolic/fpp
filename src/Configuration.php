@@ -15,7 +15,6 @@ namespace Fpp;
 use Closure;
 use Composer\Autoload\ClassLoader;
 use InvalidArgumentException;
-use org\bovigo\vfs\vfsStreamDirectory;
 use RuntimeException;
 
 class Configuration
@@ -35,16 +34,6 @@ class Configuration
     /** @param array<class-string,TypeConfiguration> $types */
     public function __construct(bool $useStrictTypes, string $source, string $target, string $successMessage, callable $printer, callable $fileParser, ?string $comment, array $types)
     {
-        if (! \in_array($target, self::availableTargets)) {
-            throw new InvalidArgumentException(
-                \sprintf(
-                    'Target must be one of %s, %s given',
-                    \implode(' or ', self::availableTargets),
-                    $target
-                )
-            );
-        }
-
         $this->useStrictTypes = $useStrictTypes;
         $this->source = $source;
         $this->target = $target;
@@ -180,7 +169,16 @@ class Configuration
         return $this->target;
     }
 
-    public function locatePathFromComposer(ClassLoader $classLoader): Closure
+    public function locatePath(ClassLoader $classLoader): Closure
+    {
+        if ('*' !== $this->target) {
+            return $this->locatePathFromTarget();
+        }
+
+        return $this->locatePathFromComposer($classLoader);
+    }
+
+    private function locatePathFromComposer(ClassLoader $classLoader): Closure
     {
         $prefixesPsr4 = $classLoader->getPrefixesPsr4();
         $prefixesPsr0 = $classLoader->getPrefixes();
@@ -190,10 +188,10 @@ class Configuration
         };
     }
 
-    public function locatePathFromVfs(vfsStreamDirectory $directory): Closure
+    private function locatePathFromTarget(): Closure
     {
-        return function (string $classname) use ($directory) {
-            return $directory->url() . DIRECTORY_SEPARATOR . \strtr($classname, '\\', DIRECTORY_SEPARATOR) . '.php';
+        return function (string $classname): string {
+            return $this->target . DIRECTORY_SEPARATOR . \strtr($classname, '\\', DIRECTORY_SEPARATOR) . '.php';
         };
     }
 

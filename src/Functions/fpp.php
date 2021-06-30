@@ -12,16 +12,18 @@ declare(strict_types=1);
 
 namespace Fpp;
 
+use Composer\Autoload\ClassLoader;
 use Fpp\Type\Data\Data;
 use Fpp\Type\Enum\Enum;
 use Nette\PhpGenerator\PhpFile;
-use org\bovigo\vfs\vfsStreamDirectory;
 use Phunkie\Types\Pair;
 
 const runFpp = 'Fpp\runFpp';
 
-function runFpp(Configuration $config, string $path, \Closure $locatePath)
+function runFpp(Configuration $config, ClassLoader $classLoader): void
 {
+    $locatePath = $config->locatePath($classLoader);
+
     $parser = \array_reduce(
         \array_filter(
             $config->types(),
@@ -33,9 +35,7 @@ function runFpp(Configuration $config, string $path, \Closure $locatePath)
 
     $definitions = \array_map(
         fn ($f) => Pair(($config->fileParser())($parser)->run(\file_get_contents($f)), $f),
-        scan(
-            $path
-        )
+        scan($config->source())
     );
 
     $definitions = \array_map(
@@ -94,13 +94,13 @@ function runFpp(Configuration $config, string $path, \Closure $locatePath)
     }
 }
 
-const registerVfsAutoloader = 'Fpp\registerVfsAutoloader';
+const registerFppTargetAutoloader = 'Fpp\registerFppTargetAutoloader';
 
-function registerVfsAutoloader(vfsStreamDirectory $vfs)
+function registerFppTargetAutoloader(string $targetDirectory): void
 {
     \spl_autoload_register(
-        function (string $className) use ($vfs) {
-            $file = $vfs->url() . DIRECTORY_SEPARATOR . \strtr($className, '\\', DIRECTORY_SEPARATOR) . '.php';
+        function (string $className) use ($targetDirectory) {
+            $file = $targetDirectory . DIRECTORY_SEPARATOR . \strtr($className, '\\', DIRECTORY_SEPARATOR) . '.php';
 
             if (\file_exists($file)) {
                 require_once $file;

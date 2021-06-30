@@ -12,8 +12,7 @@
     "php": "^7.4",
     "phunkie/phunkie": "^0.11.1",
     "nette/php-generator": "^3.4.0",
-    "nette/utils": "^3.1.2",
-    "mikey179/vfsstream": "^1.6.8"
+    "nette/utils": "^3.1.2"
   },
   "require-dev": {
     "kahlan/kahlan": "^4.7.5",

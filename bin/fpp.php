@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Fpp;
 
 use Nette\PhpGenerator\PsrPrinter;
-use org\bovigo\vfs\vfsStream;
 
 $path1 = \realpath(__DIR__ . '/../../../../');
 $path2 = \realpath(__DIR__ . '/../');
@@ -48,7 +47,7 @@ require_once $fppAutoloader;
 $config = [
     'use_strict_types' => true,
     'source' => '.',
-    'target' => 'composer', // composer or vfs
+    'target' => '*',
     'success_msg' => 'Successfully generated and written to disk',
     'printer' => fn () => (new PsrPrinter())->setTypeResolving(false),
     'file_parser' => parseFile,
@@ -82,7 +81,7 @@ use Nette\PhpGenerator\PsrPrinter;
 return [
     'use_strict_types' => true,
     'source' => '.',
-    'target' => 'composer', // composer or vfs
+    'target' => '*', // * = use composer settings, otherwise give path here
     'success_msg' => 'Successfully generated and written to disk',
     'printer' => fn () => (new PsrPrinter())->setTypeResolving(false),
     'file_parser' => parseFile,
@@ -117,10 +116,6 @@ if (\file_exists("$path/fpp-config.php")) {
 
 $config = Configuration::fromArray($config);
 
-$locatePath = $config->target() === 'vfs'
-    ? $config->locatePathFromVfs(vfsStream::setup('quote-exchange-vfs'))
-    : $config->locatePathFromComposer($autoloader);
-
-runFpp($config, $config->source(), $locatePath);
+runFpp($config, $autoloader);
 
 echo $config->successMessage() . "\n";
