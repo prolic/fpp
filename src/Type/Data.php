@@ -403,7 +403,11 @@ CODE;
         $constr->arguments()
     );
 
-    $constructor->setBody(\substr($constructorBody, 0, -1));
+    $constructor->setBody(
+        \strlen($constructorBody) > 0
+            ? \substr($constructorBody, 0, -1)
+            : $constructorBody
+    );
 
     $fromArrayBody .= ');';
     $toArrayBody .= '];';

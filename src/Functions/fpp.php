@@ -282,8 +282,7 @@ function parseArguments(): Parser
                         __($x)->_(plus(letter(), char('_'))),
                         __($xs)->_(many(plus(alphanum(), char('_')))),
                         __($_)->_(spaces()),
-                    )->call(fn ($x, $xs) => $x . $xs, $x, $xs)
-                    ->or(result(''))
+                    )->call(fn ($x, $xs) => $x . $xs, $x, $xs)->or(result(''))
                 ),
                 __($e)->_(char('=')->or(result(''))),
                 __($_)->_(spaces()),
@@ -315,7 +314,7 @@ function parseArguments(): Parser
             __($_)->_(spaces()),
             __($c)->_(char('}')),
         )->yields($c)
-    );
+    )->or(result([]));
 }
 
 const resolveType = 'Fpp\resolveType';
