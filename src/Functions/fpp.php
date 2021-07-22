@@ -673,6 +673,19 @@ function generateToArrayBodyFor(Argument $a, $prefix, ?string $resolvedType, arr
                         if ($type instanceof Data) {
                             foreach ($type->constructors() as $constructor) {
                                 if (($definition->namespace() . '\\' . $constructor->classname()) === $resolvedType) {
+                                    if ($a->isList()) {
+                                        $callback = "fn({$a->type()} \$e) => \$e->toArray()";
+
+                                        return <<<CODE
+    '{$a->name()}' => \array_map($callback, {$prefix}{$a->name()}),
+
+CODE;
+                                    }
+
+                                    if ($a->nullable()) {
+                                        return "    '{$a->name()}' => {$prefix}{$a->name()} !== null ? {$prefix}{$a->name()}->toArray() : null,\n";
+                                    }
+
                                     return "    '{$a->name()}' => {$prefix}{$a->name()}->toArray(),\n";
                                 }
                             }
